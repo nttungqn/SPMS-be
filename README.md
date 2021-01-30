@@ -34,7 +34,7 @@ Service back-end for SPMS
 - `docs` chứa những tài liệu mô tả luồng xử lý, tính năng của dự án có thể bao gồm `apis`, `postman`, ...
 
   
-- `src` chứa source code các chức năng theo mô hình **MVC**
+- `src` chứa source code các chức năng theo mô hình **3 Layers**
   
 - `test` chứa source code unit tests để kiểm tra tương ứng với tính năng trong thư mục `src`
   

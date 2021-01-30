@@ -8,7 +8,7 @@ services:
       - playlist-network
     environment:
       MYSQL_ROOT_PASSWORD: mysql
-      MYSQL_DATABASE: trainning_programming
+      MYSQL_DATABASE: spms
       MYSQL_USER: ntt
       MYSQL_PASSWORD: mysql
     volumes:
