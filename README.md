@@ -1,12 +1,8 @@
 # SPMS Back-end
 
----
 Service back-end for SPMS
 
-
 ## Requirements
-
----
 
 - Nodejs 10+
 
@@ -14,11 +10,7 @@ Service back-end for SPMS
 
 - Mysql 8.0+
 
-
-
 ## Project layout
-
----
 
 ```bash
 .
@@ -38,7 +30,6 @@ Service back-end for SPMS
 ├── docker-compose.yml
 ├── LICENSE
 └── README.md
-
 ```
 
 - `docs` chứa những tài liệu mô tả luồng xử lý, tính năng của dự án có thể bao gồm `apis`, `postman`, ...
@@ -61,13 +52,7 @@ Service back-end for SPMS
 
 - `CONTRIBUTING.md` quy định về cách sử dụng với `git`
 
-
-
 ## Development installation
-
----
-
-
 
 1. Install node package
    
@@ -90,5 +75,3 @@ Service back-end for SPMS
      ```shell
      npm run start:prod
      ```
-
-
