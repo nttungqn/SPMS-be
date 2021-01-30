@@ -16,14 +16,13 @@ Service back-end for SPMS
 .
 ├── docs/
 ├── spms_api
-│   ├── src/
-│   ├── test/
-│   ├── db/
-│   ├── package.json
-│   ├── package-lock.json  
-│   ├── tools/
-│   ├── constant.ts
-│   └── ...
+├── src/
+├── test/
+├── db/
+├── package.json
+├── package-lock.json  
+├── tools/
+├── constant.ts
 ├── .envrc
 ├── .gitignore
 ├── CONTRIBUTING.md
@@ -34,19 +33,18 @@ Service back-end for SPMS
 
 - `docs` chứa những tài liệu mô tả luồng xử lý, tính năng của dự án có thể bao gồm `apis`, `postman`, ...
 
-- `spms_api` web API application cho SPMS
   
-  - `src` chứa source code các chức năng theo mô hình **MVC**
+- `src` chứa source code các chức năng theo mô hình **MVC**
   
-  - `test` chứa source code unit tests để kiểm tra tương ứng với tính năng trong thư mục `src`
+- `test` chứa source code unit tests để kiểm tra tương ứng với tính năng trong thư mục `src`
   
-  - `db` chứa file sql tạo database (**lưu ý**: nên đặt tên theo format `yyyymmdd_table.sql`)
+- `db` chứa file sql tạo database (**lưu ý**: nên đặt tên theo format `yyyymmdd_table.sql`)
   
-  - `package.json` và `package-lock.json` mô tả thông tin package cần có
+- `package.json` và `package-lock.json` mô tả thông tin package cần có
   
-  - `tools` chứa những công cụ cần có
+- `tools` chứa những công cụ cần có
   
-  - `constanst` lưu *global variables*
+- `constanst` lưu *global variables*
 
 - `.envrc` file chứa những biến môi trường có thể có
 
