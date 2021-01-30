@@ -102,3 +102,22 @@ dist
 
 # TernJS port file
 .tern-port
+
+# compiled output
+/spms-api/dist
+/spms-api/node_modules
+
+# Logs
+/spms-api/logs
+/spms-api/*.log
+/spms-api/npm-debug.log*
+/spms-api/yarn-debug.log*
+/spms-api/yarn-error.log*
+/spms-api/lerna-debug.log*
+
+# OS
+/spms-api/.DS_Store
+
+# Tests
+/spms-api/coverage
+/spms-api/.nyc_output
