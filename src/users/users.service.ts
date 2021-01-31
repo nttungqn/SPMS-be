@@ -13,8 +13,8 @@ export class UsersService {
 
   create(createUserDto: CreateUserDto): Promise<User> {
     const user = new User();
-    user.firstName = createUserDto.firstName;
-    user.lastName = createUserDto.lastName;
+    user.firstname = createUserDto.firstname;
+    user.lastname = createUserDto.lastname;
 
     return this.usersRepository.save(user);
   }
@@ -31,7 +31,9 @@ export class UsersService {
     await this.usersRepository.delete(id);
   }
 
-  async findByUsername(username: string): Promise<User> {
-    return this.usersRepository.findOne({username: username});
+  async findByUsername(username: string): Promise<User | undefined> {
+    const users = await this.usersRepository.find();
+    const user = await this.usersRepository.findOne({ username }); 
+    return user;
   }
 }

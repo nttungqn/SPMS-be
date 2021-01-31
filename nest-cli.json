@@ -1,30 +1,5 @@
 {
+  "language": "ts",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/spms-api/src",
-  "monorepo": true,
-  "root": "apps/spms-api",
-  "compilerOptions": {
-    "webpack": true,
-    "tsConfigPath": "apps/spms-api/tsconfig.app.json"
-  },
-  "projects": {
-    "spms-api": {
-      "type": "application",
-      "root": "apps/spms-api",
-      "entryFile": "main",
-      "sourceRoot": "apps/spms-api/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/spms-api/tsconfig.app.json"
-      }
-    },
-    "app": {
-      "type": "application",
-      "root": "apps/app",
-      "entryFile": "main",
-      "sourceRoot": "apps/app/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/app/tsconfig.app.json"
-      }
-    }
-  }
+  "sourceRoot": "src"
 }
