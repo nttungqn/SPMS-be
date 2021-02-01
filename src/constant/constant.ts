@@ -1,3 +1,6 @@
 const LIMIT = 25;
-
-export { LIMIT };
+const TABLE_NAME = {
+  CHUONGTRINHDAOTAO: 'ChuongTrinhDaoTao'
+};
+const EXPIREDIN = '3600';
+export { LIMIT, TABLE_NAME, EXPIREDIN };
