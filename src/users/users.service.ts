@@ -34,8 +34,6 @@ export class UsersService {
   }
 
   async findByUsername(username: string): Promise<User | undefined> {
-    const users = await this.usersRepository.find();
-    const user = await this.usersRepository.findOne({ username }); 
-    return user;
+    return await this.usersRepository.findOne({ username }); 
   }
 }

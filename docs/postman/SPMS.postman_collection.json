@@ -9,7 +9,13 @@
 			"name": "Login",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Access-Control-Request-Headers",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im50dHVuZyIsInN1YiI6MTAsImlhdCI6MTYxMjIzODM3NSwiZXhwIjoxNjEyMjM4NDM1fQ.lph-aoiLPFYuNdno5Zfrefm8Yp_5CFuJeTlMyrOzemk",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n    \"username\": \"nttung\",\r\n    \"password\": \"123456\"\r\n}",
@@ -27,6 +33,52 @@
 					"path": [
 						"auth",
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Copy",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im50dHVuZyIsInN1YiI6MTAsImlhdCI6MTYxMjIzODk0MiwiZXhwIjoxNjEyMjM5MDAyfQ.uTKt5flH30djo4pl3voKIJLiaoypsu6SU4my6R5A3q0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im50dHVuZyIsInN1YiI6MTAsImlhdCI6MTYxMjIzODk0MiwiZXhwIjoxNjEyMjM5MDAyfQ.uTKt5flH30djo4pl3voKIJLiaoypsu6SU4my6R5A3q0",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/profile",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"profile"
 					]
 				}
 			},
