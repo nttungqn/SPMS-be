@@ -16,7 +16,13 @@ export class DatabaseConnectionService implements TypeOrmOptionsFactory {
       synchronize: false,
       dropSchema: false,
       logging: false,
-      entities: ['src/**/entity/*.ts']
+      entities: [this.getMigrationDirectory()]
     };
+  }
+  getMigrationDirectory() {
+    if (process.env.NODE_ENV == 'production') {
+      return `dist/**/entity/*{.ts,.js}`;
+    }
+    return `src/**/entity/*.ts`;
   }
 }
