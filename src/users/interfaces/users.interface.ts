@@ -5,4 +5,8 @@ export interface IUser {
   readonly email: string;
   readonly username: string;
   readonly password: string;
+  readonly role?: number;
+  readonly createdAt?: Date;
+  readonly updatedAt?: Date;
+  readonly isDeleted?: boolean;
 }
