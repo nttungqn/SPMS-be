@@ -1,6 +1,7 @@
 import { Body, Controller, Get, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { UsersService } from 'users/users.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
@@ -8,7 +9,7 @@ import { SignUpDto } from './dto/signup.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly usersService: UsersService) {}
   @Post('login')
   async login(@Req() req, @Res() res, @Body() body: LoginDto) {
     const { email = '', password = '' } = body;
@@ -23,7 +24,8 @@ export class AuthController {
   @Post('refreshtoken')
   async refreshToken(@Req() req, @Res() res, @Body() body: RefreshTokenDto) {
     try {
-      const user = this.authService.checkToken(body?.refreshToken);
+      const { id } = this.authService.checkToken(body?.refreshToken);
+      const user = await this.usersService.findOne({ ID: id });
       const { token } = await this.authService.createToken(user);
       const { refreshToken } = await this.authService.createRefreshToken(user);
       return res.json({ token, refreshToken });

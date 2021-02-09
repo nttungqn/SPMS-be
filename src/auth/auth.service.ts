@@ -1,52 +1,52 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
-import { UsersEntity } from './entity/users.entity';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { JWT_SECRET } from 'config/config';
-import { EXPIREDIN, SALT } from 'constant/constant';
-import { IUser } from './interfaces/user.interface';
+import { AUTH_MESSAGE, EXPIREDIN, SALT } from 'constant/constant';
+import { UsersService } from 'users/users.service';
+import { IUser } from 'users/interfaces/users.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectRepository(UsersEntity) private usersRepository: Repository<UsersEntity>) {}
+  constructor(private readonly usersService: UsersService) {}
   async login(email: string, password: string): Promise<any> {
     try {
-      const user = await this.usersRepository.findOne({ email });
+      const user = await this.usersService.findOne({ email });
       if (!user) {
-        return { status: HttpStatus.BAD_REQUEST, data: { message: 'EMAIL_NOT_EXIST' } };
+        return { status: HttpStatus.BAD_REQUEST, data: { message: AUTH_MESSAGE.EMAIL_NOT_EXIST } };
       }
       const checkPassword = await this.comparePassword(password, user?.password);
       if (!checkPassword) {
-        return { status: HttpStatus.BAD_REQUEST, data: { message: 'EMAIL_OR_PASSWORD_INCORRECT' } };
+        return { status: HttpStatus.BAD_REQUEST, data: { message: AUTH_MESSAGE.EMAIL_OR_PASSWORD_INCORRECT } };
       }
       const { token } = await this.createToken(user);
       const { refreshToken } = await this.createRefreshToken(user);
       return { status: HttpStatus.OK, data: { token, refreshToken } };
     } catch (error) {
-      return { status: HttpStatus.INTERNAL_SERVER_ERROR, data: { message: 'INTERNAL_SERVER_ERROR' } };
+      return { status: HttpStatus.INTERNAL_SERVER_ERROR, data: { message: AUTH_MESSAGE.LOGIN_FAILED } };
     }
   }
   async signup(newData: IUser): Promise<any> {
     try {
-      const checkExistEmail = await this.usersRepository.findOne({ email: newData?.email });
+      const checkExistEmail = await this.usersService.findOne({ email: newData?.email });
       if (checkExistEmail) {
-        return { status: HttpStatus.CONFLICT, data: { message: 'EMAIL_IS_EXIST' } };
+        return { status: HttpStatus.CONFLICT, data: { message: AUTH_MESSAGE.EMAIL_IS_EXIST } };
       }
       const newPassword = await this.hashPassword(newData?.password);
-      const newUser = await this.usersRepository.create({ ...newData, password: newPassword });
-      const user = await this.usersRepository.save(newUser);
+      const user = await this.usersService.create({
+        ...newData,
+        password: newPassword
+      });
       const { token } = await this.createToken(user);
       const { refreshToken } = await this.createRefreshToken(user);
       return { status: HttpStatus.OK, data: { token, refreshToken } };
     } catch (error) {
-      return { status: HttpStatus.INTERNAL_SERVER_ERROR, data: { message: 'INTERNAL_SERVER_ERROR' } };
+      return { status: HttpStatus.INTERNAL_SERVER_ERROR, data: { message: AUTH_MESSAGE.SIGN_UP_FAILED } };
     }
   }
   async validateUser(payload: JwtPayload): Promise<any> {
-    return await this.usersRepository.findOne({ ID: payload?.id, email: payload?.email });
+    return await this.usersService.getProfile({ ID: payload?.id, email: payload?.email });
   }
   async createToken(user: IUser): Promise<any> {
     const expiresIn = EXPIREDIN || 3600;
@@ -72,11 +72,7 @@ export class AuthService {
 
     const refreshToken = jwt.sign(
       {
-        id: user.ID,
-        email: user.email,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName
+        id: user.ID
       },
       JWT_SECRET,
       { expiresIn: expiresRefresh }
