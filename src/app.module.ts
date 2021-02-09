@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { RolesService } from './roles/roles.service';
 import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
+import { bodyValidatorMiddleware } from 'auth/middlewares/body-validator.middleware';
 
 @Module({
   imports: [
@@ -19,4 +20,8 @@ import { UsersModule } from './users/users.module';
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(bodyValidatorMiddleware).forRoutes('auth/login', 'auth/signup');
+  }
+}
