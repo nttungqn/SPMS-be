@@ -12,7 +12,7 @@ export class UsersService {
     return await this.usersRepository.findOne({ ...query });
   }
   async create(newData: IUser): Promise<any> {
-    const newUser = await this.usersRepository.create({ ...newData });
+    const newUser = await this.usersRepository.create({ ...newData, role: newData?.role || 1 });
     return await this.usersRepository.save(newUser);
   }
   async getProfile(query): Promise<any> {
