@@ -6,8 +6,8 @@ import { CtdtService } from './ctdt.service';
 import { CreateNganhDaoTaoDto } from './dto/createNganhDaoTao.dto';
 import { FilterNganhDaoTaoDto } from './dto/filterNganhDaoTao.dto';
 
-@ApiTags('ctdt')
-@Controller('ctdt')
+@ApiTags('nganh-dao-tao')
+@Controller('nganh-dao-tao')
 export class CtdtController {
   constructor(private readonly nganhDaoTaoService: CtdtService) {}
 
