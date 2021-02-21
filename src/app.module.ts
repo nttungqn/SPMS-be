@@ -12,7 +12,7 @@ import { MonHocModule} from './mon-hoc/mon-hoc.module'
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({ useClass: DatabaseConnectionService }),
-    // ChuongTrinhDaoTaoModule,
+    ChuongTrinhDaoTaoModule,
     AuthModule,
     UsersModule,
     MonHocModule
