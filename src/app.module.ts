@@ -9,13 +9,19 @@ import { RolesService } from './roles/roles.service';
 import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
 import { bodyValidatorMiddleware } from 'auth/middlewares/body-validator.middleware';
+import { SyllabusModule } from './syllabus/syllabus.module';
+import { SchoolYearModule } from './school-year/school-year.module';
+import { TypeOfEducationModule } from './type-of-education/type-of-education.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({ useClass: DatabaseConnectionService }),
     ChuongTrinhDaoTaoModule,
     AuthModule,
-    UsersModule
+    UsersModule,
+    SyllabusModule,
+    SchoolYearModule,
+    TypeOfEducationModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
