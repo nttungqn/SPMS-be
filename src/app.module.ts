@@ -9,13 +9,15 @@ import { RolesService } from './roles/roles.service';
 import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
 import { bodyValidatorMiddleware } from 'auth/middlewares/body-validator.middleware';
+import { CtdtModule } from './ctdt/ctdt.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({ useClass: DatabaseConnectionService }),
     ChuongTrinhDaoTaoModule,
     AuthModule,
-    UsersModule
+    UsersModule,
+    CtdtModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
