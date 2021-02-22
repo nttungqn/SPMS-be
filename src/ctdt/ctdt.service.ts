@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, NGANHDAOTAO_MESSAGE, TABLE_NAME } from 'constant/constant';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { NganhDaoTaoEntity } from './entity/nganhDaoTao.entity';
 import { INganhDaoTao } from './interfaces/nganhDaoTao.interface';
 
@@ -12,35 +12,31 @@ export class CtdtService {
   ) {}
 
   async findAll(filter: any): Promise<any> {
-    const { limit = LIMIT, page = 0 } = filter;
+    const { limit = LIMIT, page = 0, search = '' } = filter;
     const skip = Number(page) * Number(limit);
+    const querySearch = search ? { Ten: Like(`%${search}%`) } : {};
     const query = {
-      isDeleted: false
+      isDeleted: false,
+      ...querySearch
     };
-    const results = await this.nganhDaoTaoRepository
-      .createQueryBuilder('NganhDaoTao')
-      .leftJoinAndSelect(`NganhDaoTao.ctdt`, 'ctdt')
-      .where('NganhDaoTao.isDeleted = :isDeleted', { ...query })
-      .offset(skip)
-      .limit(limit)
-      .getMany();
+    const results = await this.nganhDaoTaoRepository.find({
+      relations: ['ctdt', 'createdBy', 'updatedBy'],
+      skip,
+      take: limit,
+      where: query
+    });
     if (!results.length) {
       return { status: HttpStatus.OK, data: { message: NGANHDAOTAO_MESSAGE.NGANHDAOTAO_EMPTY } };
     }
-    const total = await this.nganhDaoTaoRepository.count({ isDeleted: false });
+    const total = await this.nganhDaoTaoRepository.count({ ...query });
     return { status: HttpStatus.OK, data: { contents: results, total, page: Number(page) } };
   }
 
   async findById(ID: number): Promise<any> {
-    const query = {
-      ID,
-      isDeleted: false
-    };
-    const result = await this.nganhDaoTaoRepository
-      .createQueryBuilder('NganhDaoTao')
-      .leftJoinAndSelect(`NganhDaoTao.ctdt`, 'ctdt')
-      .where('NganhDaoTao.isDeleted = :isDeleted and NganhDaoTao.ID = :ID', { ...query })
-      .getOne();
+    const result = await this.nganhDaoTaoRepository.findOne({
+      where: { ID, isDeleted: false },
+      relations: ['ctdt', 'createdBy', 'updatedBy']
+    });
     if (!result) {
       return {
         status: HttpStatus.NOT_FOUND,
@@ -103,7 +99,7 @@ export class CtdtService {
     try {
       await this.nganhDaoTaoRepository.save({ ...nganhDaoTao, isDeleted: true, updatedAt: new Date() });
       return {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        status: HttpStatus.OK,
         data: { message: NGANHDAOTAO_MESSAGE.DELETE_NGANHDAOTAO_SUCCESSFULLY }
       };
     } catch (error) {

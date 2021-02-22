@@ -32,7 +32,12 @@ export class CtdtController {
   @ApiBearerAuth('token')
   @Post()
   async create(@Req() req, @Body() newData: CreateNganhDaoTaoDto, @Res() res): Promise<any> {
-    const { status, data } = await this.nganhDaoTaoService.create(newData);
+    const user = req.user || {};
+    const { status, data } = await this.nganhDaoTaoService.create({
+      ...newData,
+      createdBy: user?.ID,
+      updatedBy: user?.ID
+    });
     return res.status(status).json(data);
   }
 
@@ -40,8 +45,9 @@ export class CtdtController {
   @ApiBearerAuth('token')
   @Put(':id')
   async update(@Req() req, @Param() param: IdDto, @Body() updatedData: CreateNganhDaoTaoDto, @Res() res): Promise<any> {
+    const user = req.user || {};
     const { id } = param;
-    const { status, data } = await this.nganhDaoTaoService.update(Number(id), updatedData);
+    const { status, data } = await this.nganhDaoTaoService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
     return res.status(status).json(data);
   }
 
@@ -49,8 +55,9 @@ export class CtdtController {
   @ApiBearerAuth('token')
   @Delete(':id')
   async delete(@Req() req, @Param() param: IdDto, @Res() res): Promise<any> {
+    const user = req.user || {};
     const { id } = param;
-    const { status, data } = await this.nganhDaoTaoService.delete(Number(id));
+    const { status, data } = await this.nganhDaoTaoService.delete(Number(id), user?.ID);
     return res.status(status).json(data);
   }
 }
