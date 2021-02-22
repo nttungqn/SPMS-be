@@ -1,6 +1,6 @@
 export interface IMonHoc {
   readonly ID?: number;
-  readonly IDKTT?: number;
+  // readonly IDKTT?: number;
   readonly Ma?: string;
   readonly TenTiengViet?: string;
   readonly TenTiengAnh?: string;
@@ -12,5 +12,5 @@ export interface IMonHoc {
   readonly updatedAt?: Date;
   // readonly createdBy?: User;
   // readonly updatedBy?: User;
-  readonly isDeleted?: boolean;
+  // readonly isDeleted?: boolean;
 }
