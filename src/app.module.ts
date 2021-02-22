@@ -5,11 +5,13 @@ import { AppService } from './app.service';
 import { DatabaseConnectionService } from './database-connection/database-connection.service';
 import { ChuongTrinhDaoTaoModule } from './chuong-trinh-dao-tao/chuong-trinh-dao-tao.module';
 import { AuthModule } from './auth/auth.module';
-import { RolesService } from './roles/roles.service';
-import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
 import { bodyValidatorMiddleware } from 'auth/middlewares/body-validator.middleware';
+<<<<<<< HEAD
+import { MonHocModule} from './mon-hoc/mon-hoc.module'
+=======
 import { CtdtModule } from './ctdt/ctdt.module';
+>>>>>>> develop
 
 @Module({
   imports: [
@@ -17,7 +19,8 @@ import { CtdtModule } from './ctdt/ctdt.module';
     ChuongTrinhDaoTaoModule,
     AuthModule,
     UsersModule,
-    CtdtModule
+    MonHocModule,
+    CtdtModule,
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
