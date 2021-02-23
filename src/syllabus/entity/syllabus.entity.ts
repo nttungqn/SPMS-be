@@ -1,5 +1,4 @@
-import { Exclude } from "class-transformer";
-import { type } from "os";
+import { MonHocEntity } from "mon-hoc/entity/monHoc.entity";
 import { SchoolYear } from "school-year/entity/school-year.entity";
 import { TypeOfEducation } from "type-of-education/entity/type-of-education.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -10,8 +9,11 @@ export class Syllabus {
     @PrimaryGeneratedColumn()
     id:number;
 
-    @Column({name:'idMH'})
-    idSubject:number;
+    // @Column({name:'idMH'})
+    // idSubject:number;
+    @ManyToOne(() => MonHocEntity)
+    @JoinColumn({name:'idMH'})
+    subject:MonHocEntity;
 
     //@Column({name:'idHDT'})
     @ManyToOne(() => TypeOfEducation)
@@ -21,7 +23,7 @@ export class Syllabus {
     //@Column({name:'idNH'})
     @ManyToOne(()=>SchoolYear)
     @JoinColumn({name:'idNH'})
-    schoolYear:number;
+    schoolYear:SchoolYear;
 
     //@Column({name:'idUser'})
     @ManyToOne(() => UsersEntity,user=>user.ID)

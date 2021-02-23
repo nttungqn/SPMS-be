@@ -5,18 +5,28 @@ import { SyllabusService } from './syllabus.service';
 import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
 import { Syllabus } from './entity/syllabus.entity';
+import { SchoolYearService } from 'school-year/school-year.service';
+import { TypeOfEducationService } from 'type-of-education/type-of-education.service';
+import { MonHocService } from 'mon-hoc/mon-hoc.service';
 
 @ApiTags('Syllabus')
 @Controller('syllabus')
 export class SyllabusController {
-  constructor(private readonly syllabusService: SyllabusService) {}
+  constructor(private readonly syllabusService: SyllabusService,private readonly shoolYearService:SchoolYearService,
+    private readonly typeOfEduService:TypeOfEducationService,private readonly subjectService:MonHocService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Post()
-  create(@Body(ValidationPipe) createSyllabusDto: CreateSyllabusDto,@Req() req):Promise<Syllabus> {
-    createSyllabusDto.idUser=req.user.ID;
-    return this.syllabusService.create(createSyllabusDto);
+  async create(@Body(ValidationPipe) createSyllabusDto: CreateSyllabusDto,@Req() req):Promise<Syllabus> {
+    //createSyllabusDto.idUser=req.user.ID;
+    const createSyllabus=new Syllabus();
+    createSyllabus.schoolYear=await this.shoolYearService.findById(createSyllabusDto.idSchoolYear);
+    createSyllabus.author=req.user;
+    createSyllabus.typeOfEdu=await this.typeOfEduService.findOne(createSyllabusDto.idTypeOfEdu);
+    //createSyllabus.subject=await this.subjectService.findById(createSyllabusDto.idSubject);
+    console.log(createSyllabus);
+    return this.syllabusService.create(createSyllabus);
   }
 
   // @UseGuards(AuthGuard('jwt'))

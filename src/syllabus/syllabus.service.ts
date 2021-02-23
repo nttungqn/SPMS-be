@@ -13,9 +13,12 @@ export class SyllabusService {
     private syllabusRepository: Repository<Syllabus>)
     {}
 
-  async create(createSyllabusDto: CreateSyllabusDto) :Promise<Syllabus> {
+  async create(createSyllabus: Syllabus) :Promise<Syllabus> {
+    // const crateSyllabus=new Syllabus();
+    // crateSyllabus.author=
+    throw new BadRequestException();
     try {
-      const syllabus:Syllabus= await this.syllabusRepository.save(createSyllabusDto); 
+      const syllabus:Syllabus= await this.syllabusRepository.save(createSyllabus); 
       return syllabus;
     } catch (error) {
       throw new BadRequestException(error.sqlMessage);
