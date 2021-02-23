@@ -7,11 +7,8 @@ import { ChuongTrinhDaoTaoModule } from './chuong-trinh-dao-tao/chuong-trinh-dao
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { bodyValidatorMiddleware } from 'auth/middlewares/body-validator.middleware';
-<<<<<<< HEAD
 import { MonHocModule} from './mon-hoc/mon-hoc.module'
-=======
 import { CtdtModule } from './ctdt/ctdt.module';
->>>>>>> develop
 
 @Module({
   imports: [
