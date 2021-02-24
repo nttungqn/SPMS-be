@@ -7,4 +7,5 @@ export interface INganhDaoTao {
   readonly createdBy?: number;
   readonly updatedAt?: Date;
   readonly updatedBy?: number;
+  readonly isDeleted?: boolean;
 }

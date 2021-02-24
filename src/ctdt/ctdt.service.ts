@@ -88,7 +88,7 @@ export class CtdtService {
     }
   }
 
-  async delete(ID: number, updatedBy?: string): Promise<any> {
+  async delete(ID: number, updatedBy?: number): Promise<any> {
     const nganhDaoTao = await this.nganhDaoTaoRepository.findOne({ ID, isDeleted: false });
     if (!nganhDaoTao) {
       return {
@@ -97,7 +97,7 @@ export class CtdtService {
       };
     }
     try {
-      await this.nganhDaoTaoRepository.save({ ...nganhDaoTao, isDeleted: true, updatedAt: new Date() });
+      await this.nganhDaoTaoRepository.save({ ...nganhDaoTao, isDeleted: true, updatedAt: new Date(), updatedBy });
       return {
         status: HttpStatus.OK,
         data: { message: NGANHDAOTAO_MESSAGE.DELETE_NGANHDAOTAO_SUCCESSFULLY }
