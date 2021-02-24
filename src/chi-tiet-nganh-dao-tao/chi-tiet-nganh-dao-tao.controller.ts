@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IdDto } from 'chuong-trinh-dao-tao/dto/Id.dto';
 import { ChiTietNganhDaoTaoService } from './chi-tiet-nganh-dao-tao.service';
 import { CreateCTNganhDaoTaoDto } from './dto/createCTNganhDaoTao.dto';
 import { FilterCTNganhDaoTaoDto } from './dto/filterCTNganhDaoTao.dto';
-
+@ApiTags('chi-tiet-nganh-dao-tao')
 @Controller('chi-tiet-nganh-dao-tao')
 export class ChiTietNganhDaoTaoController {
   constructor(private readonly chiTietNganhDaoTao: ChiTietNganhDaoTaoService) {}
