@@ -1,10 +1,25 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IdDto } from 'chuong-trinh-dao-tao/dto/Id.dto';
+import { CTNGANHDAOTAO_MESSAGE } from 'constant/constant';
 import { ChiTietNganhDaoTaoService } from './chi-tiet-nganh-dao-tao.service';
 import { CreateCTNganhDaoTaoDto } from './dto/createCTNganhDaoTao.dto';
 import { FilterCTNganhDaoTaoDto } from './dto/filterCTNganhDaoTao.dto';
+import * as lodash from 'lodash';
 @ApiTags('chi-tiet-nganh-dao-tao')
 @Controller('chi-tiet-nganh-dao-tao')
 export class ChiTietNganhDaoTaoController {
@@ -13,18 +28,16 @@ export class ChiTietNganhDaoTaoController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Get()
-  async findAll(@Req() req, @Query() filter: FilterCTNganhDaoTaoDto, @Res() res): Promise<any> {
-    const { status, data } = await this.chiTietNganhDaoTao.findAll(filter);
-    return res.status(status).json(data);
+  async findAll(@Req() req, @Query() filter: FilterCTNganhDaoTaoDto): Promise<any> {
+    return await this.chiTietNganhDaoTao.findAll(filter);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Get(':id')
-  async findById(@Req() req, @Param() param: IdDto, @Res() res): Promise<any> {
+  async findById(@Req() req, @Param() param: IdDto): Promise<any> {
     const { id } = param;
-    const { status, data } = await this.chiTietNganhDaoTao.findById(Number(id));
-    return res.status(status).json(data);
+    return await this.chiTietNganhDaoTao.findById(Number(id));
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -32,12 +45,19 @@ export class ChiTietNganhDaoTaoController {
   @Post()
   async create(@Req() req, @Body() newData: CreateCTNganhDaoTaoDto, @Res() res): Promise<any> {
     const user = req.user || {};
-    const { status, data } = await this.chiTietNganhDaoTao.create({
-      ...newData,
-      createdBy: user?.ID,
-      updatedBy: user?.ID
-    });
-    return res.status(status).json(data);
+    try {
+      await this.chiTietNganhDaoTao.create({
+        ...newData,
+        createdBy: user?.ID,
+        updatedBy: user?.ID
+      });
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_FAILED,
+        error: lodash.get(error, 'response', 'error')
+      });
+    }
+    return res.status(HttpStatus.CREATED).json({ message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY });
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -51,8 +71,15 @@ export class ChiTietNganhDaoTaoController {
   ): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    const { status, data } = await this.chiTietNganhDaoTao.update(Number(id), { ...updatedData, updatedBy: user?.ID });
-    return res.status(status).json(data);
+    try {
+      await this.chiTietNganhDaoTao.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: CTNGANHDAOTAO_MESSAGE.UPDATE_CTNGANHDAOTAO_FAILED,
+        error: lodash.get(error, 'response', 'error')
+      });
+    }
+    return res.status(HttpStatus.OK).json({ message: CTNGANHDAOTAO_MESSAGE.UPDATE_CTNGANHDAOTAO_SUCCESSFULLY });
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -61,7 +88,14 @@ export class ChiTietNganhDaoTaoController {
   async delete(@Req() req, @Param() param: IdDto, @Res() res): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    const { status, data } = await this.chiTietNganhDaoTao.delete(Number(id), user?.ID);
-    return res.status(status).json(data);
+    try {
+      await this.chiTietNganhDaoTao.delete(Number(id), user?.ID);
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_FAILED,
+        error: lodash.get(error, 'response', 'error')
+      });
+    }
+    return res.status(HttpStatus.OK).json({ message: CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_SUCCESSFULLY });
   }
 }

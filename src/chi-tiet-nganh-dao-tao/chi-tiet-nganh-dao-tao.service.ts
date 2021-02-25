@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CTNGANHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm';
@@ -24,10 +24,10 @@ export class ChiTietNganhDaoTaoService {
       where: query
     });
     if (!results.length) {
-      return { status: HttpStatus.OK, data: { message: CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EMPTY } };
+      throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
     }
     const total = await this.chiTietNganhDTRepository.count({ ...query });
-    return { status: HttpStatus.OK, data: { contents: results, total, page: Number(page) } };
+    return { contents: results, total, page: Number(page) };
   }
 
   async findById(ID: number): Promise<any> {
@@ -36,12 +36,9 @@ export class ChiTietNganhDaoTaoService {
       relations: ['NganhDaoTao', 'createdBy', 'updatedBy']
     });
     if (!result) {
-      return {
-        status: HttpStatus.NOT_FOUND,
-        data: { message: CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_ID_NOT_FOUND }
-      };
+      throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    return { status: HttpStatus.OK, data: result };
+    return result;
   }
 
   async create(newData: IChiTietNganhDaoTao): Promise<any> {
@@ -51,64 +48,49 @@ export class ChiTietNganhDaoTaoService {
       isDeleted: false
     });
     if (checkExistData) {
-      return { status: HttpStatus.CONFLICT, data: { message: CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EXIST } };
+      throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EXIST, HttpStatus.CONFLICT);
     }
     try {
       const newCTNganhDaoTao = await this.chiTietNganhDTRepository.create(newData);
-      await this.chiTietNganhDTRepository.save(newCTNganhDaoTao);
-      return {
-        status: HttpStatus.CREATED,
-        data: { message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY }
-      };
+      const saved = await this.chiTietNganhDTRepository.save(newCTNganhDaoTao);
+      return saved;
     } catch (error) {
-      return {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        data: { message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_FAILED }
-      };
+      throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   async update(ID: number, updatedData: IChiTietNganhDaoTao): Promise<any> {
     const cTNganhDaoTao = await this.chiTietNganhDTRepository.findOne({ ID, isDeleted: false });
     if (!cTNganhDaoTao) {
-      return {
-        status: HttpStatus.BAD_REQUEST,
-        data: { message: CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_ID_NOT_FOUND }
-      };
+      throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
     try {
-      await this.chiTietNganhDTRepository.save({ ...cTNganhDaoTao, ...updatedData, updatedAt: new Date() });
-      return {
-        status: HttpStatus.OK,
-        data: { message: CTNGANHDAOTAO_MESSAGE.UPDATE_CTNGANHDAOTAO_SUCCESSFULLY }
-      };
+      const updated = await this.chiTietNganhDTRepository.save({
+        ...cTNganhDaoTao,
+        ...updatedData,
+        updatedAt: new Date()
+      });
+      return updated;
     } catch (error) {
-      return {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        data: { message: CTNGANHDAOTAO_MESSAGE.UPDATE_CTNGANHDAOTAO_FAILED }
-      };
+      throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   async delete(ID: number, updatedBy?: number): Promise<any> {
     const cTNganhDaoTao = await this.chiTietNganhDTRepository.findOne({ ID, isDeleted: false });
     if (!cTNganhDaoTao) {
-      return {
-        status: HttpStatus.BAD_REQUEST,
-        data: { message: CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_ID_NOT_FOUND }
-      };
+      throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
     try {
-      await this.chiTietNganhDTRepository.save({ ...cTNganhDaoTao, isDeleted: true, updatedAt: new Date(), updatedBy });
-      return {
-        status: HttpStatus.OK,
-        data: { message: CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_SUCCESSFULLY }
-      };
+      const deleted = await this.chiTietNganhDTRepository.save({
+        ...cTNganhDaoTao,
+        isDeleted: true,
+        updatedAt: new Date(),
+        updatedBy
+      });
+      return deleted;
     } catch (error) {
-      return {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        data: { message: CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_FAILED }
-      };
+      throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

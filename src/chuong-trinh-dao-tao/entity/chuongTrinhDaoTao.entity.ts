@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity('ChuongTrinhDaoTao')
 export class ChuongTrinhDaoTaoEntity {
@@ -37,4 +38,21 @@ export class ChuongTrinhDaoTaoEntity {
   @ApiProperty()
   @Column()
   DieuKienTotNghiep: string;
+
+  @Column()
+  createdAt: Date;
+
+  @OneToOne(() => UsersEntity)
+  @JoinColumn({ name: 'createdBy' })
+  createdBy: number;
+
+  @Column()
+  updatedAt: Date;
+
+  @OneToOne(() => UsersEntity)
+  @JoinColumn({ name: 'updatedBy' })
+  updatedBy: number;
+
+  @Column()
+  isDeleted: boolean;
 }
