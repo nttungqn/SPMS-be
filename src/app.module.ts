@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { bodyValidatorMiddleware } from 'auth/middlewares/body-validator.middleware';
 import { MonHocModule} from './mon-hoc/mon-hoc.module'
 import { CtdtModule } from './ctdt/ctdt.module';
+import { ChiTietNganhDaoTaoModule } from './chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CtdtModule } from './ctdt/ctdt.module';
     UsersModule,
     MonHocModule,
     CtdtModule,
+    ChiTietNganhDaoTaoModule,
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

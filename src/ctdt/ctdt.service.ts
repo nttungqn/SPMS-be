@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, NGANHDAOTAO_MESSAGE, TABLE_NAME } from 'constant/constant';
 import { Repository, Like } from 'typeorm';
@@ -26,10 +26,10 @@ export class CtdtService {
       where: query
     });
     if (!results.length) {
-      return { status: HttpStatus.OK, data: { message: NGANHDAOTAO_MESSAGE.NGANHDAOTAO_EMPTY } };
+      throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
     }
     const total = await this.nganhDaoTaoRepository.count({ ...query });
-    return { status: HttpStatus.OK, data: { contents: results, total, page: Number(page) } };
+    return { contents: results, total, page: Number(page) };
   }
 
   async findById(ID: number): Promise<any> {
@@ -38,75 +38,53 @@ export class CtdtService {
       relations: ['ctdt', 'createdBy', 'updatedBy']
     });
     if (!result) {
-      return {
-        status: HttpStatus.NOT_FOUND,
-        data: { message: NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND }
-      };
+      throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    return { status: HttpStatus.OK, data: result };
+    return result;
   }
 
   async create(newData: INganhDaoTao): Promise<any> {
     const checkExistName = await this.nganhDaoTaoRepository.findOne({ Ten: newData?.Ten, isDeleted: false });
     if (checkExistName) {
-      return { status: HttpStatus.CONFLICT, data: { message: NGANHDAOTAO_MESSAGE.NGANHDAOTAO_NAME_EXIST } };
+      throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_NAME_EXIST, HttpStatus.CONFLICT);
     }
     try {
       const newNganhDaoTao = await this.nganhDaoTaoRepository.create(newData);
-      await this.nganhDaoTaoRepository.save(newNganhDaoTao);
-      return {
-        status: HttpStatus.CREATED,
-        data: { message: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_SUCCESSFULLY }
-      };
+      const saved = await this.nganhDaoTaoRepository.save(newNganhDaoTao);
+      return saved;
     } catch (error) {
-      return {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        data: { message: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_FAILED }
-      };
+      throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   async update(ID: number, updatedData: INganhDaoTao): Promise<any> {
     const nganhDaoTao = await this.nganhDaoTaoRepository.findOne({ ID, isDeleted: false });
     if (!nganhDaoTao) {
-      return {
-        status: HttpStatus.BAD_REQUEST,
-        data: { message: NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND }
-      };
+      throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
     try {
-      await this.nganhDaoTaoRepository.save({ ...nganhDaoTao, ...updatedData, updatedAt: new Date() });
-      return {
-        status: HttpStatus.OK,
-        data: { message: NGANHDAOTAO_MESSAGE.UPDATE_NGANHDAOTAO_SUCCESSFULLY }
-      };
+      const updated = await this.nganhDaoTaoRepository.save({ ...nganhDaoTao, ...updatedData, updatedAt: new Date() });
+      return updated;
     } catch (error) {
-      return {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        data: { message: NGANHDAOTAO_MESSAGE.UPDATE_NGANHDAOTAO_SUCCESSFULLY }
-      };
+      throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async delete(ID: number, updatedBy?: string): Promise<any> {
+  async delete(ID: number, updatedBy?: number): Promise<any> {
     const nganhDaoTao = await this.nganhDaoTaoRepository.findOne({ ID, isDeleted: false });
     if (!nganhDaoTao) {
-      return {
-        status: HttpStatus.BAD_REQUEST,
-        data: { message: NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND }
-      };
+      throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
     try {
-      await this.nganhDaoTaoRepository.save({ ...nganhDaoTao, isDeleted: true, updatedAt: new Date() });
-      return {
-        status: HttpStatus.OK,
-        data: { message: NGANHDAOTAO_MESSAGE.DELETE_NGANHDAOTAO_SUCCESSFULLY }
-      };
+      const deleted = await this.nganhDaoTaoRepository.save({
+        ...nganhDaoTao,
+        isDeleted: true,
+        updatedAt: new Date(),
+        updatedBy
+      });
+      return deleted;
     } catch (error) {
-      return {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        data: { message: NGANHDAOTAO_MESSAGE.DELETE_NGANHDAOTAO_FAILED }
-      };
+      throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
