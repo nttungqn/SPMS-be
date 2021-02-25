@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChuongTrinhDaoTaoController } from './chuong-trinh-dao-tao.controller';
-
+const a = 1;
 describe('ChuongTrinhDaoTaoController', () => {
   let controller: ChuongTrinhDaoTaoController;
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ChuongTrinhDaoTaoController]
