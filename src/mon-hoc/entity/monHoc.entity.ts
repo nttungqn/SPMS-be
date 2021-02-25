@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('MonHoc')
 export class MonHocEntity {
-  @PrimaryGeneratedColumn({name: 'id'})
+  @PrimaryGeneratedColumn({ name: 'id' })
   ID: number;
 
   // @ApiProperty()
@@ -11,35 +11,35 @@ export class MonHocEntity {
   // IDKTT: number;
 
   @ApiProperty()
-  @Column({length: 10, name: 'ma'})
+  @Column({ length: 10, name: 'ma' })
   Ma: string;
 
   @ApiProperty()
-  @Column({name: 'tenTiengViet'})
+  @Column({ name: 'tenTiengViet' })
   TenTiengViet: string;
 
   @ApiProperty()
-  @Column({name: 'tenTiengAnh'})
+  @Column({ name: 'tenTiengAnh' })
   TenTiengAnh: string;
 
   @ApiProperty()
-  @Column({name: 'soTinChi'})
+  @Column({ name: 'soTinChi' })
   SoTinChi: number;
 
   @ApiProperty()
-  @Column({name: 'soTietLyThuyet'})
+  @Column({ name: 'soTietLyThuyet' })
   SoTietLyThuyet: number;
 
   @ApiProperty()
-  @Column({name: 'soTietThucHanh'})
+  @Column({ name: 'soTietThucHanh' })
   SoTietThucHanh: number;
 
   @ApiProperty()
-  @Column({name: 'soTietTuHoc'})
+  @Column({ name: 'soTietTuHoc' })
   SoTietTuHoc: number;
 
   @ApiProperty()
-  @Column({name: 'moTa'})
+  @Column({ name: 'moTa' })
   MoTa: string;
 
   // @Column({default: Date.now()})

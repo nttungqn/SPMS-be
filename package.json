@@ -9,18 +9,18 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "build:prod": "babel src --out-dir dist",
-    "format": "prettier --write \"src/***/**.*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nodemon",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "test:push": ""
   },
   "dependencies": {
@@ -87,7 +87,7 @@
     "testEnvironment": "node"
   },
   "lint-staged": {
-    "src/**/*.{js, ts}": [
+    "src/**/*.ts": [
       "npm run format",
       "npm run lint:fix"
     ]

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT, NGANHDAOTAO_MESSAGE, TABLE_NAME } from 'constant/constant';
+import { LIMIT, NGANHDAOTAO_MESSAGE } from 'constant/constant';
 import { Repository, Like } from 'typeorm';
 import { NganhDaoTaoEntity } from './entity/nganhDaoTao.entity';
 import { INganhDaoTao } from './interfaces/nganhDaoTao.interface';
