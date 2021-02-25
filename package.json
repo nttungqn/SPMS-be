@@ -87,7 +87,7 @@
     "testEnvironment": "node"
   },
   "lint-staged": {
-    "src/**/*.{js, jsx}": [
+    "src/**/*.{js, ts}": [
       "npm run format",
       "npm run lint:fix"
     ]
