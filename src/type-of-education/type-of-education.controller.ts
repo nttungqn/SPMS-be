@@ -27,7 +27,7 @@ export class TypeOfEducationController {
 
   @Get(':id')
   findOne(@Param('id',ParseIntPipe) id: number) {
-    return this.typeOfEducationService.findOne(id);
+    return this.typeOfEducationService.findById(id);
   }
 
   @UseGuards(AuthGuard('jwt'))

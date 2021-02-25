@@ -8,5 +8,5 @@ export interface IUser {
   readonly role?: number;
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
-  readonly isDeleted?: boolean;
+  // readonly isDeleted?: boolean;
 }

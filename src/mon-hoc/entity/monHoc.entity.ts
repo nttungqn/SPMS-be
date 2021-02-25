@@ -27,6 +27,10 @@ export class MonHocEntity {
   SoTinChi: number;
 
   @ApiProperty()
+  @Column({name: 'soTietLyThuyet'})
+  SoTietLyThuyet: number;
+
+  @ApiProperty()
   @Column({name: 'soTietThucHanh'})
   SoTietThucHanh: number;
 
@@ -44,13 +48,13 @@ export class MonHocEntity {
   // @Column()
   // updatedAt: Date;
 
-  // @OneToOne(() => User)
-  // @JoinColumn()
-  // createdBy: User;
+  // // @OneToOne(() => User)
+  // // @JoinColumn()
+  // // createdBy: User;
 
-  // @OneToOne(() => User)
-  // @JoinColumn()
-  // updatedBy: User;
+  // // @OneToOne(() => User)
+  // // @JoinColumn()
+  // // updatedBy: User;
 
   // @Column({default: false})
   // isDeleted: Boolean

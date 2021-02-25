@@ -1,13 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
 import { IsInt } from "class-validator";
+import { TABLE_NAME } from "constant/constant";
 import { MonHocEntity } from "mon-hoc/entity/monHoc.entity";
 import { SchoolYear } from "school-year/entity/school-year.entity";
 import { TypeOfEducation } from "type-of-education/entity/type-of-education.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UsersEntity } from "users/entity/user.entity";
 
-@Entity("Syllabus")
+@Entity(TABLE_NAME.SYLLABUS)
 export class Syllabus {
 
     @PrimaryGeneratedColumn()

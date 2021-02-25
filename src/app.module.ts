@@ -11,6 +11,7 @@ import { bodyValidatorMiddleware } from 'auth/middlewares/body-validator.middlew
 import { SyllabusModule } from './syllabus/syllabus.module';
 import { SchoolYearModule } from './school-year/school-year.module';
 import { TypeOfEducationModule } from './type-of-education/type-of-education.module';
+import { CtdtModule } from './ctdt/ctdt.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { TypeOfEducationModule } from './type-of-education/type-of-education.mod
     MonHocModule,
     SyllabusModule,
     SchoolYearModule,
-    TypeOfEducationModule
+    TypeOfEducationModule,
+    CtdtModule,
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
