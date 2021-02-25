@@ -6,9 +6,9 @@ export class MonHocEntity {
   @PrimaryGeneratedColumn({name: 'id'})
   ID: number;
 
-  @ApiProperty()
-  @Column({name: 'idKKT'})
-  IDKTT: number;
+  // @ApiProperty()
+  // @Column({name: 'idKKT'})
+  // IDKTT: number;
 
   @ApiProperty()
   @Column({length: 10, name: 'ma'})
@@ -38,11 +38,11 @@ export class MonHocEntity {
   @Column({name: 'moTa'})
   MoTa: string;
 
-  @Column({default: Date.now()})
-  createdAt: Date;
+  // @Column({default: Date.now()})
+  // createdAt: Date;
 
-  @Column()
-  updatedAt: Date;
+  // @Column()
+  // updatedAt: Date;
 
   // @OneToOne(() => User)
   // @JoinColumn()
@@ -52,6 +52,6 @@ export class MonHocEntity {
   // @JoinColumn()
   // updatedBy: User;
 
-  @Column({default: false})
-  isDeleted: Boolean
+  // @Column({default: false})
+  // isDeleted: Boolean
 }

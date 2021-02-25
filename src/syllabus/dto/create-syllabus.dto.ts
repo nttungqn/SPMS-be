@@ -1,18 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsInt} from "class-validator";
+import { Syllabus } from "syllabus/entity/syllabus.entity";
 
-export class CreateSyllabusDto {
-    @ApiProperty()
-    @IsInt()
-    idSubject:number;
+export class CreateSyllabusDto extends Syllabus {
 
-    @ApiProperty()
-    @IsInt()
-    idTypeOfEdu:number;
-
-    @ApiProperty()
-    @IsInt()
-    idSchoolYear:number;
-
-    idUser?:number;
 }

@@ -1,39 +1,30 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, ValidationPipe,UseGuards, Req, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, ValidationPipe,UseGuards, Req, ParseIntPipe, Query, UsePipes, ConflictException, HttpCode } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SyllabusService } from './syllabus.service';
 import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
 import { Syllabus } from './entity/syllabus.entity';
-import { SchoolYearService } from 'school-year/school-year.service';
-import { TypeOfEducationService } from 'type-of-education/type-of-education.service';
-import { MonHocService } from 'mon-hoc/mon-hoc.service';
+import { GetSyllabusFilterDto } from './dto/filter-syllabus.dto';
+import { HttpStatus } from '@nestjs/common';
 
 @ApiTags('Syllabus')
 @Controller('syllabus')
 export class SyllabusController {
-  constructor(private readonly syllabusService: SyllabusService,private readonly shoolYearService:SchoolYearService,
-    private readonly typeOfEduService:TypeOfEducationService,private readonly subjectService:MonHocService) {}
+  constructor(private readonly syllabusService: SyllabusService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Post()
   async create(@Body(ValidationPipe) createSyllabusDto: CreateSyllabusDto,@Req() req):Promise<Syllabus> {
-    //createSyllabusDto.idUser=req.user.ID;
-    const createSyllabus=new Syllabus();
-    createSyllabus.schoolYear=await this.shoolYearService.findById(createSyllabusDto.idSchoolYear);
-    createSyllabus.author=req.user;
-    createSyllabus.typeOfEdu=await this.typeOfEduService.findOne(createSyllabusDto.idTypeOfEdu);
-    //createSyllabus.subject=await this.subjectService.findById(createSyllabusDto.idSubject);
-    console.log(createSyllabus);
-    return this.syllabusService.create(createSyllabus);
+    return this.syllabusService.create(req.user?.ID,createSyllabusDto);
   }
 
   // @UseGuards(AuthGuard('jwt'))
   // @ApiBearerAuth('token')
   @Get()
-  findAll():Promise<Syllabus[]> {
-    return this.syllabusService.findAll();
+  async findAll(@Query(ValidationPipe) filter:GetSyllabusFilterDto):Promise<Syllabus[]|any> {
+    return await this.syllabusService.findAll(filter);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -43,13 +34,15 @@ export class SyllabusController {
     return this.syllabusService.findOne(id);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
   @Put(':id')
-  update(@Param('id',ParseIntPipe) id: number, @Body() updateSyllabusDto: UpdateSyllabusDto) {
-    return this.syllabusService.update(+id, updateSyllabusDto);
+  async update(@Param('id',ParseIntPipe) id: number, @Body() updateSyllabusDto: UpdateSyllabusDto,@Req() req) {
+    return this.syllabusService.update(id,req.user.ID,updateSyllabusDto);
   }
 
   @Delete(':id')
-  remove(@Param('id',ParseIntPipe) id: number) {
-    return this.syllabusService.remove(+id);
+  async remove(@Param('id',ParseIntPipe) id: number) {
+    return await this.syllabusService.remove(id);
   }
 }

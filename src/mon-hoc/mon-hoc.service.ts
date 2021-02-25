@@ -14,9 +14,9 @@ export class MonHocService {
     const { limit = LIMIT, page = 0 } = filter;
     const skip = Number(page) * Number(limit);
     const results = await this.monHocRepository.find({ skip, take: Number(limit), 
-        where: [
-        { isDeleted: false },
-      ]
+      //   where: [
+      //   { isDeleted: false },
+      // ]
     });
     if (!results.length) {
       return { status: HttpStatus.OK, data: { message: MONHOC_MESSAGE.MONHOC_EMPTY } };

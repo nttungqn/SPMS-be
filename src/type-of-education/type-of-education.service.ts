@@ -13,7 +13,7 @@ export class TypeOfEducationService {
   ){}
 
   async create(createTypeOfEducationDto: CreateTypeOfEducationDto) {
-    if(await this.isContainSchoolYear(createTypeOfEducationDto)){
+    if(await this.isExist(createTypeOfEducationDto)){
       throw new ConflictException();
     }
     try {
@@ -27,7 +27,7 @@ export class TypeOfEducationService {
     return await this.typeOfEduRepository.find({where:{isDeleted:false},order:{code:'ASC'}});
   }
 
-  async findOne(id: number):Promise<TypeOfEducation> {
+  async findById(id: number):Promise<TypeOfEducation> {
     let found;
     try {
        found= await this.typeOfEduRepository.findOne(id,{where:{isDeleted:false}});
@@ -41,19 +41,17 @@ export class TypeOfEducationService {
   }
 
   async update(id: number, updateTypeOfEducationDto: UpdateTypeOfEducationDto) {
-    const found= await this.findOne(id);
-    console.log(found);
+    const found= await this.findById(id);
     await this.checkConflictException(id,updateTypeOfEducationDto);
     try {
       return await this.typeOfEduRepository.save({...found,...updateTypeOfEducationDto});
     } catch (error) {
-      console.log(error);
       throw new ServiceUnavailableException();
     }
   }
 
   async remove(id: number) {
-    const found= await this.findOne(id);
+    const found= await this.findById(id);
     found.isDeleted=true;
     try {
      await this.typeOfEduRepository.save(found);
@@ -61,7 +59,7 @@ export class TypeOfEducationService {
       throw new ServiceUnavailableException();
     }
   }
-  private async isContainSchoolYear(createTypeOfEducationDto: CreateTypeOfEducationDto):Promise<boolean>{
+  private async isExist(createTypeOfEducationDto: CreateTypeOfEducationDto):Promise<boolean>{
     const {code,name}=createTypeOfEducationDto;
     const found=await this.typeOfEduRepository.findOne({where:
       [{code:code,isDeleted:false},{name:name,isDeleted:false}]

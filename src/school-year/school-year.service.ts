@@ -12,7 +12,7 @@ export class SchoolYearService {
     private schoolYearRepository:Repository<SchoolYear>,
   ){}
   async create(createSchoolYearDto: CreateSchoolYearDto) :Promise<SchoolYear>{
-    if(await this.isContainSchoolYear(createSchoolYearDto)){
+    if(await this.isExist(createSchoolYearDto)){
       throw new ConflictException();
     }
     try {
@@ -41,12 +41,10 @@ export class SchoolYearService {
 
   async update(id: number, updateSchoolYearDto: UpdateSchoolYearDto) {
     const found= await this.findById(id);
-    console.log(found);
     await this.checkConflictException(id,updateSchoolYearDto);
     try {
       return await this.schoolYearRepository.save({...found,...updateSchoolYearDto});
     } catch (error) {
-      console.log(error);
       throw new ServiceUnavailableException();
     }
   
@@ -62,7 +60,7 @@ export class SchoolYearService {
     }
   }
 
-  private async isContainSchoolYear(createSchoolYearDto:CreateSchoolYearDto):Promise<boolean>{
+  private async isExist(createSchoolYearDto:CreateSchoolYearDto):Promise<boolean>{
     const {code,name}=createSchoolYearDto;
     const found=await this.schoolYearRepository.findOne({where:
       [{code:code,isDeleted:false},{name:name,isDeleted:false}]

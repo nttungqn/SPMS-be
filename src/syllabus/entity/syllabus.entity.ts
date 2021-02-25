@@ -1,3 +1,6 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { Exclude } from "class-transformer";
+import { IsInt } from "class-validator";
 import { MonHocEntity } from "mon-hoc/entity/monHoc.entity";
 import { SchoolYear } from "school-year/entity/school-year.entity";
 import { TypeOfEducation } from "type-of-education/entity/type-of-education.entity";
@@ -6,33 +9,48 @@ import { UsersEntity } from "users/entity/user.entity";
 
 @Entity("Syllabus")
 export class Syllabus {
+
     @PrimaryGeneratedColumn()
     id:number;
 
-    // @Column({name:'idMH'})
-    // idSubject:number;
+    @ApiProperty()
+    @IsInt()
+    @Column({name:'idMH'})
     @ManyToOne(() => MonHocEntity)
     @JoinColumn({name:'idMH'})
-    subject:MonHocEntity;
+    subject:number;
 
-    //@Column({name:'idHDT'})
+    @ApiProperty()
+    @IsInt()
+    @Column({name:'idHDT'})
     @ManyToOne(() => TypeOfEducation)
     @JoinColumn({name:'idHDT'})
-    typeOfEdu:TypeOfEducation;
+    typeOfEdu:number;
 
-    //@Column({name:'idNH'})
+    @ApiProperty()
+    @IsInt()
+    @Column({name:'idNH'})
     @ManyToOne(()=>SchoolYear)
     @JoinColumn({name:'idNH'})
-    schoolYear:SchoolYear;
+    schoolYear:number;
 
-    //@Column({name:'idUser'})
-    @ManyToOne(() => UsersEntity,user=>user.ID)
-    @JoinColumn({name:'idUser'})
-    author:UsersEntity;
+    @Column({name:'createdBy'})
+    @ManyToOne(() => UsersEntity)
+    @JoinColumn({name:'createdBy'})
+    author:number;
+
+
+    @Column({name:'updatedBy'})
+    @ManyToOne(() => UsersEntity)
+    @JoinColumn({name:'updatedBy'})
+    updateBy:number;
 
     @Column({name:'updatedAt'})
     updatedAt:Date;
 
     @Column({name:'ceatedAt'})
     createdAt:Date;
+
+    @Column({name:"isDeleted"})
+    isDeleted:Boolean
 }
