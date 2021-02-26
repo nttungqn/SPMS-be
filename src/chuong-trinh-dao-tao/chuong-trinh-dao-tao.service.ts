@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CHUONGTRINHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm';
@@ -13,82 +13,67 @@ export class ChuongTrinhDaoTaoService {
   async findAll(filter): Promise<ChuongTrinhDaoTaoEntity[] | any> {
     const { limit = LIMIT, page = 0 } = filter;
     const skip = Number(page) * Number(limit);
-    const results = await this.chuongTrinhDaoTaoRepository.find({ skip, take: Number(limit) });
+    const query = {
+      isDeleted: false
+    };
+    const results = await this.chuongTrinhDaoTaoRepository.find({ where: query, skip, take: Number(limit) });
     if (!results.length) {
-      return { status: HttpStatus.OK, data: { message: CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_EMPTY } };
+      throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
     }
     const total = await this.chuongTrinhDaoTaoRepository.count();
-    return { status: HttpStatus.OK, data: { contents: results, total, page: Number(page) } };
+    return { contents: results, total, page: Number(page) };
   }
   async findById(ID: number): Promise<ChuongTrinhDaoTaoEntity | any> {
-    const result = await this.chuongTrinhDaoTaoRepository.findOne({ ID });
+    const result = await this.chuongTrinhDaoTaoRepository.findOne({ ID, isDeleted: false });
     if (!result) {
-      return {
-        status: HttpStatus.NOT_FOUND,
-        data: { message: CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_ID_NOT_FOUND }
-      };
+      throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    return { status: HttpStatus.OK, data: result };
+    return result;
   }
   async create(newData: IChuongTrinhDaoTao): Promise<any> {
-    const checkExistName = await this.chuongTrinhDaoTaoRepository.findOne({ Ten: newData?.Ten });
+    const checkExistName = await this.chuongTrinhDaoTaoRepository.findOne({ Ten: newData?.Ten, isDeleted: false });
     if (checkExistName) {
-      return { status: HttpStatus.CONFLICT, data: { message: CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_NAME_EXIST } };
+      throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_NAME_EXIST, HttpStatus.CONFLICT);
     }
     try {
       const newChuongTrinhDaoTao = await this.chuongTrinhDaoTaoRepository.create(newData);
-      await this.chuongTrinhDaoTaoRepository.save(newChuongTrinhDaoTao);
-      return {
-        status: HttpStatus.CREATED,
-        data: { message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY }
-      };
+      const saved = await this.chuongTrinhDaoTaoRepository.save(newChuongTrinhDaoTao);
+      return saved;
     } catch (error) {
-      return {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        data: { message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED }
-      };
+      throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
   async update(ID: number, updatedData: IChuongTrinhDaoTao): Promise<any> {
-    const chuongtrinhdaotao = await this.chuongTrinhDaoTaoRepository.findOne({ ID });
+    const chuongtrinhdaotao = await this.chuongTrinhDaoTaoRepository.findOne({ ID, isDeleted: false });
     if (!chuongtrinhdaotao) {
-      return {
-        status: HttpStatus.BAD_REQUEST,
-        data: { message: CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_ID_NOT_FOUND }
-      };
+      throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
     try {
-      await this.chuongTrinhDaoTaoRepository.save({ ...chuongtrinhdaotao, ...updatedData });
-      return {
-        status: HttpStatus.OK,
-        data: { message: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_SUCCESSFULLY }
-      };
+      const updated = await this.chuongTrinhDaoTaoRepository.save({
+        ...chuongtrinhdaotao,
+        ...updatedData,
+        updatedAt: new Date()
+      });
+      return updated;
     } catch (error) {
-      return {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        data: { message: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_FAILED }
-      };
+      throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  async delete(ID: number): Promise<any> {
-    const chuongtrinhdaotao = await this.chuongTrinhDaoTaoRepository.findOne({ ID });
+  async delete(ID: number, updatedBy?: number): Promise<any> {
+    const chuongtrinhdaotao = await this.chuongTrinhDaoTaoRepository.findOne({ ID, isDeleted: false });
     if (!chuongtrinhdaotao) {
-      return {
-        status: HttpStatus.BAD_REQUEST,
-        data: { message: CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_ID_NOT_FOUND }
-      };
+      throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
     try {
-      await this.chuongTrinhDaoTaoRepository.remove(chuongtrinhdaotao);
-      return {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        data: { message: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_SUCCESSFULLY }
-      };
+      const deleted = await this.chuongTrinhDaoTaoRepository.save({
+        ...chuongtrinhdaotao,
+        isDeleted: true,
+        updatedAt: new Date(),
+        updatedBy
+      });
+      return deleted;
     } catch (error) {
-      return {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        data: { message: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_FAILED }
-      };
+      throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

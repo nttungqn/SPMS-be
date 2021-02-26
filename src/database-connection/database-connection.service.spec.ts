@@ -6,7 +6,7 @@ describe('DatabaseConnectionService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [DatabaseConnectionService],
+      providers: [DatabaseConnectionService]
     }).compile();
 
     service = module.get<DatabaseConnectionService>(DatabaseConnectionService);

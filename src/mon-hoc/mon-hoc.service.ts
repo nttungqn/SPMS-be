@@ -7,13 +7,11 @@ import { IMonHoc } from './interfaces/monHoc.interface';
 
 @Injectable()
 export class MonHocService {
-  constructor(
-    @InjectRepository(MonHocEntity) private monHocRepository: Repository<MonHocEntity>
-  ) {}
+  constructor(@InjectRepository(MonHocEntity) private monHocRepository: Repository<MonHocEntity>) {}
   async findAll(filter): Promise<MonHocEntity[] | any> {
     const { limit = LIMIT, page = 0 } = filter;
     const skip = Number(page) * Number(limit);
-    const results = await this.monHocRepository.find({ skip, take: Number(limit)});
+    const results = await this.monHocRepository.find({ skip, take: Number(limit) });
     if (!results.length) {
       return { status: HttpStatus.OK, data: { message: MONHOC_MESSAGE.MONHOC_EMPTY } };
     }
@@ -37,7 +35,7 @@ export class MonHocService {
     }
     try {
       const newMonHoc = await this.monHocRepository.create(newData);
-    //TODO: createdBy = current user
+      //TODO: createdBy = current user
 
       await this.monHocRepository.save(newMonHoc);
       return {

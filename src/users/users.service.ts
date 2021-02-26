@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TABLE_NAME } from 'constant/constant';
 import { Repository } from 'typeorm';
 import { UsersEntity } from './entity/user.entity';
 import { IUser } from './interfaces/users.interface';

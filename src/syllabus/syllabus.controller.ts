@@ -1,4 +1,20 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, ValidationPipe,UseGuards, Req, ParseIntPipe, Query, UsePipes, ConflictException, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  ValidationPipe,
+  UseGuards,
+  Req,
+  ParseIntPipe,
+  Query,
+  UsePipes,
+  ConflictException,
+  HttpCode
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SyllabusService } from './syllabus.service';
@@ -16,33 +32,35 @@ export class SyllabusController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Post()
-  async create(@Body(ValidationPipe) createSyllabusDto: CreateSyllabusDto,@Req() req):Promise<Syllabus> {
-    return this.syllabusService.create(req.user?.ID,createSyllabusDto);
+  async create(@Body(ValidationPipe) createSyllabusDto: CreateSyllabusDto, @Req() req): Promise<Syllabus> {
+    return this.syllabusService.create(req.user?.ID, createSyllabusDto);
   }
 
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('token')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
   @Get()
-  async findAll(@Query(ValidationPipe) filter:GetSyllabusFilterDto):Promise<Syllabus[]|any> {
+  async findAll(@Query(ValidationPipe) filter: GetSyllabusFilterDto): Promise<Syllabus[] | any> {
     return await this.syllabusService.findAll(filter);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Get(':id')
-  findOne(@Param('id',new ParseIntPipe()) id: number):Promise<Syllabus> {
+  findOne(@Param('id', new ParseIntPipe()) id: number): Promise<Syllabus> {
     return this.syllabusService.findOne(id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Put(':id')
-  async update(@Param('id',ParseIntPipe) id: number, @Body() updateSyllabusDto: UpdateSyllabusDto,@Req() req) {
-    return this.syllabusService.update(id,req.user.ID,updateSyllabusDto);
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateSyllabusDto: UpdateSyllabusDto, @Req() req) {
+    return this.syllabusService.update(id, req.user.ID, updateSyllabusDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
   @Delete(':id')
-  async remove(@Param('id',ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return await this.syllabusService.remove(id);
   }
 }

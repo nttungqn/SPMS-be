@@ -14,13 +14,13 @@
     "start:dev": "nodemon",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "test:push": ""
   },
   "dependencies": {
@@ -37,6 +37,7 @@
     "husky": "^4.3.8",
     "jsonwebtoken": "^8.5.1",
     "lint-staged": "^10.5.3",
+    "lodash": "^4.17.21",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.7",
     "passport": "^0.4.1",
@@ -87,7 +88,7 @@
     "testEnvironment": "node"
   },
   "lint-staged": {
-    "src/**/*.{js, jsx}": [
+    "src/**/*.ts": [
       "npm run format",
       "npm run lint:fix"
     ]
