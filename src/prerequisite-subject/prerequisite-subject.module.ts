@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PrerequisiteSubject } from './entity/prerequisite-subject.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([PrerequisiteSubject])],
+  imports: [TypeOrmModule.forFeature([PrerequisiteSubject])],
   controllers: [PrerequisiteSubjectController],
   providers: [PrerequisiteSubjectService]
 })

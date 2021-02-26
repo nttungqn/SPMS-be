@@ -8,7 +8,7 @@ describe('PrerequisiteSubjectController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PrerequisiteSubjectController],
-      providers: [PrerequisiteSubjectService],
+      providers: [PrerequisiteSubjectService]
     }).compile();
 
     controller = module.get<PrerequisiteSubjectController>(PrerequisiteSubjectController);

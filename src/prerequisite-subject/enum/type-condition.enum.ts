@@ -1,4 +1,4 @@
-export enum typeCondition{
-    PREVIOUS=1,
-    PARALLEL=2
+export enum typeCondition {
+  PREVIOUS = 1,
+  PARALLEL = 2
 }

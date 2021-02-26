@@ -6,7 +6,7 @@ describe('PrerequisiteSubjectService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PrerequisiteSubjectService],
+      providers: [PrerequisiteSubjectService]
     }).compile();
 
     service = module.get<PrerequisiteSubjectService>(PrerequisiteSubjectService);

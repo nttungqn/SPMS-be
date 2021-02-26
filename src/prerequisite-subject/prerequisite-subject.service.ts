@@ -1,4 +1,12 @@
-import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT } from 'constant/constant';
 import { Not, QueryFailedError, Repository } from 'typeorm';
@@ -13,10 +21,10 @@ export class PrerequisiteSubjectService {
   constructor(
     @InjectRepository(PrerequisiteSubject)
     private prerequisiteSubjectRepository: Repository<PrerequisiteSubject>
-  ) { }
+  ) {}
 
   async create(createPrerequisiteSubjectDto: CreatePrerequisiteSubjectDto) {
-    if(await this.isExist(createPrerequisiteSubjectDto)){
+    if (await this.isExist(createPrerequisiteSubjectDto)) {
       throw new ConflictException();
     }
     try {
@@ -34,31 +42,43 @@ export class PrerequisiteSubjectService {
   async findAll(filter: FilterPrerequisiteSubject) {
     const { page = 0, limit = LIMIT } = filter;
     const skip = page * limit;
-    const query={
-      isDeleted:false
-    }
-    const results = await this.prerequisiteSubjectRepository.find({ relations: ['preSubject', 'subject', 'createdBy', 'updatedBy'], where: query,skip,take:limit });
+    const query = {
+      isDeleted: false
+    };
+    const results = await this.prerequisiteSubjectRepository.find({
+      relations: ['preSubject', 'subject', 'createdBy', 'updatedBy'],
+      where: query,
+      skip,
+      take: limit
+    });
     const total = await this.prerequisiteSubjectRepository.count({ ...query });
     return { contents: results, total, page: Number(page) };
   }
   async findById(id: number) {
-    const result = await this.prerequisiteSubjectRepository.findOne(id, { relations: ['preSubject', 'subject', 'createdBy', 'updatedBy'], where: { isDeleted: false } });
-    if (!result)
-      throw new NotFoundException();
+    const result = await this.prerequisiteSubjectRepository.findOne(id, {
+      relations: ['preSubject', 'subject', 'createdBy', 'updatedBy'],
+      where: { isDeleted: false }
+    });
+    if (!result) throw new NotFoundException();
     return result;
   }
   async findAllPrevSuject(id: number) {
-    return await this.prerequisiteSubjectRepository.find({ relations: ['preSubject', 'createdBy', 'updatedBy'], where: { subject: id, condition: typeCondition.PREVIOUS, isDeleted: false } });
+    return await this.prerequisiteSubjectRepository.find({
+      relations: ['preSubject', 'createdBy', 'updatedBy'],
+      where: { subject: id, condition: typeCondition.PREVIOUS, isDeleted: false }
+    });
   }
 
   async findAllParaSuject(id: number) {
-    return await this.prerequisiteSubjectRepository.find({ relations: ['preSubject', 'createdBy', 'updatedBy'], where: { subject: id, condition: typeCondition.PARALLEL, isDeleted: false } });
+    return await this.prerequisiteSubjectRepository.find({
+      relations: ['preSubject', 'createdBy', 'updatedBy'],
+      where: { subject: id, condition: typeCondition.PARALLEL, isDeleted: false }
+    });
   }
 
   async update(id: number, updatePrerequisiteSubjectDto: UpdatePrerequisiteSubjectDto) {
     const newPrere = await this.prerequisiteSubjectRepository.findOne(id, { where: { isDeleted: false } });
-    if (!newPrere)
-      throw new NotFoundException();
+    if (!newPrere) throw new NotFoundException();
     const { subject, preSubject, condition } = updatePrerequisiteSubjectDto;
     if (subject) {
       newPrere.subject = subject;
@@ -84,11 +104,10 @@ export class PrerequisiteSubjectService {
 
   async remove(id: number, updateBy: number) {
     const found = await this.prerequisiteSubjectRepository.findOne(id, { where: { isDeleted: false } });
-    if (!found)
-      throw new NotFoundException();
+    if (!found) throw new NotFoundException();
     found.updatedBy = updateBy;
     found.updatedAt = new Date();
-    found.isDeleted=true;
+    found.isDeleted = true;
     try {
       await this.prerequisiteSubjectRepository.save(found);
     } catch (error) {
@@ -98,13 +117,14 @@ export class PrerequisiteSubjectService {
   }
 
   private async isExist(prere: PrerequisiteSubject): Promise<boolean> {
-    const { id,subject, preSubject } = prere;
-    const notID=id?{id:Not(id)}:{};
-    const query ={
+    const { id, subject, preSubject } = prere;
+    const notID = id ? { id: Not(id) } : {};
+    const query = {
       isDeleted: false,
-      subject, preSubject,
+      subject,
+      preSubject,
       ...notID
-    }
+    };
     const found = await this.prerequisiteSubjectRepository.findOne({ where: query });
     return found ? true : false;
   }
