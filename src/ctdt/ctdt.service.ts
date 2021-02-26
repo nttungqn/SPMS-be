@@ -12,12 +12,13 @@ export class CtdtService {
   ) {}
 
   async findAll(filter: any): Promise<any> {
-    const { limit = LIMIT, page = 0, search = '' } = filter;
+    const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
     const skip = Number(page) * Number(limit);
     const querySearch = search ? { Ten: Like(`%${search}%`) } : {};
     const query = {
       isDeleted: false,
-      ...querySearch
+      ...querySearch,
+      ...rest
     };
     const results = await this.nganhDaoTaoRepository.find({
       relations: ['ctdt', 'createdBy', 'updatedBy'],
