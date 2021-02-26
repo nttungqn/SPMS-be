@@ -12,7 +12,7 @@ import { LIMIT } from 'constant/constant';
 import { MonHocService } from 'mon-hoc/mon-hoc.service';
 import { SchoolYearService } from 'school-year/school-year.service';
 import { TypeOfEducationService } from 'type-of-education/type-of-education.service';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { GetSyllabusFilterDto } from './dto/filter-syllabus.dto';
 import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
@@ -28,7 +28,7 @@ export class SyllabusService {
     private readonly subjectService: MonHocService
   ) {}
 
-  async create(idUser: number, createSyllabus: CreateSyllabusDto): Promise<Syllabus> {
+  async create(createSyllabus: CreateSyllabusDto): Promise<Syllabus> {
     if (await this.isExist(createSyllabus)) {
       throw new ConflictException();
     }
@@ -38,8 +38,6 @@ export class SyllabusService {
     await this.subjectService.findById(createSyllabus.subject);
 
     try {
-      createSyllabus.author = idUser;
-      createSyllabus.createdAt = new Date();
       const syllabus = await this.syllabusRepository.save(createSyllabus);
       return syllabus;
     } catch (error) {
@@ -82,9 +80,8 @@ export class SyllabusService {
     return found;
   }
 
-  async update(id: number, idUser: number, updateSyllabus: UpdateSyllabusDto) {
+  async update(id: number, updateSyllabus: UpdateSyllabusDto) {
     const sylabus = await this.syllabusRepository.findOne(id, { where: { isDeleted: false } });
-    sylabus.updateBy = idUser;
     const { schoolYear, typeOfEdu, subject } = updateSyllabus;
     if (schoolYear) {
       await this.shoolYearService.findById(schoolYear);
@@ -104,7 +101,6 @@ export class SyllabusService {
       throw new ConflictException();
     }
     try {
-      sylabus.updatedAt = new Date();
       await this.syllabusRepository.save(sylabus);
       return this.findOne(sylabus.id);
     } catch (error) {
@@ -112,20 +108,27 @@ export class SyllabusService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number, idUser: number) {
     const found = await this.findOne(id);
     try {
-      found.isDeleted = true;
-      await this.syllabusRepository.save(found);
+      await this.syllabusRepository.save({ ...found, updateBy: idUser, updatedAt: new Date(), isDeleted: true });
       return new HttpException('OK', HttpStatus.OK);
     } catch (error) {
       throw new InternalServerErrorException();
     }
   }
   async isExist(createSyllabusDto: CreateSyllabusDto): Promise<boolean> {
-    const { schoolYear, subject, typeOfEdu } = createSyllabusDto;
+    const { id, schoolYear, subject, typeOfEdu } = createSyllabusDto;
+    const isNotId = id ? { id: Not(id) } : {};
+    const query = {
+      schoolYear,
+      subject,
+      typeOfEdu,
+      isDeleted: false,
+      ...isNotId
+    };
     const found = await this.syllabusRepository.findOne({
-      where: { schoolYear, subject, typeOfEdu, isDeleted: false }
+      where: query
     });
     return found ? true : false;
   }

@@ -33,7 +33,14 @@ export class SyllabusController {
   @ApiBearerAuth('token')
   @Post()
   async create(@Body(ValidationPipe) createSyllabusDto: CreateSyllabusDto, @Req() req): Promise<Syllabus> {
-    return this.syllabusService.create(req.user?.ID, createSyllabusDto);
+    const user = req.user || {};
+    return this.syllabusService.create({
+      ...createSyllabusDto,
+      author: user?.ID,
+      updateBy: user?.ID,
+      updatedAt: new Date(),
+      createdAt: new Date()
+    });
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -54,13 +61,15 @@ export class SyllabusController {
   @ApiBearerAuth('token')
   @Put(':id')
   async update(@Param('id', ParseIntPipe) id: number, @Body() updateSyllabusDto: UpdateSyllabusDto, @Req() req) {
-    return this.syllabusService.update(id, req.user.ID, updateSyllabusDto);
+    const user = req.user || {};
+    return this.syllabusService.update(id, { ...updateSyllabusDto, updateBy: user?.ID, updatedAt: new Date() });
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    return await this.syllabusService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    const user = req.user || {};
+    return await this.syllabusService.remove(id, user?.ID);
   }
 }
