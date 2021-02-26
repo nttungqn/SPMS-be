@@ -7,9 +7,10 @@ import { ChuongTrinhDaoTaoModule } from './chuong-trinh-dao-tao/chuong-trinh-dao
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { bodyValidatorMiddleware } from 'auth/middlewares/body-validator.middleware';
-import { MonHocModule} from './mon-hoc/mon-hoc.module'
+import { MonHocModule } from './mon-hoc/mon-hoc.module';
 import { CtdtModule } from './ctdt/ctdt.module';
 import { PrerequisiteSubjectModule } from './prerequisite-subject/prerequisite-subject.module';
+import { ChiTietNganhDaoTaoModule } from './chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PrerequisiteSubjectModule } from './prerequisite-subject/prerequisite-s
     MonHocModule,
     CtdtModule,
     PrerequisiteSubjectModule,
+    ChiTietNganhDaoTaoModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

@@ -8,4 +8,9 @@ export interface IChuongTrinhDaoTao {
   readonly DoiTuong?: string;
   readonly QuiTrinhDaoTao?: string;
   readonly DieuKienTotNghiep?: string;
+  readonly createdAt?: Date;
+  readonly createdBy?: number;
+  readonly updatedAt?: Date;
+  readonly updatedBy?: number;
+  readonly isDeleted?: boolean;
 }

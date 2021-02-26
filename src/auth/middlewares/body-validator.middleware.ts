@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 
-export const bodyValidatorMiddleware = async (req: Request, res: Response, next: Function) => {
+export const bodyValidatorMiddleware = async (req: Request, res: Response, next: any) => {
   if (!req?.body) {
     return next(new BadRequestException(`Bad Request`));
   }

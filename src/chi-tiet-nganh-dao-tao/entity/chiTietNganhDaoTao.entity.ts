@@ -1,43 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { TABLE_NAME } from 'constant/constant';
+import { NganhDaoTaoEntity } from 'ctdt/entity/nganhDaoTao.entity';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
-@Entity('ChuongTrinhDaoTao')
-export class ChuongTrinhDaoTaoEntity {
+@Entity(TABLE_NAME.CHITIETNGANHDAOTAO)
+export class ChiTietNganhDaoTaoEntity {
   @PrimaryGeneratedColumn()
   ID: number;
 
   @ApiProperty()
   @Column()
-  MaCTDT: string;
+  Khoa: number;
 
   @ApiProperty()
   @Column()
-  LoaiHinh: string;
+  CoHoiNgheNghiep: string;
 
   @ApiProperty()
   @Column()
-  Ten: string;
+  MucTieuChung: string;
 
   @ApiProperty()
-  @Column()
-  TrinhDo: string;
-
-  @ApiProperty()
-  @Column({ default: 0 })
-  TongTinChi: number;
-
-  @ApiProperty()
-  @Column()
-  DoiTuong: string;
-
-  @ApiProperty()
-  @Column()
-  QuiTrinhDaoTao: string;
-
-  @ApiProperty()
-  @Column()
-  DieuKienTotNghiep: string;
+  @OneToOne(() => NganhDaoTaoEntity)
+  @JoinColumn({ name: 'ID_NganhDaoTao' })
+  NganhDaoTao: number;
 
   @Column()
   createdAt: Date;

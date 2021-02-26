@@ -22,7 +22,6 @@ export class CreateMonHocDto {
   @ApiProperty({ required: false })
   readonly SoTietTuHoc?: number;
 
-
   @ApiProperty({ required: false, example: 0 })
   readonly TongTinChi?: number;
 
