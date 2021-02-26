@@ -8,8 +8,8 @@ import { TypeOfEducationModule } from 'type-of-education/type-of-education.modul
 import { MonHocModule } from 'mon-hoc/mon-hoc.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Syllabus]),SchoolYearModule,TypeOfEducationModule,MonHocModule],
+  imports: [TypeOrmModule.forFeature([Syllabus]), SchoolYearModule, TypeOfEducationModule, MonHocModule],
   controllers: [SyllabusController],
-  providers: [SyllabusService],
+  providers: [SyllabusService]
 })
 export class SyllabusModule {}

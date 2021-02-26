@@ -1,5 +1,3 @@
-import { Syllabus } from "syllabus/entity/syllabus.entity";
+import { Syllabus } from 'syllabus/entity/syllabus.entity';
 
-export class CreateSyllabusDto extends Syllabus {
-
-}
+export class CreateSyllabusDto extends Syllabus {}
