@@ -11,6 +11,7 @@ import { MonHocModule } from './mon-hoc/mon-hoc.module';
 import { CtdtModule } from './ctdt/ctdt.module';
 import { ChiTietNganhDaoTaoModule } from './chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
 import { KeHoachGiangDayModule } from './ke-hoach-giang-day/ke-hoach-giang-day.module';
+import { LoaiKeHoachGiangDayModule } from './loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { KeHoachGiangDayModule } from './ke-hoach-giang-day/ke-hoach-giang-day.m
     MonHocModule,
     CtdtModule,
     ChiTietNganhDaoTaoModule,
-    KeHoachGiangDayModule
+    KeHoachGiangDayModule,
+    LoaiKeHoachGiangDayModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

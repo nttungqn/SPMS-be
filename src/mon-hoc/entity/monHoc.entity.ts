@@ -43,12 +43,15 @@ export class MonHocEntity {
   @Column({ name: 'taiNguyen' })
   TaiNguyen: string;
 
-  @OneToOne(() => UsersEntity)
-  @JoinColumn({ name: 'createdBy' })
-  createdBy: number;
+  @Column()
+  createdAt: Date;
 
   @Column()
   updatedAt: Date;
+
+  @OneToOne(() => UsersEntity)
+  @JoinColumn({ name: 'createdBy' })
+  createdBy: number;
 
   @OneToOne(() => UsersEntity)
   @JoinColumn({ name: 'updatedBy' })
