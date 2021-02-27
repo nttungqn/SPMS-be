@@ -1,14 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity('MonHoc')
 export class MonHocEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   ID: number;
-
-  // @ApiProperty()
-  // @Column({name: 'idKKT'})
-  // IDKTT: number;
 
   @ApiProperty()
   @Column({ length: 10, name: 'ma' })
@@ -42,20 +39,21 @@ export class MonHocEntity {
   @Column({ name: 'moTa' })
   MoTa: string;
 
-  // @Column({default: Date.now()})
-  // createdAt: Date;
+  @ApiProperty()
+  @Column({ name: 'taiNguyen' })
+  TaiNguyen: string;
 
-  // @Column()
-  // updatedAt: Date;
+  @OneToOne(() => UsersEntity)
+  @JoinColumn({ name: 'createdBy' })
+  createdBy: number;
 
-  // // @OneToOne(() => User)
-  // // @JoinColumn()
-  // // createdBy: User;
+  @Column()
+  updatedAt: Date;
 
-  // // @OneToOne(() => User)
-  // // @JoinColumn()
-  // // updatedBy: User;
+  @OneToOne(() => UsersEntity)
+  @JoinColumn({ name: 'updatedBy' })
+  updatedBy: number;
 
-  // @Column({default: false})
-  // isDeleted: Boolean
+  @Column()
+  isDeleted: boolean;
 }

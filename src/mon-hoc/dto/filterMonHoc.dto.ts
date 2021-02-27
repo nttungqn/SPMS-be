@@ -8,4 +8,7 @@ export class BaseFilterDto {
   readonly limit?: number;
 }
 
-export class FilterMonHoc extends BaseFilterDto {}
+export class FilterMonHoc extends BaseFilterDto {
+  @ApiProperty({ required: false, description: ' this field search by Ten Tieng Viet' })
+  readonly search?: string;
+}

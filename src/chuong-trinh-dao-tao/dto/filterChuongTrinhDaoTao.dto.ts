@@ -13,4 +13,9 @@ export class BaseFilterDto {
   readonly limit?: number;
 }
 
-export class FilterChuongTrinhDaoTao extends BaseFilterDto {}
+export class FilterChuongTrinhDaoTao extends BaseFilterDto {
+  @ApiProperty({ required: false, description: ' this field search by Ten' })
+  readonly search?: string;
+  @ApiProperty({ required: false })
+  readonly MaCTDT?: string;
+}
