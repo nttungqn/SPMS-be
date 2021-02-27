@@ -10,6 +10,7 @@ import { bodyValidatorMiddleware } from 'auth/middlewares/body-validator.middlew
 import { MonHocModule } from './mon-hoc/mon-hoc.module';
 import { CtdtModule } from './ctdt/ctdt.module';
 import { ChiTietNganhDaoTaoModule } from './chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
+import { KeHoachGiangDayModule } from './ke-hoach-giang-day/ke-hoach-giang-day.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { ChiTietNganhDaoTaoModule } from './chi-tiet-nganh-dao-tao/chi-tiet-ngan
     UsersModule,
     MonHocModule,
     CtdtModule,
-    ChiTietNganhDaoTaoModule
+    ChiTietNganhDaoTaoModule,
+    KeHoachGiangDayModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

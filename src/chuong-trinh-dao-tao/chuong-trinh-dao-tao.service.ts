@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CHUONGTRINHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { ChuongTrinhDaoTaoEntity } from './entity/chuongTrinhDaoTao.entity';
 import { IChuongTrinhDaoTao } from './interfaces/chuongTrinhDaoTao.interface';
 
@@ -11,16 +11,19 @@ export class ChuongTrinhDaoTaoService {
     @InjectRepository(ChuongTrinhDaoTaoEntity) private chuongTrinhDaoTaoRepository: Repository<ChuongTrinhDaoTaoEntity>
   ) {}
   async findAll(filter): Promise<ChuongTrinhDaoTaoEntity[] | any> {
-    const { limit = LIMIT, page = 0 } = filter;
+    const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
     const skip = Number(page) * Number(limit);
+    const querySearch = search ? { Ten: Like(`%${search}%`) } : {};
     const query = {
-      isDeleted: false
+      isDeleted: false,
+      ...querySearch,
+      ...rest
     };
     const results = await this.chuongTrinhDaoTaoRepository.find({ where: query, skip, take: Number(limit) });
     if (!results.length) {
       throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
     }
-    const total = await this.chuongTrinhDaoTaoRepository.count();
+    const total = await this.chuongTrinhDaoTaoRepository.count(query);
     return { contents: results, total, page: Number(page) };
   }
   async findById(ID: number): Promise<ChuongTrinhDaoTaoEntity | any> {
@@ -31,9 +34,14 @@ export class ChuongTrinhDaoTaoService {
     return result;
   }
   async create(newData: IChuongTrinhDaoTao): Promise<any> {
-    const checkExistName = await this.chuongTrinhDaoTaoRepository.findOne({ Ten: newData?.Ten, isDeleted: false });
+    const checkExistName = await this.chuongTrinhDaoTaoRepository.findOne({
+      where: [
+        { Ten: newData?.Ten, isDeleted: false },
+        { MaCTDT: newData?.MaCTDT, isDeleted: false }
+      ]
+    });
     if (checkExistName) {
-      throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_NAME_EXIST, HttpStatus.CONFLICT);
+      throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_NAME_OR_CODE_EXIST, HttpStatus.CONFLICT);
     }
     try {
       const newChuongTrinhDaoTao = await this.chuongTrinhDaoTaoRepository.create(newData);
