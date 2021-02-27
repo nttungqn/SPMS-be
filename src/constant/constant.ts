@@ -5,6 +5,7 @@ const TABLE_NAME = {
   CHUONGTRINHDAOTAO: 'ChuongTrinhDaoTao',
   MONHOC: 'MonHoc',
   NGANHDAOTAO: 'NganhDaoTao',
+  SYLLABUS: 'Syllabus',
   CHITIETNGANHDAOTAO: 'ChiTietNganhDaoTao',
   KEHOACHGIANGDAY: 'KeHoachGiangDay'
 };

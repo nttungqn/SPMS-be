@@ -7,6 +7,7 @@ import { MonHocEntity } from './entity/monHoc.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([MonHocEntity])],
   controllers: [MonHocController],
-  providers: [MonHocService]
+  providers: [MonHocService],
+  exports: [MonHocService]
 })
 export class MonHocModule {}
