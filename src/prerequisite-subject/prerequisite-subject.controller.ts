@@ -42,21 +42,25 @@ export class PrerequisiteSubjectController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Get()
-  findAll(@Query() filter: FilterPrerequisiteSubject) {
-    return this.prerequisiteSubjectService.findAll(filter);
+  findAll(@Query(ValidationPipe) filter: FilterPrerequisiteSubject) {
+    return this.prerequisiteSubjectService.findAllPrereSuject(null, filter);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
-  @Get(':idSubject/prevs')
-  findAllPrevSuject(@Param('idSubject', ParseIntPipe) id: number) {
-    return this.prerequisiteSubjectService.findAllPrevSuject(id);
+  @Get('subject/:idSubject')
+  findAllPrereSubject(
+    @Param('idSubject', ParseIntPipe) id: number,
+    @Query(ValidationPipe) filter: FilterPrerequisiteSubject
+  ) {
+    return this.prerequisiteSubjectService.findAllPrereSuject(id, filter);
   }
+
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
-  @Get(':idSubject/parallels')
-  findAllParaSubject(@Param('idSubject', ParseIntPipe) id: number) {
-    return this.prerequisiteSubjectService.findAllParaSuject(id);
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.prerequisiteSubjectService.findById(id);
   }
 
   @UseGuards(AuthGuard('jwt'))

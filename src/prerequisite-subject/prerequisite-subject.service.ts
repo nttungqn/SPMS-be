@@ -14,7 +14,6 @@ import { CreatePrerequisiteSubjectDto } from './dto/create-prerequisite-subject.
 import { FilterPrerequisiteSubject } from './dto/filter-prerequisite-subject.dto';
 import { UpdatePrerequisiteSubjectDto } from './dto/update-prerequisite-subject.dto';
 import { PrerequisiteSubject } from './entity/prerequisite-subject.entity';
-import { typeCondition } from './enum/type-condition.enum';
 
 @Injectable()
 export class PrerequisiteSubjectService {
@@ -45,13 +44,12 @@ export class PrerequisiteSubjectService {
     const query = {
       isDeleted: false
     };
-    const results = await this.prerequisiteSubjectRepository.find({
+    const [results, total] = await this.prerequisiteSubjectRepository.findAndCount({
       relations: ['preSubject', 'subject', 'createdBy', 'updatedBy'],
       where: query,
       skip,
       take: limit
     });
-    const total = await this.prerequisiteSubjectRepository.count({ ...query });
     return { contents: results, total, page: Number(page) };
   }
   async findById(id: number) {
@@ -62,18 +60,24 @@ export class PrerequisiteSubjectService {
     if (!result) throw new NotFoundException();
     return result;
   }
-  async findAllPrevSuject(id: number) {
-    return await this.prerequisiteSubjectRepository.find({
-      relations: ['preSubject', 'createdBy', 'updatedBy'],
-      where: { subject: id, condition: typeCondition.PREVIOUS, isDeleted: false }
-    });
-  }
 
-  async findAllParaSuject(id: number) {
-    return await this.prerequisiteSubjectRepository.find({
-      relations: ['preSubject', 'createdBy', 'updatedBy'],
-      where: { subject: id, condition: typeCondition.PARALLEL, isDeleted: false }
+  async findAllPrereSuject(id: number, filter: FilterPrerequisiteSubject) {
+    const { page = 0, limit = LIMIT, type } = filter;
+    const skip = page * limit;
+    const queryByType = type ? { condition: Number(type) } : {};
+    const queryByIdSubject = id ? { subject: id } : {};
+    const query = {
+      isDeleted: false,
+      ...queryByIdSubject,
+      ...queryByType
+    };
+    const [results, total] = await this.prerequisiteSubjectRepository.findAndCount({
+      relations: ['preSubject', 'subject', 'createdBy', 'updatedBy'],
+      where: query,
+      skip,
+      take: limit
     });
+    return { contents: results, total, page: Number(page) };
   }
 
   async update(id: number, updatePrerequisiteSubjectDto: UpdatePrerequisiteSubjectDto) {
