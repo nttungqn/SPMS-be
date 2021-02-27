@@ -30,11 +30,15 @@ export class SchoolYearController {
     return this.schoolYearService.create(createSchoolYearDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
   @Get()
   findAll() {
     return this.schoolYearService.findAll();
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.schoolYearService.findById(id);

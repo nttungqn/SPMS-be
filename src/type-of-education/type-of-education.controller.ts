@@ -30,11 +30,15 @@ export class TypeOfEducationController {
     return this.typeOfEducationService.create(createTypeOfEducationDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
   @Get()
   findAll() {
     return this.typeOfEducationService.findAll();
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.typeOfEducationService.findById(id);
