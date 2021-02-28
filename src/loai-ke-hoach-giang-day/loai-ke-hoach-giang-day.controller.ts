@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   HttpStatus,
   Param,
   Post,
@@ -19,7 +18,6 @@ import { LoaiKeHoachGiangDayService } from './loai-ke-hoach-giang-day.service';
 import { CreateLoaiKeHoachGiangDayDto } from './dto/createLoaiKeHoachGiangDay.dto';
 import { BaseFilterDto } from './dto/fliterLoaiKeHoachGiangDay.dto';
 import { IdDto } from './dto/Id.dto';
-import { LOAIKEHOACHGIANGDAY_MESSAGE } from './../constant/constant';
 
 @ApiTags('loai-ke-hoach-giang-day')
 @Controller('loai-ke-hoach-giang-day')
@@ -66,9 +64,7 @@ export class LoaiKeHoachGiangDayController {
     const user = req.user || {};
     const { id } = param;
     await this.loaiKeHoachGiangDayService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
-    return res
-      .status(HttpStatus.OK)
-      .json({ message: LOAIKEHOACHGIANGDAY_MESSAGE.UPDATE_LOAIKEHOACHGIANGDAY_SUCCESSFULLY });
+    return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -78,8 +74,6 @@ export class LoaiKeHoachGiangDayController {
     const user = req.user || {};
     const { id } = param;
     await this.loaiKeHoachGiangDayService.delete(Number(id), user?.ID);
-    return res
-      .status(HttpStatus.OK)
-      .json({ message: LOAIKEHOACHGIANGDAY_MESSAGE.DELETE_LOAIKEHOACHGIANGDAY_SUCCESSFULLY });
+    return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 }

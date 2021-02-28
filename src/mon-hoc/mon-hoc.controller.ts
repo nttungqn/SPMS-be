@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   HttpStatus,
   Param,
   Post,
@@ -19,7 +18,6 @@ import { MonHocService } from './mon-hoc.service';
 import { CreateMonHocDto } from './dto/createMonHoc';
 import { FilterMonHoc } from './dto/filterMonHoc.dto';
 import { IdDto } from './dto/Id.dto';
-import { MONHOC_MESSAGE } from './../constant/constant';
 
 @ApiTags('mon-hoc')
 @Controller('mon-hoc')
@@ -61,7 +59,7 @@ export class MonHocController {
     const user = req.user || {};
     const { id } = param;
     await this.monHocService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
-    return res.status(HttpStatus.OK).json({ message: MONHOC_MESSAGE.UPDATE_MONHOC_SUCCESSFULLY });
+    return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -71,6 +69,6 @@ export class MonHocController {
     const user = req.user || {};
     const { id } = param;
     await this.monHocService.delete(Number(id), user?.ID);
-    return res.status(HttpStatus.OK).json({ message: MONHOC_MESSAGE.DELETE_MONHOC_SUCCESSFULLY });
+    return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 }

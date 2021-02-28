@@ -1,12 +1,4 @@
-import {
-  HttpStatus,
-  Injectable,
-  HttpException,
-  InternalServerErrorException,
-  NotFoundException,
-  BadRequestException,
-  ConflictException
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT } from 'constant/constant';
@@ -32,7 +24,12 @@ export class LoaiKeHoachGiangDayService {
     };
 
     try {
-      const results = await this.loaiKeHoachGiangDayEntity.find({ where: query, skip, take: Number(limit) });
+      const results = await this.loaiKeHoachGiangDayEntity.find({
+        where: query,
+        skip,
+        take: Number(limit),
+        relations: ['createdBy', 'updatedBy']
+      });
       const total = await this.loaiKeHoachGiangDayEntity.count({ ...query });
       return { contents: results, total, page: Number(page) };
     } catch (error) {
@@ -41,7 +38,10 @@ export class LoaiKeHoachGiangDayService {
   }
 
   async findById(ID: number): Promise<LoaiKeHoachGiangDayEntity | any> {
-    const result = await this.loaiKeHoachGiangDayEntity.findOne({ ID, isDeleted: false });
+    const result = await this.loaiKeHoachGiangDayEntity.findOne({
+      where: { ID, isDeleted: false },
+      relations: ['createdBy', 'updatedBy']
+    });
     if (!result) {
       throw new NotFoundException();
     }
@@ -49,7 +49,10 @@ export class LoaiKeHoachGiangDayService {
   }
 
   async create(newData: ILoaiKeHoachGiangDay): Promise<any> {
-    const checkExistName = await this.loaiKeHoachGiangDayEntity.findOne({ Ma: newData?.Ma, isDeleted: false });
+    const checkExistName = await this.loaiKeHoachGiangDayEntity.findOne({
+      where: { Ma: newData?.Ma, isDeleted: false },
+      relations: ['createdBy', 'updatedBy']
+    });
     if (checkExistName) {
       throw new ConflictException();
     }
@@ -71,13 +74,7 @@ export class LoaiKeHoachGiangDayService {
     // check Ma is exist
     const monHocByMa = await this.loaiKeHoachGiangDayEntity.findOne({ Ma: updatedData.Ma, isDeleted: false });
     if (monHocByMa) {
-      throw new HttpException(
-        {
-          status: HttpStatus.CONFLICT,
-          error: 'Attribute name "Ma" is exist'
-        },
-        HttpStatus.CONFLICT
-      );
+      throw new ConflictException();
     }
 
     try {

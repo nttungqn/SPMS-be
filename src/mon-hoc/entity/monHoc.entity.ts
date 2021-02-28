@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
+import { TABLE_NAME } from './../../constant/constant';
 
-@Entity('MonHoc')
+@Entity(TABLE_NAME.MONHOC)
 export class MonHocEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   ID: number;
