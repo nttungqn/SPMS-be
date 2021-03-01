@@ -14,21 +14,21 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { MonHocService } from './mon-hoc.service';
-import { CreateMonHocDto } from './dto/createMonHoc';
-import { FilterMonHoc } from './dto/filterMonHoc.dto';
+import { LoaiKeHoachGiangDayService } from './loai-ke-hoach-giang-day.service';
+import { CreateLoaiKeHoachGiangDayDto } from './dto/createLoaiKeHoachGiangDay.dto';
+import { BaseFilterDto } from './dto/fliterLoaiKeHoachGiangDay.dto';
 import { IdDto } from './dto/Id.dto';
 
-@ApiTags('mon-hoc')
-@Controller('mon-hoc')
-export class MonHocController {
-  constructor(private readonly monHocService: MonHocService) {}
+@ApiTags('loai-ke-hoach-giang-day')
+@Controller('loai-ke-hoach-giang-day')
+export class LoaiKeHoachGiangDayController {
+  constructor(private readonly loaiKeHoachGiangDayService: LoaiKeHoachGiangDayService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Get()
-  async findAll(@Req() req, @Query() filter: FilterMonHoc): Promise<any> {
-    return await this.monHocService.findAll(filter);
+  async findAll(@Req() req, @Query() filter: BaseFilterDto): Promise<any> {
+    return await this.loaiKeHoachGiangDayService.findAll(filter);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -36,15 +36,15 @@ export class MonHocController {
   @Get(':id')
   async findById(@Req() req, @Param() param: IdDto): Promise<any> {
     const { id } = param;
-    return await this.monHocService.findById(Number(id));
+    return await this.loaiKeHoachGiangDayService.findById(Number(id));
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Post()
-  async create(@Req() req, @Body() newData: CreateMonHocDto, @Res() res): Promise<any> {
+  async create(@Req() req, @Body() newData: CreateLoaiKeHoachGiangDayDto, @Res() res): Promise<any> {
     const user = req.user || {};
-    const result = await this.monHocService.create({
+    const result = await this.loaiKeHoachGiangDayService.create({
       ...newData,
       createdBy: user?.ID,
       updatedBy: user?.ID
@@ -55,10 +55,15 @@ export class MonHocController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Put(':id')
-  async update(@Req() req, @Param() param: IdDto, @Body() updatedData: CreateMonHocDto, @Res() res): Promise<any> {
+  async update(
+    @Req() req,
+    @Param() param: IdDto,
+    @Body() updatedData: CreateLoaiKeHoachGiangDayDto,
+    @Res() res
+  ): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    await this.monHocService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+    await this.loaiKeHoachGiangDayService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
     return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 
@@ -68,7 +73,7 @@ export class MonHocController {
   async delete(@Req() req, @Param() param: IdDto, @Res() res): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    await this.monHocService.delete(Number(id), user?.ID);
+    await this.loaiKeHoachGiangDayService.delete(Number(id), user?.ID);
     return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 }
