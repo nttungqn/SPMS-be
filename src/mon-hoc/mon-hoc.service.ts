@@ -4,11 +4,10 @@ import {
   HttpException,
   InternalServerErrorException,
   NotFoundException,
-  BadRequestException,
   ConflictException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MONHOC_MESSAGE, LIMIT } from 'constant/constant';
+import { LIMIT } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
 import { MonHocEntity } from './entity/monHoc.entity';
 import { IMonHoc } from './interfaces/monHoc.interface';

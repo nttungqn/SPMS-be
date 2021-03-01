@@ -15,6 +15,7 @@ import { CtdtModule } from './ctdt/ctdt.module';
 import { PrerequisiteSubjectModule } from './prerequisite-subject/prerequisite-subject.module';
 import { ChiTietNganhDaoTaoModule } from './chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
 import { KeHoachGiangDayModule } from './ke-hoach-giang-day/ke-hoach-giang-day.module';
+import { KnowledgeBlockModule } from './knowledge-block/knowledge-block.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { KeHoachGiangDayModule } from './ke-hoach-giang-day/ke-hoach-giang-day.m
     CtdtModule,
     PrerequisiteSubjectModule,
     ChiTietNganhDaoTaoModule,
-    KeHoachGiangDayModule
+    KeHoachGiangDayModule,
+    KnowledgeBlockModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

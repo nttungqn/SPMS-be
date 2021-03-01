@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 import { IsInt } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
 import { MonHocEntity } from 'mon-hoc/entity/monHoc.entity';
