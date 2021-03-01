@@ -9,6 +9,7 @@ import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
 import { SignUpDto } from './dto/signup.dto';
 import { UpdateProfileDto } from './dto/updateProfile.dto';
+import * as lodash from 'lodash';
 
 @Controller('auth')
 export class AuthController {
@@ -56,7 +57,9 @@ export class AuthController {
       await this.usersService.update(Number(id), updateData);
       return res.status(HttpStatus.OK).json({ message: USER_MESSAGE.UPDATE_USER_SUCCESSFULLY });
     } catch (error) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: USER_MESSAGE.UPDATE_USER_FAILED, error });
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: USER_MESSAGE.UPDATE_USER_FAILED, error: lodash.get(error, 'response', 'error') });
     }
   }
 }
