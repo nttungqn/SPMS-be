@@ -16,6 +16,9 @@ import { PrerequisiteSubjectModule } from './prerequisite-subject/prerequisite-s
 import { ChiTietNganhDaoTaoModule } from './chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
 import { KeHoachGiangDayModule } from './ke-hoach-giang-day/ke-hoach-giang-day.module';
 import { KnowledgeBlockModule } from './knowledge-block/knowledge-block.module';
+import { LoaiKeHoachGiangDayModule } from './loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.module';
+import { ChuanDauRaModule } from './chuan-dau-ra/chuan-dau-ra.module';
+import { ChuanDauRaNganhDaoTaoModule } from './chuan-dau-ra-nganh-dao-tao/chuan-dau-ra-nganh-dao-tao.module';
 
 @Module({
   imports: [
@@ -31,7 +34,10 @@ import { KnowledgeBlockModule } from './knowledge-block/knowledge-block.module';
     PrerequisiteSubjectModule,
     ChiTietNganhDaoTaoModule,
     KeHoachGiangDayModule,
-    KnowledgeBlockModule
+    KnowledgeBlockModule,
+    LoaiKeHoachGiangDayModule,
+    ChuanDauRaModule,
+    ChuanDauRaNganhDaoTaoModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

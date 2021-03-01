@@ -1,11 +1,15 @@
-import { Body, Controller, Get, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { IdDto } from 'chuong-trinh-dao-tao/dto/Id.dto';
+import { USER_MESSAGE } from 'constant/constant';
 import { UsersService } from 'users/users.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
 import { SignUpDto } from './dto/signup.dto';
+import { UpdateProfileDto } from './dto/updateProfile.dto';
+import * as lodash from 'lodash';
 
 @Controller('auth')
 export class AuthController {
@@ -42,6 +46,20 @@ export class AuthController {
       return res.json({ ...user });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'INTERNAL_SERVER_ERROR' });
+    }
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @Put(':id')
+  async updateProfile(@Req() req, @Res() res, @Param() param: IdDto, @Body() updateData: UpdateProfileDto) {
+    try {
+      const { id } = param;
+      await this.usersService.update(Number(id), updateData);
+      return res.status(HttpStatus.OK).json({ message: USER_MESSAGE.UPDATE_USER_SUCCESSFULLY });
+    } catch (error) {
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: USER_MESSAGE.UPDATE_USER_FAILED, error: lodash.get(error, 'response', 'error') });
     }
   }
 }

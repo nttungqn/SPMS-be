@@ -1,11 +1,4 @@
-import {
-  HttpStatus,
-  Injectable,
-  HttpException,
-  InternalServerErrorException,
-  NotFoundException,
-  ConflictException
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
@@ -27,7 +20,12 @@ export class MonHocService {
     };
 
     try {
-      const results = await this.monHocRepository.find({ where: query, skip, take: Number(limit) });
+      const results = await this.monHocRepository.find({
+        where: query,
+        skip,
+        take: Number(limit),
+        relations: ['createdBy', 'updatedBy']
+      });
       const total = await this.monHocRepository.count({ ...query });
       return { contents: results, total, page: Number(page) };
     } catch (error) {
@@ -36,7 +34,10 @@ export class MonHocService {
   }
 
   async findById(ID: number): Promise<MonHocEntity | any> {
-    const result = await this.monHocRepository.findOne({ ID, isDeleted: false });
+    const result = await this.monHocRepository.findOne({
+      where: { ID, isDeleted: false },
+      relations: ['createdBy', 'updatedBy']
+    });
     if (!result) {
       throw new NotFoundException();
     }
@@ -66,13 +67,7 @@ export class MonHocService {
     // check Ma is exist
     const monHocByMa = await this.monHocRepository.findOne({ Ma: updatedData.Ma, isDeleted: false });
     if (monHocByMa) {
-      throw new HttpException(
-        {
-          status: HttpStatus.CONFLICT,
-          error: '"Ma mon hoc" is exit'
-        },
-        HttpStatus.CONFLICT
-      );
+      throw new ConflictException();
     }
 
     try {
