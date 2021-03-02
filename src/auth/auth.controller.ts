@@ -10,6 +10,7 @@ import { RefreshTokenDto } from './dto/refreshToken.dto';
 import { SignUpDto } from './dto/signup.dto';
 import { UpdateProfileDto } from './dto/updateProfile.dto';
 import * as lodash from 'lodash';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -53,9 +54,46 @@ export class AuthController {
   @Put(':id')
   async updateProfile(@Req() req, @Res() res, @Param() param: IdDto, @Body() updateData: UpdateProfileDto) {
     try {
+      const user = req.user || {};
       const { id } = param;
+      if (Number(user?.ID) !== Number(id)) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: USER_MESSAGE.USERS_NOT_AUTHORIZED, error: USER_MESSAGE.USERS_NOT_AUTHORIZED });
+      }
       await this.usersService.update(Number(id), updateData);
       return res.status(HttpStatus.OK).json({ message: USER_MESSAGE.UPDATE_USER_SUCCESSFULLY });
+    } catch (error) {
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: USER_MESSAGE.UPDATE_USER_FAILED, error: lodash.get(error, 'response', 'error') });
+    }
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @Put(':id/change-password')
+  async changePassword(@Req() req, @Res() res, @Param() param: IdDto, @Body() updateData: ChangePasswordDto) {
+    try {
+      const user = req.user || {};
+      const { id } = param;
+      if (Number(user?.ID) !== Number(id)) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: USER_MESSAGE.USERS_NOT_AUTHORIZED, error: USER_MESSAGE.USERS_NOT_AUTHORIZED });
+      }
+      const userProfile = await this.usersService.findOne({ ID: Number(id), isDeleted: false });
+      if (!userProfile) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGE.USER_ID_NOT_FOUND });
+      }
+      const checkPassword = await this.authService.comparePassword(updateData?.password, userProfile?.password);
+      if (!checkPassword) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGE.PASSWORD_INCORRECT });
+      }
+      const newPassword = await this.authService.hashPassword(updateData?.newPassword);
+      const userUpdated = await this.usersService.update(Number(id), {
+        password: newPassword
+      });
+      return res.status(HttpStatus.OK).json({ message: USER_MESSAGE.UPDATE_USER_SUCCESSFULLY, user: userUpdated });
     } catch (error) {
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
