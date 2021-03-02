@@ -35,7 +35,7 @@ export class KnowledgeBlockService {
     const { page = 0, limit = LIMIT } = filter;
     const skip = page * limit;
     const [results, total] = await this.knowledgeBlockRepository.findAndCount({
-      relations: ['chiTietNganh'],
+      relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
       where: { isDeleted: false },
       skip,
       take: limit
@@ -45,7 +45,7 @@ export class KnowledgeBlockService {
 
   async findOne(id: number) {
     const result = await this.knowledgeBlockRepository.findOne(id, {
-      relations: ['chiTietNganh'],
+      relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
       where: { isDeleted: false }
     });
     if (!result) throw new NotFoundException();
@@ -54,10 +54,13 @@ export class KnowledgeBlockService {
 
   async update(id: number, knowledgeBlock: KnowledgeBlock) {
     const result = await this.knowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
-    console.log(knowledgeBlock);
     if (!result) throw new NotFoundException();
     const { tinChiBatBuoc, tinChiTuChonTuDo, tinChiTuChon } = knowledgeBlock;
-    const type: { tinChiBatBuoc; tinChiTuChonTuDo; tinChiTuChon } = { tinChiBatBuoc, tinChiTuChonTuDo, tinChiTuChon };
+    const type: { tinChiBatBuoc: number; tinChiTuChonTuDo: number; tinChiTuChon: number } = {
+      tinChiBatBuoc,
+      tinChiTuChonTuDo,
+      tinChiTuChon
+    };
     Object.keys(type).forEach((key) => {
       if (type[key]) result.tongTinChi += type[key] - result[key];
     });
@@ -65,7 +68,6 @@ export class KnowledgeBlockService {
       await this.knowledgeBlockRepository.save({ ...result, ...knowledgeBlock, updatedAt: new Date() });
       return this.findOne(result.id);
     } catch (error) {
-      console.log(error);
       throw new InternalServerErrorException();
     }
   }

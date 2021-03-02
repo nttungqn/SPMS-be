@@ -1,17 +1,23 @@
+import { TABLE_NAME } from 'constant/constant';
 import { CreateKnowledgeBlockDto } from 'knowledge-block/dto/create-knowledge-block.dto';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { UsersEntity } from 'users/entity/user.entity';
 
-@Entity({ name: 'KhoiKienThuc' })
+@Entity({ name: TABLE_NAME.KHOIKIENTHUC })
 export class KnowledgeBlock extends CreateKnowledgeBlockDto {
   @PrimaryGeneratedColumn({ name: 'ID' })
   id?: number;
   @Column({ name: 'TongTC' })
   tongTinChi?: number;
 
-  @Column({ name: 'updatedBy' })
+  @ManyToOne(() => UsersEntity)
+  @JoinColumn({ name: 'updatedBy' })
   updatedBy?: number;
-  @Column({ name: 'createdBy' })
+
+  @ManyToOne(() => UsersEntity)
+  @JoinColumn({ name: 'createdBy' })
   createdBy?: number;
+
   @Column({ name: 'updatedAt' })
   updatedAt?: Date;
   @Column({ name: 'createdAt' })
