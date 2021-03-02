@@ -10,10 +10,7 @@ import {
   UseGuards,
   Req,
   ParseIntPipe,
-  Query,
-  UsePipes,
-  ConflictException,
-  HttpCode
+  Query
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -22,7 +19,6 @@ import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
 import { Syllabus } from './entity/syllabus.entity';
 import { GetSyllabusFilterDto } from './dto/filter-syllabus.dto';
-import { HttpStatus } from '@nestjs/common';
 
 @ApiTags('Syllabus')
 @Controller('syllabus')

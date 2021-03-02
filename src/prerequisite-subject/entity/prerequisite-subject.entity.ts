@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsInt, IsNumberString } from 'class-validator';
+import { IsIn, IsInt } from 'class-validator';
 import { MonHocEntity } from 'mon-hoc/entity/monHoc.entity';
 import { typeCondition } from 'prerequisite-subject/enum/type-condition.enum';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity('MonHoc_MonHocTienQuyet')
