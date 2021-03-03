@@ -11,7 +11,8 @@ const TABLE_NAME = {
   LOAIKEHOACHGIANGDAY: 'LoaiKeHoachGiangDay',
   CHUANDAURA: 'ChuanDauRa',
   CHUANDAURANGANHDAOTAO: 'ChuanDauRaNganhDauTao',
-  KHOIKIENTHUC: 'KhoiKienThuc'
+  KHOIKIENTHUC: 'KhoiKienThuc',
+  LOAIKHOIKIENTHUC: 'LoaiKhoiKienThuc'
 };
 const EXPIREDIN = 3600;
 const SALT = 12;

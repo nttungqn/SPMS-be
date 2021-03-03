@@ -10,7 +10,9 @@ import {
   UseGuards,
   Req,
   ParseIntPipe,
-  Query
+  Query,
+  HttpException,
+  HttpStatus
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -58,7 +60,8 @@ export class SyllabusController {
   @Put(':id')
   async update(@Param('id', ParseIntPipe) id: number, @Body() updateSyllabusDto: UpdateSyllabusDto, @Req() req) {
     const user = req.user || {};
-    return this.syllabusService.update(id, { ...updateSyllabusDto, updateBy: user?.ID, updatedAt: new Date() });
+    await this.syllabusService.update(id, { ...updateSyllabusDto, updateBy: user?.ID, updatedAt: new Date() });
+    return new HttpException('OK', HttpStatus.OK);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -66,6 +69,7 @@ export class SyllabusController {
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
     const user = req.user || {};
-    return await this.syllabusService.remove(id, user?.ID);
+    await this.syllabusService.remove(id, user?.ID);
+    return new HttpException('OK', HttpStatus.OK);
   }
 }

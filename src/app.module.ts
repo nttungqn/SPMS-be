@@ -19,6 +19,7 @@ import { KnowledgeBlockModule } from './knowledge-block/knowledge-block.module';
 import { LoaiKeHoachGiangDayModule } from './loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.module';
 import { ChuanDauRaModule } from './chuan-dau-ra/chuan-dau-ra.module';
 import { ChuanDauRaNganhDaoTaoModule } from './chuan-dau-ra-nganh-dao-tao/chuan-dau-ra-nganh-dao-tao.module';
+import { TypeOfKnowledgeBlockModule } from './type-of-knowledge-block/type-of-knowledge-block.module';
 
 @Module({
   imports: [
@@ -37,7 +38,8 @@ import { ChuanDauRaNganhDaoTaoModule } from './chuan-dau-ra-nganh-dao-tao/chuan-
     KnowledgeBlockModule,
     LoaiKeHoachGiangDayModule,
     ChuanDauRaModule,
-    ChuanDauRaNganhDaoTaoModule
+    ChuanDauRaNganhDaoTaoModule,
+    TypeOfKnowledgeBlockModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

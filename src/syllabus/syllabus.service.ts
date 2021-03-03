@@ -87,7 +87,6 @@ export class SyllabusService {
       await this.shoolYearService.findById(schoolYear);
       sylabus.schoolYear = schoolYear;
     }
-
     if (typeOfEdu) {
       await this.typeOfEduService.findById(typeOfEdu);
       sylabus.typeOfEdu = typeOfEdu;
@@ -102,17 +101,16 @@ export class SyllabusService {
     }
     try {
       await this.syllabusRepository.save(sylabus);
-      return this.findOne(sylabus.id);
     } catch (error) {
       throw new InternalServerErrorException();
     }
+    return this.findOne(sylabus.id);
   }
 
   async remove(id: number, idUser: number) {
     const found = await this.findOne(id);
     try {
-      await this.syllabusRepository.save({ ...found, updateBy: idUser, updatedAt: new Date(), isDeleted: true });
-      return new HttpException('OK', HttpStatus.OK);
+      return await this.syllabusRepository.save({ ...found, updateBy: idUser, updatedAt: new Date(), isDeleted: true });
     } catch (error) {
       throw new InternalServerErrorException();
     }
