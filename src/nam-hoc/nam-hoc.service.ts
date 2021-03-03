@@ -1,17 +1,17 @@
 import { ConflictException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateSchoolYearDto } from './dto/create-school-year.dto';
-import { UpdateSchoolYearDto } from './dto/update-school-year.dto';
-import { SchoolYear } from './entity/school-year.entity';
+import { CreateNamHocDto } from './dto/create-nam-hoc.dto';
+import { UpdateNamHocDto } from './dto/update-nam-hoc.dto';
+import { NamHocEntity } from './entity/nam-hoc.entity';
 
 @Injectable()
-export class SchoolYearService {
+export class NamHocService {
   constructor(
-    @InjectRepository(SchoolYear)
-    private schoolYearRepository: Repository<SchoolYear>
+    @InjectRepository(NamHocEntity)
+    private schoolYearRepository: Repository<NamHocEntity>
   ) {}
-  async create(createSchoolYearDto: CreateSchoolYearDto): Promise<SchoolYear> {
+  async create(createSchoolYearDto: CreateNamHocDto): Promise<NamHocEntity> {
     if (await this.isExist(createSchoolYearDto)) {
       throw new ConflictException();
     }
@@ -23,10 +23,10 @@ export class SchoolYearService {
   }
 
   async findAll() {
-    return await this.schoolYearRepository.find({ where: { isDeleted: false }, order: { code: 'ASC' } });
+    return await this.schoolYearRepository.find({ where: { isDeleted: false }, order: { ma: 'ASC' } });
   }
 
-  async findById(id: number): Promise<SchoolYear> {
+  async findById(id: number): Promise<NamHocEntity> {
     let found;
     try {
       found = await this.schoolYearRepository.findOne(id, { where: { isDeleted: false } });
@@ -39,7 +39,7 @@ export class SchoolYearService {
     return found;
   }
 
-  async update(id: number, updateSchoolYearDto: UpdateSchoolYearDto) {
+  async update(id: number, updateSchoolYearDto: UpdateNamHocDto) {
     const found = await this.findById(id);
     await this.checkConflictException(id, updateSchoolYearDto);
     try {
@@ -59,20 +59,20 @@ export class SchoolYearService {
     }
   }
 
-  private async isExist(createSchoolYearDto: CreateSchoolYearDto): Promise<boolean> {
-    const { code, name } = createSchoolYearDto;
+  private async isExist(createSchoolYearDto: CreateNamHocDto): Promise<boolean> {
+    const { ma, ten } = createSchoolYearDto;
     const found = await this.schoolYearRepository.findOne({
       where: [
-        { code: code, isDeleted: false },
-        { name: name, isDeleted: false }
+        { ma: ma, isDeleted: false },
+        { ten: ten, isDeleted: false }
       ]
     });
     return found ? true : false;
   }
-  private async checkConflictException(id: number, updateSchoolYearDto: UpdateSchoolYearDto) {
-    const { code, name } = updateSchoolYearDto;
+  private async checkConflictException(id: number, updateSchoolYearDto: UpdateNamHocDto) {
+    const { ma, ten } = updateSchoolYearDto;
     const query = this.schoolYearRepository.createQueryBuilder('sy');
-    query.andWhere('(sy.code=:code OR sy.name=:name)', { code, name });
+    query.andWhere('(sy.ma=:ma OR sy.ten=:ten)', { ma, ten });
     query.andWhere('(sy.isDeleted=:isDeleted AND sy.id!=:id)', { isDeleted: false, id });
     const found = await query.getOne();
     if (found) {

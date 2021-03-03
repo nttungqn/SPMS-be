@@ -8,8 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { bodyValidatorMiddleware } from 'auth/middlewares/body-validator.middleware';
 import { SyllabusModule } from './syllabus/syllabus.module';
-import { SchoolYearModule } from './school-year/school-year.module';
-import { TypeOfEducationModule } from './type-of-education/type-of-education.module';
+import { NamHocModule } from './nam-hoc/nam-hoc.module';
+import { HeDaotaoModule } from './he-dao-tao/he-dao-tao.module';
 import { MonHocModule } from './mon-hoc/mon-hoc.module';
 import { CtdtModule } from './ctdt/ctdt.module';
 import { MonHocTienQuyetModule } from './mon-hoc-tien-quyet/mon-hoc-tien-quyet.module';
@@ -31,8 +31,8 @@ import { HoatDongDayHocModule } from './hoat-dong-day-hoc/hoat-dong-day-hoc.modu
     UsersModule,
     MonHocModule,
     SyllabusModule,
-    SchoolYearModule,
-    TypeOfEducationModule,
+    NamHocModule,
+    HeDaotaoModule,
     CtdtModule,
     MonHocTienQuyetModule,
     ChiTietNganhDaoTaoModule,

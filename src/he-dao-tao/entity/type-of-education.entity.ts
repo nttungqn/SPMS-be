@@ -1,13 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
-@Entity('NamHoc')
-export class SchoolYear {
+import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
+@Entity('HeDaoTao')
+export class HeDaoTaoEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
   @Column({ name: 'ma' })
-  code: string;
+  ma: string;
   @Column({ name: 'ten' })
-  name: string;
+  ten: string;
   @Column({ name: 'isDeleted' })
   isDeleted: boolean;
 }

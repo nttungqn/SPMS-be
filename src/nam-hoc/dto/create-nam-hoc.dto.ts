@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, Length } from 'class-validator';
 
-export class CreateSchoolYearDto {
+export class CreateNamHocDto {
   @ApiProperty()
   @IsNotEmpty()
-  code?: string;
+  ma?: string;
 
   @ApiProperty()
   @Length(5)
-  name?: string;
+  ten?: string;
 }

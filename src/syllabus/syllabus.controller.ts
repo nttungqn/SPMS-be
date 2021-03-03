@@ -34,7 +34,7 @@ export class SyllabusController {
     const user = req.user || {};
     return this.syllabusService.create({
       ...createSyllabusDto,
-      author: user?.ID,
+      createdBy: user?.ID,
       updateBy: user?.ID,
       updatedAt: new Date(),
       createdAt: new Date()

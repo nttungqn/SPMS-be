@@ -1,18 +1,18 @@
 import { ConflictException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateTypeOfEducationDto } from './dto/create-type-of-education.dto';
-import { UpdateTypeOfEducationDto } from './dto/update-type-of-education.dto';
-import { TypeOfEducation } from './entity/type-of-education.entity';
+import { CreateHeDaoTaoDto } from './dto/create-he-dao-tao.dto';
+import { UpdateHeDaoTaoDto } from './dto/update-he-dao-tao.dto';
+import { HeDaoTaoEntity } from './entity/type-of-education.entity';
 
 @Injectable()
-export class TypeOfEducationService {
+export class HeDaotaoService {
   constructor(
-    @InjectRepository(TypeOfEducation)
-    private typeOfEduRepository: Repository<TypeOfEducation>
+    @InjectRepository(HeDaoTaoEntity)
+    private typeOfEduRepository: Repository<HeDaoTaoEntity>
   ) {}
 
-  async create(createTypeOfEducationDto: CreateTypeOfEducationDto) {
+  async create(createTypeOfEducationDto: CreateHeDaoTaoDto) {
     if (await this.isExist(createTypeOfEducationDto)) {
       throw new ConflictException();
     }
@@ -24,10 +24,10 @@ export class TypeOfEducationService {
   }
 
   async findAll() {
-    return await this.typeOfEduRepository.find({ where: { isDeleted: false }, order: { code: 'ASC' } });
+    return await this.typeOfEduRepository.find({ where: { isDeleted: false }, order: { ma: 'ASC' } });
   }
 
-  async findById(id: number): Promise<TypeOfEducation> {
+  async findById(id: number): Promise<HeDaoTaoEntity> {
     let found;
     try {
       found = await this.typeOfEduRepository.findOne(id, { where: { isDeleted: false } });
@@ -40,7 +40,7 @@ export class TypeOfEducationService {
     return found;
   }
 
-  async update(id: number, updateTypeOfEducationDto: UpdateTypeOfEducationDto) {
+  async update(id: number, updateTypeOfEducationDto: UpdateHeDaoTaoDto) {
     const found = await this.findById(id);
     await this.checkConflictException(id, updateTypeOfEducationDto);
     try {
@@ -59,20 +59,20 @@ export class TypeOfEducationService {
       throw new ServiceUnavailableException();
     }
   }
-  private async isExist(createTypeOfEducationDto: CreateTypeOfEducationDto): Promise<boolean> {
-    const { code, name } = createTypeOfEducationDto;
+  private async isExist(createTypeOfEducationDto: CreateHeDaoTaoDto): Promise<boolean> {
+    const { ma, ten } = createTypeOfEducationDto;
     const found = await this.typeOfEduRepository.findOne({
       where: [
-        { code: code, isDeleted: false },
-        { name: name, isDeleted: false }
+        { ma: ma, isDeleted: false },
+        { ten: ten, isDeleted: false }
       ]
     });
     return found ? true : false;
   }
-  private async checkConflictException(id: number, createTypeOfEducationDto: CreateTypeOfEducationDto) {
-    const { code, name } = createTypeOfEducationDto;
+  private async checkConflictException(id: number, createTypeOfEducationDto: CreateHeDaoTaoDto) {
+    const { ma, ten } = createTypeOfEducationDto;
     const query = this.typeOfEduRepository.createQueryBuilder('tod');
-    query.andWhere('(tod.code=:code OR tod.name=:name)', { code, name });
+    query.andWhere('(tod.code=:code OR tod.name=:name)', { ma, ten });
     query.andWhere('(tod.isDeleted=:isDeleted AND tod.id!=:id)', { isDeleted: false, id });
     const found = await query.getOne();
     if (found) {

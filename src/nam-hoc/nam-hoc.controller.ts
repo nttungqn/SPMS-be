@@ -11,22 +11,22 @@ import {
   ValidationPipe,
   UseGuards
 } from '@nestjs/common';
-import { SchoolYearService } from './school-year.service';
-import { CreateSchoolYearDto } from './dto/create-school-year.dto';
-import { UpdateSchoolYearDto } from './dto/update-school-year.dto';
+import { NamHocService } from './nam-hoc.service';
+import { CreateNamHocDto } from './dto/create-nam-hoc.dto';
+import { UpdateNamHocDto } from './dto/update-nam-hoc.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
-@ApiTags('school-year')
-@Controller('school-year')
-export class SchoolYearController {
-  constructor(private readonly schoolYearService: SchoolYearService) {}
+@ApiTags('nam-hoc')
+@Controller('nam-hoc')
+export class NamHocController {
+  constructor(private readonly schoolYearService: NamHocService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Post()
   @UsePipes(ValidationPipe)
-  create(@Body() createSchoolYearDto: CreateSchoolYearDto) {
+  create(@Body() createSchoolYearDto: CreateNamHocDto) {
     return this.schoolYearService.create(createSchoolYearDto);
   }
 
@@ -47,7 +47,7 @@ export class SchoolYearController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateSchoolYearDto: UpdateSchoolYearDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateSchoolYearDto: UpdateNamHocDto) {
     return this.schoolYearService.update(id, updateSchoolYearDto);
   }
 

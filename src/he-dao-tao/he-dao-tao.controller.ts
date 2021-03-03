@@ -11,22 +11,22 @@ import {
   ValidationPipe,
   UseGuards
 } from '@nestjs/common';
-import { TypeOfEducationService } from './type-of-education.service';
-import { CreateTypeOfEducationDto } from './dto/create-type-of-education.dto';
-import { UpdateTypeOfEducationDto } from './dto/update-type-of-education.dto';
+import { HeDaotaoService } from './he-dao-tao.service';
+import { CreateHeDaoTaoDto } from './dto/create-he-dao-tao.dto';
+import { UpdateHeDaoTaoDto } from './dto/update-he-dao-tao.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
-@ApiTags('type-of-education')
-@Controller('type-of-education')
-export class TypeOfEducationController {
-  constructor(private readonly typeOfEducationService: TypeOfEducationService) {}
+@ApiTags('he-dao-tao')
+@Controller('he-dao-tao')
+export class HeDaotaoController {
+  constructor(private readonly typeOfEducationService: HeDaotaoService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Post()
   @UsePipes(ValidationPipe)
-  create(@Body() createTypeOfEducationDto: CreateTypeOfEducationDto) {
+  create(@Body() createTypeOfEducationDto: CreateHeDaoTaoDto) {
     return this.typeOfEducationService.create(createTypeOfEducationDto);
   }
 
@@ -47,7 +47,7 @@ export class TypeOfEducationController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateTypeOfEducationDto: UpdateTypeOfEducationDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateTypeOfEducationDto: UpdateHeDaoTaoDto) {
     return this.typeOfEducationService.update(id, updateTypeOfEducationDto);
   }
 
