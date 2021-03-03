@@ -12,7 +12,7 @@ import { SchoolYearModule } from './school-year/school-year.module';
 import { TypeOfEducationModule } from './type-of-education/type-of-education.module';
 import { MonHocModule } from './mon-hoc/mon-hoc.module';
 import { CtdtModule } from './ctdt/ctdt.module';
-import { PrerequisiteSubjectModule } from './prerequisite-subject/prerequisite-subject.module';
+import { MonHocTienQuyetModule } from './mon-hoc-tien-quyet/mon-hoc-tien-quyet.module';
 import { ChiTietNganhDaoTaoModule } from './chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
 import { KeHoachGiangDayModule } from './ke-hoach-giang-day/ke-hoach-giang-day.module';
 import { KhoiKIenThucModule } from './khoi-kien-thuc/khoi-kien-thuc.module';
@@ -34,7 +34,7 @@ import { HoatDongDayHocModule } from './hoat-dong-day-hoc/hoat-dong-day-hoc.modu
     SchoolYearModule,
     TypeOfEducationModule,
     CtdtModule,
-    PrerequisiteSubjectModule,
+    MonHocTienQuyetModule,
     ChiTietNganhDaoTaoModule,
     KeHoachGiangDayModule,
     KhoiKIenThucModule,

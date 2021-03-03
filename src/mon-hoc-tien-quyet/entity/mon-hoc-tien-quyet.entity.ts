@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsInt } from 'class-validator';
 import { MonHocEntity } from 'mon-hoc/entity/monHoc.entity';
-import { typeCondition } from 'prerequisite-subject/enum/type-condition.enum';
+import { LoaiMonHoc } from 'mon-hoc-tien-quyet/enum/loai-mon-hoc.enum';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity('MonHoc_MonHocTienQuyet')
-export class PrerequisiteSubject {
+export class MonHocTienQuyetEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
@@ -15,19 +15,19 @@ export class PrerequisiteSubject {
   @ManyToOne(() => MonHocEntity)
   @JoinColumn({ name: 'idMH' })
   @IsInt()
-  subject: number;
+  monHoc: number;
 
   @ApiProperty()
   @Column({ name: 'idMHTQ' })
   @ManyToOne(() => MonHocEntity)
   @JoinColumn({ name: 'idMHTQ' })
   @IsInt()
-  preSubject: number;
+  monHocTruoc: number;
 
   @ApiProperty()
   @Column({ name: 'LoaiDK' })
   @IsIn([1, 2])
-  condition: typeCondition;
+  loaiMonHoc: LoaiMonHoc;
 
   @Column({ name: 'createdAt' })
   createdAt: Date;

@@ -13,25 +13,25 @@ import {
   Query,
   BadRequestException
 } from '@nestjs/common';
-import { PrerequisiteSubjectService } from './prerequisite-subject.service';
-import { CreatePrerequisiteSubjectDto } from './dto/create-prerequisite-subject.dto';
-import { UpdatePrerequisiteSubjectDto } from './dto/update-prerequisite-subject.dto';
+import { MonHocTienQuyetService } from './mon-hoc-tien-quyet.service';
+import { CreateMonHocTienQuyetDto } from './dto/create-mon-hoc-tien-quyet.dto';
+import { UpdateMonHocKienQuyetDto } from './dto/update-mon-hoc-tien-quyet.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { FilterPrerequisiteSubject } from './dto/filter-prerequisite-subject.dto';
+import { FilterMonHocKienQuyet } from './dto/filter-mon-hoc-tien-quyet.dto';
 
-@ApiTags('prerequisite-subject')
-@Controller('prerequisite-subject')
-export class PrerequisiteSubjectController {
-  constructor(private readonly prerequisiteSubjectService: PrerequisiteSubjectService) {}
+@ApiTags('mon-hoc-tien-quyet')
+@Controller('mon-hoc-tien-quyet')
+export class MonHocTienQuyetController {
+  constructor(private readonly prerequisiteSubjectService: MonHocTienQuyetService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Post()
-  create(@Body(ValidationPipe) createPrerequisiteSubjectDto: CreatePrerequisiteSubjectDto, @Req() req) {
+  create(@Body(ValidationPipe) createPrerequisiteSubjectDto: CreateMonHocTienQuyetDto, @Req() req) {
     const user = req.user || {};
-    const { subject, preSubject } = createPrerequisiteSubjectDto;
-    if (subject === preSubject) throw new BadRequestException();
+    const { monHoc, monHocTruoc } = createPrerequisiteSubjectDto;
+    if (monHoc === monHocTruoc) throw new BadRequestException();
     return this.prerequisiteSubjectService.create({
       ...createPrerequisiteSubjectDto,
       updatedBy: user?.ID,
@@ -42,16 +42,16 @@ export class PrerequisiteSubjectController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Get()
-  findAll(@Query(ValidationPipe) filter: FilterPrerequisiteSubject) {
+  findAll(@Query(ValidationPipe) filter: FilterMonHocKienQuyet) {
     return this.prerequisiteSubjectService.findAllPrereSuject(null, filter);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
-  @Get('subject/:idSubject')
+  @Get('mon-hoc/:idMonHoc')
   findAllPrereSubject(
-    @Param('idSubject', ParseIntPipe) id: number,
-    @Query(ValidationPipe) filter: FilterPrerequisiteSubject
+    @Param('idMonHoc', ParseIntPipe) id: number,
+    @Query(ValidationPipe) filter: FilterMonHocKienQuyet
   ) {
     return this.prerequisiteSubjectService.findAllPrereSuject(id, filter);
   }
@@ -68,7 +68,7 @@ export class PrerequisiteSubjectController {
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(ValidationPipe) updatePrerequisiteSubjectDto: UpdatePrerequisiteSubjectDto,
+    @Body(ValidationPipe) updatePrerequisiteSubjectDto: UpdateMonHocKienQuyetDto,
     @Req() req
   ) {
     const user = req.user || {};

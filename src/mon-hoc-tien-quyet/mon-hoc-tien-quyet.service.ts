@@ -10,19 +10,19 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT } from 'constant/constant';
 import { Not, QueryFailedError, Repository } from 'typeorm';
-import { CreatePrerequisiteSubjectDto } from './dto/create-prerequisite-subject.dto';
-import { FilterPrerequisiteSubject } from './dto/filter-prerequisite-subject.dto';
-import { UpdatePrerequisiteSubjectDto } from './dto/update-prerequisite-subject.dto';
-import { PrerequisiteSubject } from './entity/prerequisite-subject.entity';
+import { CreateMonHocTienQuyetDto } from './dto/create-mon-hoc-tien-quyet.dto';
+import { FilterMonHocKienQuyet } from './dto/filter-mon-hoc-tien-quyet.dto';
+import { UpdateMonHocKienQuyetDto } from './dto/update-mon-hoc-tien-quyet.dto';
+import { MonHocTienQuyetEntity } from './entity/mon-hoc-tien-quyet.entity';
 
 @Injectable()
-export class PrerequisiteSubjectService {
+export class MonHocTienQuyetService {
   constructor(
-    @InjectRepository(PrerequisiteSubject)
-    private prerequisiteSubjectRepository: Repository<PrerequisiteSubject>
+    @InjectRepository(MonHocTienQuyetEntity)
+    private prerequisiteSubjectRepository: Repository<MonHocTienQuyetEntity>
   ) {}
 
-  async create(createPrerequisiteSubjectDto: CreatePrerequisiteSubjectDto) {
+  async create(createPrerequisiteSubjectDto: CreateMonHocTienQuyetDto) {
     if (await this.isExist(createPrerequisiteSubjectDto)) {
       throw new ConflictException();
     }
@@ -38,7 +38,7 @@ export class PrerequisiteSubjectService {
     }
   }
 
-  async findAll(filter: FilterPrerequisiteSubject) {
+  async findAll(filter: FilterMonHocKienQuyet) {
     const { page = 0, limit = LIMIT } = filter;
     const skip = page * limit;
     const query = {
@@ -61,7 +61,7 @@ export class PrerequisiteSubjectService {
     return result;
   }
 
-  async findAllPrereSuject(id: number, filter: FilterPrerequisiteSubject) {
+  async findAllPrereSuject(id: number, filter: FilterMonHocKienQuyet) {
     const { page = 0, limit = LIMIT, type } = filter;
     const skip = page * limit;
     const queryByType = type ? { condition: Number(type) } : {};
@@ -80,18 +80,18 @@ export class PrerequisiteSubjectService {
     return { contents: results, total, page: Number(page) };
   }
 
-  async update(id: number, updatePrerequisiteSubjectDto: UpdatePrerequisiteSubjectDto) {
+  async update(id: number, updatePrerequisiteSubjectDto: UpdateMonHocKienQuyetDto) {
     const newPrere = await this.prerequisiteSubjectRepository.findOne(id, { where: { isDeleted: false } });
     if (!newPrere) throw new NotFoundException();
-    const { subject, preSubject, condition } = updatePrerequisiteSubjectDto;
-    if (subject) {
-      newPrere.subject = subject;
+    const { monHoc, monHocTruoc, loaiMonHoc } = updatePrerequisiteSubjectDto;
+    if (monHoc) {
+      newPrere.monHoc = monHoc;
     }
-    if (preSubject) {
-      newPrere.preSubject = preSubject;
+    if (monHocTruoc) {
+      newPrere.monHocTruoc = monHocTruoc;
     }
-    if (condition) {
-      newPrere.condition = condition;
+    if (loaiMonHoc) {
+      newPrere.loaiMonHoc = loaiMonHoc;
     }
     if (await this.isExist(newPrere)) {
       throw new ConflictException();
@@ -120,13 +120,13 @@ export class PrerequisiteSubjectService {
     throw new HttpException('OK', HttpStatus.OK);
   }
 
-  private async isExist(prere: PrerequisiteSubject): Promise<boolean> {
-    const { id, subject, preSubject } = prere;
+  private async isExist(prere: MonHocTienQuyetEntity): Promise<boolean> {
+    const { id, monHoc, monHocTruoc } = prere;
     const notID = id ? { id: Not(id) } : {};
     const query = {
       isDeleted: false,
-      subject,
-      preSubject,
+      monHoc,
+      monHocTruoc,
       ...notID
     };
     const found = await this.prerequisiteSubjectRepository.findOne({ where: query });
