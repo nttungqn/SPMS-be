@@ -8,18 +8,18 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { bodyValidatorMiddleware } from 'auth/middlewares/body-validator.middleware';
 import { SyllabusModule } from './syllabus/syllabus.module';
-import { SchoolYearModule } from './school-year/school-year.module';
-import { TypeOfEducationModule } from './type-of-education/type-of-education.module';
+import { NamHocModule } from './nam-hoc/nam-hoc.module';
+import { HeDaotaoModule } from './he-dao-tao/he-dao-tao.module';
 import { MonHocModule } from './mon-hoc/mon-hoc.module';
 import { CtdtModule } from './ctdt/ctdt.module';
-import { PrerequisiteSubjectModule } from './prerequisite-subject/prerequisite-subject.module';
+import { MonHocTienQuyetModule } from './mon-hoc-tien-quyet/mon-hoc-tien-quyet.module';
 import { ChiTietNganhDaoTaoModule } from './chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
 import { KeHoachGiangDayModule } from './ke-hoach-giang-day/ke-hoach-giang-day.module';
-import { KnowledgeBlockModule } from './knowledge-block/knowledge-block.module';
+import { KhoiKIenThucModule } from './khoi-kien-thuc/khoi-kien-thuc.module';
 import { LoaiKeHoachGiangDayModule } from './loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.module';
 import { ChuanDauRaModule } from './chuan-dau-ra/chuan-dau-ra.module';
 import { ChuanDauRaNganhDaoTaoModule } from './chuan-dau-ra-nganh-dao-tao/chuan-dau-ra-nganh-dao-tao.module';
-import { TypeOfKnowledgeBlockModule } from './type-of-knowledge-block/type-of-knowledge-block.module';
+import { LoaiKhoiKienThucModule } from './loai-khoi-kien-thuc/loai-khoi-kien-thuc.module';
 import { ChuDeModule } from './chu-de/chu-de.module';
 import { HoatDongDayHocModule } from './hoat-dong-day-hoc/hoat-dong-day-hoc.module';
 
@@ -31,17 +31,17 @@ import { HoatDongDayHocModule } from './hoat-dong-day-hoc/hoat-dong-day-hoc.modu
     UsersModule,
     MonHocModule,
     SyllabusModule,
-    SchoolYearModule,
-    TypeOfEducationModule,
+    NamHocModule,
+    HeDaotaoModule,
     CtdtModule,
-    PrerequisiteSubjectModule,
+    MonHocTienQuyetModule,
     ChiTietNganhDaoTaoModule,
     KeHoachGiangDayModule,
-    KnowledgeBlockModule,
+    KhoiKIenThucModule,
     LoaiKeHoachGiangDayModule,
     ChuanDauRaModule,
     ChuanDauRaNganhDaoTaoModule,
-    TypeOfKnowledgeBlockModule,
+    LoaiKhoiKienThucModule,
     ChuDeModule,
     HoatDongDayHocModule
   ],

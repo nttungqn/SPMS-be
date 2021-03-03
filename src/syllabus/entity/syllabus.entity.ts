@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsInt } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
 import { MonHocEntity } from 'mon-hoc/entity/monHoc.entity';
-import { SchoolYear } from 'school-year/entity/school-year.entity';
-import { TypeOfEducation } from 'type-of-education/entity/type-of-education.entity';
+import { NamHocEntity } from 'nam-hoc/entity/nam-hoc.entity';
+import { HeDaoTaoEntity } from 'he-dao-tao/entity/type-of-education.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
@@ -17,26 +17,26 @@ export class Syllabus {
   @Column({ name: 'idMH' })
   @ManyToOne(() => MonHocEntity)
   @JoinColumn({ name: 'idMH' })
-  subject: number;
+  monHoc: number;
 
   @ApiProperty()
   @IsInt()
   @Column({ name: 'idHDT' })
-  @ManyToOne(() => TypeOfEducation)
+  @ManyToOne(() => HeDaoTaoEntity)
   @JoinColumn({ name: 'idHDT' })
-  typeOfEdu: number;
+  heDaoTao: number;
 
   @ApiProperty()
   @IsInt()
   @Column({ name: 'idNH' })
-  @ManyToOne(() => SchoolYear)
+  @ManyToOne(() => NamHocEntity)
   @JoinColumn({ name: 'idNH' })
-  schoolYear: number;
+  namHoc: number;
 
   @Column({ name: 'createdBy' })
   @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'createdBy' })
-  author: number;
+  createdBy: number;
 
   @Column({ name: 'updatedBy' })
   @ManyToOne(() => UsersEntity)
