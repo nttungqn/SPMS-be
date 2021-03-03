@@ -6,5 +6,5 @@ export class UpdateProfileDto {
   @ApiProperty({ required: false })
   readonly lastName: string;
   @ApiProperty({ required: false })
-  readonly email: string;
+  readonly username: string;
 }

@@ -15,6 +15,7 @@ import { CtdtModule } from './ctdt/ctdt.module';
 import { PrerequisiteSubjectModule } from './prerequisite-subject/prerequisite-subject.module';
 import { ChiTietNganhDaoTaoModule } from './chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
 import { KeHoachGiangDayModule } from './ke-hoach-giang-day/ke-hoach-giang-day.module';
+import { KnowledgeBlockModule } from './knowledge-block/knowledge-block.module';
 import { LoaiKeHoachGiangDayModule } from './loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.module';
 import { ChuanDauRaModule } from './chuan-dau-ra/chuan-dau-ra.module';
 import { ChuanDauRaNganhDaoTaoModule } from './chuan-dau-ra-nganh-dao-tao/chuan-dau-ra-nganh-dao-tao.module';
@@ -34,6 +35,7 @@ import { ChuDeModule } from './chu-de/chu-de.module';
     PrerequisiteSubjectModule,
     ChiTietNganhDaoTaoModule,
     KeHoachGiangDayModule,
+    KnowledgeBlockModule,
     LoaiKeHoachGiangDayModule,
     ChuanDauRaModule,
     ChuanDauRaNganhDaoTaoModule,
