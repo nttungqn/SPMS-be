@@ -5,7 +5,7 @@ export class FilterNganhDaoTaoDto extends BaseFilterDto {
   @ApiProperty({ required: false, description: 'this field search by Ten' })
   readonly search: string;
   @ApiProperty({ required: false })
-  readonly MaNganhDaoTao?: string;
+  readonly maNganhDaoTao?: string;
   @ApiProperty({ required: false, description: 'this field search by ChuongTrinhDaoTaoID' })
-  readonly ctdt?: string;
+  readonly chuongTrinhDaoTao?: string;
 }

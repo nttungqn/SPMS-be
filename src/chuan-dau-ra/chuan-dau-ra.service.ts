@@ -12,7 +12,7 @@ export class ChuanDauRaService {
   async findAll(filter: any): Promise<any> {
     const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
     const skip = Number(page) * Number(limit);
-    const querySearch = search ? { Ten: Like(`%${search}%`) } : {};
+    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
     const query = {
       isDeleted: false,
       ...querySearch,
@@ -44,7 +44,7 @@ export class ChuanDauRaService {
 
   async create(newData: CreateChuanDauRaDto): Promise<any> {
     const checkExistData = await this.chuanDauRaRepository.findOne({
-      Ten: newData?.Ten,
+      ten: newData?.ten,
       isDeleted: false
     });
     if (checkExistData) {

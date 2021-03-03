@@ -11,16 +11,16 @@ export class NganhDaoTaoEntity {
 
   @ApiProperty()
   @Column()
-  MaNganhDaoTao: string;
+  maNganhDaoTao: string;
 
   @ApiProperty()
   @Column()
-  Ten: string;
+  ten: string;
 
   @ApiProperty()
   @OneToOne(() => ChuongTrinhDaoTaoEntity)
   @JoinColumn({ name: 'ctdtID' })
-  ctdt: number;
+  chuongTrinhDaoTao: number;
 
   @Column()
   createdAt: Date;
