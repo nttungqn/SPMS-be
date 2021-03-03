@@ -22,6 +22,8 @@ import { ChuanDauRaNganhDaoTaoModule } from './chuan-dau-ra-nganh-dao-tao/chuan-
 import { TypeOfKnowledgeBlockModule } from './type-of-knowledge-block/type-of-knowledge-block.module';
 import { ChuDeModule } from './chu-de/chu-de.module';
 import { HoatDongDayHocModule } from './hoat-dong-day-hoc/hoat-dong-day-hoc.module';
+import { GomNhomModule } from './gom-nhom/gom-nhom.module';
+import { ChiTietGomNhomModule } from './chi-tiet-gom-nhom/chi-tiet-gom-nhom.module';
 
 @Module({
   imports: [
@@ -43,7 +45,9 @@ import { HoatDongDayHocModule } from './hoat-dong-day-hoc/hoat-dong-day-hoc.modu
     ChuanDauRaNganhDaoTaoModule,
     TypeOfKnowledgeBlockModule,
     ChuDeModule,
-    HoatDongDayHocModule
+    HoatDongDayHocModule,
+    GomNhomModule,
+    ChiTietGomNhomModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
