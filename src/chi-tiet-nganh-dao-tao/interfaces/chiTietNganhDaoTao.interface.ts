@@ -1,9 +1,9 @@
 export interface IChiTietNganhDaoTao {
   readonly ID?: number;
-  readonly Khoa?: number;
-  readonly CoHoiNgheNghiep?: string;
-  readonly MucTieuChung?: string;
-  readonly NganhDaoTao?: number;
+  readonly khoa?: number;
+  readonly coHoiNgheNghiep?: string;
+  readonly mucTieuChung?: string;
+  readonly nganhDaoTao?: number;
   readonly createdAt?: Date;
   readonly createdBy?: number;
   readonly updatedAt?: Date;

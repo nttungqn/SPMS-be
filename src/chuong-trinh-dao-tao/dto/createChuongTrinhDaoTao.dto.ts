@@ -2,26 +2,26 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateChuongTrinhDaoTaoDto {
   @ApiProperty({ required: false })
-  readonly MaCTDT?: string;
+  readonly maCTDT?: string;
 
   @ApiProperty({ required: false })
-  readonly LoaiHinh?: string;
+  readonly loaiHinh?: string;
 
   @ApiProperty({ required: false })
-  readonly Ten?: string;
+  readonly ten?: string;
 
   @ApiProperty({ required: false })
-  readonly TrinhDo?: string;
+  readonly trinhDo?: string;
 
   @ApiProperty({ required: false, example: 0 })
-  readonly TongTinChi?: number;
+  readonly tongTinChi?: number;
 
   @ApiProperty({ required: false })
-  readonly DoiTuong?: string;
+  readonly doiTuong?: string;
 
   @ApiProperty({ required: false })
-  readonly QuiTrinhDaoTao?: string;
+  readonly quiTrinhDaoTao?: string;
 
   @ApiProperty({ required: false })
-  readonly DieuKienTotNghiep?: string;
+  readonly dieuKienTotNghiep?: string;
 }

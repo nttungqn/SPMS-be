@@ -1,13 +1,13 @@
 export interface IChuongTrinhDaoTao {
   readonly ID?: number;
-  readonly MaCTDT?: string;
-  readonly LoaiHinh?: string;
-  readonly Ten?: string;
-  readonly TrinhDo?: string;
-  readonly TongTinChi?: number;
-  readonly DoiTuong?: string;
-  readonly QuiTrinhDaoTao?: string;
-  readonly DieuKienTotNghiep?: string;
+  readonly maCTDT?: string;
+  readonly loaiHinh?: string;
+  readonly ten?: string;
+  readonly trinhDo?: string;
+  readonly tongTinChi?: number;
+  readonly doiTuong?: string;
+  readonly quiTrinhDaoTao?: string;
+  readonly dieuKienTotNghiep?: string;
   readonly createdAt?: Date;
   readonly createdBy?: number;
   readonly updatedAt?: Date;

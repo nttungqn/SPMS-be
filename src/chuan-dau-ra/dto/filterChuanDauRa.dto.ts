@@ -6,5 +6,5 @@ export class FilterChuanDauRaDto extends BaseFilterDto {
   readonly search: string;
 
   @ApiProperty({ required: false })
-  readonly MucDo: number;
+  readonly mucDo: number;
 }

@@ -13,7 +13,7 @@ export class ChuongTrinhDaoTaoService {
   async findAll(filter): Promise<ChuongTrinhDaoTaoEntity[] | any> {
     const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
     const skip = Number(page) * Number(limit);
-    const querySearch = search ? { Ten: Like(`%${search}%`) } : {};
+    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
     const query = {
       isDeleted: false,
       ...querySearch,
@@ -36,8 +36,8 @@ export class ChuongTrinhDaoTaoService {
   async create(newData: IChuongTrinhDaoTao): Promise<any> {
     const checkExistName = await this.chuongTrinhDaoTaoRepository.findOne({
       where: [
-        { Ten: newData?.Ten, isDeleted: false },
-        { MaCTDT: newData?.MaCTDT, isDeleted: false }
+        { ten: newData?.ten, isDeleted: false },
+        { maCTDT: newData?.maCTDT, isDeleted: false }
       ]
     });
     if (checkExistName) {

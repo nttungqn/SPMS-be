@@ -7,24 +7,25 @@ import { UsersEntity } from 'users/entity/user.entity';
 @Entity(TABLE_NAME.CHITIETNGANHDAOTAO)
 export class ChiTietNganhDaoTaoEntity {
   @PrimaryGeneratedColumn()
+  @Column({ name: 'ID' })
   ID: number;
 
   @ApiProperty()
-  @Column()
-  Khoa: number;
+  @Column({ name: 'Khoa' })
+  khoa: number;
 
   @ApiProperty()
-  @Column()
-  CoHoiNgheNghiep: string;
+  @Column({ name: 'CoHoiNgheNghiep' })
+  coHoiNgheNghiep: string;
 
   @ApiProperty()
-  @Column()
-  MucTieuChung: string;
+  @Column({ name: 'MucTieuChung' })
+  mucTieuChung: string;
 
   @ApiProperty()
   @OneToOne(() => NganhDaoTaoEntity)
   @JoinColumn({ name: 'ID_NganhDaoTao' })
-  NganhDaoTao: number;
+  nganhDaoTao: number;
 
   @Column()
   createdAt: Date;

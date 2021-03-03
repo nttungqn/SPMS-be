@@ -3,8 +3,8 @@ import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.
 
 export class FilterCTNganhDaoTaoDto extends BaseFilterDto {
   @ApiProperty({ required: false })
-  Khoa: number;
+  khoa: number;
 
   @ApiProperty({ required: false })
-  NganhDaoTao: number;
+  nganhDaoTao: number;
 }
