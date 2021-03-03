@@ -19,6 +19,7 @@ import { KnowledgeBlockModule } from './knowledge-block/knowledge-block.module';
 import { LoaiKeHoachGiangDayModule } from './loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.module';
 import { ChuanDauRaModule } from './chuan-dau-ra/chuan-dau-ra.module';
 import { ChuanDauRaNganhDaoTaoModule } from './chuan-dau-ra-nganh-dao-tao/chuan-dau-ra-nganh-dao-tao.module';
+import { TypeOfKnowledgeBlockModule } from './type-of-knowledge-block/type-of-knowledge-block.module';
 import { ChuDeModule } from './chu-de/chu-de.module';
 import { HoatDongDayHocModule } from './hoat-dong-day-hoc/hoat-dong-day-hoc.module';
 
@@ -40,6 +41,7 @@ import { HoatDongDayHocModule } from './hoat-dong-day-hoc/hoat-dong-day-hoc.modu
     LoaiKeHoachGiangDayModule,
     ChuanDauRaModule,
     ChuanDauRaNganhDaoTaoModule,
+    TypeOfKnowledgeBlockModule,
     ChuDeModule,
     HoatDongDayHocModule
   ],

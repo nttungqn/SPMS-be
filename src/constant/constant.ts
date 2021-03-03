@@ -12,6 +12,7 @@ const TABLE_NAME = {
   CHUANDAURA: 'ChuanDauRa',
   CHUANDAURANGANHDAOTAO: 'ChuanDauRaNganhDauTao',
   KHOIKIENTHUC: 'KhoiKienThuc',
+  LOAIKHOIKIENTHUC: 'LoaiKhoiKienThuc',
   CHUDE: 'ChuDe',
   HOATDONGDAYHOC: 'HoatDongDayHoc'
 };
