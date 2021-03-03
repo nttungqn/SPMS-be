@@ -1,12 +1,12 @@
 import { TABLE_NAME } from 'constant/constant';
-import { CreateTypeOfKnowledgeBlockDto } from 'type-of-knowledge-block/dto/create-type-of-knowledge-block.dto';
+import { CreateLoaiKhoiKienThucDto } from 'loai-khoi-kien-thuc/dto/create-loai-khoi-kien-thuc.dto';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity(TABLE_NAME.LOAIKHOIKIENTHUC)
-export class TypeOfKnowledgeBlock extends CreateTypeOfKnowledgeBlockDto {
+export class LoaiKhoiKienThucEntity extends CreateLoaiKhoiKienThucDto {
   @PrimaryGeneratedColumn({ name: 'ID' })
-  ID?: number;
+  id?: number;
 
   @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'createdBy' })

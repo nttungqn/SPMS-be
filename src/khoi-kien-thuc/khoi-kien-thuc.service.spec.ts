@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { KnowledgeBlockService } from './knowledge-block.service';
+import { KhoiKienThucService } from './khoi-kien-thuc.service';
 
 describe('KnowledgeBlockService', () => {
-  let service: KnowledgeBlockService;
+  let service: KhoiKienThucService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [KnowledgeBlockService]
+      providers: [KhoiKienThucService]
     }).compile();
 
-    service = module.get<KnowledgeBlockService>(KnowledgeBlockService);
+    service = module.get<KhoiKienThucService>(KhoiKienThucService);
   });
 
   it('should be defined', () => {

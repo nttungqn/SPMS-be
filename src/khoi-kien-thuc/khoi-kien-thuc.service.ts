@@ -2,18 +2,18 @@ import { ConflictException, Injectable, InternalServerErrorException, NotFoundEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm';
-import { CreateKnowledgeBlockDto } from './dto/create-knowledge-block.dto';
-import { filterKnowledgeBlock } from './dto/filter-knowledge-block.dto';
-import { KnowledgeBlock } from './entity/knowledge-block.entity';
+import { CreateKhoiKienThucDto } from './dto/create-khoi-kien-thuc.dto';
+import { filterKnowledgeBlock } from './dto/filter-khoi-kien-thuc.dto';
+import { KhoiKienThucEntity } from './entity/khoi-kien-thuc.entity';
 
 @Injectable()
-export class KnowledgeBlockService {
+export class KhoiKienThucService {
   constructor(
-    @InjectRepository(KnowledgeBlock)
-    private knowledgeBlockRepository: Repository<KnowledgeBlock>
+    @InjectRepository(KhoiKienThucEntity)
+    private knowledgeBlockRepository: Repository<KhoiKienThucEntity>
   ) {}
 
-  async create(knowledgeBlock: KnowledgeBlock) {
+  async create(knowledgeBlock: KhoiKienThucEntity) {
     if (await this.isExist(knowledgeBlock)) {
       throw new ConflictException();
     }
@@ -52,7 +52,7 @@ export class KnowledgeBlockService {
     return result;
   }
 
-  async update(id: number, knowledgeBlock: KnowledgeBlock) {
+  async update(id: number, knowledgeBlock: KhoiKienThucEntity) {
     const result = await this.knowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
     if (!result) throw new NotFoundException();
     const { tinChiBatBuoc, tinChiTuChonTuDo, tinChiTuChon } = knowledgeBlock;
@@ -87,7 +87,7 @@ export class KnowledgeBlockService {
     }
   }
 
-  async isExist(createKnowledgeBlockDto: CreateKnowledgeBlockDto): Promise<boolean> {
-    return createKnowledgeBlockDto ? true : false;
+  async isExist(createKhoiKienThucDto: CreateKhoiKienThucDto): Promise<boolean> {
+    return createKhoiKienThucDto ? true : false;
   }
 }

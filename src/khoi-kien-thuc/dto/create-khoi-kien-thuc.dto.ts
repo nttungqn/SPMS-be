@@ -3,7 +3,7 @@ import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietN
 import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
-export class CreateKnowledgeBlockDto {
+export class CreateKhoiKienThucDto {
   @ApiProperty()
   @ManyToOne(() => ChiTietNganhDaoTaoEntity)
   @JoinColumn({ name: 'ID_ChiTietNganhDaoTao' })

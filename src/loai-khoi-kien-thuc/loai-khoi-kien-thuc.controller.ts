@@ -14,22 +14,22 @@ import {
   HttpException,
   ValidationPipe
 } from '@nestjs/common';
-import { TypeOfKnowledgeBlockService } from './type-of-knowledge-block.service';
-import { CreateTypeOfKnowledgeBlockDto } from './dto/create-type-of-knowledge-block.dto';
-import { UpdateTypeOfKnowledgeBlockDto } from './dto/update-type-of-knowledge-block.dto';
+import { LoaiKhoiKienThucService } from './loai-khoi-kien-thuc.service';
+import { CreateLoaiKhoiKienThucDto } from './dto/create-loai-khoi-kien-thuc.dto';
+import { UpdateLoaiKhoiKienThucDto } from './dto/update-loai-khoi-kien-thuc.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { FilterTypeOfKnowledgeBlock } from './dto/filter-type-of-knowledge-block.dto';
+import { FilterLoaiKhoiKienThuc } from './dto/filter-loai-khoi-kien-thuc.dto';
 import { AuthGuard } from '@nestjs/passport';
 
-@ApiTags('Loai-Khoi-Kien-Thuc')
-@Controller('Loai-Khoi-Kien-Thuc')
-export class TypeOfKnowledgeBlockController {
-  constructor(private readonly typeOfKnowledgeBlockService: TypeOfKnowledgeBlockService) {}
+@ApiTags('loai-khoi-kien-thuc')
+@Controller('loai-khoi-kien-thuc')
+export class LoaiKhoiKienThucController {
+  constructor(private readonly typeOfKnowledgeBlockService: LoaiKhoiKienThucService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Get()
-  findAll(@Query() filter: FilterTypeOfKnowledgeBlock) {
+  findAll(@Query() filter: FilterLoaiKhoiKienThuc) {
     return this.typeOfKnowledgeBlockService.findAll(filter);
   }
 
@@ -43,7 +43,7 @@ export class TypeOfKnowledgeBlockController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Post()
-  async create(@Body(ValidationPipe) createTypeOfKnowledgeBlockDto: CreateTypeOfKnowledgeBlockDto, @Req() req) {
+  async create(@Body(ValidationPipe) createTypeOfKnowledgeBlockDto: CreateLoaiKhoiKienThucDto, @Req() req) {
     const user = req.user || {};
     await this.typeOfKnowledgeBlockService.create({
       ...createTypeOfKnowledgeBlockDto,
@@ -58,7 +58,7 @@ export class TypeOfKnowledgeBlockController {
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateTypeOfKnowledgeBlockDto: UpdateTypeOfKnowledgeBlockDto,
+    @Body() updateTypeOfKnowledgeBlockDto: UpdateLoaiKhoiKienThucDto,
     @Req() req
   ) {
     const user = req.user || {};

@@ -10,22 +10,22 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT } from 'constant/constant';
 import { QueryFailedError, Repository } from 'typeorm';
-import { CreateTypeOfKnowledgeBlockDto } from './dto/create-type-of-knowledge-block.dto';
-import { FilterTypeOfKnowledgeBlock } from './dto/filter-type-of-knowledge-block.dto';
-import { TypeOfKnowledgeBlock } from './entity/type-of-knowledge-block.entity';
+import { CreateLoaiKhoiKienThucDto } from './dto/create-loai-khoi-kien-thuc.dto';
+import { FilterLoaiKhoiKienThuc } from './dto/filter-loai-khoi-kien-thuc.dto';
+import { LoaiKhoiKienThucEntity } from './entity/type-of-knowledge-block.entity';
 
 @Injectable()
-export class TypeOfKnowledgeBlockService {
+export class LoaiKhoiKienThucService {
   constructor(
-    @InjectRepository(TypeOfKnowledgeBlock)
-    private typeOfKnowledgeBlockRepository: Repository<TypeOfKnowledgeBlock>
+    @InjectRepository(LoaiKhoiKienThucEntity)
+    private typeOfKnowledgeBlockRepository: Repository<LoaiKhoiKienThucEntity>
   ) {}
 
-  async findAll(filter: FilterTypeOfKnowledgeBlock) {
+  async findAll(filter: FilterLoaiKhoiKienThuc) {
     const { page = 0, limit = LIMIT, idKhoiKienThuc } = filter;
     const queryBy_KhoiKienThuc = idKhoiKienThuc ? { khoiKienThuc: idKhoiKienThuc } : {};
     const skip = page * limit;
-    const query: TypeOfKnowledgeBlock = {
+    const query: LoaiKhoiKienThucEntity = {
       isDeleted: false,
       ...queryBy_KhoiKienThuc
     };
@@ -52,11 +52,11 @@ export class TypeOfKnowledgeBlockService {
     return result;
   }
 
-  async create(typeOfKnowledgeBlock: TypeOfKnowledgeBlock) {
+  async create(typeOfKnowledgeBlock: LoaiKhoiKienThucEntity) {
     if (await this.isExist(typeOfKnowledgeBlock)) {
       throw new ConflictException();
     }
-    let saveResult: TypeOfKnowledgeBlock;
+    let saveResult: LoaiKhoiKienThucEntity;
     try {
       const createResult = this.typeOfKnowledgeBlockRepository.create({
         ...typeOfKnowledgeBlock,
@@ -68,10 +68,10 @@ export class TypeOfKnowledgeBlockService {
       if (error instanceof QueryFailedError) throw new BadRequestException();
       throw new InternalServerErrorException();
     }
-    return await this.typeOfKnowledgeBlockRepository.findOne(saveResult.ID);
+    return await this.typeOfKnowledgeBlockRepository.findOne(saveResult.id);
   }
 
-  async update(id: number, typeOfKnowledgeBlock: TypeOfKnowledgeBlock) {
+  async update(id: number, typeOfKnowledgeBlock: LoaiKhoiKienThucEntity) {
     const results = await this.typeOfKnowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
     if (!results) throw new HttpException(`${id} Khoi-kien-thuc not found`, HttpStatus.NOT_FOUND);
     if (await this.isExist(typeOfKnowledgeBlock)) {
@@ -98,7 +98,7 @@ export class TypeOfKnowledgeBlockService {
       throw new InternalServerErrorException();
     }
   }
-  private async isExist(createTypeOfKnowledgeBlockDto: CreateTypeOfKnowledgeBlockDto): Promise<boolean> {
+  private async isExist(createTypeOfKnowledgeBlockDto: CreateLoaiKhoiKienThucDto): Promise<boolean> {
     return !createTypeOfKnowledgeBlockDto ? true : false;
   }
 }

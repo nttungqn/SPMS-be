@@ -1,10 +1,10 @@
 import { TABLE_NAME } from 'constant/constant';
-import { CreateKnowledgeBlockDto } from 'knowledge-block/dto/create-knowledge-block.dto';
+import { CreateKhoiKienThucDto } from 'khoi-kien-thuc/dto/create-khoi-kien-thuc.dto';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity({ name: TABLE_NAME.KHOIKIENTHUC })
-export class KnowledgeBlock extends CreateKnowledgeBlockDto {
+export class KhoiKienThucEntity extends CreateKhoiKienThucDto {
   @PrimaryGeneratedColumn({ name: 'ID' })
   id?: number;
   @Column({ name: 'TongTC' })

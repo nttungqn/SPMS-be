@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { KnowledgeBlock } from 'knowledge-block/entity/knowledge-block.entity';
+import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
-export class CreateTypeOfKnowledgeBlockDto {
+export class CreateLoaiKhoiKienThucDto {
   //@Column({name:'ID_KhoiKienThuc'})
   @ApiProperty()
   @IsNotEmpty()
-  @ManyToOne(() => KnowledgeBlock)
+  @ManyToOne(() => KhoiKienThucEntity)
   @JoinColumn({ name: 'ID_KhoiKienThuc' })
   khoiKienThuc?: number;
 
