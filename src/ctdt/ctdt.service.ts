@@ -14,14 +14,14 @@ export class CtdtService {
   async findAll(filter: any): Promise<any> {
     const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
     const skip = Number(page) * Number(limit);
-    const querySearch = search ? { Ten: Like(`%${search}%`) } : {};
+    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
     const query = {
       isDeleted: false,
       ...querySearch,
       ...rest
     };
     const results = await this.nganhDaoTaoRepository.find({
-      relations: ['ctdt', 'createdBy', 'updatedBy'],
+      relations: ['chuongTrinhDaoTao', 'createdBy', 'updatedBy'],
       skip,
       take: limit,
       where: query
@@ -36,7 +36,7 @@ export class CtdtService {
   async findById(ID: number): Promise<any> {
     const result = await this.nganhDaoTaoRepository.findOne({
       where: { ID, isDeleted: false },
-      relations: ['ctdt', 'createdBy', 'updatedBy']
+      relations: ['chuongTrinhDaoTao', 'createdBy', 'updatedBy']
     });
     if (!result) {
       throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -45,7 +45,7 @@ export class CtdtService {
   }
 
   async create(newData: INganhDaoTao): Promise<any> {
-    const checkExistName = await this.nganhDaoTaoRepository.findOne({ Ten: newData?.Ten, isDeleted: false });
+    const checkExistName = await this.nganhDaoTaoRepository.findOne({ ten: newData?.ten, isDeleted: false });
     if (checkExistName) {
       throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_NAME_EXIST, HttpStatus.CONFLICT);
     }

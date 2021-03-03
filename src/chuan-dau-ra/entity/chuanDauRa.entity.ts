@@ -9,12 +9,12 @@ export class ChuanDauRaEntity {
   ID: number;
 
   @ApiProperty()
-  @Column()
-  Ten: string;
+  @Column({ name: 'Ten' })
+  ten: string;
 
   @ApiProperty()
-  @Column()
-  MucDo: number;
+  @Column({ name: 'MucDo' })
+  mucDo: number;
 
   @Column()
   createdAt: Date;

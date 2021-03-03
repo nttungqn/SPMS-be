@@ -26,14 +26,10 @@ import * as lodash from 'lodash';
 export class ChuongTrinhDaoTaoController {
   constructor(private readonly chuongTrinhDaoTaoService: ChuongTrinhDaoTaoService) {}
 
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('token')
   @Get()
   async getAll(@Req() req, @Query() filter: FilterChuongTrinhDaoTao) {
     return await this.chuongTrinhDaoTaoService.findAll(filter);
   }
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('token')
   @Get(':id')
   async getById(@Req() req, @Param() param: IdDto) {
     const { id } = param;

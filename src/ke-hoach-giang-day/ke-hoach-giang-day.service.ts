@@ -18,7 +18,7 @@ export class KeHoachGiangDayService {
       ...rest
     };
     const results = await this.keHoachGiangDayRepository.find({
-      relations: ['NganhDaoTao', 'createdBy', 'updatedBy'],
+      relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.chuongTrinhDaoTao'],
       skip,
       take: limit,
       where: query
@@ -33,7 +33,7 @@ export class KeHoachGiangDayService {
   async findById(ID: number): Promise<any> {
     const result = await this.keHoachGiangDayRepository.findOne({
       where: { ID, isDeleted: false },
-      relations: ['NganhDaoTao', 'createdBy', 'updatedBy']
+      relations: ['NganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.chuongTrinhDaoTao']
     });
     if (!result) {
       throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -43,7 +43,7 @@ export class KeHoachGiangDayService {
 
   async create(newData: CreateKeHoachGiangDayDto): Promise<any> {
     const checkExist = await this.keHoachGiangDayRepository.findOne({
-      MaKeHoach: newData?.MaKeHoach,
+      maKeHoach: newData?.maKeHoach,
       isDeleted: false
     });
     if (checkExist) {

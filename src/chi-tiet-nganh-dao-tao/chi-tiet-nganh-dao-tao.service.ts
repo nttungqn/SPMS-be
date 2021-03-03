@@ -18,7 +18,7 @@ export class ChiTietNganhDaoTaoService {
       ...rest
     };
     const results = await this.chiTietNganhDTRepository.find({
-      relations: ['NganhDaoTao', 'createdBy', 'updatedBy'],
+      relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.chuongTrinhDaoTao'],
       skip,
       take: limit,
       where: query
@@ -33,7 +33,7 @@ export class ChiTietNganhDaoTaoService {
   async findById(ID: number): Promise<any> {
     const result = await this.chiTietNganhDTRepository.findOne({
       where: { ID, isDeleted: false },
-      relations: ['NganhDaoTao', 'createdBy', 'updatedBy']
+      relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.chuongTrinhDaoTao']
     });
     if (!result) {
       throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -43,8 +43,8 @@ export class ChiTietNganhDaoTaoService {
 
   async create(newData: IChiTietNganhDaoTao): Promise<any> {
     const checkExistData = await this.chiTietNganhDTRepository.findOne({
-      Khoa: newData?.Khoa,
-      NganhDaoTao: newData.NganhDaoTao,
+      khoa: newData?.khoa,
+      nganhDaoTao: newData.nganhDaoTao,
       isDeleted: false
     });
     if (checkExistData) {

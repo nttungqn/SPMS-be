@@ -10,22 +10,22 @@ export class KeHoachGiangDayEntity {
   ID: number;
 
   @ApiProperty()
-  @Column()
-  MaKeHoach: string;
+  @Column({ name: 'MaKeHoach' })
+  maKeHoach: string;
 
   @ApiProperty()
-  @Column()
-  TenHocKy: number;
+  @Column({ name: 'TenHocKy' })
+  tenHocKy: number;
 
   @ApiProperty()
-  @Column()
-  STT: number;
+  @Column({ name: 'STT' })
+  sTT: number;
 
   @ApiProperty()
   @Column({ name: 'ID_ChiTietNganhDaoTao' })
   @ManyToOne(() => ChiTietNganhDaoTaoEntity)
   @JoinColumn({ name: 'ID_ChiTietNganhDaoTao' })
-  NganhDaoTao: number;
+  nganhDaoTao: number;
 
   @Column()
   createdAt: Date;

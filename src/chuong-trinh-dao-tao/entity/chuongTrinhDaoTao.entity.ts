@@ -8,36 +8,36 @@ export class ChuongTrinhDaoTaoEntity {
   ID: number;
 
   @ApiProperty()
-  @Column()
-  MaCTDT: string;
+  @Column({ name: 'MaCTDT' })
+  maCTDT: string;
 
   @ApiProperty()
-  @Column()
-  LoaiHinh: string;
+  @Column({ name: 'LoaiHinh' })
+  loaiHinh: string;
 
   @ApiProperty()
-  @Column()
-  Ten: string;
+  @Column({ name: 'Ten' })
+  ten: string;
 
   @ApiProperty()
-  @Column()
-  TrinhDo: string;
+  @Column({ name: 'TrinhDo' })
+  trinhDo: string;
 
   @ApiProperty()
-  @Column({ default: 0 })
-  TongTinChi: number;
+  @Column({ default: 0, name: 'TongTinChi' })
+  tongTinChi: number;
 
   @ApiProperty()
-  @Column()
-  DoiTuong: string;
+  @Column({ name: 'DoiTuong' })
+  doiTuong: string;
 
   @ApiProperty()
-  @Column()
-  QuiTrinhDaoTao: string;
+  @Column({ name: 'QuiTrinhDaoTao' })
+  quiTrinhDaoTao: string;
 
   @ApiProperty()
-  @Column()
-  DieuKienTotNghiep: string;
+  @Column({ name: 'DieuKienTotNghiep' })
+  dieuKienTotNghiep: string;
 
   @Column()
   createdAt: Date;
