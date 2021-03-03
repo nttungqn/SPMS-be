@@ -12,13 +12,13 @@ export class ChuDeEntity {
 
   @ApiProperty()
   @ManyToOne(() => Syllabus)
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'idSyllabus' })
   @Column({ name: 'idSyllabus' })
   idSyllabus: number;
 
   @ApiProperty()
   @ManyToOne(() => LoaiKeHoachGiangDayEntity)
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'idLKHGD' })
   @Column({ name: 'idLKHGD' })
   idLKHGD: number;
 
