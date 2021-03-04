@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
+import { IsInt, IsString } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
@@ -10,18 +11,22 @@ export class KeHoachGiangDayEntity {
   id: number;
 
   @ApiProperty()
+  @IsString()
   @Column({ name: 'MaKeHoach' })
   maKeHoach: string;
 
   @ApiProperty()
+  @IsInt()
   @Column({ name: 'TenHocKy' })
   tenHocKy: number;
 
   @ApiProperty()
+  @IsInt()
   @Column({ name: 'STT' })
   sTT: number;
 
   @ApiProperty()
+  @IsInt()
   @Column({ name: 'ID_ChiTietNganhDaoTao' })
   @ManyToOne(() => ChiTietNganhDaoTaoEntity)
   @JoinColumn({ name: 'ID_ChiTietNganhDaoTao' })

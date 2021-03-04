@@ -60,7 +60,7 @@ export class SyllabusService {
       })
       .leftJoinAndSelect('sy.createdBy', 'createdBy')
       .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
-      .leftJoinAndSelect('sy.updateBy', 'updateBy')
+      .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
       .leftJoinAndSelect('sy.namHoc', 'namHoc')
       .andWhere('sy.isDeleted=:isDeleted', { isDeleted: false })
       .take(limit)

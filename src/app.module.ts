@@ -22,6 +22,7 @@ import { ChuanDauRaNganhDaoTaoModule } from './chuan-dau-ra-nganh-dao-tao/chuan-
 import { LoaiKhoiKienThucModule } from './loai-khoi-kien-thuc/loai-khoi-kien-thuc.module';
 import { ChuDeModule } from './chu-de/chu-de.module';
 import { HoatDongDayHocModule } from './hoat-dong-day-hoc/hoat-dong-day-hoc.module';
+import { LoaiDanhGiaModule } from './loai-danh-gia/loai-danh-gia.module';
 import { GomNhomModule } from './gom-nhom/gom-nhom.module';
 import { ChiTietGomNhomModule } from './chi-tiet-gom-nhom/chi-tiet-gom-nhom.module';
 import { MucTieuMonHocModule } from './muc-tieu-mon-hoc/muc-tieu-mon-hoc.module';
@@ -47,6 +48,7 @@ import { MucTieuMonHocModule } from './muc-tieu-mon-hoc/muc-tieu-mon-hoc.module'
     LoaiKhoiKienThucModule,
     ChuDeModule,
     HoatDongDayHocModule,
+    LoaiDanhGiaModule,
     GomNhomModule,
     ChiTietGomNhomModule,
     MucTieuMonHocModule
