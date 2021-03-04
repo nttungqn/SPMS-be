@@ -46,13 +46,13 @@ export class AuthService {
     }
   }
   async validateUser(payload: JwtPayload): Promise<any> {
-    return await this.usersService.getProfile({ ID: payload?.id, email: payload?.email });
+    return await this.usersService.getProfile({ id: payload?.id, email: payload?.email });
   }
   async createToken(user: IUser): Promise<any> {
     const expiresIn = EXPIREDIN || 3600;
     const token = jwt.sign(
       {
-        id: user?.ID,
+        id: user?.id,
         email: user?.email,
         username: user?.username,
         firstName: user?.firstName,
@@ -72,7 +72,7 @@ export class AuthService {
 
     const refreshToken = jwt.sign(
       {
-        id: user.ID
+        id: user.id
       },
       JWT_SECRET,
       { expiresIn: expiresRefresh }

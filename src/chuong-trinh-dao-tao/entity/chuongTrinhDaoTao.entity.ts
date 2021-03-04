@@ -4,8 +4,8 @@ import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity('ChuongTrinhDaoTao')
 export class ChuongTrinhDaoTaoEntity {
-  @PrimaryGeneratedColumn()
-  ID: number;
+  @PrimaryGeneratedColumn({ name: 'ID' })
+  id: number;
 
   @ApiProperty()
   @Column({ name: 'MaCTDT' })

@@ -1,5 +1,5 @@
 export interface IChiTietNganhDaoTao {
-  readonly ID?: number;
+  readonly id?: number;
   readonly khoa?: number;
   readonly coHoiNgheNghiep?: string;
   readonly mucTieuChung?: string;

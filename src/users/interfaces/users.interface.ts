@@ -1,5 +1,5 @@
 export interface IUser {
-  readonly ID?: number;
+  readonly id?: number;
   readonly firstName?: string;
   readonly lastName?: string;
   readonly email: string;
@@ -8,5 +8,6 @@ export interface IUser {
   readonly role?: number;
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
-  // readonly isDeleted?: boolean;
+  readonly isActive?: boolean;
+  readonly isDeleted?: boolean;
 }

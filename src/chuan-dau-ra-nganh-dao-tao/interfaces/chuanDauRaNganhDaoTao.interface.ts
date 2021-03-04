@@ -1,5 +1,5 @@
 export interface IChuanDauRaNganhDaoTao {
-  readonly ID?: number;
+  readonly id?: number;
   readonly ma?: string;
   readonly parent?: number;
   readonly nganhDaoTao?: number;

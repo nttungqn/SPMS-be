@@ -49,8 +49,8 @@ export class CtdtController {
     try {
       await this.nganhDaoTaoService.create({
         ...newData,
-        createdBy: user?.ID,
-        updatedBy: user?.ID
+        createdBy: user?.id,
+        updatedBy: user?.id
       });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -68,7 +68,7 @@ export class CtdtController {
     const user = req.user || {};
     const { id } = param;
     try {
-      await this.nganhDaoTaoService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+      await this.nganhDaoTaoService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: NGANHDAOTAO_MESSAGE.UPDATE_NGANHDAOTAO_FAILED,
@@ -85,7 +85,7 @@ export class CtdtController {
     const user = req.user || {};
     const { id } = param;
     try {
-      await this.nganhDaoTaoService.delete(Number(id), user?.ID);
+      await this.nganhDaoTaoService.delete(Number(id), user?.id);
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: NGANHDAOTAO_MESSAGE.DELETE_NGANHDAOTAO_FAILED,

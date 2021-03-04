@@ -30,9 +30,9 @@ export class ChuanDauRaNganhDaoTaoService {
     return { contents: results, total, page: Number(page) };
   }
 
-  async findById(ID: number): Promise<any> {
+  async findById(id: number): Promise<any> {
     const result = await this.chuanDauRaNDTRepository.findOne({
-      where: { ID, isDeleted: false },
+      where: { id, isDeleted: false },
       relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
     });
     if (!result) {
@@ -60,8 +60,8 @@ export class ChuanDauRaNganhDaoTaoService {
     }
   }
 
-  async update(ID: number, updatedData: CreateChuanDauRaNganhDaoTaoDto): Promise<any> {
-    const chuanDauRaNDT = await this.chuanDauRaNDTRepository.findOne({ ID, isDeleted: false });
+  async update(id: number, updatedData: CreateChuanDauRaNganhDaoTaoDto): Promise<any> {
+    const chuanDauRaNDT = await this.chuanDauRaNDTRepository.findOne({ id, isDeleted: false });
     if (!chuanDauRaNDT) {
       throw new HttpException(
         CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_ID_NOT_FOUND,
@@ -80,8 +80,8 @@ export class ChuanDauRaNganhDaoTaoService {
     }
   }
 
-  async delete(ID: number, updatedBy?: number): Promise<any> {
-    const chuanDauRaNDT = await this.chuanDauRaNDTRepository.findOne({ ID, isDeleted: false });
+  async delete(id: number, updatedBy?: number): Promise<any> {
+    const chuanDauRaNDT = await this.chuanDauRaNDTRepository.findOne({ id, isDeleted: false });
     if (!chuanDauRaNDT) {
       throw new HttpException(
         CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_ID_NOT_FOUND,

@@ -26,8 +26,8 @@ export class ChuongTrinhDaoTaoService {
     const total = await this.chuongTrinhDaoTaoRepository.count(query);
     return { contents: results, total, page: Number(page) };
   }
-  async findById(ID: number): Promise<ChuongTrinhDaoTaoEntity | any> {
-    const result = await this.chuongTrinhDaoTaoRepository.findOne({ ID, isDeleted: false });
+  async findById(id: number): Promise<ChuongTrinhDaoTaoEntity | any> {
+    const result = await this.chuongTrinhDaoTaoRepository.findOne({ id, isDeleted: false });
     if (!result) {
       throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
@@ -51,8 +51,8 @@ export class ChuongTrinhDaoTaoService {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  async update(ID: number, updatedData: IChuongTrinhDaoTao): Promise<any> {
-    const chuongtrinhdaotao = await this.chuongTrinhDaoTaoRepository.findOne({ ID, isDeleted: false });
+  async update(id: number, updatedData: IChuongTrinhDaoTao): Promise<any> {
+    const chuongtrinhdaotao = await this.chuongTrinhDaoTaoRepository.findOne({ id, isDeleted: false });
     if (!chuongtrinhdaotao) {
       throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
@@ -67,8 +67,8 @@ export class ChuongTrinhDaoTaoService {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  async delete(ID: number, updatedBy?: number): Promise<any> {
-    const chuongtrinhdaotao = await this.chuongTrinhDaoTaoRepository.findOne({ ID, isDeleted: false });
+  async delete(id: number, updatedBy?: number): Promise<any> {
+    const chuongtrinhdaotao = await this.chuongTrinhDaoTaoRepository.findOne({ id, isDeleted: false });
     if (!chuongtrinhdaotao) {
       throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }

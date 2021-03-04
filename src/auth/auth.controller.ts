@@ -30,7 +30,7 @@ export class AuthController {
   async refreshToken(@Req() req, @Res() res, @Body() body: RefreshTokenDto) {
     try {
       const { id } = this.authService.checkToken(body?.refreshToken);
-      const user = await this.usersService.findOne({ ID: id });
+      const user = await this.usersService.findOne({ id });
       const { token } = await this.authService.createToken(user);
       const { refreshToken } = await this.authService.createRefreshToken(user);
       return res.json({ token, refreshToken });
@@ -56,7 +56,7 @@ export class AuthController {
     try {
       const user = req.user || {};
       const { id } = param;
-      if (Number(user?.ID) !== Number(id)) {
+      if (Number(user?.id) !== Number(id)) {
         return res
           .status(HttpStatus.BAD_REQUEST)
           .json({ message: USER_MESSAGE.USERS_NOT_AUTHORIZED, error: USER_MESSAGE.USERS_NOT_AUTHORIZED });
@@ -76,12 +76,12 @@ export class AuthController {
     try {
       const user = req.user || {};
       const { id } = param;
-      if (Number(user?.ID) !== Number(id)) {
+      if (Number(user?.id) !== Number(id)) {
         return res
           .status(HttpStatus.BAD_REQUEST)
           .json({ message: USER_MESSAGE.USERS_NOT_AUTHORIZED, error: USER_MESSAGE.USERS_NOT_AUTHORIZED });
       }
-      const userProfile = await this.usersService.findOne({ ID: Number(id), isDeleted: false });
+      const userProfile = await this.usersService.findOne({ id: Number(id), isDeleted: false });
       if (!userProfile) {
         return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGE.USER_ID_NOT_FOUND });
       }

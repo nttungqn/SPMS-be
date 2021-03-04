@@ -37,8 +37,8 @@ export class ChuanDauRaController {
     try {
       await this.chuanDauRaService.create({
         ...newData,
-        createdBy: user?.ID,
-        updatedBy: user?.ID
+        createdBy: user?.id,
+        updatedBy: user?.id
       });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -56,7 +56,7 @@ export class ChuanDauRaController {
     const user = req.user || {};
     const { id } = param;
     try {
-      await this.chuanDauRaService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+      await this.chuanDauRaService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CHUANDAURA_MESSAGE.UPDATE_CHUANDAURA_FAILED,
@@ -73,7 +73,7 @@ export class ChuanDauRaController {
     const user = req.user || {};
     const { id } = param;
     try {
-      await this.chuanDauRaService.delete(Number(id), user?.ID);
+      await this.chuanDauRaService.delete(Number(id), user?.id);
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CHUANDAURA_MESSAGE.DELETE_CHUANDAURA_FAILED,

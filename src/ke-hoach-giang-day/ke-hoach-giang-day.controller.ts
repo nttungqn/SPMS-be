@@ -49,8 +49,8 @@ export class KeHoachGiangDayController {
     try {
       await this.keHoachGiangDayService.create({
         ...newData,
-        createdBy: user?.ID,
-        updatedBy: user?.ID
+        createdBy: user?.id,
+        updatedBy: user?.id
       });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -75,7 +75,7 @@ export class KeHoachGiangDayController {
     const user = req.user || {};
     const { id } = param;
     try {
-      await this.keHoachGiangDayService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+      await this.keHoachGiangDayService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: KEHOACHGIANGDAY_MESSAGE.UPDATE_KEHOACHGIANGDAY_FAILED,
@@ -92,7 +92,7 @@ export class KeHoachGiangDayController {
     const user = req.user || {};
     const { id } = param;
     try {
-      await this.keHoachGiangDayService.delete(Number(id), user?.ID);
+      await this.keHoachGiangDayService.delete(Number(id), user?.id);
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: KEHOACHGIANGDAY_MESSAGE.DELETE_KEHOACHGIANGDAY_FAILED,
