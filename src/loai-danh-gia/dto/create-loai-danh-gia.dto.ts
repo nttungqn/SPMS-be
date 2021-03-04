@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 import { Syllabus } from 'syllabus/entity/syllabus.entity';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
@@ -18,9 +18,11 @@ export class CreateLoaiDanhGiaDto {
 
   @ApiProperty()
   @Column({ name: 'ten' })
+  @IsNotEmpty()
   ten?: string;
 
   @ApiProperty()
   @Column({ name: 'tyLe' })
+  @IsOptional()
   tyLe?: number;
 }

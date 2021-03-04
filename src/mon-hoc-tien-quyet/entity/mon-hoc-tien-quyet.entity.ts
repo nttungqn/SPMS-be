@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsInt } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty } from 'class-validator';
 import { MonHocEntity } from 'mon-hoc/entity/monHoc.entity';
 import { LoaiMonHoc } from 'mon-hoc-tien-quyet/enum/loai-mon-hoc.enum';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
@@ -14,6 +14,7 @@ export class MonHocTienQuyetEntity {
   @Column({ name: 'idMH' })
   @ManyToOne(() => MonHocEntity)
   @JoinColumn({ name: 'idMH' })
+  @IsNotEmpty()
   @IsInt()
   monHoc: number;
 
@@ -21,11 +22,13 @@ export class MonHocTienQuyetEntity {
   @Column({ name: 'idMHTQ' })
   @ManyToOne(() => MonHocEntity)
   @JoinColumn({ name: 'idMHTQ' })
+  @IsNotEmpty()
   @IsInt()
   monHocTruoc: number;
 
   @ApiProperty()
   @Column({ name: 'LoaiDK' })
+  @IsNotEmpty()
   @IsIn([1, 2])
   loaiMonHoc: LoaiMonHoc;
 

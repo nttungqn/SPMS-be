@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
@@ -28,5 +28,6 @@ export class CreateLoaiKhoiKienThucDto {
 
   @ApiProperty()
   @Column({ name: 'NoiDung' })
+  @IsOptional()
   noidung?: string;
 }

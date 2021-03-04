@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 import { Syllabus } from 'syllabus/entity/syllabus.entity';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
@@ -18,5 +18,6 @@ export class CreateMucTieuMonHocDto {
 
   @ApiProperty()
   @Column({ name: 'moTa' })
+  @IsOptional()
   moTa?: string;
 }
