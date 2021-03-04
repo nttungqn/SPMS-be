@@ -45,7 +45,7 @@ export class KhoiKienThucController {
   @Post()
   async create(@Body(ValidationPipe) createKhoiKienThucDto: CreateKhoiKienThucDto, @Req() req) {
     const user = req.user || {};
-    return this.khoiKienThucService.create({ ...createKhoiKienThucDto, createdBy: user?.ID });
+    return this.khoiKienThucService.create({ ...createKhoiKienThucDto, createdBy: user?.id, updatedBy: user?.id });
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -57,7 +57,7 @@ export class KhoiKienThucController {
     @Req() req
   ) {
     const user = req.user || {};
-    await this.khoiKienThucService.update(id, { ...updateKnowledgeBlockDto, updatedBy: user?.ID });
+    await this.khoiKienThucService.update(id, { ...updateKnowledgeBlockDto, updatedBy: user?.id });
     return new HttpException('OK', HttpStatus.OK);
   }
 
@@ -66,7 +66,7 @@ export class KhoiKienThucController {
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
     const user = req.user || {};
-    await this.khoiKienThucService.remove(user?.ID, id);
+    await this.khoiKienThucService.remove(user?.id, id);
     return new HttpException('OK', HttpStatus.OK);
   }
 }

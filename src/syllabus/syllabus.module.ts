@@ -10,6 +10,7 @@ import { MonHocModule } from 'mon-hoc/mon-hoc.module';
 @Module({
   imports: [TypeOrmModule.forFeature([Syllabus]), NamHocModule, HeDaotaoModule, MonHocModule],
   controllers: [SyllabusController],
-  providers: [SyllabusService]
+  providers: [SyllabusService],
+  exports: [SyllabusService]
 })
 export class SyllabusModule {}
