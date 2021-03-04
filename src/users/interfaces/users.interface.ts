@@ -10,4 +10,5 @@ export interface IUser {
   readonly updatedAt?: Date;
   readonly isActive?: boolean;
   readonly isDeleted?: boolean;
+  readonly tokenVerifyEmail?: string;
 }

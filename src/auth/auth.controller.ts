@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuard
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { IdDto } from 'chuong-trinh-dao-tao/dto/Id.dto';
-import { USER_MESSAGE } from 'constant/constant';
+import { AUTH_MESSAGE, USER_MESSAGE } from 'constant/constant';
 import { UsersService } from 'users/users.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -11,6 +11,7 @@ import { SignUpDto } from './dto/signup.dto';
 import { UpdateProfileDto } from './dto/updateProfile.dto';
 import * as lodash from 'lodash';
 import { ChangePasswordDto } from './dto/changePassword.dto';
+import { VerifyEmailDto } from './dto/verifyEmail.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -98,6 +99,26 @@ export class AuthController {
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ message: USER_MESSAGE.UPDATE_USER_FAILED, error: lodash.get(error, 'response', 'error') });
+    }
+  }
+  @Get('verify/:tokenEmail')
+  async verifyEmailSignUp(@Req() req, @Res() res, @Param() param: VerifyEmailDto): Promise<any> {
+    try {
+      const email = await this.authService.checkEmailToken(param?.tokenEmail);
+      if (!email) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ error: AUTH_MESSAGE.TOKEN_INVALID });
+      }
+      const result = await this.usersService.findOne({ email, tokenVerifyEmail: param?.tokenEmail, isDeleted: false });
+      if (!result) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: AUTH_MESSAGE.VERIFY_ERROR });
+      }
+      if (result?.isActive) {
+        return res.status(HttpStatus.OK).json({ message: AUTH_MESSAGE.TOKEN_VERIFED });
+      }
+      await this.usersService.update(result?.id, { ...result, isActive: true });
+      return res.json({ message: AUTH_MESSAGE.VERIFY_SUCCESSFULLY });
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: AUTH_MESSAGE.VERIFY_FAILED });
     }
   }
 }
