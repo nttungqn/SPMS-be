@@ -1,6 +1,6 @@
+import { LoaiKhoiKienThucEntity } from './../../loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
-import { TypeOfKnowledgeBlock } from 'type-of-knowledge-block/entity/type-of-knowledge-block.entity';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
 
@@ -10,7 +10,7 @@ export class GomNhomEntity {
   id: number;
 
   @ApiProperty()
-  @ManyToOne(() => TypeOfKnowledgeBlock)
+  @ManyToOne(() => LoaiKhoiKienThucEntity)
   @JoinColumn({ name: 'ID_LoaiKhoiKienThuc' })
   @Column({ name: 'ID_LoaiKhoiKienThuc' })
   idLKKT: number;
