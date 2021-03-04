@@ -33,9 +33,9 @@ export class CtdtService {
     return { contents: results, total, page: Number(page) };
   }
 
-  async findById(ID: number): Promise<any> {
+  async findById(id: number): Promise<any> {
     const result = await this.nganhDaoTaoRepository.findOne({
-      where: { ID, isDeleted: false },
+      where: { id, isDeleted: false },
       relations: ['chuongTrinhDaoTao', 'createdBy', 'updatedBy']
     });
     if (!result) {
@@ -58,8 +58,8 @@ export class CtdtService {
     }
   }
 
-  async update(ID: number, updatedData: INganhDaoTao): Promise<any> {
-    const nganhDaoTao = await this.nganhDaoTaoRepository.findOne({ ID, isDeleted: false });
+  async update(id: number, updatedData: INganhDaoTao): Promise<any> {
+    const nganhDaoTao = await this.nganhDaoTaoRepository.findOne({ id, isDeleted: false });
     if (!nganhDaoTao) {
       throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
@@ -71,8 +71,8 @@ export class CtdtService {
     }
   }
 
-  async delete(ID: number, updatedBy?: number): Promise<any> {
-    const nganhDaoTao = await this.nganhDaoTaoRepository.findOne({ ID, isDeleted: false });
+  async delete(id: number, updatedBy?: number): Promise<any> {
+    const nganhDaoTao = await this.nganhDaoTaoRepository.findOne({ id, isDeleted: false });
     if (!nganhDaoTao) {
       throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }

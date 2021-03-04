@@ -31,9 +31,9 @@ export class ChuanDauRaService {
     return { contents: results, total, page: Number(page) };
   }
 
-  async findById(ID: number): Promise<any> {
+  async findById(id: number): Promise<any> {
     const result = await this.chuanDauRaRepository.findOne({
-      where: { ID, isDeleted: false },
+      where: { id, isDeleted: false },
       relations: ['createdBy', 'updatedBy']
     });
     if (!result) {
@@ -59,8 +59,8 @@ export class ChuanDauRaService {
     }
   }
 
-  async update(ID: number, updatedData: CreateChuanDauRaDto): Promise<any> {
-    const chuanDauRa = await this.chuanDauRaRepository.findOne({ ID, isDeleted: false });
+  async update(id: number, updatedData: CreateChuanDauRaDto): Promise<any> {
+    const chuanDauRa = await this.chuanDauRaRepository.findOne({ id, isDeleted: false });
     if (!chuanDauRa) {
       throw new HttpException(CHUANDAURA_MESSAGE.CHUANDAURA_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
@@ -76,8 +76,8 @@ export class ChuanDauRaService {
     }
   }
 
-  async delete(ID: number, updatedBy?: number): Promise<any> {
-    const chuanDauRa = await this.chuanDauRaRepository.findOne({ ID, isDeleted: false });
+  async delete(id: number, updatedBy?: number): Promise<any> {
+    const chuanDauRa = await this.chuanDauRaRepository.findOne({ id, isDeleted: false });
     if (!chuanDauRa) {
       throw new HttpException(CHUANDAURA_MESSAGE.CHUANDAURA_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }

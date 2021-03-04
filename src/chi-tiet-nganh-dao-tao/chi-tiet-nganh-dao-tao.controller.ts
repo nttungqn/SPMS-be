@@ -48,8 +48,8 @@ export class ChiTietNganhDaoTaoController {
     try {
       await this.chiTietNganhDaoTao.create({
         ...newData,
-        createdBy: user?.ID,
-        updatedBy: user?.ID
+        createdBy: user?.id,
+        updatedBy: user?.id
       });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -72,7 +72,7 @@ export class ChiTietNganhDaoTaoController {
     const user = req.user || {};
     const { id } = param;
     try {
-      await this.chiTietNganhDaoTao.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+      await this.chiTietNganhDaoTao.update(Number(id), { ...updatedData, updatedBy: user?.id });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CTNGANHDAOTAO_MESSAGE.UPDATE_CTNGANHDAOTAO_FAILED,
@@ -89,7 +89,7 @@ export class ChiTietNganhDaoTaoController {
     const user = req.user || {};
     const { id } = param;
     try {
-      await this.chiTietNganhDaoTao.delete(Number(id), user?.ID);
+      await this.chiTietNganhDaoTao.delete(Number(id), user?.id);
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_FAILED,

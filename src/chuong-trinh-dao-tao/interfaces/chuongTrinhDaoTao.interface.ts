@@ -1,5 +1,5 @@
 export interface IChuongTrinhDaoTao {
-  readonly ID?: number;
+  readonly id?: number;
   readonly maCTDT?: string;
   readonly loaiHinh?: string;
   readonly ten?: string;

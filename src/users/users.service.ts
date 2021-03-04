@@ -19,11 +19,14 @@ export class UsersService {
     return await this.usersRepository
       .createQueryBuilder('users')
       .leftJoinAndSelect('users.role', 'roles')
-      .where('users.id = :ID and users.email = :email', { ...query })
+      .where(
+        'users.id = :id and users.email = :email and users.isDeleted = :isDeleted and users.isActive = :isActive',
+        { ...query, isDeleted: false, isActive: true }
+      )
       .getOne();
   }
-  async update(ID: number, updateData): Promise<any> {
-    const user = await this.usersRepository.findOne({ ID, isDeleted: false });
+  async update(id: number, updateData): Promise<any> {
+    const user = await this.usersRepository.findOne({ id, isDeleted: false });
     if (!user) {
       throw new HttpException(USER_MESSAGE.USER_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }

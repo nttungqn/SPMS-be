@@ -5,8 +5,8 @@ import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity(TABLE_NAME.CHUANDAURA)
 export class ChuanDauRaEntity {
-  @PrimaryGeneratedColumn()
-  ID: number;
+  @PrimaryGeneratedColumn({ name: 'ID' })
+  id: number;
 
   @ApiProperty()
   @Column({ name: 'Ten' })
