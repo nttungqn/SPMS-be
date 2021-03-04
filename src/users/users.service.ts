@@ -1,7 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { USER_MESSAGE } from 'constant/constant';
+import { FE_ROUTE } from 'config/config';
+import { CONFIRM_SIGNUP_PATH, ROLE_SINHVIEN, USER_MESSAGE } from 'constant/constant';
 import { Repository } from 'typeorm';
+import { sendMail } from 'utils/sendMail';
 import { UsersEntity } from './entity/user.entity';
 import { IUser } from './interfaces/users.interface';
 
@@ -12,8 +14,22 @@ export class UsersService {
     return await this.usersRepository.findOne({ ...query });
   }
   async create(newData: IUser): Promise<any> {
-    const newUser = await this.usersRepository.create({ ...newData, role: newData?.role || 1 });
-    return await this.usersRepository.save(newUser);
+    try {
+      const newUser = await this.usersRepository.create({ ...newData, role: ROLE_SINHVIEN });
+      const dataMail = {
+        receiverName: `${newData?.firstName || ''} ${newData?.lastName || ''}`,
+        message1: 'Your new account has been created. Welcome to Study Program Management System',
+        link: `${FE_ROUTE}${CONFIRM_SIGNUP_PATH.replace(':token', newData?.tokenVerifyEmail)}`,
+        buttonText: 'CONFIRM',
+        message2: 'From now on, please confirm to your account',
+        message3: 'Thank you!',
+        author: 'SPMS Team'
+      };
+      await sendMail(newData?.email, 'Confirm Register Account', dataMail);
+      return await this.usersRepository.save(newUser);
+    } catch (error) {
+      throw error;
+    }
   }
   async getProfile(query): Promise<any> {
     return await this.usersRepository

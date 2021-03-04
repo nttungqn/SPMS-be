@@ -26,4 +26,6 @@ export class UsersEntity {
   isDeleted: boolean;
   @Column({ default: false })
   isActive: boolean;
+  @Column({ name: 'tokenVerifyEmail' })
+  tokenVerifyEmail: string;
 }
