@@ -34,8 +34,8 @@ export class SyllabusController {
     const user = req.user || {};
     return this.syllabusService.create({
       ...createSyllabusDto,
-      createdBy: user?.ID,
-      updateBy: user?.ID,
+      createdBy: user?.id,
+      updatedBy: user?.id,
       updatedAt: new Date(),
       createdAt: new Date()
     });
@@ -60,7 +60,7 @@ export class SyllabusController {
   @Put(':id')
   async update(@Param('id', ParseIntPipe) id: number, @Body() updateSyllabusDto: UpdateSyllabusDto, @Req() req) {
     const user = req.user || {};
-    await this.syllabusService.update(id, { ...updateSyllabusDto, updateBy: user?.ID, updatedAt: new Date() });
+    await this.syllabusService.update(id, { ...updateSyllabusDto, updatedBy: user?.id, updatedAt: new Date() });
     return new HttpException('OK', HttpStatus.OK);
   }
 
@@ -69,7 +69,7 @@ export class SyllabusController {
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
     const user = req.user || {};
-    await this.syllabusService.remove(id, user?.ID);
+    await this.syllabusService.remove(id, user?.id);
     return new HttpException('OK', HttpStatus.OK);
   }
 }

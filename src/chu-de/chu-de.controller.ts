@@ -46,8 +46,8 @@ export class ChuDeController {
     const user = req.user || {};
     const result = await this.chuDeService.create({
       ...newData,
-      createdBy: user?.ID,
-      updatedBy: user?.ID
+      createdBy: user?.id,
+      updatedBy: user?.id
     });
     return res.json({ result: result });
   }
@@ -58,7 +58,7 @@ export class ChuDeController {
   async update(@Req() req, @Param() param: IdDto, @Body() updatedData: CreateChuDeDTO, @Res() res): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    await this.chuDeService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+    await this.chuDeService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 
@@ -68,7 +68,7 @@ export class ChuDeController {
   async delete(@Req() req, @Param() param: IdDto, @Res() res): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    await this.chuDeService.delete(Number(id), user?.ID);
+    await this.chuDeService.delete(Number(id), user?.id);
     return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 }

@@ -60,7 +60,7 @@ export class SyllabusService {
       })
       .leftJoinAndSelect('sy.createdBy', 'createdBy')
       .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
-      .leftJoinAndSelect('sy.updateBy', 'updateBy')
+      .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
       .leftJoinAndSelect('sy.namHoc', 'namHoc')
       .andWhere('sy.isDeleted=:isDeleted', { isDeleted: false })
       .take(limit)
@@ -71,7 +71,7 @@ export class SyllabusService {
 
   async findOne(id: number): Promise<Syllabus> {
     const found = await this.syllabusRepository.findOne(id, {
-      relations: ['createdBy', 'namHoc', 'heDaoTao', 'updateBy', 'monHoc'],
+      relations: ['createdBy', 'namHoc', 'heDaoTao', 'updatedBy', 'monHoc'],
       where: { isDeleted: false }
     });
     if (!found) {
@@ -100,7 +100,7 @@ export class SyllabusService {
       throw new ConflictException();
     }
     try {
-      await this.syllabusRepository.save({ ...sylabus, updateBy: updateSyllabus.updateBy, updatedAt: new Date() });
+      await this.syllabusRepository.save({ ...sylabus, updateBy: updateSyllabus.updatedBy, updatedAt: new Date() });
     } catch (error) {
       throw new InternalServerErrorException();
     }

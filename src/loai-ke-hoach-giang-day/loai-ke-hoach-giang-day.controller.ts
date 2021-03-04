@@ -46,8 +46,8 @@ export class LoaiKeHoachGiangDayController {
     const user = req.user || {};
     const result = await this.loaiKeHoachGiangDayService.create({
       ...newData,
-      createdBy: user?.ID,
-      updatedBy: user?.ID
+      createdBy: user?.id,
+      updatedBy: user?.id
     });
     return res.json({ result: result });
   }
@@ -63,7 +63,7 @@ export class LoaiKeHoachGiangDayController {
   ): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    await this.loaiKeHoachGiangDayService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+    await this.loaiKeHoachGiangDayService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 
@@ -73,7 +73,7 @@ export class LoaiKeHoachGiangDayController {
   async delete(@Req() req, @Param() param: IdDto, @Res() res): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    await this.loaiKeHoachGiangDayService.delete(Number(id), user?.ID);
+    await this.loaiKeHoachGiangDayService.delete(Number(id), user?.id);
     return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 }
