@@ -41,12 +41,12 @@ export class Syllabus {
   @Column({ name: 'updatedBy' })
   @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'updatedBy' })
-  updateBy: number;
+  updatedBy: number;
 
   @Column({ name: 'updatedAt' })
   updatedAt: Date;
 
-  @Column({ name: 'ceatedAt' })
+  @Column({ name: 'createdAt' })
   createdAt: Date;
 
   @Column({ name: 'isDeleted' })
