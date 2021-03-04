@@ -46,8 +46,8 @@ export class ChiTietGomNhomController {
     const user = req.user || {};
     const result = await this.chiTietGomNhomService.create({
       ...newData,
-      createdBy: user?.ID,
-      updatedBy: user?.ID
+      createdBy: user?.id,
+      updatedBy: user?.id
     });
     return res.json({ result: result });
   }
@@ -63,7 +63,7 @@ export class ChiTietGomNhomController {
   ): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    await this.chiTietGomNhomService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+    await this.chiTietGomNhomService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 
@@ -73,7 +73,7 @@ export class ChiTietGomNhomController {
   async delete(@Req() req, @Param() param: IdDto, @Res() res): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    await this.chiTietGomNhomService.delete(Number(id), user?.ID);
+    await this.chiTietGomNhomService.delete(Number(id), user?.id);
     return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 }

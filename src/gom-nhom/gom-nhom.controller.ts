@@ -46,8 +46,8 @@ export class GomNhomController {
     const user = req.user || {};
     const result = await this.gomNhomService.create({
       ...newData,
-      createdBy: user?.ID,
-      updatedBy: user?.ID
+      createdBy: user?.id,
+      updatedBy: user?.id
     });
     return res.json({ result: result });
   }
@@ -58,7 +58,7 @@ export class GomNhomController {
   async update(@Req() req, @Param() param: IdDto, @Body() updatedData: CreateGomNhomDTO, @Res() res): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    await this.gomNhomService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+    await this.gomNhomService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 
@@ -68,7 +68,7 @@ export class GomNhomController {
   async delete(@Req() req, @Param() param: IdDto, @Res() res): Promise<any> {
     const user = req.user || {};
     const { id } = param;
-    await this.gomNhomService.delete(Number(id), user?.ID);
+    await this.gomNhomService.delete(Number(id), user?.id);
     return res.status(HttpStatus.OK).json({ message: 'OK' });
   }
 }
