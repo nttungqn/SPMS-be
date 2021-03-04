@@ -3,8 +3,8 @@ import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'ty
 
 @Entity('users')
 export class UsersEntity {
-  @PrimaryGeneratedColumn()
-  ID: number;
+  @PrimaryGeneratedColumn({ name: 'ID' })
+  id: number;
   @Column()
   firstName: string;
   @Column()
@@ -24,4 +24,8 @@ export class UsersEntity {
   updatedAt: Date;
   @Column({ default: false })
   isDeleted: boolean;
+  @Column({ default: false })
+  isActive: boolean;
+  @Column({ name: 'tokenVerifyEmail' })
+  tokenVerifyEmail: string;
 }

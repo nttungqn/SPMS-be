@@ -59,7 +59,7 @@ export class LoaiDanhGiaService {
   }
 
   async findOne(id: number) {
-    let result;
+    let result: any;
     try {
       result = await this.loaiDanhGiaRepository.findOne(id, {
         relations: [
@@ -93,9 +93,9 @@ export class LoaiDanhGiaService {
     }
   }
 
-  async remove(id: number, idUser) {
+  async remove(id: number, idUser: number) {
     const result = await this.loaiDanhGiaRepository.findOne(id, { where: { isDeleted: false } });
-    if (!result) throw new NotFoundException();
+    if (!result) throw new NotFoundException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_ID_NOT_FOUND);
     try {
       return await this.loaiDanhGiaRepository.save({
         ...result,
@@ -104,7 +104,7 @@ export class LoaiDanhGiaService {
         isDeleted: true
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(LOAIDANHGIA_MESSAGE.DELETE_LOAIDANHGIA_FAILED);
     }
   }
 
@@ -119,10 +119,7 @@ export class LoaiDanhGiaService {
       ...queryByMaAndSlylabus,
       ...notID
     };
-    console.log(query);
     const found = await this.loaiDanhGiaRepository.findOne({ where: query });
-    console.log(found);
-    return true;
     return found ? true : false;
   }
 }

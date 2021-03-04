@@ -41,7 +41,7 @@ export class ChuongTrinhDaoTaoController {
   async create(@Req() req, @Res() res, @Body() newData: CreateChuongTrinhDaoTaoDto) {
     const user = req.user || {};
     try {
-      await this.chuongTrinhDaoTaoService.create({ ...newData, createdBy: user?.ID, updatedBy: user?.ID });
+      await this.chuongTrinhDaoTaoService.create({ ...newData, createdBy: user?.id, updatedBy: user?.id });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED,
@@ -59,7 +59,7 @@ export class ChuongTrinhDaoTaoController {
     const { id } = param;
     const user = req.user || {};
     try {
-      await this.chuongTrinhDaoTaoService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+      await this.chuongTrinhDaoTaoService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     } catch (error) {
       return res.status(HttpStatus.NOT_FOUND).json({
         message: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_FAILED,
@@ -75,7 +75,7 @@ export class ChuongTrinhDaoTaoController {
     const { id } = param;
     const user = req.user || {};
     try {
-      await this.chuongTrinhDaoTaoService.delete(Number(id), user?.ID);
+      await this.chuongTrinhDaoTaoService.delete(Number(id), user?.id);
     } catch (error) {
       return res.status(HttpStatus.NOT_FOUND).json({
         message: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_FAILED,

@@ -2,8 +2,8 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('roles')
 export class RolesEntity {
-  @PrimaryGeneratedColumn()
-  ID: number;
+  @PrimaryGeneratedColumn({ name: 'ID' })
+  id: number;
   @Column()
   name: string;
   @Column({ default: new Date() })

@@ -47,8 +47,8 @@ export class LoaiKhoiKienThucController {
     const user = req.user || {};
     await this.typeOfKnowledgeBlockService.create({
       ...createTypeOfKnowledgeBlockDto,
-      createdBy: user?.ID,
-      updatedBy: user?.ID
+      createdBy: user?.id,
+      updatedBy: user?.id
     });
     return new HttpException('OK', HttpStatus.OK);
   }
@@ -62,7 +62,7 @@ export class LoaiKhoiKienThucController {
     @Req() req
   ) {
     const user = req.user || {};
-    await this.typeOfKnowledgeBlockService.update(id, { ...updateTypeOfKnowledgeBlockDto, updatedBy: user?.ID });
+    await this.typeOfKnowledgeBlockService.update(id, { ...updateTypeOfKnowledgeBlockDto, updatedBy: user?.id });
     return new HttpException('OK', HttpStatus.OK);
   }
 
@@ -71,7 +71,7 @@ export class LoaiKhoiKienThucController {
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
     const user = req.user || {};
-    await this.typeOfKnowledgeBlockService.remove(id, user?.ID);
+    await this.typeOfKnowledgeBlockService.remove(id, user?.id);
     return new HttpException('OK', HttpStatus.OK);
   }
 }

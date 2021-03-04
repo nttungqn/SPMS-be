@@ -49,8 +49,8 @@ export class ChuanDauRaNganhDaoTaoController {
     try {
       await this.chuanDauRaNganhDaoTaoService.create({
         ...newData,
-        createdBy: user?.ID,
-        updatedBy: user?.ID
+        createdBy: user?.id,
+        updatedBy: user?.id
       });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -75,7 +75,7 @@ export class ChuanDauRaNganhDaoTaoController {
     const user = req.user || {};
     const { id } = param;
     try {
-      await this.chuanDauRaNganhDaoTaoService.update(Number(id), { ...updatedData, updatedBy: user?.ID });
+      await this.chuanDauRaNganhDaoTaoService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CHUANDAURA_NGANHDAOTAO_MESSAGE.UPDATE_CHUANDAURA_NGANHDAOTAO_FAILED,
@@ -94,7 +94,7 @@ export class ChuanDauRaNganhDaoTaoController {
     const user = req.user || {};
     const { id } = param;
     try {
-      await this.chuanDauRaNganhDaoTaoService.delete(Number(id), user?.ID);
+      await this.chuanDauRaNganhDaoTaoService.delete(Number(id), user?.id);
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CHUANDAURA_NGANHDAOTAO_MESSAGE.DELETE_CHUANDAURA_NGANHDAOTAO_FAILED,

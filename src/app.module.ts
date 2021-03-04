@@ -23,6 +23,8 @@ import { LoaiKhoiKienThucModule } from './loai-khoi-kien-thuc/loai-khoi-kien-thu
 import { ChuDeModule } from './chu-de/chu-de.module';
 import { HoatDongDayHocModule } from './hoat-dong-day-hoc/hoat-dong-day-hoc.module';
 import { LoaiDanhGiaModule } from './loai-danh-gia/loai-danh-gia.module';
+import { GomNhomModule } from './gom-nhom/gom-nhom.module';
+import { ChiTietGomNhomModule } from './chi-tiet-gom-nhom/chi-tiet-gom-nhom.module';
 
 @Module({
   imports: [
@@ -45,7 +47,9 @@ import { LoaiDanhGiaModule } from './loai-danh-gia/loai-danh-gia.module';
     LoaiKhoiKienThucModule,
     ChuDeModule,
     HoatDongDayHocModule,
-    LoaiDanhGiaModule
+    LoaiDanhGiaModule,
+    GomNhomModule,
+    ChiTietGomNhomModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

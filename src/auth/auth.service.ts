@@ -16,6 +16,9 @@ export class AuthService {
       if (!user) {
         return { status: HttpStatus.BAD_REQUEST, data: { message: AUTH_MESSAGE.EMAIL_NOT_EXIST } };
       }
+      if (!user?.isActive) {
+        return { status: HttpStatus.OK, data: { message: AUTH_MESSAGE.ACCOUNT_NOT_VERIFY } };
+      }
       const checkPassword = await this.comparePassword(password, user?.password);
       if (!checkPassword) {
         return { status: HttpStatus.BAD_REQUEST, data: { message: AUTH_MESSAGE.EMAIL_OR_PASSWORD_INCORRECT } };
@@ -33,26 +36,26 @@ export class AuthService {
       if (checkExistEmail) {
         return { status: HttpStatus.CONFLICT, data: { message: AUTH_MESSAGE.EMAIL_IS_EXIST } };
       }
+      const { tokenVerifyEmail } = await this.createEmailToken({ email: newData?.email });
       const newPassword = await this.hashPassword(newData?.password);
       const user = await this.usersService.create({
         ...newData,
-        password: newPassword
+        password: newPassword,
+        tokenVerifyEmail
       });
-      const { token } = await this.createToken(user);
-      const { refreshToken } = await this.createRefreshToken(user);
-      return { status: HttpStatus.OK, data: { token, refreshToken } };
+      return { status: HttpStatus.OK, data: { message: AUTH_MESSAGE.SIGN_UP_SUCCESSFULLY } };
     } catch (error) {
       return { status: HttpStatus.INTERNAL_SERVER_ERROR, data: { message: AUTH_MESSAGE.SIGN_UP_FAILED } };
     }
   }
   async validateUser(payload: JwtPayload): Promise<any> {
-    return await this.usersService.getProfile({ ID: payload?.id, email: payload?.email });
+    return await this.usersService.getProfile({ id: payload?.id, email: payload?.email });
   }
   async createToken(user: IUser): Promise<any> {
     const expiresIn = EXPIREDIN || 3600;
     const token = jwt.sign(
       {
-        id: user?.ID,
+        id: user?.id,
         email: user?.email,
         username: user?.username,
         firstName: user?.firstName,
@@ -72,7 +75,7 @@ export class AuthService {
 
     const refreshToken = jwt.sign(
       {
-        id: user.ID
+        id: user.id
       },
       JWT_SECRET,
       { expiresIn: expiresRefresh }
@@ -94,5 +97,24 @@ export class AuthService {
 
   checkToken(refreshToken: string) {
     return jwt.verify(refreshToken.replace('Bearer ', ''), JWT_SECRET);
+  }
+  async createEmailToken(payload): Promise<any> {
+    const expiresIn = EXPIREDIN || 864000;
+    const tokenVerifyEmail = jwt.sign(
+      {
+        ...payload
+      },
+      JWT_SECRET,
+      { expiresIn }
+    );
+
+    return {
+      expiresIn,
+      tokenVerifyEmail
+    };
+  }
+  async checkEmailToken(token: string): Promise<any> {
+    const { email = '' } = this.checkToken(token);
+    return email;
   }
 }

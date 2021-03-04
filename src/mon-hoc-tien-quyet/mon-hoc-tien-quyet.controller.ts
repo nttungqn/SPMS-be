@@ -34,8 +34,8 @@ export class MonHocTienQuyetController {
     if (monHoc === monHocTruoc) throw new BadRequestException();
     return this.prerequisiteSubjectService.create({
       ...createPrerequisiteSubjectDto,
-      updatedBy: user?.ID,
-      createdBy: user?.ID
+      updatedBy: user?.id,
+      createdBy: user?.id
     });
   }
 
@@ -74,7 +74,7 @@ export class MonHocTienQuyetController {
     const user = req.user || {};
     return this.prerequisiteSubjectService.update(id, {
       ...updatePrerequisiteSubjectDto,
-      updatedBy: user?.ID,
+      updatedBy: user?.id,
       updatedAt: new Date()
     });
   }
@@ -84,6 +84,6 @@ export class MonHocTienQuyetController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
     const user = req.user || {};
-    return this.prerequisiteSubjectService.remove(id, user?.ID);
+    return this.prerequisiteSubjectService.remove(id, user?.id);
   }
 }

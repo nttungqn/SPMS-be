@@ -20,6 +20,7 @@ import { UpdateLoaiDanhGiaDto } from './dto/update-loai-danh-gia.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FilterLoaiDanhGia } from './dto/filter-loai-danh-gia.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { LOAIDANHGIA_MESSAGE } from 'constant/constant';
 
 @ApiTags('loai-danh-gia')
 @Controller('loai-danh-gia')
@@ -31,8 +32,8 @@ export class LoaiDanhGiaController {
   @Post()
   async create(@Body(ValidationPipe) createLoaiDanhGiaDto: CreateLoaiDanhGiaDto, @Req() req) {
     const user = req.user || {};
-    await this.loaiDanhGiaService.create({ ...createLoaiDanhGiaDto, updatedBy: user?.ID, createdBy: user?.ID });
-    return new HttpException('OK', HttpStatus.CREATED);
+    await this.loaiDanhGiaService.create({ ...createLoaiDanhGiaDto, updatedBy: user?.id, createdBy: user?.id });
+    return new HttpException(LOAIDANHGIA_MESSAGE.CREATE_LOAIDANHGIA_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -58,8 +59,8 @@ export class LoaiDanhGiaController {
     @Req() req
   ) {
     const user = req.user || {};
-    await this.loaiDanhGiaService.update(id, { ...updateLoaiDanhGiaDto, updatedBy: user?.ID, updatedAt: new Date() });
-    return new HttpException('OK', HttpStatus.OK);
+    await this.loaiDanhGiaService.update(id, { ...updateLoaiDanhGiaDto, updatedBy: user?.id, updatedAt: new Date() });
+    return new HttpException(LOAIDANHGIA_MESSAGE.UPDATE_LOAIDANHGIA_SUCCESSFULLY, HttpStatus.OK);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -67,7 +68,7 @@ export class LoaiDanhGiaController {
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
     const user = req.user || {};
-    await this.loaiDanhGiaService.remove(id, user?.ID);
-    return new HttpException('OK', HttpStatus.OK);
+    await this.loaiDanhGiaService.remove(id, user?.id);
+    return new HttpException(LOAIDANHGIA_MESSAGE.DELETE_LOAIDANHGIA_SUCCESSFULLY, HttpStatus.OK);
   }
 }

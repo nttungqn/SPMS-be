@@ -1,5 +1,5 @@
 export interface IChuanDauRa {
-  readonly ID?: number;
+  readonly id?: number;
   readonly ten?: string;
   readonly mucDo?: number;
   readonly createdAt?: Date;
