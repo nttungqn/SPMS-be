@@ -40,5 +40,6 @@ export class CreateKhoiKienThucDto {
 
   @ApiProperty()
   @Column({ name: 'GhiChu' })
+  @IsOptional()
   ghiChu?: string;
 }

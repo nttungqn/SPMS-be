@@ -46,7 +46,7 @@ export class Syllabus {
   @Column({ name: 'updatedAt' })
   updatedAt: Date;
 
-  @Column({ name: 'ceatedAt' })
+  @Column({ name: 'createdAt' })
   createdAt: Date;
 
   @Column({ name: 'isDeleted' })

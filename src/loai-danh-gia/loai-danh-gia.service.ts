@@ -110,7 +110,7 @@ export class LoaiDanhGiaService {
 
   async isExist(oldData: LoaiDanhGiaEntity, newData: LoaiDanhGiaEntity): Promise<boolean> {
     const { syllabus, ma }: LoaiDanhGiaEntity = newData;
-    if (!(syllabus || ma)) return true;
+    if (!(syllabus || ma)) return false;
     const loaiDanhGia: LoaiDanhGiaEntity = { ...oldData, ...newData };
     const queryByMaAndSlylabus: LoaiDanhGiaEntity = { syllabus: loaiDanhGia.syllabus, ma: loaiDanhGia.ma };
     const notID = oldData?.id ? { id: Not(Number(oldData.id)) } : {};
