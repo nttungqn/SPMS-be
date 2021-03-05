@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsOptional } from 'class-validator';
+import { IsIn, IsNumberString, IsOptional } from 'class-validator';
 
 export class BaseFilterDto {
   @ApiProperty({ required: false, default: 0 })
@@ -15,7 +15,14 @@ export class BaseFilterDto {
 
 export class FilterChuongTrinhDaoTao extends BaseFilterDto {
   @ApiProperty({ required: false, description: ' this field search by Ten' })
+  @IsOptional()
   readonly search?: string;
   @ApiProperty({ required: false })
+  @IsOptional()
   readonly maCTDT?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsIn(['ASC', 'DESC'])
+  updatedAt: 'ASC' | 'DESC';
 }

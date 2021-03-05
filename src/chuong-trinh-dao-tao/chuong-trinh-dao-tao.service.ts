@@ -11,15 +11,21 @@ export class ChuongTrinhDaoTaoService {
     @InjectRepository(ChuongTrinhDaoTaoEntity) private chuongTrinhDaoTaoRepository: Repository<ChuongTrinhDaoTaoEntity>
   ) {}
   async findAll(filter): Promise<ChuongTrinhDaoTaoEntity[] | any> {
-    const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
+    const { limit = LIMIT, page = 0, search = '', updatedAt, ...rest } = filter;
     const skip = Number(page) * Number(limit);
     const querySearch = search ? { ten: Like(`%${search}%`) } : {};
+    const orderByUpdateAt = updatedAt ? { updatedAt: updatedAt } : {};
     const query = {
       isDeleted: false,
       ...querySearch,
       ...rest
     };
-    const results = await this.chuongTrinhDaoTaoRepository.find({ where: query, skip, take: Number(limit) });
+    const results = await this.chuongTrinhDaoTaoRepository.find({
+      where: query,
+      skip,
+      take: Number(limit),
+      order: { ...orderByUpdateAt }
+    });
     if (!results.length) {
       throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
     }
