@@ -1,8 +1,6 @@
 import {
   BadRequestException,
   ConflictException,
-  HttpException,
-  HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException
@@ -12,7 +10,7 @@ import { LIMIT } from 'constant/constant';
 import { MonHocService } from 'mon-hoc/mon-hoc.service';
 import { NamHocService } from 'nam-hoc/nam-hoc.service';
 import { HeDaotaoService } from 'he-dao-tao/he-dao-tao.service';
-import { Not, Repository } from 'typeorm';
+import { Not, OrderByCondition, Repository } from 'typeorm';
 import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { GetSyllabusFilterDto } from './dto/filter-syllabus.dto';
 import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
@@ -46,15 +44,16 @@ export class SyllabusService {
   }
 
   async findAll(filter: GetSyllabusFilterDto): Promise<Syllabus[] | any> {
-    const { search, page = 0, limit = LIMIT } = filter;
+    const { key, page = 0, limit = LIMIT, updatedAt } = filter;
     const skip = page * limit;
+    const queryOrder: OrderByCondition = updatedAt ? { 'sy.updatedAt': updatedAt } : {};
     const query = this.syllabusRepository
       .createQueryBuilder('sy')
       .leftJoinAndSelect('sy.monHoc', 'monHoc')
       .where((qb) => {
-        search
-          ? qb.where('(monHoc.TenTiengViet LIKE :search OR monHoc.TenTiengAnh LIKE :search)', {
-              search: `%${search}%`
+        key
+          ? qb.where('(monHoc.TenTiengViet LIKE :key OR monHoc.TenTiengAnh LIKE :key)', {
+              key: `%${key}%`
             })
           : {};
       })
@@ -64,7 +63,8 @@ export class SyllabusService {
       .leftJoinAndSelect('sy.namHoc', 'namHoc')
       .andWhere('sy.isDeleted=:isDeleted', { isDeleted: false })
       .take(limit)
-      .skip(skip);
+      .skip(skip)
+      .orderBy({ ...queryOrder });
     const [results, total] = await query.getManyAndCount();
     return { contents: results, total, page: page };
   }
