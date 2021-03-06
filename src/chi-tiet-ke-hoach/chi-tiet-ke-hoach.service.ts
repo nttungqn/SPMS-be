@@ -65,9 +65,8 @@ export class ChiTietKeHoachService {
 
   async update(id: number, newData: ChiTietKeHoachEntity) {
     const oldData = await this.chiTietKeHoachRepository.findOne(id, { where: { isDeleted: false } });
-    const khgd = await this.keHoachGiangDayService.findById(newData.idKHGD);
-    const ctgn = await this.chiTietGomNhomService.findById(newData.idCTGN);
-    if (!(khgd && ctgn)) throw new ConflictException(RESPONSE_MESSAGE.FOREIGN_KEY_CONFLICT);
+    if (newData.idKHGD) await this.keHoachGiangDayService.findById(newData.idKHGD);
+    if (newData.idCTGN) await this.chiTietGomNhomService.findById(newData.idCTGN);
     try {
       return await this.chiTietKeHoachRepository.save({ ...oldData, ...newData, updatedAt: new Date() });
     } catch (error) {

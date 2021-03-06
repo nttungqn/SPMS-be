@@ -45,8 +45,11 @@ export class ChiTietKeHoachController {
   @Post()
   async create(@Body() CreateChiTietKeHoachDto: CreateChiTietKeHoachDto, @Req() req) {
     const user = req.user || {};
-    await this.chiTietKeHoachService.create({ ...CreateChiTietKeHoachDto, updatedBy: user?.id, createdBy: user?.id });
-    return new HttpException(RESPONSE_MESSAGE.SUCCESS, HttpStatus.CREATED);
+    return await this.chiTietKeHoachService.create({
+      ...CreateChiTietKeHoachDto,
+      updatedBy: user?.id,
+      createdBy: user?.id
+    });
   }
 
   @UseGuards(AuthGuard('jwt'))
