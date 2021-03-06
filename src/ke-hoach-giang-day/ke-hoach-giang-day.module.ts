@@ -7,6 +7,7 @@ import { KeHoachGiangDayService } from './ke-hoach-giang-day.service';
 @Module({
   imports: [TypeOrmModule.forFeature([KeHoachGiangDayEntity])],
   controllers: [KeHoachGiangDayController],
-  providers: [KeHoachGiangDayService]
+  providers: [KeHoachGiangDayService],
+  exports: [KeHoachGiangDayService]
 })
 export class KeHoachGiangDayModule {}

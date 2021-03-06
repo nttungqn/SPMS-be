@@ -2,25 +2,23 @@ import { ConflictException, Injectable, InternalServerErrorException, NotFoundEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, RESPONSE_MESSAGE } from 'constant/constant';
 import { Not, Repository } from 'typeorm';
-import { ChiTIetKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
+import { ChiTietKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
 import { KeHoachGiangDayService } from 'ke-hoach-giang-day/ke-hoach-giang-day.service';
 import { ChiTietGomNhomService } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.service';
 import { BaseFilterDto } from './dto/filter-chi-tiet-ke-hoach.dto';
-import { CreateChiTietKeHoachDto } from './dto/create-chi-tiet-ke-hoach.dto';
-import { UpdateChiTietKeHoachDto } from './dto/update-chi-tiet-ke-hoach.dto';
 
 @Injectable()
 export class ChiTietKeHoachService {
   constructor(
-    @InjectRepository(ChiTIetKeHoachEntity)
-    private chiTietKeHoachRepository: Repository<ChiTIetKeHoachEntity>,
+    @InjectRepository(ChiTietKeHoachEntity)
+    private chiTietKeHoachRepository: Repository<ChiTietKeHoachEntity>,
     private keHoachGiangDayService: KeHoachGiangDayService,
     private chiTietGomNhomService: ChiTietGomNhomService
   ) {}
 
-  async create(newData: CreateChiTietKeHoachDto) {
-    const khgd = await this.keHoachGiangDayService.findById(newData.idKHGD);
+  async create(newData: ChiTietKeHoachEntity) {
     const ctgn = await this.chiTietGomNhomService.findById(newData.idCTGN);
+    const khgd = await this.keHoachGiangDayService.findById(newData.idKHGD);
     if (!(khgd && ctgn)) throw new ConflictException(RESPONSE_MESSAGE.FOREIGN_KEY_CONFLICT);
 
     try {
@@ -65,7 +63,7 @@ export class ChiTietKeHoachService {
     return result;
   }
 
-  async update(id: number, newData: UpdateChiTietKeHoachDto) {
+  async update(id: number, newData: ChiTietKeHoachEntity) {
     const oldData = await this.chiTietKeHoachRepository.findOne(id, { where: { isDeleted: false } });
     const khgd = await this.keHoachGiangDayService.findById(newData.idKHGD);
     const ctgn = await this.chiTietGomNhomService.findById(newData.idCTGN);

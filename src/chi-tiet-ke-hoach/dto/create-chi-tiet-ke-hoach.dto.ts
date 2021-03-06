@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
 import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
@@ -9,6 +9,7 @@ export class CreateChiTietKeHoachDto {
   @ManyToOne(() => KeHoachGiangDayEntity)
   @JoinColumn({ name: 'ID_KeHoachGiangDay' })
   @Column({ name: 'ID_KeHoachGiangDay' })
+  @IsInt()
   @IsNotEmpty()
   idKHGD?: number;
 
@@ -16,6 +17,7 @@ export class CreateChiTietKeHoachDto {
   @ManyToOne(() => ChiTietGomNhomEntity)
   @JoinColumn({ name: 'ID_ChiTietGomNhom' })
   @Column({ name: 'ID_ChiTietGomNhom' })
+  @IsInt()
   @IsNotEmpty()
   idCTGN?: number;
 

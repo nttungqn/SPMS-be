@@ -43,9 +43,9 @@ export class ChiTietKeHoachController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Post()
-  async create(@Body() createMucTieuMonHocDto: CreateChiTietKeHoachDto, @Req() req) {
+  async create(@Body() CreateChiTietKeHoachDto: CreateChiTietKeHoachDto, @Req() req) {
     const user = req.user || {};
-    await this.chiTietKeHoachService.create({ ...createMucTieuMonHocDto, updatedBy: user?.id, createdBy: user?.id });
+    await this.chiTietKeHoachService.create({ ...CreateChiTietKeHoachDto, updatedBy: user?.id, createdBy: user?.id });
     return new HttpException(RESPONSE_MESSAGE.SUCCESS, HttpStatus.CREATED);
   }
 
