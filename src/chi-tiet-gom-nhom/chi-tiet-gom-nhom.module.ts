@@ -6,7 +6,7 @@ import { ChiTietGomNhomController } from './chi-tiet-gom-nhom.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ChiTietGomNhomEntity])],
-  providers: [ChiTietGomNhomService],
+  providers: [ChiTietGomNhomService, ChiTietGomNhomEntity],
   controllers: [ChiTietGomNhomController],
   exports: [ChiTietGomNhomService]
 })

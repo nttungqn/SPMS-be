@@ -7,6 +7,6 @@ import { LoaiKhoiKienThucEntity } from './entity/type-of-knowledge-block.entity'
 @Module({
   imports: [TypeOrmModule.forFeature([LoaiKhoiKienThucEntity])],
   controllers: [LoaiKhoiKienThucController],
-  providers: [LoaiKhoiKienThucService]
+  providers: [LoaiKhoiKienThucService, LoaiKhoiKienThucEntity]
 })
 export class LoaiKhoiKienThucModule {}

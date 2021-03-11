@@ -7,8 +7,10 @@ import { ChuanDauRaNganhDaoTaoEntity } from './entity/chuanDauRaNganhDaoTao.enti
 
 @Injectable()
 export class ChuanDauRaNganhDaoTaoService {
-  @InjectRepository(ChuanDauRaNganhDaoTaoEntity)
-  private readonly chuanDauRaNDTRepository: Repository<ChuanDauRaNganhDaoTaoEntity>;
+  constructor(
+    @InjectRepository(ChuanDauRaNganhDaoTaoEntity)
+    private readonly chuanDauRaNDTRepository: Repository<ChuanDauRaNganhDaoTaoEntity>
+  ) {}
 
   async findAll(filter: any): Promise<any> {
     const { limit = LIMIT, page = 0, ...rest } = filter;

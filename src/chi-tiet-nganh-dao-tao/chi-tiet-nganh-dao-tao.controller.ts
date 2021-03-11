@@ -98,4 +98,25 @@ export class ChiTietNganhDaoTaoController {
     }
     return res.status(HttpStatus.OK).json({ message: CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_SUCCESSFULLY });
   }
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @Get(':id/muctieudaotao')
+  async getMucTieuDaoTao(@Req() req, @Param() param: IdDto): Promise<any> {
+    const { id = '' } = param;
+    return await this.chiTietNganhDaoTao.getMucTieuDaoTao(Number(id));
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @Get(':id/noidungdaotao')
+  async getNoiDungDaoTao(@Req() req, @Param() param: IdDto): Promise<any> {
+    const { id = '' } = param;
+    return await this.chiTietNganhDaoTao.getNoiDungDaoTao(Number(id));
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @Get(':id/kehoachgiangday')
+  async getKeHoachGiangDay(@Req() req, @Param() param: IdDto): Promise<any> {
+    const { id = '' } = param;
+    return await this.chiTietNganhDaoTao.getKeHoachGiangDay(Number(id));
+  }
 }

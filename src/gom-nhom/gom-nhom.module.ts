@@ -6,7 +6,7 @@ import { GomNhomEntity } from './entity/gom-nhom.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([GomNhomEntity])],
-  providers: [GomNhomService],
+  providers: [GomNhomService, GomNhomEntity],
   controllers: [GomNhomController],
   exports: [GomNhomService]
 })

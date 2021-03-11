@@ -7,7 +7,9 @@ import { ChuanDauRaEntity } from './entity/chuanDauRa.entity';
 
 @Injectable()
 export class ChuanDauRaService {
-  @InjectRepository(ChuanDauRaEntity) private readonly chuanDauRaRepository: Repository<ChuanDauRaEntity>;
+  constructor(
+    @InjectRepository(ChuanDauRaEntity) private readonly chuanDauRaRepository: Repository<ChuanDauRaEntity>
+  ) {}
 
   async findAll(filter: any): Promise<any> {
     const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
