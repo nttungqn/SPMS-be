@@ -13,13 +13,22 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags
+} from '@nestjs/swagger';
 import { IdDto } from 'chuong-trinh-dao-tao/dto/Id.dto';
 import { CreateKeHoachGiangDayDto } from './dto/createKeHoachGiangDay.dto';
 import { FilterKeHoachGiangDayDto } from './dto/filterKeHoachGiangDay.dto';
 import { KeHoachGiangDayService } from './ke-hoach-giang-day.service';
 import * as lodash from 'lodash';
 import { KEHOACHGIANGDAY_MESSAGE } from 'constant/constant';
+import { KeHoachGiangDayDto, KeHoachGiangDayResponseDto } from './interfaces/keHoachGiangDay.response';
 
 @ApiTags('ke-hoach-giang-day')
 @Controller('ke-hoach-giang-day')
@@ -28,6 +37,9 @@ export class KeHoachGiangDayController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'lấy thông tin kế hoạch giảng dạy' })
+  @ApiOkResponse({ description: 'OK', type: KeHoachGiangDayResponseDto })
+  @ApiNotFoundResponse({ description: KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_EMPTY })
   @Get()
   async findAll(@Req() req, @Query() filter: FilterKeHoachGiangDayDto): Promise<any> {
     return await this.keHoachGiangDayService.findAll(filter);
@@ -35,6 +47,9 @@ export class KeHoachGiangDayController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'lấy thông tin chi tiết của 1 kế hoạch giảng dạy' })
+  @ApiOkResponse({ description: 'OK', type: KeHoachGiangDayDto })
+  @ApiNotFoundResponse({ description: KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND })
   @Get(':id')
   async findById(@Req() req, @Param() param: IdDto): Promise<any> {
     const { id } = param;
@@ -43,6 +58,9 @@ export class KeHoachGiangDayController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiCreatedResponse({ description: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY })
+  @ApiInternalServerErrorResponse({ description: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED })
+  @ApiOperation({ summary: 'tạo mới kế hoạch giảng dạy' })
   @Post()
   async create(@Req() req, @Body() newData: CreateKeHoachGiangDayDto, @Res() res): Promise<any> {
     const user = req.user || {};
@@ -66,6 +84,9 @@ export class KeHoachGiangDayController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Put(':id')
+  @ApiOkResponse({ description: KEHOACHGIANGDAY_MESSAGE.UPDATE_KEHOACHGIANGDAY_SUCCESSFULLY })
+  @ApiInternalServerErrorResponse({ description: KEHOACHGIANGDAY_MESSAGE.UPDATE_KEHOACHGIANGDAY_FAILED })
+  @ApiOperation({ summary: 'cập nhật thông tin của 1 kế hoạch giảng dạy' })
   async update(
     @Req() req,
     @Param() param: IdDto,
@@ -88,6 +109,9 @@ export class KeHoachGiangDayController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Delete(':id')
+  @ApiOkResponse({ description: KEHOACHGIANGDAY_MESSAGE.DELETE_KEHOACHGIANGDAY_SUCCESSFULLY })
+  @ApiInternalServerErrorResponse({ description: KEHOACHGIANGDAY_MESSAGE.DELETE_KEHOACHGIANGDAY_FAILED })
+  @ApiOperation({ summary: 'xóa thông tin của 1 kế hoạch giảng dạy' })
   async delete(@Req() req, @Param() param: IdDto, @Res() res): Promise<any> {
     const user = req.user || {};
     const { id } = param;
