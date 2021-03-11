@@ -17,6 +17,8 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }} # runs a test on Ubuntu, Windows and macOS
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
     strategy:
       matrix:
