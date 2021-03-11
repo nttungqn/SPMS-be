@@ -1,3 +1,4 @@
+import { IChuongTrinhDaoTao } from './interfaces/chuongTrinhDaoTao.interface';
 import {
   Body,
   Controller,
@@ -13,13 +14,22 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags
+} from '@nestjs/swagger';
 import { CHUONGTRINHDAOTAO_MESSAGE } from 'constant/constant';
 import { ChuongTrinhDaoTaoService } from './chuong-trinh-dao-tao.service';
 import { CreateChuongTrinhDaoTaoDto } from './dto/createChuongTrinhDaoTao.dto';
 import { FilterChuongTrinhDaoTao } from './dto/filterChuongTrinhDaoTao.dto';
 import { IdDto } from './dto/Id.dto';
 import * as lodash from 'lodash';
+import { ChuongTrinhDaoTaoDto, ChuongTrinhDaoTaoResponseDto } from './interfaces/chuongTrinhTaoDao.response';
 
 @ApiTags('chuong-trinh-dao-tao')
 @Controller('chuong-trinh-dao-tao')
@@ -27,16 +37,25 @@ export class ChuongTrinhDaoTaoController {
   constructor(private readonly chuongTrinhDaoTaoService: ChuongTrinhDaoTaoService) {}
 
   @Get()
+  @ApiOperation({ summary: 'lấy thông tin chương trình đào tạo' })
+  @ApiOkResponse({ description: 'OK', type: ChuongTrinhDaoTaoResponseDto })
+  @ApiNotFoundResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_EMPTY })
   async getAll(@Req() req, @Query() filter: FilterChuongTrinhDaoTao) {
     return await this.chuongTrinhDaoTaoService.findAll(filter);
   }
   @Get(':id')
+  @ApiOperation({ summary: 'lấy thông tin chi tiết của 1 chương trình đào tạo' })
+  @ApiOkResponse({ description: 'OK', type: ChuongTrinhDaoTaoDto })
+  @ApiNotFoundResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_ID_NOT_FOUND })
   async getById(@Req() req, @Param() param: IdDto) {
     const { id } = param;
     return await this.chuongTrinhDaoTaoService.findById(Number(id));
   }
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiCreatedResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
+  @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED })
+  @ApiOperation({ summary: 'tạo mới chương trình đào tạo' })
   @Post()
   async create(@Req() req, @Res() res, @Body() newData: CreateChuongTrinhDaoTaoDto) {
     const user = req.user || {};
@@ -54,6 +73,9 @@ export class ChuongTrinhDaoTaoController {
   }
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiOkResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
+  @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_FAILED })
+  @ApiOperation({ summary: 'cập nhật thông tin của 1 chương trình đào tạo' })
   @Put(':id')
   async update(@Req() req, @Res() res, @Param() param: IdDto, @Body() updatedData: CreateChuongTrinhDaoTaoDto) {
     const { id } = param;
@@ -70,6 +92,9 @@ export class ChuongTrinhDaoTaoController {
   }
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiOkResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
+  @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_FAILED })
+  @ApiOperation({ summary: 'xóa thông tin của 1 chương trình đào tạo' })
   @Delete(':id')
   async delete(@Req() req, @Res() res, @Param() param: IdDto) {
     const { id } = param;

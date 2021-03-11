@@ -1,3 +1,4 @@
+import { ChuDeEntity } from 'chu-de/entity/chu-de.entity';
 import {
   Body,
   Controller,
@@ -13,13 +14,22 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags
+} from '@nestjs/swagger';
 import { IdDto } from 'chuong-trinh-dao-tao/dto/Id.dto';
 import { ChuanDauRaNganhDaoTaoService } from './chuan-dau-ra-nganh-dao-tao.service';
 import { CreateChuanDauRaNganhDaoTaoDto } from './dto/createChuanDauRaNDT.dto';
 import { FilterChuanDauRaNganhDaoTaoDto } from './dto/filterChuanDauRaNDT.dto';
 import * as lodash from 'lodash';
 import { CHUANDAURA_NGANHDAOTAO_MESSAGE } from 'constant/constant';
+import { ChuanDauRaNDTDto, ChuanDauRaNDTResponseDto } from './interfaces/chuanDauRaNDT.response';
 
 @ApiTags('chuan-dau-ra-nganh-dao-tao')
 @Controller('chuan-dau-ra-nganh-dao-tao')
@@ -28,6 +38,9 @@ export class ChuanDauRaNganhDaoTaoController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'lấy thông tin chuẩn đầu ra ngành đào tạo' })
+  @ApiOkResponse({ description: 'OK', type: ChuanDauRaNDTResponseDto })
+  @ApiNotFoundResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_EMPTY })
   @Get()
   async findAll(@Req() req, @Query() filter: FilterChuanDauRaNganhDaoTaoDto): Promise<any> {
     return await this.chuanDauRaNganhDaoTaoService.findAll(filter);
@@ -36,6 +49,9 @@ export class ChuanDauRaNganhDaoTaoController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Get(':id')
+  @ApiOperation({ summary: 'lấy thông tin chi tiết của 1 chuẩn đầu ra ngành đào tạo' })
+  @ApiOkResponse({ description: 'OK', type: ChuanDauRaNDTDto })
+  @ApiNotFoundResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_ID_NOT_FOUND })
   async findById(@Req() req, @Param() param: IdDto): Promise<any> {
     const { id } = param;
     return await this.chuanDauRaNganhDaoTaoService.findById(Number(id));
@@ -44,6 +60,9 @@ export class ChuanDauRaNganhDaoTaoController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Post()
+  @ApiCreatedResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.CREATE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY })
+  @ApiInternalServerErrorResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.CREATE_CHUANDAURA_NGANHDAOTAO_FAILED })
+  @ApiOperation({ summary: 'tạo mới chuẩn đầu ra ngành đào tạo' })
   async create(@Req() req, @Body() newData: CreateChuanDauRaNganhDaoTaoDto, @Res() res): Promise<any> {
     const user = req.user || {};
     try {
@@ -66,6 +85,9 @@ export class ChuanDauRaNganhDaoTaoController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Put(':id')
+  @ApiOkResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.UPDATE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY })
+  @ApiInternalServerErrorResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.UPDATE_CHUANDAURA_NGANHDAOTAO_FAILED })
+  @ApiOperation({ summary: 'cập nhật thông tin của 1 chuẩn đầu ra ngành đào tạo' })
   async update(
     @Req() req,
     @Param() param: IdDto,
@@ -90,6 +112,9 @@ export class ChuanDauRaNganhDaoTaoController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Delete(':id')
+  @ApiOkResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.DELETE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY })
+  @ApiInternalServerErrorResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.DELETE_CHUANDAURA_NGANHDAOTAO_FAILED })
+  @ApiOperation({ summary: 'xóa thông tin của 1 chương trình đào tạo ngành đào tạo' })
   async delete(@Req() req, @Param() param: IdDto, @Res() res): Promise<any> {
     const user = req.user || {};
     const { id } = param;
