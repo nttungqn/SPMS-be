@@ -8,7 +8,7 @@ import {
   NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT } from 'constant/constant';
+import { LIMIT, MONHOCTIENQUYET_MESSAGE } from 'constant/constant';
 import { Not, QueryFailedError, Repository } from 'typeorm';
 import { CreateMonHocTienQuyetDto } from './dto/create-mon-hoc-tien-quyet.dto';
 import { FilterMonHocKienQuyet } from './dto/filter-mon-hoc-tien-quyet.dto';
@@ -24,7 +24,7 @@ export class MonHocTienQuyetService {
 
   async create(createPrerequisiteSubjectDto: CreateMonHocTienQuyetDto) {
     if (await this.isExist(createPrerequisiteSubjectDto)) {
-      throw new ConflictException();
+      throw new ConflictException(MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_EXIST);
     }
     try {
       const newRow = await this.prerequisiteSubjectRepository.create(createPrerequisiteSubjectDto);
@@ -34,7 +34,7 @@ export class MonHocTienQuyetService {
       if (error instanceof QueryFailedError) {
         throw new BadRequestException();
       }
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(MONHOCTIENQUYET_MESSAGE.CREATE_MONHOCTIENQUYET_FAILED);
     }
   }
 
@@ -45,7 +45,7 @@ export class MonHocTienQuyetService {
       isDeleted: false
     };
     const [results, total] = await this.prerequisiteSubjectRepository.findAndCount({
-      relations: ['preSubject', 'subject', 'createdBy', 'updatedBy'],
+      relations: ['monHocTruoc', 'monHoc', 'createdBy', 'updatedBy'],
       where: query,
       skip,
       take: limit
@@ -54,10 +54,10 @@ export class MonHocTienQuyetService {
   }
   async findById(id: number) {
     const result = await this.prerequisiteSubjectRepository.findOne(id, {
-      relations: ['preSubject', 'subject', 'createdBy', 'updatedBy'],
+      relations: ['monHocTruoc', 'monHoc', 'createdBy', 'updatedBy'],
       where: { isDeleted: false }
     });
-    if (!result) throw new NotFoundException();
+    if (!result) throw new NotFoundException(MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_ID_NOT_FOUND);
     return result;
   }
 
@@ -72,7 +72,7 @@ export class MonHocTienQuyetService {
       ...queryByType
     };
     const [results, total] = await this.prerequisiteSubjectRepository.findAndCount({
-      relations: ['preSubject', 'subject', 'createdBy', 'updatedBy'],
+      relations: ['monHocTruoc', 'monHoc', 'createdBy', 'updatedBy'],
       where: query,
       skip,
       take: limit
@@ -94,7 +94,7 @@ export class MonHocTienQuyetService {
       newPrere.loaiMonHoc = loaiMonHoc;
     }
     if (await this.isExist(newPrere)) {
-      throw new ConflictException();
+      throw new ConflictException(MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_EXIST);
     }
     try {
       newPrere.updatedAt = new Date();
@@ -102,22 +102,21 @@ export class MonHocTienQuyetService {
       await this.prerequisiteSubjectRepository.save(newPrere);
       return this.findById(id);
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(MONHOCTIENQUYET_MESSAGE.UPDATE_MONHOCTIENQUYET_FAILED);
     }
   }
 
   async remove(id: number, updateBy: number) {
     const found = await this.prerequisiteSubjectRepository.findOne(id, { where: { isDeleted: false } });
-    if (!found) throw new NotFoundException();
+    if (!found) throw new NotFoundException(MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_ID_NOT_FOUND);
     found.updatedBy = updateBy;
     found.updatedAt = new Date();
     found.isDeleted = true;
     try {
-      await this.prerequisiteSubjectRepository.save(found);
+      return await this.prerequisiteSubjectRepository.save(found);
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(MONHOCTIENQUYET_MESSAGE.DELETE_MONHOCTIENQUYET_FAILED);
     }
-    throw new HttpException('OK', HttpStatus.OK);
   }
 
   private async isExist(prere: MonHocTienQuyetEntity): Promise<boolean> {
