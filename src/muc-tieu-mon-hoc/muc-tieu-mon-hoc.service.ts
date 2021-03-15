@@ -53,7 +53,8 @@ export class MucTieuMonHocService {
           'syllabus.createdBy',
           'syllabus.updatedBy',
           'syllabus.heDaoTao',
-          'syllabus.namHoc'
+          'syllabus.namHoc',
+          'chuanDauRaCDIO'
         ],
         where: query,
         skip,
@@ -62,6 +63,7 @@ export class MucTieuMonHocService {
       });
       return { contents: results, total, page: Number(page) };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException();
     }
   }
