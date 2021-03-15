@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
 import { GomNhomEntity } from 'gom-nhom/entity/gom-nhom.entity';
-import { MonHocEntity } from 'mon-hoc/entity/monHoc.entity';
+import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
 
