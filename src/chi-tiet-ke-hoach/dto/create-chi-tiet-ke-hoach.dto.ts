@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsNumberString, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsOptional } from 'class-validator';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
 import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
