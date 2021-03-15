@@ -6,6 +6,10 @@ export class RolesEntity {
   id: number;
   @Column()
   name: string;
+
+  @Column({ name: 'value' })
+  value: number;
+
   @Column({ default: new Date() })
   createdAt: Date;
   @Column()
