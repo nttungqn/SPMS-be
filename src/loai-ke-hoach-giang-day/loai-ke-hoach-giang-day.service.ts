@@ -1,10 +1,9 @@
 import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT } from 'constant/constant';
+import { LIMIT, LOAIKEHOACHGIANGDAY_MESSAGE } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
 import { LoaiKeHoachGiangDayEntity } from './entity/loaiKeHoachGiangDay.entity';
-import { ILoaiKeHoachGiangDay } from './interfaces/loaiKeHoachGiangDay.interface';
 
 @Injectable()
 export class LoaiKeHoachGiangDayService {
@@ -16,25 +15,21 @@ export class LoaiKeHoachGiangDayService {
   async findAll(filter): Promise<LoaiKeHoachGiangDayEntity[] | any> {
     const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
     const skip = Number(page) * Number(limit);
-    const querySearch = search ? { Ten: Like(`%${search}%`) } : {};
+    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
     const query = {
       isDeleted: false,
       ...querySearch,
       ...otherParam
     };
 
-    try {
-      const results = await this.loaiKeHoachGiangDayEntity.find({
-        where: query,
-        skip,
-        take: Number(limit),
-        relations: ['createdBy', 'updatedBy']
-      });
-      const total = await this.loaiKeHoachGiangDayEntity.count({ ...query });
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    const results = await this.loaiKeHoachGiangDayEntity.find({
+      where: query,
+      skip,
+      take: Number(limit),
+      relations: ['createdBy', 'updatedBy']
+    });
+    const total = await this.loaiKeHoachGiangDayEntity.count({ ...query });
+    return { contents: results, total, page: Number(page) };
   }
 
   async findById(ID: number): Promise<LoaiKeHoachGiangDayEntity | any> {
@@ -43,38 +38,38 @@ export class LoaiKeHoachGiangDayService {
       relations: ['createdBy', 'updatedBy']
     });
     if (!result) {
-      throw new NotFoundException();
+      throw new NotFoundException(LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_ID_NOT_FOUND);
     }
     return result;
   }
 
-  async create(newData: ILoaiKeHoachGiangDay): Promise<any> {
+  async create(newData: LoaiKeHoachGiangDayEntity): Promise<any> {
     const checkExistName = await this.loaiKeHoachGiangDayEntity.findOne({
-      where: { Ma: newData?.Ma, isDeleted: false },
+      where: { ma: newData?.ma, isDeleted: false },
       relations: ['createdBy', 'updatedBy']
     });
     if (checkExistName) {
-      throw new ConflictException();
+      throw new ConflictException(LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_EXIST);
     }
     try {
       const loaiKeHoachGiangDay = await this.loaiKeHoachGiangDayEntity.create(newData);
       const saved = await this.loaiKeHoachGiangDayEntity.save(loaiKeHoachGiangDay);
       return saved;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(LOAIKEHOACHGIANGDAY_MESSAGE.CREATE_LOAIKEHOACHGIANGDAY_FAILED);
     }
   }
 
-  async update(ID: number, updatedData: ILoaiKeHoachGiangDay): Promise<any> {
-    const loaiKeHoachGiangDay = await this.loaiKeHoachGiangDayEntity.findOne({ ID, isDeleted: false });
+  async update(id: number, updatedData: LoaiKeHoachGiangDayEntity): Promise<any> {
+    const loaiKeHoachGiangDay = await this.loaiKeHoachGiangDayEntity.findOne({ id, isDeleted: false });
     if (!loaiKeHoachGiangDay) {
-      throw new NotFoundException();
+      throw new NotFoundException(LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_ID_NOT_FOUND);
     }
 
     // check Ma is exist
-    const monHocByMa = await this.loaiKeHoachGiangDayEntity.findOne({ Ma: updatedData.Ma, isDeleted: false });
+    const monHocByMa = await this.loaiKeHoachGiangDayEntity.findOne({ ma: updatedData.ma, isDeleted: false });
     if (monHocByMa) {
-      throw new ConflictException();
+      throw new ConflictException(LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_EXIST);
     }
 
     try {
@@ -84,14 +79,14 @@ export class LoaiKeHoachGiangDayService {
         updatedAt: new Date()
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(LOAIKEHOACHGIANGDAY_MESSAGE.UPDATE_LOAIKEHOACHGIANGDAY_FAILED);
     }
   }
 
-  async delete(ID: number, updatedBy?: number): Promise<any> {
-    const loaiKeHoachGiangDay = await this.loaiKeHoachGiangDayEntity.findOne({ ID, isDeleted: false });
+  async delete(id: number, updatedBy?: number): Promise<any> {
+    const loaiKeHoachGiangDay = await this.loaiKeHoachGiangDayEntity.findOne({ id, isDeleted: false });
     if (!loaiKeHoachGiangDay) {
-      throw new NotFoundException();
+      throw new NotFoundException(LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_ID_NOT_FOUND);
     }
     try {
       return await this.loaiKeHoachGiangDayEntity.save({
@@ -101,7 +96,7 @@ export class LoaiKeHoachGiangDayService {
         updatedBy
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(LOAIKEHOACHGIANGDAY_MESSAGE.DELETE_LOAIKEHOACHGIANGDAY_FAILED);
     }
   }
 }

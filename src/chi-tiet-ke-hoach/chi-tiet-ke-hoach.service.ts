@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT, RESPONSE_MESSAGE } from 'constant/constant';
-import { Not, Repository } from 'typeorm';
+import { LIMIT, CHITIETKEHOACH_MESSAGE } from 'constant/constant';
+import { Repository } from 'typeorm';
 import { ChiTietKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
 import { KeHoachGiangDayService } from 'ke-hoach-giang-day/ke-hoach-giang-day.service';
 import { ChiTietGomNhomService } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.service';
@@ -19,7 +19,7 @@ export class ChiTietKeHoachService {
   async create(newData: ChiTietKeHoachEntity) {
     const ctgn = await this.chiTietGomNhomService.findById(newData.idCTGN);
     const khgd = await this.keHoachGiangDayService.findById(newData.idKHGD);
-    if (!(khgd && ctgn)) throw new ConflictException(RESPONSE_MESSAGE.FOREIGN_KEY_CONFLICT);
+    if (!(khgd && ctgn)) throw new ConflictException(CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_FOREIGN_KEY_CONFLICT);
 
     try {
       const result = await this.chiTietKeHoachRepository.save({
@@ -29,37 +29,30 @@ export class ChiTietKeHoachService {
       });
       return result;
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.CREATE_CHITIETKEHOACH_FAILED);
     }
   }
 
   async findAll(filter: BaseFilterDto) {
     const { page = 0, limit = LIMIT, ...other } = filter;
     const skip = page * limit;
-    try {
-      const [results, total] = await this.chiTietKeHoachRepository.findAndCount({
-        relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy'],
-        skip,
-        take: limit,
-        ...other
-      });
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
-    }
+    const [results, total] = await this.chiTietKeHoachRepository.findAndCount({
+      relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy'],
+      skip,
+      take: limit,
+      ...other
+    });
+    return { contents: results, total, page: Number(page) };
   }
 
   async findOne(id: number) {
-    let result: any;
-    try {
-      result = await this.chiTietKeHoachRepository.findOne(id, {
-        relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy'],
-        where: { isDeleted: false }
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
+    const result = await this.chiTietKeHoachRepository.findOne(id, {
+      relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy'],
+      where: { isDeleted: false }
+    });
+    if (!result) {
+      throw new NotFoundException(CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_ID_NOT_FOUND);
     }
-    if (!result) throw new NotFoundException();
     return result;
   }
 
@@ -70,7 +63,7 @@ export class ChiTietKeHoachService {
     try {
       return await this.chiTietKeHoachRepository.save({ ...oldData, ...newData, updatedAt: new Date() });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.UPDATE_CHITIETKEHOACH_FAILED);
     }
   }
 
@@ -85,7 +78,7 @@ export class ChiTietKeHoachService {
         isDeleted: true
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED);
     }
   }
 }

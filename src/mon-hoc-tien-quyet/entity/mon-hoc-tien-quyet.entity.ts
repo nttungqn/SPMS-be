@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsInt, IsNotEmpty } from 'class-validator';
-import { MonHocEntity } from 'mon-hoc/entity/monHoc.entity';
+import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { LoaiMonHoc } from 'mon-hoc-tien-quyet/enum/loai-mon-hoc.enum';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';

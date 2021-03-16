@@ -6,17 +6,17 @@ export class FilterKeHoachGiangDayDto extends BaseFilterDto {
   @ApiProperty({ required: false, description: 'mã kế hoạch' })
   @IsString()
   @IsOptional()
-  readonly MaKeHoach: string;
-  @ApiProperty({ required: false, description: 'id của ngành đào tạo' })
+  readonly maKeHoach: string;
+  @ApiProperty({ required: false, description: 'id của chi tiết ngành đào tạo' })
   @IsNumberString()
   @IsOptional()
-  readonly NganhDaoTao: number;
+  readonly nganhDaoTao: number;
   @ApiProperty({ required: false, description: 'tên học kỳ' })
   @IsNumberString()
   @IsOptional()
-  readonly TenHocKy: number;
+  readonly tenHocKy: number;
   @ApiProperty({ required: false, description: 'số thứ tự' })
   @IsNumberString()
   @IsOptional()
-  readonly STT: number;
+  readonly sTT: number;
 }

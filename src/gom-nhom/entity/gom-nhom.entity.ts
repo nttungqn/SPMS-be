@@ -1,62 +1,43 @@
-import { LoaiKhoiKienThucEntity } from './../../loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { CreateGomNhomDTO } from 'gom-nhom/dto/create-gom-nhom';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
 import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
+import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
 
 @Entity(TABLE_NAME.GOMNHOM)
-export class GomNhomEntity {
-  @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
-
+export class GomNhomEntity extends CreateGomNhomDTO {
   @ApiProperty()
-  @ManyToOne(() => LoaiKhoiKienThucEntity)
-  @JoinColumn({ name: 'ID_LoaiKhoiKienThuc' })
-  @Column({ name: 'ID_LoaiKhoiKienThuc' })
-  idLKKT: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id?: number;
 
   @ManyToOne(() => LoaiKhoiKienThucEntity)
   @JoinColumn({ name: 'ID_LoaiKhoiKienThuc' })
-  loaiKhoiKienThuc: LoaiKhoiKienThucEntity;
+  loaiKhoiKienThuc?: LoaiKhoiKienThucEntity;
 
   @OneToMany(() => ChiTietGomNhomEntity, (chiTietGomNhom) => chiTietGomNhom.gomNhom, { eager: true })
-  chiTietGomNhom: ChiTietGomNhomEntity[];
+  chiTietGomNhom?: ChiTietGomNhomEntity[];
 
   @ApiProperty()
-  @Column({ name: 'Ma_GomNhom' })
-  maGN: number;
-
-  @ApiProperty()
-  @Column({ name: 'TieuDe' })
-  tieuDe: string;
-
-  @ApiProperty()
-  @Column({ name: 'STT' })
-  stt: number;
-
-  @ApiProperty()
-  @Column({ name: 'LoaiNhom' })
-  loaiNhom: string;
-
-  @ApiProperty()
-  @Column({ name: 'SoTCBB' })
-  soTCBB: number;
-
-  @Column()
-  createdAt: Date;
-
-  @Column()
-  updatedAt: Date;
-
-  @OneToOne(() => UsersEntity)
-  @JoinColumn({ name: 'createdBy' })
-  createdBy: number;
-
-  @OneToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'updatedBy' })
-  updatedBy: number;
+  updatedBy?: number;
 
-  @Column()
-  isDeleted: boolean;
+  @ApiProperty()
+  @ManyToOne(() => UsersEntity)
+  @JoinColumn({ name: 'createdBy' })
+  createdBy?: number;
+
+  @ApiProperty()
+  @Column({ name: 'updatedAt' })
+  updatedAt?: Date;
+
+  @ApiProperty()
+  @Column({ name: 'createdAt' })
+  createdAt?: Date;
+
+  @ApiProperty()
+  @Column({ name: 'isDeleted' })
+  isDeleted?: boolean;
 }
