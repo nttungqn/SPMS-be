@@ -19,13 +19,16 @@ export class FilterMonHoc extends BaseFilterDto {
 
   @ApiProperty({ required: false })
   @IsNumberString()
+  @IsOptional()
   readonly soTietLyThuyet: number;
 
   @ApiProperty({ required: false })
   @IsNumberString()
+  @IsOptional()
   readonly soTietThucHanh: number;
 
   @ApiProperty({ required: false })
   @IsNumberString()
+  @IsOptional()
   readonly soTietTuHoc: number;
 }

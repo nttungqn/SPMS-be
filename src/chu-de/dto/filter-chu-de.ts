@@ -19,13 +19,11 @@ export class FilterChuDe extends BaseFilterDto {
 
   @ApiProperty({ required: false })
   @IsNumberString()
+  @IsOptional()
   readonly idSyllabus: number;
 
   @ApiProperty({ required: false })
   @IsNumberString()
+  @IsOptional()
   readonly idLKHGD: number;
-
-  @ApiProperty({ required: false })
-  @IsNumberString()
-  readonly ma: string;
 }
