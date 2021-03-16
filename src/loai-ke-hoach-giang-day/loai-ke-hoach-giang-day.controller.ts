@@ -25,7 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { LoaiKeHoachGiangDayService } from './loai-ke-hoach-giang-day.service';
 import { CreateLoaiKeHoachGiangDayDto } from './dto/createLoaiKeHoachGiangDay.dto';
-import { BaseFilterDto } from './dto/fliterLoaiKeHoachGiangDay.dto';
+import { BaseFilterDto, fliterLoaiKeHoachGiangDay } from './dto/fliterLoaiKeHoachGiangDay.dto';
 import { LOAIKEHOACHGIANGDAY_MESSAGE } from './../constant/constant';
 import { FindAllLoaiKeHoachGiangDayDtoResponse } from './dto/loai-ke-hoach-giang-day.response';
 import { LoaiKeHoachGiangDayEntity } from './entity/loaiKeHoachGiangDay.entity';
@@ -41,7 +41,7 @@ export class LoaiKeHoachGiangDayController {
   @ApiUnauthorizedResponse({ description: LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_NOT_AUTHORIZED })
   @ApiOkResponse({ type: FindAllLoaiKeHoachGiangDayDtoResponse })
   @Get()
-  async findAll(@Req() req, @Query() filter: BaseFilterDto): Promise<any> {
+  async findAll(@Req() req, @Query() filter: fliterLoaiKeHoachGiangDay): Promise<any> {
     return await this.loaiKeHoachGiangDayService.findAll(filter);
   }
 

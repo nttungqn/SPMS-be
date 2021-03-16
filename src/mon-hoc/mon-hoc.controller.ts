@@ -43,7 +43,7 @@ export class MonHocController {
   @ApiUnauthorizedResponse({ description: MONHOC_MESSAGE.MONHOC_NOT_AUTHORIZED })
   @ApiOkResponse({ type: FindAllMonHocDtoResponse })
   @Get()
-  async findAll(@Query() filter: BaseFilterDto): Promise<any> {
+  async findAll(@Query() filter: FilterMonHoc): Promise<any> {
     return await this.monHocService.findAll(filter);
   }
 
