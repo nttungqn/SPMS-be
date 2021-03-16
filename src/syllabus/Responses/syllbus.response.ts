@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { HeDaoTaoResponse } from 'he-dao-tao/Responses/he-dao-tao.response';
-import { MonHocEntity } from 'mon-hoc/entity/monHoc.entity';
+import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { NamHocResponse } from 'nam-hoc/Responses/nam-hoc.respones';
 import { UserResponse } from 'users/Responses/user.response';
 

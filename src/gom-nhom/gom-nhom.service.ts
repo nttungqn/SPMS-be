@@ -1,9 +1,8 @@
 import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT } from 'constant/constant';
+import { GOMNHOM_MESSAGE, LIMIT } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
 import { GomNhomEntity } from './entity/gom-nhom.entity';
-import { IGomNhom } from './interfaces/gom-nhom.interface';
 
 @Injectable()
 export class GomNhomService {
@@ -19,18 +18,14 @@ export class GomNhomService {
       ...otherParam
     };
 
-    try {
-      const results = await this.gomNhomRepository.find({
-        where: query,
-        skip,
-        take: Number(limit),
-        relations: ['idLKKT', 'createdBy', 'updatedBy']
-      });
-      const total = await this.gomNhomRepository.count({ ...query });
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    const results = await this.gomNhomRepository.find({
+      where: query,
+      skip,
+      take: Number(limit),
+      relations: ['idLKKT', 'createdBy', 'updatedBy']
+    });
+    const total = await this.gomNhomRepository.count({ ...query });
+    return { contents: results, total, page: Number(page) };
   }
 
   async findById(id: number): Promise<GomNhomEntity | any> {
@@ -39,35 +34,35 @@ export class GomNhomService {
       relations: ['idLKKT', 'createdBy', 'updatedBy']
     });
     if (!result) {
-      throw new NotFoundException();
+      throw new NotFoundException(GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND);
     }
     return result;
   }
 
-  async create(newData: IGomNhom): Promise<any> {
+  async create(newData: GomNhomEntity): Promise<any> {
     const checkExistName = await this.gomNhomRepository.findOne({ maGN: newData?.maGN, isDeleted: false });
     if (checkExistName) {
-      throw new ConflictException();
+      throw new ConflictException(GOMNHOM_MESSAGE.GOMNHOM_EXIST);
     }
     try {
       const gomNhom = await this.gomNhomRepository.create(newData);
       const saved = await this.gomNhomRepository.save(gomNhom);
       return saved;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(GOMNHOM_MESSAGE.CREATE_GOMNHOM_FAILED);
     }
   }
 
-  async update(id: number, updatedData: IGomNhom): Promise<any> {
+  async update(id: number, updatedData: GomNhomEntity): Promise<any> {
     const gomNhom = await this.gomNhomRepository.findOne({ id, isDeleted: false });
     if (!gomNhom) {
-      throw new NotFoundException();
+      throw new NotFoundException(GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND);
     }
 
     // check Ma is exist
     const chuDeByMa = await this.gomNhomRepository.findOne({ maGN: updatedData.maGN, isDeleted: false });
     if (chuDeByMa) {
-      throw new ConflictException();
+      throw new ConflictException(GOMNHOM_MESSAGE.GOMNHOM_EXIST);
     }
 
     try {
@@ -77,14 +72,14 @@ export class GomNhomService {
         updatedAt: new Date()
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(GOMNHOM_MESSAGE.UPDATE_GOMNHOM_FAILED);
     }
   }
 
   async delete(id: number, updatedBy?: number): Promise<any> {
     const gomNhom = await this.gomNhomRepository.findOne({ id, isDeleted: false });
     if (!gomNhom) {
-      throw new NotFoundException();
+      throw new NotFoundException(GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND);
     }
     try {
       return await this.gomNhomRepository.save({
@@ -94,7 +89,7 @@ export class GomNhomService {
         updatedBy
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED);
     }
   }
 }

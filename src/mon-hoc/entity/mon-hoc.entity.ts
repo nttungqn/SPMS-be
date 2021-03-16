@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
-import { UsersEntity } from './../../users/entity/user.entity';
-import { TABLE_NAME } from './../../constant/constant';
-import { CreateLoaiKeHoachGiangDayDto } from 'loai-ke-hoach-giang-day/dto/createLoaiKeHoachGiangDay.dto';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { UsersEntity } from 'users/entity/user.entity';
+import { TABLE_NAME } from '../../constant/constant';
+import { CreateMonHocDto } from './../dto/create-mon-hoc.dto';
 
-@Entity(TABLE_NAME.LOAIKEHOACHGIANGDAY)
-export class LoaiKeHoachGiangDayEntity extends CreateLoaiKeHoachGiangDayDto {
+@Entity(TABLE_NAME.MONHOC)
+export class MonHocEntity extends CreateMonHocDto {
   @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;

@@ -1,9 +1,8 @@
 import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT } from 'constant/constant';
+import { HOATDONGDAYHOC_MESSAGE, LIMIT } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
 import { HoatDongDayHocEntity } from './entity/hoat-dong-day-hoc.entity';
-import { IHoatDongDayHoc } from './interfaces/hoat-dong-day-hoc.interface';
 
 @Injectable()
 export class HoatDongDayHocService {
@@ -21,18 +20,14 @@ export class HoatDongDayHocService {
       ...otherParam
     };
 
-    try {
-      const results = await this.hoatDongDayHocRepository.find({
-        where: query,
-        skip,
-        take: Number(limit),
-        relations: ['idCD', 'createdBy', 'updatedBy']
-      });
-      const total = await this.hoatDongDayHocRepository.count({ ...query });
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    const results = await this.hoatDongDayHocRepository.find({
+      where: query,
+      skip,
+      take: Number(limit),
+      relations: ['idCD', 'createdBy', 'updatedBy']
+    });
+    const total = await this.hoatDongDayHocRepository.count({ ...query });
+    return { contents: results, total, page: Number(page) };
   }
 
   async findById(id: number): Promise<HoatDongDayHocEntity | any> {
@@ -41,35 +36,35 @@ export class HoatDongDayHocService {
       relations: ['idCD', 'createdBy', 'updatedBy']
     });
     if (!result) {
-      throw new NotFoundException();
+      throw new NotFoundException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_ID_NOT_FOUND);
     }
     return result;
   }
 
-  async create(newData: IHoatDongDayHoc): Promise<any> {
+  async create(newData: HoatDongDayHocEntity): Promise<any> {
     const checkExistName = await this.hoatDongDayHocRepository.findOne({ ma: newData?.ma, isDeleted: false });
     if (checkExistName) {
-      throw new ConflictException();
+      throw new ConflictException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_EXIST);
     }
     try {
       const hoatDongDayHoc = await this.hoatDongDayHocRepository.create(newData);
       const saved = await this.hoatDongDayHocRepository.save(hoatDongDayHoc);
       return saved;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(HOATDONGDAYHOC_MESSAGE.CREATE_HOATDONGDAYHOC_FAILED);
     }
   }
 
-  async update(id: number, updatedData: IHoatDongDayHoc): Promise<any> {
+  async update(id: number, updatedData: HoatDongDayHocEntity): Promise<any> {
     const hoatDongDayHoc = await this.hoatDongDayHocRepository.findOne({ id, isDeleted: false });
     if (!hoatDongDayHoc) {
-      throw new NotFoundException();
+      throw new NotFoundException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_ID_NOT_FOUND);
     }
 
     // check Ma is exist
     const hoatDongDayHocByMa = await this.hoatDongDayHocRepository.findOne({ ma: updatedData.ma, isDeleted: false });
     if (hoatDongDayHocByMa) {
-      throw new ConflictException();
+      throw new ConflictException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_EXIST);
     }
 
     try {
@@ -79,14 +74,14 @@ export class HoatDongDayHocService {
         updatedAt: new Date()
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(HOATDONGDAYHOC_MESSAGE.UPDATE_HOATDONGDAYHOC_FAILED);
     }
   }
 
   async delete(id: number, updatedBy?: number): Promise<any> {
     const hoatDongDayHoc = await this.hoatDongDayHocRepository.findOne({ id, isDeleted: false });
     if (!hoatDongDayHoc) {
-      throw new NotFoundException();
+      throw new NotFoundException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_ID_NOT_FOUND);
     }
     try {
       return await this.hoatDongDayHocRepository.save({
@@ -96,7 +91,7 @@ export class HoatDongDayHocService {
         updatedBy
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(HOATDONGDAYHOC_MESSAGE.DELETE_HOATDONGDAYHOC_FAILED);
     }
   }
 }
