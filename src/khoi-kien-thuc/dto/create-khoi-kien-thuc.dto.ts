@@ -5,6 +5,7 @@ import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
 export class CreateKhoiKienThucDto {
   @ApiProperty()
+  @Column({ name: 'ID_ChiTietNganhDaoTao' })
   @ManyToOne(() => ChiTietNganhDaoTaoEntity)
   @JoinColumn({ name: 'ID_ChiTietNganhDaoTao' })
   @IsNotEmpty()

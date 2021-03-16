@@ -8,7 +8,7 @@ import {
   NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT } from 'constant/constant';
+import { LIMIT, LOAIKHOIKIENTHUC_MESSAGE } from 'constant/constant';
 import { QueryFailedError, Repository } from 'typeorm';
 import { CreateLoaiKhoiKienThucDto } from './dto/create-loai-khoi-kien-thuc.dto';
 import { FilterLoaiKhoiKienThuc } from './dto/filter-loai-khoi-kien-thuc.dto';
@@ -48,13 +48,13 @@ export class LoaiKhoiKienThucService {
     } catch (error) {
       throw new InternalServerErrorException();
     }
-    if (!result) throw new NotFoundException(`${id} Khoi-kien-thuc not found`);
+    if (!result) throw new NotFoundException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND);
     return result;
   }
 
   async create(typeOfKnowledgeBlock: LoaiKhoiKienThucEntity) {
     if (await this.isExist(typeOfKnowledgeBlock)) {
-      throw new ConflictException();
+      throw new ConflictException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_EXIST);
     }
     let saveResult: LoaiKhoiKienThucEntity;
     try {
@@ -66,16 +66,16 @@ export class LoaiKhoiKienThucService {
       saveResult = await this.typeOfKnowledgeBlockRepository.save(createResult);
     } catch (error) {
       if (error instanceof QueryFailedError) throw new BadRequestException();
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.CREATE_LOAIKHOIKIENTHUC_FAILED);
     }
     return await this.typeOfKnowledgeBlockRepository.findOne(saveResult.id);
   }
 
   async update(id: number, typeOfKnowledgeBlock: LoaiKhoiKienThucEntity) {
     const results = await this.typeOfKnowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
-    if (!results) throw new HttpException(`${id} Khoi-kien-thuc not found`, HttpStatus.NOT_FOUND);
+    if (!results) throw new HttpException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
     if (await this.isExist(typeOfKnowledgeBlock)) {
-      throw new ConflictException();
+      throw new ConflictException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_EXIST);
     }
     try {
       return await this.typeOfKnowledgeBlockRepository.save({
@@ -85,17 +85,17 @@ export class LoaiKhoiKienThucService {
       });
     } catch (error) {
       if (error instanceof QueryFailedError) throw new BadRequestException();
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.UPDATE_LOAIKHOIKIENTHUC_FAILED);
     }
   }
 
   async remove(id: number, updatedBy: number) {
     const results = await this.typeOfKnowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
-    if (!results) throw new HttpException(`${id} Khoi-kien-thuc not found`, HttpStatus.NOT_FOUND);
+    if (!results) throw new HttpException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
     try {
       return await this.typeOfKnowledgeBlockRepository.save({ ...results, updatedBy, updatedAt: new Date() });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.DELETE_LOAIKHOIKIENTHUC_FAILED);
     }
   }
   private async isExist(createTypeOfKnowledgeBlockDto: CreateLoaiKhoiKienThucDto): Promise<boolean> {
