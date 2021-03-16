@@ -32,7 +32,6 @@ import { FilterLoaiKhoiKienThuc } from './dto/filter-loai-khoi-kien-thuc.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { LOAIKHOIKIENTHUC_MESSAGE } from 'constant/constant';
 import { FindAllLoaiKhoiKienThuc } from './Responses/find-all-loai-khoi-kien-thuc.response';
-import { LoaiKhoiKienThucResponse } from './Responses/Loai-khoi-kien-thuc.response';
 import { LoaiKhoiKienThucDetailResponse } from './Responses/loai-khoi-kien-thuc.detail.response';
 
 @ApiTags('loai-khoi-kien-thuc')
@@ -54,21 +53,10 @@ export class LoaiKhoiKienThucController {
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin một loại khối kiến thức' })
   @ApiUnauthorizedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_NOT_AUTHORIZED })
-  @ApiOkResponse({ type: LoaiKhoiKienThucResponse })
+  @ApiOkResponse({ type: LoaiKhoiKienThucDetailResponse })
   @ApiNotFoundResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.typeOfKnowledgeBlockService.findOne(id);
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @ApiBearerAuth('token')
-  @ApiOperation({ summary: 'Lấy thông tin chi tiết một loại khối kiến thức' })
-  @ApiUnauthorizedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_NOT_AUTHORIZED })
-  @ApiOkResponse({ type: LoaiKhoiKienThucDetailResponse })
-  @ApiNotFoundResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND })
-  @Get('/detail/:id')
-  getDetail(@Param('id', ParseIntPipe) id: number) {
     return this.typeOfKnowledgeBlockService.findDetail(id);
   }
 
