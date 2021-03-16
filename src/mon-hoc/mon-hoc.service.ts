@@ -28,9 +28,9 @@ export class MonHocService {
     return { contents: results, total, page: Number(page) };
   }
 
-  async findById(ID: number): Promise<MonHocEntity | any> {
+  async findById(id: number): Promise<MonHocEntity | any> {
     const result = await this.monHocRepository.findOne({
-      where: { ID, isDeleted: false },
+      where: { id, isDeleted: false },
       relations: ['createdBy', 'updatedBy']
     });
     if (!result) {

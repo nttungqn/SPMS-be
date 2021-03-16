@@ -26,7 +26,7 @@ import {
   ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { BaseFilterDto } from './dto/filter-chi-tiet-ke-hoach.dto';
+import { FilterChiTietKeHoach } from './dto/filter-chi-tiet-ke-hoach.dto';
 import { CHITIETKEHOACH_MESSAGE } from 'constant/constant';
 import { FindAllChiTietKeHoachDtoResponse } from './dto/chi-tiet-ke-hoach.dto.response';
 import { ChiTietKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
@@ -42,7 +42,7 @@ export class ChiTietKeHoachController {
   @ApiUnauthorizedResponse({ description: CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_NOT_AUTHORIZED })
   @ApiOkResponse({ type: FindAllChiTietKeHoachDtoResponse })
   @Get()
-  findAll(@Query() filter: BaseFilterDto) {
+  findAll(@Query() filter: FilterChiTietKeHoach) {
     return this.chiTietKeHoachService.findAll(filter);
   }
 

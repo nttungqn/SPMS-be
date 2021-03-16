@@ -12,3 +12,15 @@ export class BaseFilterDto {
   @IsNumberString()
   readonly limit?: number;
 }
+
+export class FilterChiTietKeHoach extends BaseFilterDto {
+  @ApiProperty({ required: false })
+  @IsNumberString()
+  @IsOptional()
+  readonly idKHGD?: number;
+
+  @ApiProperty({ required: false })
+  @IsNumberString()
+  @IsOptional()
+  readonly idCTGN?: number;
+}

@@ -12,3 +12,13 @@ export class BaseFilterDto {
   @IsNumberString()
   readonly limit?: number;
 }
+
+export class fliterLoaiKeHoachGiangDay extends BaseFilterDto {
+  @ApiProperty({ required: false, description: ' this field search by ma ' })
+  readonly search?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumberString()
+  readonly idCD: number;
+}
