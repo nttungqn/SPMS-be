@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { LoaiMonHoc } from 'mon-hoc-tien-quyet/enum/loai-mon-hoc.enum';
-import { MonHocEntity } from 'mon-hoc/entity/monHoc.entity';
+import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { UserResponse } from 'users/Responses/user.response';
 
 export class MonHocTienQuyetResponse {
