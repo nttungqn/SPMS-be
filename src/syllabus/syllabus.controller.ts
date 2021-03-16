@@ -34,14 +34,18 @@ import { GetSyllabusFilterDto } from './dto/filter-syllabus.dto';
 import { SYLLABUS_MESSAGE } from 'constant/constant';
 import { FindAllSyllabusResponse } from './Responses/find-all-syllabus.response';
 import { SyllabusResponse } from './Responses/syllbus.response';
+import { Roles } from 'guards/roles.decorator';
+import { Role } from 'guards/roles.enum';
+import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('Syllabus')
 @Controller('syllabus')
 export class SyllabusController {
   constructor(private readonly syllabusService: SyllabusService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
+  @Roles(Role.GIAOVIEN)
   @ApiOperation({ summary: 'Tạo mới một Syllabus' })
   @ApiCreatedResponse({ description: SYLLABUS_MESSAGE.CREATE_SYLLABUS_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: SYLLABUS_MESSAGE.CREATE_SYLLABUS_FAILED })
