@@ -16,4 +16,16 @@ export class BaseFilterDto {
 export class FilterMonHoc extends BaseFilterDto {
   @ApiProperty({ required: false, description: ' this field search by Ten Tieng Viet' })
   readonly search?: string;
+
+  @ApiProperty({ required: false })
+  @IsNumberString()
+  readonly soTietLyThuyet: number;
+
+  @ApiProperty({ required: false })
+  @IsNumberString()
+  readonly soTietThucHanh: number;
+
+  @ApiProperty({ required: false })
+  @IsNumberString()
+  readonly soTietTuHoc: number;
 }

@@ -32,9 +32,9 @@ export class LoaiKeHoachGiangDayService {
     return { contents: results, total, page: Number(page) };
   }
 
-  async findById(ID: number): Promise<LoaiKeHoachGiangDayEntity | any> {
+  async findById(id: number): Promise<LoaiKeHoachGiangDayEntity | any> {
     const result = await this.loaiKeHoachGiangDayEntity.findOne({
-      where: { ID, isDeleted: false },
+      where: { id, isDeleted: false },
       relations: ['createdBy', 'updatedBy']
     });
     if (!result) {

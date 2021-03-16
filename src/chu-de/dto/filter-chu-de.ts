@@ -16,4 +16,16 @@ export class BaseFilterDto {
 export class FilterChuDe extends BaseFilterDto {
   @ApiProperty({ required: false, description: ' this field search by Ten ' })
   readonly search?: string;
+
+  @ApiProperty({ required: false })
+  @IsNumberString()
+  readonly idSyllabus: number;
+
+  @ApiProperty({ required: false })
+  @IsNumberString()
+  readonly idLKHGD: number;
+
+  @ApiProperty({ required: false })
+  @IsNumberString()
+  readonly ma: string;
 }

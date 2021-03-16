@@ -26,7 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { ChiTietGomNhomService } from './chi-tiet-gom-nhom.service';
 import { CreateChiTietGomNhomDTO } from './dto/create-chi-tiet-gom-nhom.dto';
-import { BaseFilterDto } from './dto/filter-chi-tiet-gom-nhom';
+import { FilterChiTietGomNhom } from './dto/filter-chi-tiet-gom-nhom';
 import { CHITIETGOMNHOM_MESSAGE } from './../constant/constant';
 import { FindAllChiTietGomNhomDtoResponse } from './dto/chi-tiet-gom-nhom.dto';
 import { ChiTietGomNhomEntity } from './entity/chi-tiet-gom-nhom.entity';
@@ -43,7 +43,7 @@ export class ChiTietGomNhomController {
   @ApiUnauthorizedResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_NOT_AUTHORIZED })
   @ApiOkResponse({ type: FindAllChiTietGomNhomDtoResponse })
   @Get()
-  async findAll(@Req() req, @Query() filter: BaseFilterDto): Promise<any> {
+  async findAll(@Req() req, @Query() filter: FilterChiTietGomNhom): Promise<any> {
     return await this.chiTietGomNhomService.findAll(filter);
   }
 
