@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { GomNhomEntity } from 'gom-nhom/entity/gom-nhom.entity';
+import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
@@ -19,6 +21,14 @@ export class ChiTietGomNhomEntity extends CreateChiTietGomNhomDTO {
   @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'createdBy' })
   createdBy?: number;
+
+  @ManyToOne(() => GomNhomEntity, (gomNhom) => gomNhom.chiTietGomNhom)
+  @JoinColumn({ name: 'ID_GomNhom' })
+  gomNhom?: GomNhomEntity;
+
+  @OneToOne(() => MonHocEntity, (monHoc) => monHoc.chiTietGomNhom, { eager: true })
+  @JoinColumn({ name: 'ID_MonHoc' })
+  monHoc?: MonHocEntity;
 
   @ApiProperty()
   @Column({ name: 'updatedAt' })

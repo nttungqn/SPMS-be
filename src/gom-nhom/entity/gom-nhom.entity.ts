@@ -1,14 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { CreateGomNhomDTO } from 'gom-nhom/dto/create-gom-nhom';
-import { Column, Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
+import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
+import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
 
-@Entity(TABLE_NAME.GOMNHOM)
+@Entity(TABLE_NAME.GOMNHOM, { orderBy: { stt: 'ASC' } })
 export class GomNhomEntity extends CreateGomNhomDTO {
   @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
+
+  @ManyToOne(() => LoaiKhoiKienThucEntity)
+  @JoinColumn({ name: 'ID_LoaiKhoiKienThuc' })
+  loaiKhoiKienThuc?: LoaiKhoiKienThucEntity;
+
+  @OneToMany(() => ChiTietGomNhomEntity, (chiTietGomNhom) => chiTietGomNhom.gomNhom, { eager: true })
+  chiTietGomNhom?: ChiTietGomNhomEntity[];
 
   @ApiProperty()
   @ManyToOne(() => UsersEntity)

@@ -2,7 +2,7 @@ import { GomNhomEntity } from 'gom-nhom/entity/gom-nhom.entity';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
-import { IsNumberString } from 'class-validator';
+import { IsNumberString, IsOptional, IsString, isString } from 'class-validator';
 
 export class CreateChiTietGomNhomDTO {
   @ApiProperty()
@@ -15,11 +15,12 @@ export class CreateChiTietGomNhomDTO {
   @ApiProperty()
   @ManyToOne(() => MonHocEntity)
   @JoinColumn({ name: 'ID_MonHoc' })
-  @Column({ name: 'ID_MonHoc' })
   @IsNumberString()
   idMH?: number;
 
   @ApiProperty()
   @Column({ name: 'GhiChu' })
+  @IsString()
+  @IsOptional()
   ghiChu?: string;
 }

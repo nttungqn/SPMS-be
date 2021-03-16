@@ -18,14 +18,18 @@ export class GomNhomService {
       ...otherParam
     };
 
-    const results = await this.gomNhomRepository.find({
-      where: query,
-      skip,
-      take: Number(limit),
-      relations: ['idLKKT', 'createdBy', 'updatedBy']
-    });
-    const total = await this.gomNhomRepository.count({ ...query });
-    return { contents: results, total, page: Number(page) };
+    try {
+      const results = await this.gomNhomRepository.find({
+        where: query,
+        skip,
+        take: Number(limit),
+        relations: ['idLKKT', 'createdBy', 'updatedBy']
+      });
+      const total = await this.gomNhomRepository.count({ ...query });
+      return { contents: results, total, page: Number(page) };
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async findById(id: number): Promise<GomNhomEntity | any> {

@@ -15,6 +15,7 @@ export class BaseFilterDto {
 
 export class FilterGomNhom extends BaseFilterDto {
   @ApiProperty({ required: false, description: ' this field search by Tieu De ' })
+  @IsOptional()
   readonly search?: string;
 
   @ApiProperty({ required: false })

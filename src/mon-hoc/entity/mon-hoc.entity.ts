@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
 import { CreateMonHocDto } from './../dto/create-mon-hoc.dto';
@@ -9,6 +10,9 @@ export class MonHocEntity extends CreateMonHocDto {
   @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
+
+  @OneToOne(() => ChiTietGomNhomEntity, (chiTietGomNhom) => chiTietGomNhom.monHoc)
+  chiTietGomNhom?: ChiTietGomNhomEntity[];
 
   @ApiProperty()
   @ManyToOne(() => UsersEntity)

@@ -18,20 +18,24 @@ export class ChiTietGomNhomService {
       ...otherParam
     };
 
-    const results = await this.chiTietGomNhomRepository.find({
-      where: query,
-      skip,
-      take: Number(limit),
-      relations: ['idGN', 'idMH', 'createdBy', 'updatedBy']
-    });
-    const total = await this.chiTietGomNhomRepository.count({ ...query });
-    return { contents: results, total, page: Number(page) };
+    try {
+      const results = await this.chiTietGomNhomRepository.find({
+        where: query,
+        skip,
+        take: Number(limit),
+        relations: ['createdBy', 'updatedBy']
+      });
+      const total = await this.chiTietGomNhomRepository.count({ ...query });
+      return { contents: results, total, page: Number(page) };
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async findById(id: number): Promise<ChiTietGomNhomEntity | any> {
     const result = await this.chiTietGomNhomRepository.findOne({
       where: { id, isDeleted: false },
-      relations: ['idGN', 'idMH', 'createdBy', 'updatedBy']
+      relations: ['createdBy', 'updatedBy']
     });
     if (!result) {
       throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);
