@@ -24,11 +24,12 @@ export class ChiTietGomNhomService {
         where: query,
         skip,
         take: Number(limit),
-        relations: ['idGN', 'idMH', 'createdBy', 'updatedBy']
+        relations: ['idGN', 'idMH', 'createdBy', 'updatedBy', 'monHoc']
       });
       const total = await this.chiTietGomNhomRepository.count({ ...query });
       return { contents: results, total, page: Number(page) };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException();
     }
   }

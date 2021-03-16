@@ -29,6 +29,7 @@ export class GomNhomService {
       const total = await this.gomNhomRepository.count({ ...query });
       return { contents: results, total, page: Number(page) };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException();
     }
   }

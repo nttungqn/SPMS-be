@@ -1,12 +1,16 @@
 import { TABLE_NAME } from 'constant/constant';
+import { GomNhomEntity } from 'gom-nhom/entity/gom-nhom.entity';
 import { CreateLoaiKhoiKienThucDto } from 'loai-khoi-kien-thuc/dto/create-loai-khoi-kien-thuc.dto';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity(TABLE_NAME.LOAIKHOIKIENTHUC)
 export class LoaiKhoiKienThucEntity extends CreateLoaiKhoiKienThucDto {
   @PrimaryGeneratedColumn({ name: 'ID' })
   id?: number;
+
+  @OneToMany(() => GomNhomEntity, (gomNhom) => gomNhom.loaiKhoiKienThuc)
+  gomNhom?: GomNhomEntity[];
 
   @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'createdBy' })

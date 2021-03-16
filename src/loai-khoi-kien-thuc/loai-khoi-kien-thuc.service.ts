@@ -30,7 +30,7 @@ export class LoaiKhoiKienThucService {
       ...queryBy_KhoiKienThuc
     };
     const [results, total] = await this.typeOfKnowledgeBlockRepository.findAndCount({
-      relations: ['khoiKienThuc', 'createdBy', 'updatedBy'],
+      relations: ['khoiKienThuc', 'createdBy', 'updatedBy', 'gomNhom'],
       where: query,
       take: limit,
       skip
@@ -42,7 +42,7 @@ export class LoaiKhoiKienThucService {
     let result;
     try {
       result = await this.typeOfKnowledgeBlockRepository.findOne(id, {
-        relations: ['khoiKienThuc', 'createdBy', 'updatedBy'],
+        relations: ['khoiKienThuc', 'createdBy', 'updatedBy', 'gomNhom'],
         where: { isDeleted: false }
       });
     } catch (error) {

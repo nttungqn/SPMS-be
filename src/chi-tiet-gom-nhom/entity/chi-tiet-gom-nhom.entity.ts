@@ -22,6 +22,14 @@ export class ChiTietGomNhomEntity {
   @Column({ name: 'ID_MonHoc' })
   idMH: number;
 
+  @ManyToOne(() => GomNhomEntity, (gomNhom) => gomNhom.chiTietGomNhom)
+  @JoinColumn({ name: 'ID_GomNhom' })
+  gomNhom: GomNhomEntity;
+
+  @OneToOne(() => MonHocEntity, (monHoc) => monHoc.chiTietGomNhom, { eager: true })
+  @JoinColumn({ name: 'ID_MonHoc' })
+  monHoc: MonHocEntity;
+
   @ApiProperty()
   @Column({ name: 'GhiChu' })
   ghiChu: string;
