@@ -6,7 +6,7 @@ import { TABLE_NAME } from '../../constant/constant';
 import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
 
-@Entity(TABLE_NAME.GOMNHOM)
+@Entity(TABLE_NAME.GOMNHOM, { orderBy: { stt: 'ASC' } })
 export class GomNhomEntity extends CreateGomNhomDTO {
   @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'id' })

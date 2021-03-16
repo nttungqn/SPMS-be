@@ -82,12 +82,7 @@ export class ChiTietGomNhomController {
   @ApiInternalServerErrorResponse({ description: CHITIETGOMNHOM_MESSAGE.UPDATE_CHITIETGOMNHOM_FAILED })
   @ApiOkResponse({ description: CHITIETGOMNHOM_MESSAGE.UPDATE_CHITIETGOMNHOM_SUCCESSFULLY })
   @Put(':id')
-  async update(
-    @Req() req,
-    @Param() id: number,
-    @Body() updatedData: UpdateChiTietGomNhomDTO,
-    @Res() res
-  ): Promise<any> {
+  async update(@Req() req, @Param('id') id: number, @Body() updatedData: UpdateChiTietGomNhomDTO): Promise<any> {
     const user = req.user || {};
     await this.chiTietGomNhomService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     return new HttpException(CHITIETGOMNHOM_MESSAGE.UPDATE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.OK);
@@ -101,7 +96,7 @@ export class ChiTietGomNhomController {
   @ApiInternalServerErrorResponse({ description: CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED })
   @ApiOkResponse({ description: CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_SUCCESSFULLY })
   @Delete(':id')
-  async delete(@Req() req, @Param() id: number, @Res() res): Promise<any> {
+  async delete(@Req() req, @Param() id: number): Promise<any> {
     const user = req.user || {};
     await this.chiTietGomNhomService.delete(Number(id), user?.id);
     return new HttpException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.OK);

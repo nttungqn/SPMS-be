@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, LOAIKHOIKIENTHUC_MESSAGE } from 'constant/constant';
-import { QueryFailedError, Repository } from 'typeorm';
+import { OrderByCondition, QueryFailedError, Repository } from 'typeorm';
 import { CreateLoaiKhoiKienThucDto } from './dto/create-loai-khoi-kien-thuc.dto';
 import { FilterLoaiKhoiKienThuc } from './dto/filter-loai-khoi-kien-thuc.dto';
 import { LoaiKhoiKienThucEntity } from './entity/type-of-knowledge-block.entity';
@@ -22,23 +22,38 @@ export class LoaiKhoiKienThucService {
   ) {}
 
   async findAll(filter: FilterLoaiKhoiKienThuc) {
-    const { page = 0, limit = LIMIT, idKhoiKienThuc } = filter;
+    const { page = 0, limit = LIMIT, idKhoiKienThuc, createdAt } = filter;
     const queryBy_KhoiKienThuc = idKhoiKienThuc ? { khoiKienThuc: idKhoiKienThuc } : {};
+    const queryOrder: OrderByCondition = createdAt ? { createdAt } : {};
     const skip = page * limit;
     const query: LoaiKhoiKienThucEntity = {
       isDeleted: false,
       ...queryBy_KhoiKienThuc
     };
     const [results, total] = await this.typeOfKnowledgeBlockRepository.findAndCount({
-      relations: ['khoiKienThuc', 'createdBy', 'updatedBy', 'gomNhom'],
+      relations: ['khoiKienThuc', 'createdBy', 'updatedBy'],
       where: query,
       take: limit,
-      skip
+      skip,
+      order: queryOrder
     });
     return { contents: results, total, page: page };
   }
 
   async findOne(id: number) {
+    let result;
+    try {
+      result = await this.typeOfKnowledgeBlockRepository.findOne(id, {
+        relations: ['khoiKienThuc', 'createdBy', 'updatedBy'],
+        where: { isDeleted: false }
+      });
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+    if (!result) throw new NotFoundException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND);
+    return result;
+  }
+  async findDetail(id: number) {
     let result;
     try {
       result = await this.typeOfKnowledgeBlockRepository.findOne(id, {
@@ -51,7 +66,6 @@ export class LoaiKhoiKienThucService {
     if (!result) throw new NotFoundException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND);
     return result;
   }
-
   async create(typeOfKnowledgeBlock: LoaiKhoiKienThucEntity) {
     if (await this.isExist(typeOfKnowledgeBlock)) {
       throw new ConflictException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_EXIST);
