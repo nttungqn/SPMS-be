@@ -27,6 +27,7 @@ import { GomNhomModule } from './gom-nhom/gom-nhom.module';
 import { ChiTietGomNhomModule } from './chi-tiet-gom-nhom/chi-tiet-gom-nhom.module';
 import { MucTieuMonHocModule } from './muc-tieu-mon-hoc/muc-tieu-mon-hoc.module';
 import { ChiTietKeHoachModule } from './chi-tiet-ke-hoach/chi-tiet-ke-hoach.module';
+import { ChuanDauRaMonHocModule } from './chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.module';
 
 @Module({
   imports: [
@@ -53,7 +54,8 @@ import { ChiTietKeHoachModule } from './chi-tiet-ke-hoach/chi-tiet-ke-hoach.modu
     GomNhomModule,
     ChiTietGomNhomModule,
     MucTieuMonHocModule,
-    ChiTietKeHoachModule
+    ChiTietKeHoachModule,
+    ChuanDauRaMonHocModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
