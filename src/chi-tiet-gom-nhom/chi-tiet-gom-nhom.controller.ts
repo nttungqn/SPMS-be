@@ -96,7 +96,7 @@ export class ChiTietGomNhomController {
   @ApiInternalServerErrorResponse({ description: CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED })
   @ApiOkResponse({ description: CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_SUCCESSFULLY })
   @Delete(':id')
-  async delete(@Req() req, @Param() id: number): Promise<any> {
+  async delete(@Req() req, @Param('id') id: number): Promise<any> {
     const user = req.user || {};
     await this.chiTietGomNhomService.delete(Number(id), user?.id);
     return new HttpException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.OK);

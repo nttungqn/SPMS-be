@@ -107,7 +107,12 @@ export class LoaiKhoiKienThucService {
     const results = await this.typeOfKnowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
     if (!results) throw new HttpException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
     try {
-      return await this.typeOfKnowledgeBlockRepository.save({ ...results, updatedBy, updatedAt: new Date() });
+      return await this.typeOfKnowledgeBlockRepository.save({
+        ...results,
+        isDeleted: true,
+        updatedBy,
+        updatedAt: new Date()
+      });
     } catch (error) {
       throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.DELETE_LOAIKHOIKIENTHUC_FAILED);
     }

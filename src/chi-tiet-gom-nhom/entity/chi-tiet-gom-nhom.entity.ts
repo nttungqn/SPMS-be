@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CreateChiTietGomNhomDTO } from 'chi-tiet-gom-nhom/dto/create-chi-tiet-gom-nhom.dto';
 import { GomNhomEntity } from 'gom-nhom/entity/gom-nhom.entity';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
-import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
+import { addListener } from 'process';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, AfterLoad } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
-import { CreateChiTietGomNhomDTO } from '../dto/create-chi-tiet-gom-nhom.dto';
 
 @Entity(TABLE_NAME.CHITIETGOMNHOM)
 export class ChiTietGomNhomEntity extends CreateChiTietGomNhomDTO {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, OneToMany, AfterLoad } from 'typeorm';
 import { CreateGomNhomDTO } from 'gom-nhom/dto/create-gom-nhom';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
@@ -40,4 +40,9 @@ export class GomNhomEntity extends CreateGomNhomDTO {
   @ApiProperty()
   @Column({ name: 'isDeleted' })
   isDeleted?: boolean;
+
+  @AfterLoad()
+  afterLoad() {
+    this.chiTietGomNhom = this.chiTietGomNhom.filter((ctgn) => ctgn.isDeleted === false);
+  }
 }
