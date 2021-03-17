@@ -29,6 +29,7 @@ import { FilterGomNhom } from './dto/filter-gom-nhom';
 import { GOMNHOM_MESSAGE } from 'constant/constant';
 import { FindAllGomNhomDtoResponse } from './dto/gom-nhom-response';
 import { GomNhomEntity } from './entity/gom-nhom.entity';
+import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 
 @ApiTags('gom-nhom')
 @Controller('gom-nhom')
@@ -68,7 +69,8 @@ export class GomNhomController {
     return await this.gomNhomService.create({
       ...newData,
       createdBy: user?.id,
-      updatedBy: user?.id
+      updatedBy: user?.id,
+      afterLoad: GomNhomEntity.prototype.afterLoad
     });
   }
 
@@ -82,7 +84,11 @@ export class GomNhomController {
   @Put(':id')
   async update(@Req() req, @Param() id: number, @Body() updatedData: CreateGomNhomDTO): Promise<any> {
     const user = req.user || {};
-    await this.gomNhomService.update(Number(id), { ...updatedData, updatedBy: user?.id });
+    await this.gomNhomService.update(Number(id), {
+      ...updatedData,
+      updatedBy: user?.id,
+      afterLoad: GomNhomEntity.prototype.afterLoad
+    });
     return new HttpException(GOMNHOM_MESSAGE.UPDATE_GOMNHOM_SUCCESSFULLY, HttpStatus.OK);
   }
 
