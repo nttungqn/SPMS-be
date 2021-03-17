@@ -29,9 +29,13 @@ export class MucTieuMonHocService {
     if (await this.isExistV2(null, newData)) throw new ConflictException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_EXIST);
     if (newData.chuanDauRaCDIO) {
       mucTieuMonHoc.chuanDauRaCDIO = [];
+      const uniqueId = [];
       for (const id of newData.chuanDauRaCDIO) {
-        const chuanDaura = await this.chuanDauRaNganhDaoTaoService.findById(Number(id));
-        mucTieuMonHoc.chuanDauRaCDIO.push(chuanDaura);
+        if (uniqueId.indexOf(id) === -1) {
+          uniqueId.push(id);
+          const chuanDaura = await this.chuanDauRaNganhDaoTaoService.findById(Number(id));
+          mucTieuMonHoc.chuanDauRaCDIO.push(chuanDaura);
+        }
       }
     }
     try {
@@ -92,9 +96,13 @@ export class MucTieuMonHocService {
     if (await this.isExistV2(oldData, newData)) throw new ConflictException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_EXIST);
     if (chuanDauRaCDIO) {
       oldData.chuanDauRaCDIO = [];
+      const uniqueId = [];
       for (const id of newData.chuanDauRaCDIO) {
-        const chuanDaura = await this.chuanDauRaNganhDaoTaoService.findById(Number(id));
-        oldData.chuanDauRaCDIO.push(chuanDaura);
+        if (uniqueId.indexOf(id) === -1) {
+          uniqueId.push(id);
+          const chuanDaura = await this.chuanDauRaNganhDaoTaoService.findById(Number(id));
+          oldData.chuanDauRaCDIO.push(chuanDaura);
+        }
       }
     }
     const { ma, syllabus, moTa } = { ...oldData, ...newData };
@@ -102,8 +110,6 @@ export class MucTieuMonHocService {
       const result = await this.mucTieuMonHocEntityRepository.save({
         ...oldData,
         ...{ ma, syllabus, moTa },
-        createdAt: new Date(),
-        createdBy: idUser,
         updatedAt: new Date(),
         updatedBy: idUser
       });
