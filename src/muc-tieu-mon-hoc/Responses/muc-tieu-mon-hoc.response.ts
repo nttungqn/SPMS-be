@@ -1,19 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SyllabusResponse } from 'syllabus/Responses/syllbus.response';
+import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
 import { UserResponse } from 'users/Responses/user.response';
 
 export class MucTieuMonHocResponse {
   @ApiProperty()
   id?: number;
 
-  @ApiProperty({ type: SyllabusResponse })
-  syllabus?: SyllabusResponse;
+  @ApiProperty()
+  syllabus?: number;
 
   @ApiProperty()
   ma?: string;
 
   @ApiProperty()
   moTa?: string;
+
+  @ApiProperty({ type: [ChuanDauRaNganhDaoTaoEntity] })
+  chuanDauRaCDIO?: ChuanDauRaNganhDaoTaoEntity[];
 
   @ApiProperty({ type: UserResponse })
   updatedBy?: UserResponse;

@@ -7,6 +7,7 @@ import { ChuanDauRaNganhDaoTaoEntity } from './entity/chuanDauRaNganhDaoTao.enti
 @Module({
   imports: [TypeOrmModule.forFeature([ChuanDauRaNganhDaoTaoEntity])],
   controllers: [ChuanDauRaNganhDaoTaoController],
-  providers: [ChuanDauRaNganhDaoTaoService]
+  providers: [ChuanDauRaNganhDaoTaoService],
+  exports: [ChuanDauRaNganhDaoTaoService]
 })
 export class ChuanDauRaNganhDaoTaoModule {}
