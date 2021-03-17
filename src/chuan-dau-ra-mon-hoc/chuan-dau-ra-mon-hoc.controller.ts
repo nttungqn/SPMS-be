@@ -1,5 +1,29 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  HttpException,
+  HttpStatus
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import {
+  ApiBearerAuth,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
+import { GetUser } from 'auth/user.decorator';
+import { CHUANDAURAMONHOC_MESSAGE } from 'constant/constant';
+import { UsersEntity } from 'users/entity/user.entity';
 import { ChuanDauRaMonHocService } from './chuan-dau-ra-mon-hoc.service';
 import { CreateChuanDauRaMonHocDto } from './dto/create-chuan-dau-ra-mon-hoc.dto';
 import { FilterChuanDauRaMonHocDto } from './dto/filter-chuan-dau-ra-mon-hoc.dto';
@@ -16,13 +40,13 @@ export class ChuanDauRaMonHocController {
   }
 
   @Post()
-  create(@Body() createChuanDauRaMonHocDto: CreateChuanDauRaMonHocDto) {
-    return this.chuanDauRaMonHocService.create(createChuanDauRaMonHocDto);
+  create(@Body() createChuanDauRaMonHocDto: CreateChuanDauRaMonHocDto, @GetUser() user: UsersEntity) {
+    return this.chuanDauRaMonHocService.create(createChuanDauRaMonHocDto, user.id);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.chuanDauRaMonHocService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.chuanDauRaMonHocService.findOne(id);
   }
 
   @Put(':id')
@@ -30,8 +54,16 @@ export class ChuanDauRaMonHocController {
     return this.chuanDauRaMonHocService.update(+id, updateChuanDauRaMonHocDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Xóa một chuẩn đầu ra' })
+  @ApiUnauthorizedResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_NOT_AUTHORIZED })
+  @ApiInternalServerErrorResponse({ description: CHUANDAURAMONHOC_MESSAGE.DELETE_CHUANDAURAMONHOC_FAILED })
+  @ApiOkResponse({ description: CHUANDAURAMONHOC_MESSAGE.DELETE_CHUANDAURAMONHOC_SUCCESSFULLY })
+  @ApiNotFoundResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_ID_NOT_FOUND })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.chuanDauRaMonHocService.remove(+id);
+  async remove(@Param('id') id: number, @GetUser() user: UsersEntity) {
+    await this.chuanDauRaMonHocService.remove(id, user.id);
+    return new HttpException(CHUANDAURAMONHOC_MESSAGE.DELETE_CHUANDAURAMONHOC_SUCCESSFULLY, HttpStatus.OK);
   }
 }

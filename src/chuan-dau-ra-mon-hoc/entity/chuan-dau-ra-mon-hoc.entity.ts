@@ -1,4 +1,5 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { MucTieuMonHocEntity } from 'muc-tieu-mon-hoc/entity/muc-tieu-mon-hoc.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity({ name: 'ChuanDauRaMonHoc' })
@@ -7,8 +8,12 @@ export class ChuanDauRaMonHocEntity {
   id?: number;
   @Column({ name: 'ma' })
   ma?: string;
+
   @Column({ name: 'idMTMH' })
-  idMTMH?: number;
+  @ManyToOne(() => MucTieuMonHocEntity)
+  @JoinColumn({ name: 'idMTMH', referencedColumnName: 'id' })
+  mucTieuMonHoc?: number;
+
   @Column({ name: 'moTa' })
   mota?: string;
   @Column({ name: 'mucDo' })

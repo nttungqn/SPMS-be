@@ -3,9 +3,11 @@ import { ChuanDauRaMonHocService } from './chuan-dau-ra-mon-hoc.service';
 import { ChuanDauRaMonHocController } from './chuan-dau-ra-mon-hoc.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocEntity } from './entity/chuan-dau-ra-mon-hoc.entity';
+import { MucTieuMonHocModule } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.module';
+import { SyllabusModule } from 'syllabus/syllabus.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ChuanDauRaMonHocEntity])],
+  imports: [TypeOrmModule.forFeature([ChuanDauRaMonHocEntity]), MucTieuMonHocModule, SyllabusModule],
   controllers: [ChuanDauRaMonHocController],
   providers: [ChuanDauRaMonHocService]
 })
