@@ -1,5 +1,6 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ChuanDauRaNganhDaoTaoService } from 'chuan-dau-ra-nganh-dao-tao/chuan-dau-ra-nganh-dao-tao.service';
 import { LIMIT, MUCTIEUMONHOC_MESSAGE } from 'constant/constant';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
@@ -13,19 +14,37 @@ export class MucTieuMonHocService {
   constructor(
     @InjectRepository(MucTieuMonHocEntity)
     private mucTieuMonHocEntityRepository: Repository<MucTieuMonHocEntity>,
-    private syllabusService: SyllabusService
+    private syllabusService: SyllabusService,
+    private chuanDauRaNganhDaoTaoService: ChuanDauRaNganhDaoTaoService
   ) {}
 
-  async create(newData: MucTieuMonHocEntity) {
+  async create(newData: CreateMucTieuMonHocDto, idUser: number) {
     await this.syllabusService.findOne(newData.syllabus);
 
-    if (await this.isExist(null, newData)) throw new ConflictException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_EXIST);
+    const mucTieuMonHoc = new MucTieuMonHocEntity();
+    mucTieuMonHoc.syllabus = newData.syllabus;
+    mucTieuMonHoc.ma = newData.ma;
+    mucTieuMonHoc.moTa = newData.moTa;
 
+    if (await this.isExistV2(null, newData)) throw new ConflictException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_EXIST);
+    if (newData.chuanDauRaCDIO) {
+      mucTieuMonHoc.chuanDauRaCDIO = [];
+      const uniqueId = [];
+      for (const id of newData.chuanDauRaCDIO) {
+        if (uniqueId.indexOf(id) === -1) {
+          uniqueId.push(id);
+          const chuanDaura = await this.chuanDauRaNganhDaoTaoService.findById(Number(id));
+          mucTieuMonHoc.chuanDauRaCDIO.push(chuanDaura);
+        }
+      }
+    }
     try {
       const result = await this.mucTieuMonHocEntityRepository.save({
-        ...newData,
+        ...mucTieuMonHoc,
         createdAt: new Date(),
-        updatedAt: new Date()
+        createdBy: idUser,
+        updatedAt: new Date(),
+        updatedBy: idUser
       });
       return this.findOne(result.id);
     } catch (error) {
@@ -45,16 +64,7 @@ export class MucTieuMonHocService {
     const order = idSyllabus ? { ma: 'ASC' } : {};
     try {
       const [results, total] = await this.mucTieuMonHocEntityRepository.findAndCount({
-        relations: [
-          'syllabus',
-          'createdBy',
-          'updatedBy',
-          'syllabus.monHoc',
-          'syllabus.createdBy',
-          'syllabus.updatedBy',
-          'syllabus.heDaoTao',
-          'syllabus.namHoc'
-        ],
+        relations: ['createdBy', 'updatedBy', 'chuanDauRaCDIO'],
         where: query,
         skip,
         take: limit,
@@ -70,16 +80,7 @@ export class MucTieuMonHocService {
     let result: any;
     try {
       result = await this.mucTieuMonHocEntityRepository.findOne(id, {
-        relations: [
-          'syllabus',
-          'createdBy',
-          'updatedBy',
-          'syllabus.monHoc',
-          'syllabus.createdBy',
-          'syllabus.updatedBy',
-          'syllabus.heDaoTao',
-          'syllabus.namHoc'
-        ],
+        relations: ['createdBy', 'updatedBy', 'chuanDauRaCDIO'],
         where: { isDeleted: false }
       });
     } catch (error) {
@@ -89,13 +90,30 @@ export class MucTieuMonHocService {
     return result;
   }
 
-  async update(id: number, newData: MucTieuMonHocEntity) {
+  async update(id: number, newData: UpdateMucTieuMonHocDto, idUser: number) {
     const oldData = await this.mucTieuMonHocEntityRepository.findOne(id, { where: { isDeleted: false } });
-    if (!oldData) throw new NotFoundException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_ID_NOT_FOUND);
-    if (await this.isExist(oldData, newData)) throw new ConflictException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_EXIST);
-    if (!newData.syllabus) await this.syllabusService.findOne(newData.syllabus);
+    const { chuanDauRaCDIO } = newData;
+    if (await this.isExistV2(oldData, newData)) throw new ConflictException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_EXIST);
+    if (chuanDauRaCDIO) {
+      oldData.chuanDauRaCDIO = [];
+      const uniqueId = [];
+      for (const id of newData.chuanDauRaCDIO) {
+        if (uniqueId.indexOf(id) === -1) {
+          uniqueId.push(id);
+          const chuanDaura = await this.chuanDauRaNganhDaoTaoService.findById(Number(id));
+          oldData.chuanDauRaCDIO.push(chuanDaura);
+        }
+      }
+    }
+    const { ma, syllabus, moTa } = { ...oldData, ...newData };
     try {
-      return await this.mucTieuMonHocEntityRepository.save({ ...oldData, ...newData, updatedAt: new Date() });
+      const result = await this.mucTieuMonHocEntityRepository.save({
+        ...oldData,
+        ...{ ma, syllabus, moTa },
+        updatedAt: new Date(),
+        updatedBy: idUser
+      });
+      return this.findOne(result.id);
     } catch (error) {
       throw new InternalServerErrorException(MUCTIEUMONHOC_MESSAGE.UPDATE_MUCTIEUMONHOC_FAILED);
     }
@@ -129,5 +147,18 @@ export class MucTieuMonHocService {
     };
     const found = await this.mucTieuMonHocEntityRepository.findOne({ where: query });
     return found ? true : false;
+  }
+  async isExistV2(oldData: MucTieuMonHocEntity, newData: CreateMucTieuMonHocDto): Promise<boolean> {
+    if (!(newData.syllabus || newData.ma)) return false;
+    const { syllabus, ma } = { ...oldData, ...newData };
+    const notID = oldData?.id ? { id: Not(Number(oldData.id)) } : {};
+    const queryByMaAndSlylabus: MucTieuMonHocEntity = { syllabus, ma };
+    const query = {
+      isDeleted: false,
+      ...queryByMaAndSlylabus,
+      ...notID
+    };
+    const result = await this.mucTieuMonHocEntityRepository.findOne({ where: query });
+    return result ? true : false;
   }
 }

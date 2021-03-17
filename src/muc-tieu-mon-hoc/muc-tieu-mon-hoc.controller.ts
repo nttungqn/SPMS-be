@@ -69,7 +69,7 @@ export class MucTieuMonHocController {
   @Post()
   async create(@Body() createMucTieuMonHocDto: CreateMucTieuMonHocDto, @Req() req) {
     const user = req.user || {};
-    await this.mucTieuMonHocService.create({ ...createMucTieuMonHocDto, updatedBy: user?.id, createdBy: user?.id });
+    await this.mucTieuMonHocService.create(createMucTieuMonHocDto, user?.id);
     return new HttpException(MUCTIEUMONHOC_MESSAGE.CREATE_MUCTIEUMONHOC_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
@@ -88,11 +88,7 @@ export class MucTieuMonHocController {
     @Req() req
   ) {
     const user = req.user || {};
-    await this.mucTieuMonHocService.update(id, {
-      ...updateMucTieuMonHocDto,
-      updatedBy: user?.id,
-      updatedAt: new Date()
-    });
+    await this.mucTieuMonHocService.update(id, updateMucTieuMonHocDto, user.id);
     return new HttpException(MUCTIEUMONHOC_MESSAGE.UPDATE_MUCTIEUMONHOC_SUCCESSFULLY, HttpStatus.OK);
   }
 
