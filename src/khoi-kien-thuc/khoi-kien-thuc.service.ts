@@ -32,11 +32,12 @@ export class KhoiKienThucService {
   }
 
   async findAll(filter: filterKnowledgeBlock) {
-    const { page = 0, limit = LIMIT } = filter;
+    const { page = 0, limit = LIMIT, idChiTietNganhDaoTao } = filter;
+    const queryByChiTietNganhDaoTao = idChiTietNganhDaoTao ? { chiTietNganh: idChiTietNganhDaoTao } : {};
     const skip = page * limit;
     const [results, total] = await this.knowledgeBlockRepository.findAndCount({
       relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
-      where: { isDeleted: false },
+      where: { isDeleted: false, ...queryByChiTietNganhDaoTao },
       skip,
       take: limit
     });

@@ -1,6 +1,6 @@
 import { TABLE_NAME } from 'constant/constant';
 import { CreateKhoiKienThucDto } from 'khoi-kien-thuc/dto/create-khoi-kien-thuc.dto';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { AfterLoad, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity({ name: TABLE_NAME.KHOIKIENTHUC })

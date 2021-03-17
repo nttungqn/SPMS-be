@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsNumberString, IsOptional } from 'class-validator';
+import { IsNumberString, IsOptional } from 'class-validator';
 
 export class BaseFilterDto {
   @ApiProperty({ required: false, default: 0 })
@@ -11,4 +11,16 @@ export class BaseFilterDto {
   @IsOptional()
   @IsNumberString()
   readonly limit?: number;
+}
+
+export class FilterChiTietKeHoach extends BaseFilterDto {
+  @ApiProperty({ required: false })
+  @IsNumberString()
+  @IsOptional()
+  readonly idKHGD?: number;
+
+  @ApiProperty({ required: false })
+  @IsNumberString()
+  @IsOptional()
+  readonly idCTGN?: number;
 }

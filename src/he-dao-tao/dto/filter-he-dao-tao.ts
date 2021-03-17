@@ -13,16 +13,27 @@ export class BaseFilterDto {
   readonly limit?: number;
 }
 
-export class FilterHoatDongDayHoc extends BaseFilterDto {
-  @ApiProperty({ required: false, description: ' this field search by Ten ' })
+export class FilterGomNhom extends BaseFilterDto {
+  @ApiProperty({ required: false, description: ' this field search by Tieu De ' })
   readonly search?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumberString()
-  readonly idCD: number;
+  readonly idLKKT: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  readonly ma: string;
+  @IsNumberString()
+  readonly maGN: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumberString()
+  readonly loaiNhom: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumberString()
+  readonly soTCBB: number;
 }

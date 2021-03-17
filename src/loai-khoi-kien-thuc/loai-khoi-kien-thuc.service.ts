@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, LOAIKHOIKIENTHUC_MESSAGE } from 'constant/constant';
-import { QueryFailedError, Repository } from 'typeorm';
+import { OrderByCondition, QueryFailedError, Repository } from 'typeorm';
 import { CreateLoaiKhoiKienThucDto } from './dto/create-loai-khoi-kien-thuc.dto';
 import { FilterLoaiKhoiKienThuc } from './dto/filter-loai-khoi-kien-thuc.dto';
 import { LoaiKhoiKienThucEntity } from './entity/type-of-knowledge-block.entity';
@@ -22,8 +22,9 @@ export class LoaiKhoiKienThucService {
   ) {}
 
   async findAll(filter: FilterLoaiKhoiKienThuc) {
-    const { page = 0, limit = LIMIT, idKhoiKienThuc } = filter;
+    const { page = 0, limit = LIMIT, idKhoiKienThuc, createdAt } = filter;
     const queryBy_KhoiKienThuc = idKhoiKienThuc ? { khoiKienThuc: idKhoiKienThuc } : {};
+    const queryOrder: OrderByCondition = createdAt ? { createdAt } : {};
     const skip = page * limit;
     const query: LoaiKhoiKienThucEntity = {
       isDeleted: false,
@@ -33,7 +34,8 @@ export class LoaiKhoiKienThucService {
       relations: ['khoiKienThuc', 'createdBy', 'updatedBy'],
       where: query,
       take: limit,
-      skip
+      skip,
+      order: queryOrder
     });
     return { contents: results, total, page: page };
   }
@@ -51,7 +53,19 @@ export class LoaiKhoiKienThucService {
     if (!result) throw new NotFoundException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND);
     return result;
   }
-
+  async findDetail(id: number) {
+    let result;
+    try {
+      result = await this.typeOfKnowledgeBlockRepository.findOne(id, {
+        relations: ['khoiKienThuc', 'createdBy', 'updatedBy', 'gomNhom'],
+        where: { isDeleted: false }
+      });
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+    if (!result) throw new NotFoundException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND);
+    return result;
+  }
   async create(typeOfKnowledgeBlock: LoaiKhoiKienThucEntity) {
     if (await this.isExist(typeOfKnowledgeBlock)) {
       throw new ConflictException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_EXIST);
@@ -93,7 +107,12 @@ export class LoaiKhoiKienThucService {
     const results = await this.typeOfKnowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
     if (!results) throw new HttpException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
     try {
-      return await this.typeOfKnowledgeBlockRepository.save({ ...results, updatedBy, updatedAt: new Date() });
+      return await this.typeOfKnowledgeBlockRepository.save({
+        ...results,
+        isDeleted: true,
+        updatedBy,
+        updatedAt: new Date()
+      });
     } catch (error) {
       throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.DELETE_LOAIKHOIKIENTHUC_FAILED);
     }

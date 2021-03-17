@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
-import { MonHocEntity } from 'mon-hoc/entity/monHoc.entity';
+import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { NamHocEntity } from 'nam-hoc/entity/nam-hoc.entity';
 import { HeDaoTaoEntity } from 'he-dao-tao/entity/type-of-education.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
