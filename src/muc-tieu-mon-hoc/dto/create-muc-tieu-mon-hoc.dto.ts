@@ -5,19 +5,18 @@ import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
 export class CreateMucTieuMonHocDto {
   @ApiProperty()
-  @ManyToOne(() => Syllabus)
-  @JoinColumn({ name: 'idSyllabus' })
-  @Column({ name: 'idSyllabus' })
   @IsNotEmpty()
   syllabus?: number;
 
   @ApiProperty()
-  @Column({ name: 'ma' })
   @IsNotEmpty()
   ma?: string;
 
   @ApiProperty()
-  @Column({ name: 'moTa' })
   @IsOptional()
   moTa?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  chuanDauRaCDIO?: string[];
 }
