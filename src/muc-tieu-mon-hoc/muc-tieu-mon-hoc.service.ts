@@ -115,7 +115,7 @@ export class MucTieuMonHocService {
       });
       return this.findOne(result.id);
     } catch (error) {
-      throw new InternalServerErrorException(MUCTIEUMONHOC_MESSAGE.CREATE_MUCTIEUMONHOC_FAILED);
+      throw new InternalServerErrorException(MUCTIEUMONHOC_MESSAGE.UPDATE_MUCTIEUMONHOC_FAILED);
     }
   }
 
