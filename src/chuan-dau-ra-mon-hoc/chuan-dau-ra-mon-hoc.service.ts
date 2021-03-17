@@ -1,10 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CHUANDAURAMONHOC_MESSAGE, LIMIT } from 'constant/constant';
-import { MucTieuMonHocEntity } from 'muc-tieu-mon-hoc/entity/muc-tieu-mon-hoc.entity';
 import { MucTieuMonHocService } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.service';
 import { SyllabusService } from 'syllabus/syllabus.service';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateChuanDauRaMonHocDto } from './dto/create-chuan-dau-ra-mon-hoc.dto';
 import { FilterChuanDauRaMonHocDto } from './dto/filter-chuan-dau-ra-mon-hoc.dto';
 import { UpdateChuanDauRaMonHocDto } from './dto/update-chuan-dau-ra-mon-hoc.dto';
@@ -19,8 +18,34 @@ export class ChuanDauRaMonHocService {
     private syllabusService: SyllabusService
   ) {}
 
-  create(createChuanDauRaMonHocDto: CreateChuanDauRaMonHocDto, idUser: number) {
-    return 'This action adds a new chuanDauRaMonHoc';
+  async create(newData: CreateChuanDauRaMonHocDto, idUser: number) {
+    await this.mucTieuMonHocService.findOne(newData.mucTieuMonHoc);
+
+    const chuanDauRaMonHoc = new ChuanDauRaMonHocEntity();
+    const { mucDo } = newData;
+    if (mucDo) {
+      chuanDauRaMonHoc.mucDo = mucDo.join(', ');
+      delete newData.mucDo;
+    }
+    for (const key in newData) {
+      if (Object.prototype.hasOwnProperty.call(newData, key)) {
+        chuanDauRaMonHoc[key] = newData[key];
+      }
+    }
+    if (await this.isExistV2(null, newData))
+      throw new ConflictException(CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_EXIST);
+    try {
+      const result = await this.chuanDauRaMonHocService.save({
+        ...chuanDauRaMonHoc,
+        createdAt: new Date(),
+        createdBy: idUser,
+        updatedAt: new Date(),
+        updatedBy: idUser
+      });
+      return this.findOne(result.id);
+    } catch (error) {
+      throw new InternalServerErrorException(CHUANDAURAMONHOC_MESSAGE.CREATE_CHUANDAURAMONHOC_FAILED);
+    }
   }
 
   async findAll(filter: FilterChuanDauRaMonHocDto) {
@@ -74,8 +99,31 @@ export class ChuanDauRaMonHocService {
     return found;
   }
 
-  update(id: number, updateChuanDauRaMonHocDto: UpdateChuanDauRaMonHocDto) {
-    return `This action updates a #${id} chuanDauRaMonHoc`;
+  async update(id: number, newData: UpdateChuanDauRaMonHocDto, idUser: number) {
+    const oldData = await this.chuanDauRaMonHocService.findOne(id, { where: { isDeleted: false } });
+
+    if (await this.isExistV2(oldData, newData))
+      throw new ConflictException(CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_EXIST);
+    const { mucDo } = newData;
+    if (mucDo) {
+      oldData.mucDo = mucDo.join(', ');
+      delete newData.mucDo;
+    }
+    for (const key in newData) {
+      if (Object.prototype.hasOwnProperty.call(newData, key)) {
+        oldData[key] = newData[key];
+      }
+    }
+    try {
+      const result = await this.chuanDauRaMonHocService.save({
+        ...oldData,
+        updatedAt: new Date(),
+        updatedBy: idUser
+      });
+      return this.findOne(result.id);
+    } catch (error) {
+      throw new InternalServerErrorException(CHUANDAURAMONHOC_MESSAGE.UPDATE_CHUANDAURAMONHOC_FAILED);
+    }
   }
 
   async remove(id: number, idUser: number) {
@@ -90,5 +138,18 @@ export class ChuanDauRaMonHocService {
     } catch (error) {
       throw new InternalServerErrorException(CHUANDAURAMONHOC_MESSAGE.DELETE_CHUANDAURAMONHOC_FAILED);
     }
+  }
+  async isExistV2(oldData: ChuanDauRaMonHocEntity, newData: CreateChuanDauRaMonHocDto): Promise<boolean> {
+    if (!(newData.mucTieuMonHoc || newData.ma)) return false;
+    const { mucTieuMonHoc, ma } = { ...oldData, ...newData };
+    const notID = oldData?.id ? { id: Not(Number(oldData.id)) } : {};
+    const queryByMaAndSlylabus: ChuanDauRaMonHocEntity = { mucTieuMonHoc, ma };
+    const query = {
+      isDeleted: false,
+      ...queryByMaAndSlylabus,
+      ...notID
+    };
+    const result = await this.chuanDauRaMonHocService.findOne({ where: query });
+    return result ? true : false;
   }
 }
