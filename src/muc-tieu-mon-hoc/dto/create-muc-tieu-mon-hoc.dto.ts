@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { Syllabus } from 'syllabus/entity/syllabus.entity';
-import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
 export class CreateMucTieuMonHocDto {
   @ApiProperty()
@@ -18,6 +16,6 @@ export class CreateMucTieuMonHocDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsString({ egach: true })
+  @IsString({ each: true })
   chuanDauRaCDIO?: string[];
 }
