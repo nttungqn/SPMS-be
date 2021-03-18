@@ -143,10 +143,10 @@ export class ChuanDauRaMonHocService {
     if (!(newData.mucTieuMonHoc || newData.ma)) return false;
     const { mucTieuMonHoc, ma } = { ...oldData, ...newData };
     const notID = oldData?.id ? { id: Not(Number(oldData.id)) } : {};
-    const queryByMaAndSlylabus: ChuanDauRaMonHocEntity = { mucTieuMonHoc, ma };
+    const queryByMaAndMTMH: ChuanDauRaMonHocEntity = { mucTieuMonHoc, ma };
     const query = {
       isDeleted: false,
-      ...queryByMaAndSlylabus,
+      ...queryByMaAndMTMH,
       ...notID
     };
     const result = await this.chuanDauRaMonHocService.findOne({ where: query });
