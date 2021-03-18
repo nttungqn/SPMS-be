@@ -9,6 +9,7 @@ import { ChuanDauRaNganhDaoTaoModule } from 'chuan-dau-ra-nganh-dao-tao/chuan-da
 @Module({
   controllers: [MucTieuMonHocController],
   providers: [MucTieuMonHocService],
-  imports: [SyllabusModule, ChuanDauRaNganhDaoTaoModule, TypeOrmModule.forFeature([MucTieuMonHocEntity])]
+  imports: [SyllabusModule, ChuanDauRaNganhDaoTaoModule, TypeOrmModule.forFeature([MucTieuMonHocEntity])],
+  exports: [MucTieuMonHocService]
 })
 export class MucTieuMonHocModule {}
