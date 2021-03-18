@@ -33,6 +33,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { LOAIDANHGIA_MESSAGE } from 'constant/constant';
 import { FindAllLoaiDanhGiaResponse } from './responses/find-all-loai-danh-gia.response';
 import { LoaiDanhGiaResponse } from './responses/loai-danh-gia.response';
+import { GetUser } from 'auth/user.decorator';
+import { UsersEntity } from 'users/entity/user.entity';
 
 @ApiTags('loai-danh-gia')
 @Controller('loai-danh-gia')
@@ -47,9 +49,8 @@ export class LoaiDanhGiaController {
   @ApiConflictResponse({ description: LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST })
   @ApiUnauthorizedResponse({ description: LOAIDANHGIA_MESSAGE.LOAIDANHGIA_NOT_AUTHORIZED })
   @Post()
-  async create(@Body(ValidationPipe) createLoaiDanhGiaDto: CreateLoaiDanhGiaDto, @Req() req) {
-    const user = req.user || {};
-    await this.loaiDanhGiaService.create({ ...createLoaiDanhGiaDto, updatedBy: user?.id, createdBy: user?.id });
+  async create(@Body(ValidationPipe) createLoaiDanhGiaDto: CreateLoaiDanhGiaDto, @GetUser() user: UsersEntity) {
+    await this.loaiDanhGiaService.create(createLoaiDanhGiaDto, user.id);
     return new HttpException(LOAIDANHGIA_MESSAGE.CREATE_LOAIDANHGIA_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
@@ -86,10 +87,9 @@ export class LoaiDanhGiaController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body(ValidationPipe) updateLoaiDanhGiaDto: UpdateLoaiDanhGiaDto,
-    @Req() req
+    @GetUser() user: UsersEntity
   ) {
-    const user = req.user || {};
-    await this.loaiDanhGiaService.update(id, { ...updateLoaiDanhGiaDto, updatedBy: user?.id, updatedAt: new Date() });
+    await this.loaiDanhGiaService.update(id, updateLoaiDanhGiaDto, user.id);
     return new HttpException(LOAIDANHGIA_MESSAGE.UPDATE_LOAIDANHGIA_SUCCESSFULLY, HttpStatus.OK);
   }
 
