@@ -27,13 +27,15 @@ import { GomNhomModule } from './gom-nhom/gom-nhom.module';
 import { ChiTietGomNhomModule } from './chi-tiet-gom-nhom/chi-tiet-gom-nhom.module';
 import { MucTieuMonHocModule } from './muc-tieu-mon-hoc/muc-tieu-mon-hoc.module';
 import { ChiTietKeHoachModule } from './chi-tiet-ke-hoach/chi-tiet-ke-hoach.module';
+import { ExportsModule } from './exports/exports.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({ useClass: DatabaseConnectionService })
+    TypeOrmModule.forRootAsync({ useClass: DatabaseConnectionService }),
+    ExportsModule,
     // ChuongTrinhDaoTaoModule,
-    // AuthModule,
-    // UsersModule,
+    AuthModule,
+    UsersModule
     // MonHocModule,
     // SyllabusModule,
     // NamHocModule,

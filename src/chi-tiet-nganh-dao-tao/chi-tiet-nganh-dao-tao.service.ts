@@ -17,6 +17,7 @@ export class ChiTietNganhDaoTaoService {
       isDeleted: false,
       ...rest
     };
+    console.log('query', query);
     const results = await this.chiTietNganhDTRepository.find({
       relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.chuongTrinhDaoTao'],
       skip,

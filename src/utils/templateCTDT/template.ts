@@ -20,6 +20,9 @@ const titles = {
   NOI_DUNG_CHUONG_TRINH: 'nội dung chương trình',
   KE_HOACH_GIANG_DAY: 'kế hoạch giảng dạy'
 };
+import renderTables from 'utils/templateCTDT/components/tables';
+import { getStringHtml } from './components/list';
+
 export default (data) => `
 <!DOCTYPE html>
 <html>
@@ -97,7 +100,7 @@ export default (data) => `
                          <div class="container">
                               <div class="row titleChuongTrinhDaoTao">
                                    <h2>${titles.CHUONG_TRINH_DAO_TAO}</h2>
-                                   <h2>ngành công nghệ phần mềm</h2>
+                                   <h2>ngành ${data?.tenNganhDaoTao}</h2>
                               </div>
                               <div class="row">
                                    <div class="table-info" style="width: 100%;">
@@ -110,12 +113,12 @@ export default (data) => `
                                              <p>${titles.KHOA_TUYEN}:</p>
                                         </div>
                                         <div class="table-value">
-                                             <p class="block-value">cong nghe phan mem</p>
-                                             <p class="block-value">đại học</p>
-                                             <p class="block-value">ky thuat phan mem</p>
-                                             <p class="block-value">D123</p>
-                                             <p class="block-value">chinh quy</p>
-                                             <p class="block-value">2016</p>
+                                             <p class="block-value">${data?.tenNganhDaoTao}</p>
+                                             <p class="block-value">${data?.trinhDo}</p>
+                                             <p class="block-value">${data?.tenNganhDaoTao}</p>
+                                             <p class="block-value">${data?.maNganhDaoTao}</p>
+                                             <p class="block-value">${data?.loaiHinh}</p>
+                                             <p class="block-value">${data?.khoa}</p>
                                         </div>
                                    </div>
                               </div>
@@ -132,27 +135,33 @@ export default (data) => `
                                                   <li class="li-menu-lv2">
                                                        <p class="part-title">${titles.MUC_TIEU_CHUNG}</p>
                                                        <div class="row muctieuchung">
-                                                            <p>text.............</p>
+                                                            <p>${data?.mucTieuChung}</p>
                                                        </div>
                                                   </li>
                                                   <li class="li-menu-lv2">
                                                        <p class="part-title">${titles.MUC_TIEU_CU_THE}</p>
                                                        <div class="row muctieucuthe">
-                                                            <p>text.............</p>
+                                                            ${getStringHtml(data?.chuanDauRaNganhDaoTao, 'ma')}
                                                        </div>
                                                   </li>
                                                   <li class="li-menu-lv2">
                                                        <p class="part-title">${titles.CO_HOI_NGHE_NGHIEP}</p>
                                                        <div class="row cohoinghenghiep">
-                                                            <p>text.............</p>
+                                                            <p>${data?.coHoiNgheNghiep}</p>
                                                        </div>
                                                   </li>
                                              </ol>
                                         </li>
 
-                                        <li class="li-menu-lv1"><p class="part-title">${titles.THOI_GIAN_DAO_TAO}</p></li>
-                                        <li class="li-menu-lv1"><p class="part-title">${titles.KHOI_LUONG_KIEN_THUC}</p></li>
-                                        <li class="li-menu-lv1"><p class="part-title">${titles.DOI_TUONG_TUYEN_SINH}</p></li>
+                                        <li class="li-menu-lv1"><p class="part-title">${
+                                          titles.THOI_GIAN_DAO_TAO
+                                        }: 4 năm</p></li>
+                                        <li class="li-menu-lv1"><p class="part-title">${titles.KHOI_LUONG_KIEN_THUC}: ${
+  data?.tongTinChi
+}</p></li>
+                                        <li class="li-menu-lv1"><p class="part-title">${titles.DOI_TUONG_TUYEN_SINH}: ${
+  data?.doiTuong
+}</p></li>
                                         <li class="li-menu-lv1">
                                              <p class="part-title">${titles.QUY_TRINH_DAO_TAO_DIEU_KIEN_TOT_NGHIEP}</p>
                                         
@@ -160,18 +169,39 @@ export default (data) => `
                                                   <li class="li-menu-lv2">
                                                        <p class="part-title">${titles.QUY_TRINH_DAO_TAO}</p>
                                                        <div class="row quytrinhdaotao">
-                                                            <p>text.............</p>
+                                                            <p>${data?.quiTrinhDaoTao}</p>
                                                        </div>
                                                   </li>
                                                   <li class="li-menu-lv2">
                                                        <p class="part-title">${titles.DIEU_KIEN_TOT_NGHIEP}</p>
                                                        <div class="row dieukientotnghiep">
-                                                            <p>text.............</p>
+                                                       <p>${data?.dieuKienTotNghiep}</p>
                                                        </div>
                                                   </li>
                                              </ol>
                                         </li>
-                                        <li class="li-menu-lv1"><p class="part-title">${titles.CAU_TRUC_CHUONG_TRINH}</p></li>
+                                        <li class="li-menu-lv1">
+                                             <p class="part-title">${titles.CAU_TRUC_CHUONG_TRINH}</p>
+                                             
+                                             ${renderTables({
+                                               titles: [
+                                                 { title: 'Khối Kiến Thức', rowspan: 2 },
+                                                 { title: 'Số Tín Chỉ', colspan: 3 },
+                                                 { title: 'Ghi Chú', rowspan: 2 }
+                                               ],
+                                               fields: [
+                                                 'ten',
+                                                 'tinChiBatBuoc',
+                                                 'tinChiTuChon',
+                                                 'tinChiTuChonTuDo',
+                                                 'ghiChu'
+                                               ],
+                                               data: data?.khoiKienThuc,
+                                               tongSoTinChi: data?.tongTinChi,
+                                               subTitles: ['Bắt Buộc', 'Tự Chọn', 'Tự Chọn Tự Do']
+                                             })}
+                                        
+                                             </li>
                                         <li class="li-menu-lv1">
                                              <p class="part-title">${titles.CAU_TRUC_CHUONG_TRINH}</p>
                                         
@@ -190,7 +220,9 @@ export default (data) => `
                                                   </li>
                                              </ol>
                                         </li>
-                                        <li class="li-menu-lv1"><p class="part-title">${titles.KE_HOACH_GIANG_DAY}</p></li>
+                                        <li class="li-menu-lv1"><p class="part-title">${
+                                          titles.KE_HOACH_GIANG_DAY
+                                        }</p></li>
                                    </ol>
                               </div>
                          </div>
@@ -200,5 +232,4 @@ export default (data) => `
           </div>
      </body>
 </html>
-
 `;

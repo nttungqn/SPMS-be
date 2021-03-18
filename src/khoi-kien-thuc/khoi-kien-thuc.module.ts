@@ -7,6 +7,7 @@ import { KhoiKienThucEntity } from './entity/khoi-kien-thuc.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([KhoiKienThucEntity])],
   controllers: [KhoiKienThucController],
-  providers: [KhoiKienThucService]
+  providers: [KhoiKienThucService],
+  exports: [KhoiKienThucService]
 })
 export class KhoiKIenThucModule {}
