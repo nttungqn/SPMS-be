@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT } from 'constant/constant';
+import { KHOIKIENTHUC_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm';
 import { CreateKhoiKienThucDto } from './dto/create-khoi-kien-thuc.dto';
 import { filterKnowledgeBlock } from './dto/filter-khoi-kien-thuc.dto';
@@ -15,7 +15,7 @@ export class KhoiKienThucService {
 
   async create(knowledgeBlock: KhoiKienThucEntity) {
     if (await this.isExist(knowledgeBlock)) {
-      throw new ConflictException();
+      throw new ConflictException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_EXIST);
     }
     const { tinChiBatBuoc = 0, tinChiTuChonTuDo = 0, tinChiTuChon = 0 } = knowledgeBlock;
     knowledgeBlock.tongTinChi = tinChiBatBuoc + tinChiTuChonTuDo + tinChiTuChon;
@@ -27,16 +27,17 @@ export class KhoiKienThucService {
       });
       return this.findOne(result.id);
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.CREATE_KHOIKIENTHUC_FAILED);
     }
   }
 
   async findAll(filter: filterKnowledgeBlock) {
-    const { page = 0, limit = LIMIT } = filter;
+    const { page = 0, limit = LIMIT, idChiTietNganhDaoTao } = filter;
+    const queryByChiTietNganhDaoTao = idChiTietNganhDaoTao ? { chiTietNganh: idChiTietNganhDaoTao } : {};
     const skip = page * limit;
     const [results, total] = await this.knowledgeBlockRepository.findAndCount({
       relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
-      where: { isDeleted: false },
+      where: { isDeleted: false, ...queryByChiTietNganhDaoTao },
       skip,
       take: limit
     });
@@ -48,13 +49,13 @@ export class KhoiKienThucService {
       relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
       where: { isDeleted: false }
     });
-    if (!result) throw new NotFoundException();
+    if (!result) throw new NotFoundException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_ID_NOT_FOUND);
     return result;
   }
 
   async update(id: number, knowledgeBlock: KhoiKienThucEntity) {
     const result = await this.knowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
-    if (!result) throw new NotFoundException();
+    if (!result) throw new NotFoundException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_ID_NOT_FOUND);
     const { tinChiBatBuoc, tinChiTuChonTuDo, tinChiTuChon } = knowledgeBlock;
     const type: { tinChiBatBuoc: number; tinChiTuChonTuDo: number; tinChiTuChon: number } = {
       tinChiBatBuoc,
@@ -68,13 +69,13 @@ export class KhoiKienThucService {
       await this.knowledgeBlockRepository.save({ ...result, ...knowledgeBlock, updatedAt: new Date() });
       return this.findOne(result.id);
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.UPDATE_KHOIKIENTHUC_FAILED);
     }
   }
 
   async remove(idUser: number, id: number) {
     const result = await this.knowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
-    if (!result) throw new NotFoundException();
+    if (!result) throw new NotFoundException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_ID_NOT_FOUND);
     try {
       return await this.knowledgeBlockRepository.save({
         ...result,
@@ -83,7 +84,7 @@ export class KhoiKienThucService {
         isDeleted: true
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.DELETE_KHOIKIENTHUC_FAILED);
     }
   }
 

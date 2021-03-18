@@ -1,46 +1,34 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
-import { ChuDeEntity } from './../../chu-de/entity/chu-de.entity';
+import { CreateHoatDongDayHocDTO } from 'hoat-dong-day-hoc/dto/create-hoat-dong-day-hoc';
+import { Column, Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
 
 @Entity(TABLE_NAME.HOATDONGDAYHOC)
-export class HoatDongDayHocEntity {
+export class HoatDongDayHocEntity extends CreateHoatDongDayHocDTO {
+  @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'id' })
-  id: number;
+  id?: number;
 
   @ApiProperty()
-  @ManyToOne(() => ChuDeEntity)
-  @JoinColumn({ name: 'idCD' })
-  @Column({ name: 'idCD' })
-  idCD: number;
-
-  @ApiProperty()
-  @Column({ name: 'ma' })
-  ma: string;
-
-  @ApiProperty()
-  @Column({ name: 'ten' })
-  ten: string;
-
-  @ApiProperty()
-  @Column({ name: 'stt' })
-  stt: number;
-
-  @Column()
-  createdAt: Date;
-
-  @Column()
-  updatedAt: Date;
-
-  @OneToOne(() => UsersEntity)
-  @JoinColumn({ name: 'createdBy' })
-  createdBy: number;
-
-  @OneToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'updatedBy' })
-  updatedBy: number;
+  updatedBy?: number;
 
-  @Column()
-  isDeleted: boolean;
+  @ApiProperty()
+  @ManyToOne(() => UsersEntity)
+  @JoinColumn({ name: 'createdBy' })
+  createdBy?: number;
+
+  @ApiProperty()
+  @Column({ name: 'updatedAt' })
+  updatedAt?: Date;
+
+  @ApiProperty()
+  @Column({ name: 'createdAt' })
+  createdAt?: Date;
+
+  @ApiProperty()
+  @Column({ name: 'isDeleted' })
+  isDeleted?: boolean;
 }

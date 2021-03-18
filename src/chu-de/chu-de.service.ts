@@ -1,9 +1,8 @@
 import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT } from 'constant/constant';
+import { CHUDE_MESSAGE, LIMIT } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
 import { ChuDeEntity } from './entity/chu-de.entity';
-import { IChuDe } from './interfaces/chuDe.interface';
 
 @Injectable()
 export class ChuDeService {
@@ -19,18 +18,14 @@ export class ChuDeService {
       ...otherParam
     };
 
-    try {
-      const results = await this.chuDeRepository.find({
-        where: query,
-        skip,
-        take: Number(limit),
-        relations: ['idSyllabus', 'idLKHGD', 'createdBy', 'updatedBy']
-      });
-      const total = await this.chuDeRepository.count({ ...query });
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    const results = await this.chuDeRepository.find({
+      where: query,
+      skip,
+      take: Number(limit),
+      relations: ['idSyllabus', 'idLKHGD', 'createdBy', 'updatedBy']
+    });
+    const total = await this.chuDeRepository.count({ ...query });
+    return { contents: results, total, page: Number(page) };
   }
 
   async findById(id: number): Promise<ChuDeEntity | any> {
@@ -39,35 +34,35 @@ export class ChuDeService {
       relations: ['idSyllabus', 'idLKHGD', 'createdBy', 'updatedBy']
     });
     if (!result) {
-      throw new NotFoundException();
+      throw new NotFoundException(CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND);
     }
     return result;
   }
 
-  async create(newData: IChuDe): Promise<any> {
+  async create(newData: ChuDeEntity): Promise<any> {
     const checkExistName = await this.chuDeRepository.findOne({ ma: newData?.ma, isDeleted: false });
     if (checkExistName) {
-      throw new ConflictException();
+      throw new ConflictException(CHUDE_MESSAGE.CHUDE_EXIST);
     }
     try {
       const chude = await this.chuDeRepository.create(newData);
       const saved = await this.chuDeRepository.save(chude);
       return saved;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(CHUDE_MESSAGE.CREATE_CHUDE_FAILED);
     }
   }
 
-  async update(id: number, updatedData: IChuDe): Promise<any> {
+  async update(id: number, updatedData: ChuDeEntity): Promise<any> {
     const chude = await this.chuDeRepository.findOne({ id, isDeleted: false });
     if (!chude) {
-      throw new NotFoundException();
+      throw new NotFoundException(CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND);
     }
 
     // check Ma is exist
     const chuDeByMa = await this.chuDeRepository.findOne({ ma: updatedData.ma, isDeleted: false });
     if (chuDeByMa) {
-      throw new ConflictException();
+      throw new ConflictException(CHUDE_MESSAGE.CHUDE_EXIST);
     }
 
     try {
@@ -77,14 +72,14 @@ export class ChuDeService {
         updatedAt: new Date()
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(CHUDE_MESSAGE.CREATE_CHUDE_FAILED);
     }
   }
 
   async delete(id: number, updatedBy?: number): Promise<any> {
     const chude = await this.chuDeRepository.findOne({ id, isDeleted: false });
     if (!chude) {
-      throw new NotFoundException();
+      throw new NotFoundException(CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND);
     }
     try {
       return await this.chuDeRepository.save({
@@ -94,7 +89,7 @@ export class ChuDeService {
         updatedBy
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(CHUDE_MESSAGE.DELETE_CHUDE_FAILED);
     }
   }
 }

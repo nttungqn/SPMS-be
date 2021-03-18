@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   HttpStatus,
   Param,
   Post,
@@ -13,11 +14,22 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 import { GomNhomService } from './gom-nhom.service';
 import { CreateGomNhomDTO } from './dto/create-gom-nhom';
 import { FilterGomNhom } from './dto/filter-gom-nhom';
-import { IdDto } from './dto/Id.dto';
+import { GOMNHOM_MESSAGE } from 'constant/constant';
+import { FindAllGomNhomDtoResponse } from './dto/gom-nhom-response';
+import { GomNhomEntity } from './entity/gom-nhom.entity';
+import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 
 @ApiTags('gom-nhom')
 @Controller('gom-nhom')
@@ -26,6 +38,9 @@ export class GomNhomController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy danh sách gom nhom' })
+  @ApiUnauthorizedResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_NOT_AUTHORIZED })
+  @ApiOkResponse({ type: FindAllGomNhomDtoResponse })
   @Get()
   async findAll(@Req() req, @Query() filter: FilterGomNhom): Promise<any> {
     return await this.gomNhomService.findAll(filter);
@@ -33,42 +48,61 @@ export class GomNhomController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy chi tiết gom nhóm' })
+  @ApiNotFoundResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND })
+  @ApiUnauthorizedResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_NOT_AUTHORIZED })
+  @ApiOkResponse({ type: GomNhomEntity })
   @Get(':id')
-  async findById(@Req() req, @Param() param: IdDto): Promise<any> {
-    const { id } = param;
+  async findById(@Req() req, @Param() id: number): Promise<any> {
     return await this.gomNhomService.findById(Number(id));
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Tạo gom nhóm' })
+  @ApiUnauthorizedResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_NOT_AUTHORIZED })
+  @ApiInternalServerErrorResponse({ description: GOMNHOM_MESSAGE.CREATE_GOMNHOM_FAILED })
+  @ApiOkResponse({ description: GOMNHOM_MESSAGE.CREATE_GOMNHOM_SUCCESSFULLY })
   @Post()
-  async create(@Req() req, @Body() newData: CreateGomNhomDTO, @Res() res): Promise<any> {
+  async create(@Req() req, @Body() newData: CreateGomNhomDTO): Promise<any> {
     const user = req.user || {};
-    const result = await this.gomNhomService.create({
+    return await this.gomNhomService.create({
       ...newData,
       createdBy: user?.id,
-      updatedBy: user?.id
+      updatedBy: user?.id,
+      afterLoad: GomNhomEntity.prototype.afterLoad
     });
-    return res.json({ result: result });
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Cập nhật gom nhóm' })
+  @ApiNotFoundResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND })
+  @ApiUnauthorizedResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_NOT_AUTHORIZED })
+  @ApiInternalServerErrorResponse({ description: GOMNHOM_MESSAGE.UPDATE_GOMNHOM_FAILED })
+  @ApiOkResponse({ description: GOMNHOM_MESSAGE.UPDATE_GOMNHOM_SUCCESSFULLY })
   @Put(':id')
-  async update(@Req() req, @Param() param: IdDto, @Body() updatedData: CreateGomNhomDTO, @Res() res): Promise<any> {
+  async update(@Req() req, @Param() id: number, @Body() updatedData: CreateGomNhomDTO): Promise<any> {
     const user = req.user || {};
-    const { id } = param;
-    await this.gomNhomService.update(Number(id), { ...updatedData, updatedBy: user?.id });
-    return res.status(HttpStatus.OK).json({ message: 'OK' });
+    await this.gomNhomService.update(Number(id), {
+      ...updatedData,
+      updatedBy: user?.id,
+      afterLoad: GomNhomEntity.prototype.afterLoad
+    });
+    return new HttpException(GOMNHOM_MESSAGE.UPDATE_GOMNHOM_SUCCESSFULLY, HttpStatus.OK);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Xóa gom nhóm' })
+  @ApiNotFoundResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND })
+  @ApiUnauthorizedResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_NOT_AUTHORIZED })
+  @ApiInternalServerErrorResponse({ description: GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED })
+  @ApiOkResponse({ description: GOMNHOM_MESSAGE.DELETE_GOMNHOM_SUCCESSFULLY })
   @Delete(':id')
-  async delete(@Req() req, @Param() param: IdDto, @Res() res): Promise<any> {
+  async delete(@Req() req, @Param() id: number, @Res() res): Promise<any> {
     const user = req.user || {};
-    const { id } = param;
     await this.gomNhomService.delete(Number(id), user?.id);
-    return res.status(HttpStatus.OK).json({ message: 'OK' });
+    return new HttpException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_SUCCESSFULLY, HttpStatus.OK);
   }
 }

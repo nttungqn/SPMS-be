@@ -34,7 +34,7 @@ export class ExportsService {
       const doiTuong = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.doiTuong', '');
       const quiTrinhDaoTao = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.quiTrinhDaoTao', '');
       const dieuKienTotNghiep = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.dieuKienTotNghiep', '');
-      const khoiKienThucData = await this.khoiKienThucService.findAll({});
+      const khoiKienThucData = await this.khoiKienThucService.findAll({ idChiTietNganhDaoTao: result?.id });
       const khoiKienThuc = khoiKienThucData?.contents || [];
       const chuanDauRaNganhDaoTaoData = await this.chuanDauRaNganhGomNhomService.findAll({
         nganhDaoTao: result?.id,

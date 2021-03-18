@@ -1,9 +1,8 @@
 import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT } from 'constant/constant';
+import { LIMIT, MONHOC_MESSAGE } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
-import { MonHocEntity } from './entity/monHoc.entity';
-import { IMonHoc } from './interfaces/monHoc.interface';
+import { MonHocEntity } from './entity/mon-hoc.entity';
 
 @Injectable()
 export class MonHocService {
@@ -12,62 +11,58 @@ export class MonHocService {
   async findAll(filter): Promise<MonHocEntity[] | any> {
     const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
     const skip = Number(page) * Number(limit);
-    const querySearch = search ? { TenTiengViet: Like(`%${search}%`) } : {};
+    const querySearch = search ? { tenTiengViet: Like(`%${search}%`) } : {};
     const query = {
       isDeleted: false,
       ...querySearch,
       ...otherParam
     };
 
-    try {
-      const results = await this.monHocRepository.find({
-        where: query,
-        skip,
-        take: Number(limit),
-        relations: ['createdBy', 'updatedBy']
-      });
-      const total = await this.monHocRepository.count({ ...query });
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    const results = await this.monHocRepository.find({
+      where: query,
+      skip,
+      take: Number(limit),
+      relations: ['createdBy', 'updatedBy']
+    });
+    const total = await this.monHocRepository.count({ ...query });
+    return { contents: results, total, page: Number(page) };
   }
 
-  async findById(ID: number): Promise<MonHocEntity | any> {
+  async findById(id: number): Promise<MonHocEntity | any> {
     const result = await this.monHocRepository.findOne({
-      where: { ID, isDeleted: false },
+      where: { id, isDeleted: false },
       relations: ['createdBy', 'updatedBy']
     });
     if (!result) {
-      throw new NotFoundException();
+      throw new NotFoundException(MONHOC_MESSAGE.MONHOC_ID_NOT_FOUND);
     }
     return result;
   }
 
-  async create(newData: IMonHoc): Promise<any> {
-    const checkExistName = await this.monHocRepository.findOne({ Ma: newData?.Ma, isDeleted: false });
+  async create(newData: MonHocEntity): Promise<any> {
+    const checkExistName = await this.monHocRepository.findOne({ ma: newData?.ma, isDeleted: false });
     if (checkExistName) {
-      throw new ConflictException();
+      throw new ConflictException(MONHOC_MESSAGE.MONHOC_EXIST);
     }
     try {
       const monhoc = await this.monHocRepository.create(newData);
       const saved = await this.monHocRepository.save(monhoc);
       return saved;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(MONHOC_MESSAGE.CREATE_MONHOC_FAILED);
     }
   }
 
-  async update(ID: number, updatedData: IMonHoc): Promise<any> {
-    const monhoc = await this.monHocRepository.findOne({ ID, isDeleted: false });
+  async update(id: number, updatedData: MonHocEntity): Promise<any> {
+    const monhoc = await this.monHocRepository.findOne({ id, isDeleted: false });
     if (!monhoc) {
-      throw new NotFoundException();
+      throw new NotFoundException(MONHOC_MESSAGE.MONHOC_ID_NOT_FOUND);
     }
 
     // check Ma is exist
-    const monHocByMa = await this.monHocRepository.findOne({ Ma: updatedData.Ma, isDeleted: false });
+    const monHocByMa = await this.monHocRepository.findOne({ ma: updatedData.ma, isDeleted: false });
     if (monHocByMa) {
-      throw new ConflictException();
+      throw new ConflictException(MONHOC_MESSAGE.MONHOC_EXIST);
     }
 
     try {
@@ -77,14 +72,14 @@ export class MonHocService {
         updatedAt: new Date()
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(MONHOC_MESSAGE.UPDATE_MONHOC_FAILED);
     }
   }
 
-  async delete(ID: number, updatedBy?: number): Promise<any> {
-    const monhoc = await this.monHocRepository.findOne({ ID, isDeleted: false });
+  async delete(id: number, updatedBy?: number): Promise<any> {
+    const monhoc = await this.monHocRepository.findOne({ id, isDeleted: false });
     if (!monhoc) {
-      throw new NotFoundException();
+      throw new NotFoundException(MONHOC_MESSAGE.MONHOC_ID_NOT_FOUND);
     }
     try {
       return await this.monHocRepository.save({
@@ -94,7 +89,7 @@ export class MonHocService {
         updatedBy
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(MONHOC_MESSAGE.DELETE_MONHOC_FAILED);
     }
   }
 }

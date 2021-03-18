@@ -1,7 +1,8 @@
 import { IsNotEmpty } from 'class-validator';
+import { TABLE_NAME } from 'constant/constant';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('NamHoc')
+@Entity(TABLE_NAME.NAMHOC)
 export class NamHocEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;

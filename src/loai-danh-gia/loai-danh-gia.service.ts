@@ -83,13 +83,13 @@ export class LoaiDanhGiaService {
 
   async update(id: number, newData: LoaiDanhGiaEntity) {
     const oldData = await this.loaiDanhGiaRepository.findOne(id, { where: { isDeleted: false } });
-    if (!oldData) throw new NotFoundException();
-    if (await this.isExist(oldData, newData)) throw new ConflictException();
+    if (!oldData) throw new NotFoundException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_ID_NOT_FOUND);
+    if (await this.isExist(oldData, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
     if (!newData.syllabus) await this.syllabusService.findOne(newData.syllabus);
     try {
       return await this.loaiDanhGiaRepository.save({ ...oldData, ...newData, updatedAt: new Date() });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(LOAIDANHGIA_MESSAGE.UPDATE_LOAIDANHGIA_FAILED);
     }
   }
 

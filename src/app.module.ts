@@ -27,35 +27,39 @@ import { GomNhomModule } from './gom-nhom/gom-nhom.module';
 import { ChiTietGomNhomModule } from './chi-tiet-gom-nhom/chi-tiet-gom-nhom.module';
 import { MucTieuMonHocModule } from './muc-tieu-mon-hoc/muc-tieu-mon-hoc.module';
 import { ChiTietKeHoachModule } from './chi-tiet-ke-hoach/chi-tiet-ke-hoach.module';
+import { ChuanDauRaMonHocModule } from './chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.module';
+import { HoatDongDanhGiaModule } from './hoat-dong-danh-gia/hoat-dong-danh-gia.module';
 import { ExportsModule } from './exports/exports.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({ useClass: DatabaseConnectionService }),
-    ExportsModule,
-    // ChuongTrinhDaoTaoModule,
+    ChuongTrinhDaoTaoModule,
     AuthModule,
-    UsersModule
-    // MonHocModule,
-    // SyllabusModule,
-    // NamHocModule,
-    // HeDaotaoModule,
-    // CtdtModule,
-    // MonHocTienQuyetModule,
-    // ChiTietNganhDaoTaoModule,
-    // KeHoachGiangDayModule,
-    // KhoiKIenThucModule,
-    // LoaiKeHoachGiangDayModule,
-    // ChuanDauRaModule,
-    // ChuanDauRaNganhDaoTaoModule,
-    // LoaiKhoiKienThucModule,
-    // ChuDeModule,
-    // HoatDongDayHocModule,
-    // LoaiDanhGiaModule,
-    // GomNhomModule,
-    // ChiTietGomNhomModule,
-    // MucTieuMonHocModule,
-    // ChiTietKeHoachModule
+    UsersModule,
+    MonHocModule,
+    SyllabusModule,
+    NamHocModule,
+    HeDaotaoModule,
+    CtdtModule,
+    MonHocTienQuyetModule,
+    ChiTietNganhDaoTaoModule,
+    KeHoachGiangDayModule,
+    KhoiKIenThucModule,
+    LoaiKeHoachGiangDayModule,
+    ChuanDauRaModule,
+    ChuanDauRaNganhDaoTaoModule,
+    LoaiKhoiKienThucModule,
+    ChuDeModule,
+    HoatDongDayHocModule,
+    LoaiDanhGiaModule,
+    GomNhomModule,
+    ChiTietGomNhomModule,
+    MucTieuMonHocModule,
+    ChiTietKeHoachModule,
+    ChuanDauRaMonHocModule,
+    HoatDongDanhGiaModule,
+    ExportsModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

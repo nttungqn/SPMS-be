@@ -1,19 +1,11 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException
-} from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT } from 'constant/constant';
+import { LIMIT, SYLLABUS_MESSAGE } from 'constant/constant';
 import { MonHocService } from 'mon-hoc/mon-hoc.service';
 import { NamHocService } from 'nam-hoc/nam-hoc.service';
 import { HeDaotaoService } from 'he-dao-tao/he-dao-tao.service';
 import { Not, OrderByCondition, Repository } from 'typeorm';
-import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { GetSyllabusFilterDto } from './dto/filter-syllabus.dto';
-import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
 import { Syllabus } from './entity/syllabus.entity';
 
 @Injectable()
@@ -26,9 +18,9 @@ export class SyllabusService {
     private readonly subjectService: MonHocService
   ) {}
 
-  async create(createSyllabus: CreateSyllabusDto): Promise<Syllabus> {
+  async create(createSyllabus: Syllabus): Promise<Syllabus> {
     if (await this.isExist(createSyllabus)) {
-      throw new ConflictException();
+      throw new ConflictException(SYLLABUS_MESSAGE.SYLLABUS_EXIST);
     }
 
     await this.shoolYearService.findById(createSyllabus.namHoc);
@@ -39,7 +31,7 @@ export class SyllabusService {
       const syllabus = await this.syllabusRepository.save(createSyllabus);
       return syllabus;
     } catch (error) {
-      throw new BadRequestException(error.sqlMessage);
+      throw new InternalServerErrorException(SYLLABUS_MESSAGE.CREATE_SYLLABUS_FAILED);
     }
   }
 
@@ -75,12 +67,12 @@ export class SyllabusService {
       where: { isDeleted: false }
     });
     if (!found) {
-      throw new NotFoundException(`id:'${id}' Syllabus not found`);
+      throw new NotFoundException(SYLLABUS_MESSAGE.SYLLABUS_ID_NOT_FOUND);
     }
     return found;
   }
 
-  async update(id: number, updateSyllabus: UpdateSyllabusDto) {
+  async update(id: number, updateSyllabus: Syllabus) {
     const sylabus = await this.syllabusRepository.findOne(id, { where: { isDeleted: false } });
     const { namHoc, heDaoTao, monHoc } = updateSyllabus;
     if (namHoc) {
@@ -97,12 +89,12 @@ export class SyllabusService {
     }
 
     if (await this.isExist(sylabus)) {
-      throw new ConflictException();
+      throw new ConflictException(SYLLABUS_MESSAGE.SYLLABUS_EXIST);
     }
     try {
       await this.syllabusRepository.save({ ...sylabus, updateBy: updateSyllabus.updatedBy, updatedAt: new Date() });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(SYLLABUS_MESSAGE.UPDATE_SYLLABUS_FAILED);
     }
     return this.findOne(sylabus.id);
   }
@@ -112,10 +104,10 @@ export class SyllabusService {
     try {
       return await this.syllabusRepository.save({ ...found, updateBy: idUser, updatedAt: new Date(), isDeleted: true });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(SYLLABUS_MESSAGE.DELETE_SYLLABUS_FAILED);
     }
   }
-  async isExist(createSyllabusDto: CreateSyllabusDto): Promise<boolean> {
+  async isExist(createSyllabusDto: Syllabus): Promise<boolean> {
     const { id, namHoc, monHoc, heDaoTao } = createSyllabusDto;
     const isNotId = id ? { id: Not(id) } : {};
     const query = {
