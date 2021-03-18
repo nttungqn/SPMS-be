@@ -8,6 +8,7 @@ import { SyllabusModule } from 'syllabus/syllabus.module';
 @Module({
   imports: [TypeOrmModule.forFeature([LoaiDanhGiaEntity]), SyllabusModule],
   controllers: [LoaiDanhGiaController],
-  providers: [LoaiDanhGiaService]
+  providers: [LoaiDanhGiaService],
+  exports: [LoaiDanhGiaService]
 })
 export class LoaiDanhGiaModule {}

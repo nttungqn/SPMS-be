@@ -9,6 +9,7 @@ import { SyllabusModule } from 'syllabus/syllabus.module';
 @Module({
   imports: [TypeOrmModule.forFeature([ChuanDauRaMonHocEntity]), MucTieuMonHocModule, SyllabusModule],
   controllers: [ChuanDauRaMonHocController],
-  providers: [ChuanDauRaMonHocService]
+  providers: [ChuanDauRaMonHocService],
+  exports: [ChuanDauRaMonHocService]
 })
 export class ChuanDauRaMonHocModule {}

@@ -1,8 +1,9 @@
+import { TABLE_NAME } from 'constant/constant';
 import { MucTieuMonHocEntity } from 'muc-tieu-mon-hoc/entity/muc-tieu-mon-hoc.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
-@Entity({ name: 'ChuanDauRaMonHoc' })
+@Entity({ name: TABLE_NAME.CHUANDAURAMONHOC })
 export class ChuanDauRaMonHocEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
