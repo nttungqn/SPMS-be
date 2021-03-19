@@ -11,14 +11,13 @@ import {
 } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
-import { CreateChuDeDTO } from 'chu-de/dto/create-chu-de';
 import { HoatDongDanhGiaEntity } from 'hoat-dong-danh-gia/entity/hoat-dong-danh-gia.entity';
 import { ChuanDauRaMonHocEntity } from 'chuan-dau-ra-mon-hoc/entity/chuan-dau-ra-mon-hoc.entity';
 import { HoatDongDayHocEntity } from 'hoat-dong-day-hoc/entity/hoat-dong-day-hoc.entity';
 import { LoaiKeHoachGiangDayEntity } from 'loai-ke-hoach-giang-day/entity/loaiKeHoachGiangDay.entity';
 import { Syllabus } from 'syllabus/entity/syllabus.entity';
 
-@Entity(TABLE_NAME.CHUDE)
+@Entity(TABLE_NAME.CHUDE, { orderBy: { tuan: 'ASC' } })
 export class ChuDeEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'id' })
@@ -28,25 +27,25 @@ export class ChuDeEntity {
   @ManyToOne(() => Syllabus)
   @JoinColumn({ name: 'idSyllabus' })
   @Column({ name: 'idSyllabus' })
-  idSyllabus: number;
+  idSyllabus?: number;
 
   @ApiProperty()
   @ManyToOne(() => LoaiKeHoachGiangDayEntity)
   @JoinColumn({ name: 'idLKHGD' })
   @Column({ name: 'idLKHGD' })
-  idLKHGD: number;
+  idLKHGD?: number;
 
   @ApiProperty()
   @Column({ name: 'ma' })
-  ma: string;
+  ma?: string;
 
   @ApiProperty()
   @Column({ name: 'ten' })
-  ten: string;
+  ten?: string;
 
   @ApiProperty()
   @Column({ name: 'tuan' })
-  tuan: number;
+  tuan?: number;
 
   @ApiProperty()
   @ManyToOne(() => UsersEntity)
@@ -86,7 +85,18 @@ export class ChuDeEntity {
   })
   chuanDauRaMonHoc?: ChuanDauRaMonHocEntity[];
 
-  @OneToMany(() => HoatDongDayHocEntity, (hddh) => hddh.idCD)
-  @JoinColumn({ name: 'id' })
+  @ManyToMany(() => HoatDongDayHocEntity, { cascade: true })
+  @JoinTable({
+    name: TABLE_NAME.CHUDE_HOATDONGDAYHOC,
+    joinColumn: { name: 'idChuDe', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'idHoatDongDayHoc', referencedColumnName: 'id' }
+  })
   hoatDongDayHoc?: HoatDongDayHocEntity[];
 }
+export const KEY_CD = {
+  idSyllabus: 'idSyllabus',
+  idLKHGD: 'idLKHGD',
+  ma: 'ma',
+  ten: 'ten',
+  tuan: 'tuan'
+};

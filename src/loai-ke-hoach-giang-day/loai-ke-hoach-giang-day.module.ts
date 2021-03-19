@@ -7,6 +7,7 @@ import { LoaiKeHoachGiangDayService } from './loai-ke-hoach-giang-day.service';
 @Module({
   imports: [TypeOrmModule.forFeature([LoaiKeHoachGiangDayEntity])],
   controllers: [LoaiKeHoachGiangDayController],
-  providers: [LoaiKeHoachGiangDayService]
+  providers: [LoaiKeHoachGiangDayService],
+  exports: [LoaiKeHoachGiangDayService]
 })
 export class LoaiKeHoachGiangDayModule {}

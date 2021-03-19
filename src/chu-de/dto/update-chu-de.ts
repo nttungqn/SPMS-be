@@ -1,3 +1,4 @@
-import { CreateChuDeDTO } from './create-chu-de';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateChuDeDto } from './create-chu-de';
 
-export class UpdateChuDeDTO extends CreateChuDeDTO {}
+export class UpdateChuDeDTO extends PartialType(CreateChuDeDto) {}

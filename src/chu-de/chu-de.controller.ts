@@ -25,10 +25,13 @@ import {
 } from '@nestjs/swagger';
 import { CHUDE_MESSAGE } from 'constant/constant';
 import { ChuDeService } from './chu-de.service';
-import { CreateChuDeDTO } from './dto/create-chu-de';
+import { CreateChuDeDto } from './dto/create-chu-de';
 import { FilterChuDe } from './dto/filter-chu-de';
 import { FindAllChuDeDtoResponse } from './dto/chu-de-response';
 import { ChuDeEntity } from './entity/chu-de.entity';
+import { GetUser } from 'auth/user.decorator';
+import { UsersEntity } from 'users/entity/user.entity';
+import { UpdateChuDeDTO } from './dto/update-chu-de';
 
 @ApiTags('chu-de')
 @Controller('chu-de')
@@ -53,7 +56,7 @@ export class ChuDeController {
   @ApiOkResponse({ type: ChuDeEntity })
   @Get(':id')
   async findById(@Param('id') id: number): Promise<any> {
-    return await this.chuDeService.findById(Number(id));
+    return await this.chuDeService.findOne(Number(id));
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -63,14 +66,9 @@ export class ChuDeController {
   @ApiInternalServerErrorResponse({ description: CHUDE_MESSAGE.CREATE_CHUDE_FAILED })
   @ApiOkResponse({ description: CHUDE_MESSAGE.CREATE_CHUDE_SUCCESSFULLY })
   @Post()
-  async create(@Body() newData: CreateChuDeDTO): Promise<any> {
-    // const user = req.user || {};
-    // const result = await this.chuDeService.create({
-    //   ...newData,
-    //   createdBy: user?.id,
-    //   updatedBy: user?.id
-    // });
-    // return res.json({ result: result });
+  async create(@Body() newData: CreateChuDeDto, @GetUser() user: UsersEntity): Promise<any> {
+    await this.chuDeService.create(newData, user.id);
+    return new HttpException(CHUDE_MESSAGE.CREATE_CHUDE_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -80,10 +78,13 @@ export class ChuDeController {
   @ApiInternalServerErrorResponse({ description: CHUDE_MESSAGE.UPDATE_CHUDE_FAILED })
   @ApiOkResponse({ description: CHUDE_MESSAGE.UPDATE_CHUDE_SUCCESSFULLY })
   @Put(':id')
-  async update(@Param() id: number, @Body() updatedData: CreateChuDeDTO): Promise<any> {
-    // const user = req.user || {};
-    // await this.chuDeService.update(Number(id), { ...updatedData, updatedBy: user?.id });
-    // return new HttpException(CHUDE_MESSAGE.UPDATE_CHUDE_SUCCESSFULLY, HttpStatus.OK);
+  async update(
+    @Param('id') id: number,
+    @Body() updatedData: UpdateChuDeDTO,
+    @GetUser() user: UsersEntity
+  ): Promise<any> {
+    await this.chuDeService.update(id, updatedData, user.id);
+    return new HttpException(CHUDE_MESSAGE.UPDATE_CHUDE_SUCCESSFULLY, HttpStatus.OK);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -93,8 +94,7 @@ export class ChuDeController {
   @ApiInternalServerErrorResponse({ description: CHUDE_MESSAGE.DELETE_CHUDE_FAILED })
   @ApiOkResponse({ description: CHUDE_MESSAGE.DELETE_CHUDE_SUCCESSFULLY })
   @Delete(':id')
-  async delete(@Req() req, @Param() id: number, @Res() res): Promise<any> {
-    const user = req.user || {};
+  async delete(@Param('id') id: number, @GetUser() user: UsersEntity): Promise<any> {
     await this.chuDeService.delete(Number(id), user?.id);
     return new HttpException(CHUDE_MESSAGE.DELETE_CHUDE_SUCCESSFULLY, HttpStatus.OK);
   }

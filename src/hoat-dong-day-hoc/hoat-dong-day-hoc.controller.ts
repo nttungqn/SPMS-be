@@ -52,7 +52,7 @@ export class HoatDongDayHocController {
   @ApiOkResponse({ type: HoatDongDayHocEntity })
   @Get(':id')
   async findById(@Req() req, @Param() id: number): Promise<any> {
-    return await this.hoatDongDayHocService.findById(Number(id));
+    return await this.hoatDongDayHocService.findOne(Number(id));
   }
 
   @UseGuards(AuthGuard('jwt'))
