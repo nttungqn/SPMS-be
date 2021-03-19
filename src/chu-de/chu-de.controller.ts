@@ -41,7 +41,7 @@ export class ChuDeController {
   @ApiUnauthorizedResponse({ description: CHUDE_MESSAGE.CHUDE_NOT_AUTHORIZED })
   @ApiOkResponse({ type: FindAllChuDeDtoResponse })
   @Get()
-  async findAll(@Req() req, @Query() filter: FilterChuDe): Promise<any> {
+  async findAll(@Query() filter: FilterChuDe): Promise<any> {
     return await this.chuDeService.findAll(filter);
   }
 
@@ -52,7 +52,7 @@ export class ChuDeController {
   @ApiUnauthorizedResponse({ description: CHUDE_MESSAGE.CHUDE_NOT_AUTHORIZED })
   @ApiOkResponse({ type: ChuDeEntity })
   @Get(':id')
-  async findById(@Req() req, @Param() id: number): Promise<any> {
+  async findById(@Param('id') id: number): Promise<any> {
     return await this.chuDeService.findById(Number(id));
   }
 
@@ -63,14 +63,14 @@ export class ChuDeController {
   @ApiInternalServerErrorResponse({ description: CHUDE_MESSAGE.CREATE_CHUDE_FAILED })
   @ApiOkResponse({ description: CHUDE_MESSAGE.CREATE_CHUDE_SUCCESSFULLY })
   @Post()
-  async create(@Req() req, @Body() newData: CreateChuDeDTO, @Res() res): Promise<any> {
-    const user = req.user || {};
-    const result = await this.chuDeService.create({
-      ...newData,
-      createdBy: user?.id,
-      updatedBy: user?.id
-    });
-    return res.json({ result: result });
+  async create(@Body() newData: CreateChuDeDTO): Promise<any> {
+    // const user = req.user || {};
+    // const result = await this.chuDeService.create({
+    //   ...newData,
+    //   createdBy: user?.id,
+    //   updatedBy: user?.id
+    // });
+    // return res.json({ result: result });
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -80,10 +80,10 @@ export class ChuDeController {
   @ApiInternalServerErrorResponse({ description: CHUDE_MESSAGE.UPDATE_CHUDE_FAILED })
   @ApiOkResponse({ description: CHUDE_MESSAGE.UPDATE_CHUDE_SUCCESSFULLY })
   @Put(':id')
-  async update(@Req() req, @Param() id: number, @Body() updatedData: CreateChuDeDTO, @Res() res): Promise<any> {
-    const user = req.user || {};
-    await this.chuDeService.update(Number(id), { ...updatedData, updatedBy: user?.id });
-    return new HttpException(CHUDE_MESSAGE.UPDATE_CHUDE_SUCCESSFULLY, HttpStatus.OK);
+  async update(@Param() id: number, @Body() updatedData: CreateChuDeDTO): Promise<any> {
+    // const user = req.user || {};
+    // await this.chuDeService.update(Number(id), { ...updatedData, updatedBy: user?.id });
+    // return new HttpException(CHUDE_MESSAGE.UPDATE_CHUDE_SUCCESSFULLY, HttpStatus.OK);
   }
 
   @UseGuards(AuthGuard('jwt'))

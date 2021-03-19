@@ -22,7 +22,7 @@ export class ChuDeService {
       where: query,
       skip,
       take: Number(limit),
-      relations: ['idSyllabus', 'idLKHGD', 'createdBy', 'updatedBy']
+      relations: ['createdBy', 'updatedBy', 'hoatDongDanhGia', 'chuanDauRaMonHoc', 'hoatDongDayHoc']
     });
     const total = await this.chuDeRepository.count({ ...query });
     return { contents: results, total, page: Number(page) };
@@ -31,7 +31,7 @@ export class ChuDeService {
   async findById(id: number): Promise<ChuDeEntity | any> {
     const result = await this.chuDeRepository.findOne({
       where: { id, isDeleted: false },
-      relations: ['idSyllabus', 'idLKHGD', 'createdBy', 'updatedBy']
+      relations: ['createdBy', 'updatedBy', 'hoatDongDanhGia', 'chuanDauRaMonHoc', 'hoatDongDayHoc']
     });
     if (!result) {
       throw new NotFoundException(CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND);

@@ -1,14 +1,52 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
+  OneToMany
+} from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
 import { CreateChuDeDTO } from 'chu-de/dto/create-chu-de';
+import { HoatDongDanhGiaEntity } from 'hoat-dong-danh-gia/entity/hoat-dong-danh-gia.entity';
+import { ChuanDauRaMonHocEntity } from 'chuan-dau-ra-mon-hoc/entity/chuan-dau-ra-mon-hoc.entity';
+import { HoatDongDayHocEntity } from 'hoat-dong-day-hoc/entity/hoat-dong-day-hoc.entity';
+import { LoaiKeHoachGiangDayEntity } from 'loai-ke-hoach-giang-day/entity/loaiKeHoachGiangDay.entity';
+import { Syllabus } from 'syllabus/entity/syllabus.entity';
 
 @Entity(TABLE_NAME.CHUDE)
-export class ChuDeEntity extends CreateChuDeDTO {
+export class ChuDeEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
+
+  @ApiProperty()
+  @ManyToOne(() => Syllabus)
+  @JoinColumn({ name: 'idSyllabus' })
+  @Column({ name: 'idSyllabus' })
+  idSyllabus: number;
+
+  @ApiProperty()
+  @ManyToOne(() => LoaiKeHoachGiangDayEntity)
+  @JoinColumn({ name: 'idLKHGD' })
+  @Column({ name: 'idLKHGD' })
+  idLKHGD: number;
+
+  @ApiProperty()
+  @Column({ name: 'ma' })
+  ma: string;
+
+  @ApiProperty()
+  @Column({ name: 'ten' })
+  ten: string;
+
+  @ApiProperty()
+  @Column({ name: 'tuan' })
+  tuan: number;
 
   @ApiProperty()
   @ManyToOne(() => UsersEntity)
@@ -31,4 +69,24 @@ export class ChuDeEntity extends CreateChuDeDTO {
   @ApiProperty()
   @Column({ name: 'isDeleted' })
   isDeleted?: boolean;
+
+  @ManyToMany(() => HoatDongDanhGiaEntity, { cascade: true })
+  @JoinTable({
+    name: TABLE_NAME.CHUDE_HOATDONGDANHGIA,
+    joinColumn: { name: 'idChuDe', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'idHoatDongDanhGia', referencedColumnName: 'id' }
+  })
+  hoatDongDanhGia?: HoatDongDanhGiaEntity[];
+
+  @ManyToMany(() => ChuanDauRaMonHocEntity, { cascade: true })
+  @JoinTable({
+    name: TABLE_NAME.CHUDE_CHUANDAURAMONHOC,
+    joinColumn: { name: 'idCD', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'idCDRMH', referencedColumnName: 'id' }
+  })
+  chuanDauRaMonHoc?: ChuanDauRaMonHocEntity[];
+
+  @OneToMany(() => HoatDongDayHocEntity, (hddh) => hddh.idCD)
+  @JoinColumn({ name: 'id' })
+  hoatDongDayHoc?: HoatDongDayHocEntity[];
 }
