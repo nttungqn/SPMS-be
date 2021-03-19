@@ -25,7 +25,8 @@ const TABLE_NAME = {
   MONHOCTIENQUYET: 'MonHoc_MonHocTienQuyet',
   CHUANDAURAMONHOC: 'ChuanDauRaMonHoc',
   HOATDONGDANHGIA: 'HoatDongDanhGia',
-  HOATDONGDANHGIA_CHUANDAURAMONHOC: 'HoatDongDanhGia_ChuanDauRaMonHoc'
+  HOATDONGDANHGIA_CHUANDAURAMONHOC: 'HoatDongDanhGia_ChuanDauRaMonHoc',
+  LOAIDANHGIA_CHUANDAURAMONHOC: 'LoaiDanhGia_ChuanDauRaMonHoc'
 };
 const EXPIREDIN = 3600;
 const SALT = 12;
