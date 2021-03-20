@@ -122,7 +122,7 @@ export class ChuDeService {
     const tuan = newData.tuan ? newData.tuan : oldData?.tuan;
     const ma = newData.ma ? newData.ma : oldData?.ma;
     const notID = oldData?.id ? { id: Not(Number(oldData.id)) } : {};
-    const queryCheckUnique: ChuDeEntity = { ma, idLKHGD, idSyllabus, tuan };
+    const queryCheckUnique = { ma, idLKHGD, idSyllabus, tuan };
     const query = {
       isDeleted: false,
       ...queryCheckUnique,
@@ -169,7 +169,7 @@ export class ChuDeService {
     }
     return chuDe;
   }
-  private getService(key: string) {
+  private getService(key: string): ChuanDauRaMonHocService | HoatDongDanhGiaService | HoatDongDayHocService {
     switch (key) {
       case 'chuanDauRaMonHoc':
         return this.chuanDauRaMonHocService;

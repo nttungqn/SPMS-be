@@ -7,7 +7,7 @@ import {
   ManyToOne,
   ManyToMany,
   JoinTable,
-  OneToMany
+  AfterLoad
 } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
@@ -92,6 +92,19 @@ export class ChuDeEntity {
     inverseJoinColumn: { name: 'idHoatDongDayHoc', referencedColumnName: 'id' }
   })
   hoatDongDayHoc?: HoatDongDayHocEntity[];
+
+  @AfterLoad()
+  afterLoad() {
+    this.hoatDongDanhGia = this.hoatDongDanhGia.filter((e) => {
+      return e.isDeleted === false;
+    });
+    this.chuanDauRaMonHoc = this.chuanDauRaMonHoc.filter((e) => {
+      return e.isDeleted === false;
+    });
+    this.hoatDongDayHoc = this.hoatDongDayHoc.filter((e) => {
+      return e.isDeleted === false;
+    });
+  }
 }
 export const KEY_CD = {
   idSyllabus: 'idSyllabus',

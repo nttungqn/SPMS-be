@@ -148,7 +148,7 @@ export class HoatDongDanhGiaService {
     const idLoaiDanhGia = newData.idLoaiDanhGia ? newData.idLoaiDanhGia : oldData.loaiDanhGia;
     const ma = newData.ma ? newData.ma : oldData.ma;
     const notID = oldData?.id ? { id: Not(Number(oldData.id)) } : {};
-    const queryByMaAndLDG: HoatDongDanhGiaEntity = { loaiDanhGia: idLoaiDanhGia, ma };
+    const queryByMaAndLDG = { loaiDanhGia: idLoaiDanhGia, ma };
     const query = {
       isDeleted: false,
       ...queryByMaAndLDG,
