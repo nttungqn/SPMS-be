@@ -16,13 +16,4 @@ export class BaseFilterDto {
 export class FilterHoatDongDayHoc extends BaseFilterDto {
   @ApiProperty({ required: false, description: ' this field search by Ten ' })
   readonly search?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumberString()
-  readonly idCD: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  readonly ma: string;
 }

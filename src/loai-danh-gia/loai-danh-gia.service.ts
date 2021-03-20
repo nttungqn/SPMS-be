@@ -42,9 +42,9 @@ export class LoaiDanhGiaService {
   async findAll(filter: FilterLoaiDanhGia) {
     const { page = 0, limit = LIMIT, idSyllabus } = filter;
     const skip = page * limit;
-    const searchByIdSyllabus: LoaiDanhGiaEntity = idSyllabus ? { syllabus: idSyllabus } : {};
+    const searchByIdSyllabus = idSyllabus ? { syllabus: idSyllabus } : {};
     if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
-    const query: LoaiDanhGiaEntity = {
+    const query = {
       isDeleted: false,
       ...searchByIdSyllabus
     };
@@ -111,8 +111,8 @@ export class LoaiDanhGiaService {
   async isExist(oldData: LoaiDanhGiaEntity, newData: LoaiDanhGiaEntity): Promise<boolean> {
     const { syllabus, ma }: LoaiDanhGiaEntity = newData;
     if (!(syllabus || ma)) return false;
-    const loaiDanhGia: LoaiDanhGiaEntity = { ...oldData, ...newData };
-    const queryByMaAndSlylabus: LoaiDanhGiaEntity = { syllabus: loaiDanhGia.syllabus, ma: loaiDanhGia.ma };
+    const loaiDanhGia = { ...oldData, ...newData };
+    const queryByMaAndSlylabus = { syllabus: loaiDanhGia.syllabus, ma: loaiDanhGia.ma };
     const notID = oldData?.id ? { id: Not(Number(oldData.id)) } : {};
     const query = {
       isDeleted: false,
@@ -127,7 +127,7 @@ export class LoaiDanhGiaService {
     const idSyllabus = newData.idSyllabus ? newData.idSyllabus : oldData.syllabus;
     const ma = newData.ma ? newData.ma : oldData.ma;
     const notID = oldData?.id ? { id: Not(Number(oldData.id)) } : {};
-    const queryByMaAndSlylabus: LoaiDanhGiaEntity = { syllabus: idSyllabus, ma };
+    const queryByMaAndSlylabus = { syllabus: idSyllabus, ma };
     const query = {
       isDeleted: false,
       ...queryByMaAndSlylabus,
