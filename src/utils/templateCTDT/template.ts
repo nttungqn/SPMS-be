@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 const titles = {
   CHUONG_TRINH_DAO_TAO: 'chương trình đào tạo',
   TEN_CHUONG_TRINH: 'tên chương trình',
@@ -22,6 +23,7 @@ const titles = {
 };
 import renderTables from 'utils/templateCTDT/components/tables';
 import { getStringHtml } from './components/list';
+import renderTableSubject, { generateHeader } from 'utils/templateCTDT/components/tableSubject';
 
 export default (data) => `
 <!DOCTYPE html>
@@ -30,6 +32,9 @@ export default (data) => `
           <link rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
       <style>
+          ul, ol, li{
+               list-style: none;
+          }
            ol {
                list-style-type: none;
                counter-reset: item;
@@ -90,6 +95,9 @@ export default (data) => `
                 text-transform: uppercase;
                 font-size: 15px;
                 font-weight: 700;
+           }
+           .row.muctieucuthe > ul{
+                padding: 0;
            }
       </style>
      </head>
@@ -169,13 +177,13 @@ export default (data) => `
                                                   <li class="li-menu-lv2">
                                                        <p class="part-title">${titles.QUY_TRINH_DAO_TAO}</p>
                                                        <div class="row quytrinhdaotao">
-                                                            <p>${data?.quiTrinhDaoTao}</p>
+                                                            <p style="padding: 0;">${data?.quiTrinhDaoTao}</p>
                                                        </div>
                                                   </li>
                                                   <li class="li-menu-lv2">
                                                        <p class="part-title">${titles.DIEU_KIEN_TOT_NGHIEP}</p>
                                                        <div class="row dieukientotnghiep">
-                                                       <p>${data?.dieuKienTotNghiep}</p>
+                                                       <p style="padding: 0;">${data?.dieuKienTotNghiep}</p>
                                                        </div>
                                                   </li>
                                              </ol>
@@ -198,7 +206,7 @@ export default (data) => `
                                                ],
                                                data: data?.khoiKienThuc,
                                                tongSoTinChi: data?.tongTinChi,
-                                               subTitles: ['Bắt Buộc', 'Tự Chọn', 'Tự Chọn Tự Do']
+                                               subTitles: ['', 'Bắt Buộc', 'Tự Chọn', 'Tự Chọn Tự Do', '']
                                              })}
                                         
                                              </li>
@@ -206,23 +214,136 @@ export default (data) => `
                                              <p class="part-title">${titles.CAU_TRUC_CHUONG_TRINH}</p>
                                         
                                              <ol>
-                                                  <li class="li-menu-lv2">
-                                                       <p class="part-title">kien thuc giao duc dai cuong</p>
-                                                       <div class="row kienthucgiaoducdaicuong">
-                                                            <p>text.............</p>
-                                                       </div>
-                                                  </li>
-                                                  <li class="li-menu-lv2">
-                                                       <p class="part-title">kien thuc chuyen nghiep</p>
-                                                       <div class="row kienthuctotnghiep">
-                                                            <p>text.............</p>
-                                                       </div>
-                                                  </li>
+                                                  ${data?.cauTrucChuongTrinh
+                                                    ?.map((item) => {
+                                                      return `
+                                                                 <li class="li-menu-lv2">
+                                                                      <p class="part-title">${item?.ten}</p>
+                                                                      <p>${item?.ghiChu}</p>
+
+                                                                      <ol>
+                                                                           ${item?.loaiKhoiKienThuc
+                                                                             ?.map((subItem) => {
+                                                                               return `
+                                                                                <li><p class="part-title">${
+                                                                                  subItem?.ten
+                                                                                }</p></li>
+                                                                                
+
+                                                                                ${renderTableSubject({
+                                                                                  titles: [
+                                                                                    {
+                                                                                      title: 'Mã Học Phần'
+                                                                                    },
+                                                                                    {
+                                                                                      title: 'Tên Học Phần'
+                                                                                    },
+                                                                                    {
+                                                                                      title: 'Số TC'
+                                                                                    },
+                                                                                    {
+                                                                                      title: 'Số Tiết',
+                                                                                      colspan: 3
+                                                                                    },
+                                                                                    {
+                                                                                      title: 'Loại HP'
+                                                                                    },
+                                                                                    { title: 'Ghi Chú' }
+                                                                                  ],
+                                                                                  fields: [
+                                                                                    'monHoc.ma',
+                                                                                    'monHoc.tenTiengViet',
+                                                                                    'monHoc.soTinChi',
+                                                                                    'monHoc.soTietLyThuyet',
+                                                                                    'monHoc.soTietThucHanh',
+                                                                                    'monHoc.soTietTuHoc',
+                                                                                    'groupType',
+                                                                                    'ghiChu'
+                                                                                  ],
+                                                                                  data: subItem?.gomNhom,
+                                                                                  subTitles: [
+                                                                                    '',
+                                                                                    '',
+                                                                                    '',
+                                                                                    '',
+                                                                                    'LT',
+                                                                                    'TH',
+                                                                                    'BT',
+                                                                                    '',
+                                                                                    ''
+                                                                                  ],
+                                                                                  tongTC: subItem?.tongTinChi
+                                                                                })}
+                                                                                `;
+                                                                             })
+                                                                             .join('')}
+                                                                      </ol>
+                                                                 </li>
+                                                            `;
+                                                    })
+                                                    .join('')}
                                              </ol>
                                         </li>
-                                        <li class="li-menu-lv1"><p class="part-title">${
-                                          titles.KE_HOACH_GIANG_DAY
-                                        }</p></li>
+                                        <li class="li-menu-lv1">
+                                        <p class="part-title">${titles.KE_HOACH_GIANG_DAY}</p>
+                                        <table>
+                                             ${generateHeader(
+                                               [
+                                                 {
+                                                   title: 'Mã Học Phần'
+                                                 },
+                                                 {
+                                                   title: 'Tên Học Phần'
+                                                 },
+                                                 {
+                                                   title: 'Số TC'
+                                                 },
+                                                 {
+                                                   title: 'Số Tiết',
+                                                   colspan: 3
+                                                 },
+                                                 {
+                                                   title: 'Loại HP'
+                                                 },
+                                                 { title: 'Ghi Chú' }
+                                               ],
+                                               ['', '', '', '', 'LT', 'TH', 'BT', '', '']
+                                             )}
+                                        ${data?.keHoachGiangDay
+                                          ?.map((item) => {
+                                            return `
+                                                  <tr>
+                                                       <td colspan='1000' style="width:489.8pt;border:solid black 1.0pt;
+                                                       border-top:none;background:#E2EFD9;padding:0in 5.75pt 0in 5.75pt;height:26.95pt"><p style="text-align:center"><b><span style="font-size:11.0pt;color:black">Học Kỳ ${
+                                                         item?.tenHocKy
+                                                       }</span></b></p></td>
+                                                  </tr>
+                                                  ${item?.chiTietKHGD
+                                                    ?.map((subItem, index) => {
+                                                      return `
+                                                       <tr>
+                                                            <td>${index + 1}</td>
+                                                            ${[
+                                                              'idCTGN.monHoc.ma',
+                                                              'idCTGN.monHoc.tenTiengViet',
+                                                              'idCTGN.monHoc.soTinChi',
+                                                              'idCTGN.monHoc.soTietLyThuyet',
+                                                              'idCTGN.monHoc.soTietThucHanh',
+                                                              'idCTGN.monHoc.soTietTuHoc',
+                                                              'idCTGN.idGN.loaiNhom',
+                                                              'idCTGN.idGN.ghiChu'
+                                                            ]
+                                                              .map((field) => `<td>${get(subItem, field, '')}</td>`)
+                                                              .join('')}
+                                                       </tr>
+                                                       `;
+                                                    })
+                                                    .join('')}
+                                             `;
+                                          })
+                                          .join('')}
+                                        </table>
+                                        </li>
                                    </ol>
                               </div>
                          </div>

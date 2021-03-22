@@ -81,4 +81,16 @@ export class ChiTietKeHoachService {
       throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED);
     }
   }
+  async findAllWithSelectField(filter) {
+    const { page = 0, limit = LIMIT, select = '', ...other } = filter;
+    const query = {
+      isDeleted: false,
+      ...other
+    };
+    const results = await this.chiTietKeHoachRepository.find({
+      relations: select ? select?.split(',') : [],
+      where: query
+    });
+    return results;
+  }
 }

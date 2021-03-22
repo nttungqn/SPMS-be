@@ -1,3 +1,7 @@
+import { ChiTietKeHoachService } from './../chi-tiet-ke-hoach/chi-tiet-ke-hoach.service';
+import { KeHoachGiangDayService } from './../ke-hoach-giang-day/ke-hoach-giang-day.service';
+import { GomNhomService } from './../gom-nhom/gom-nhom.service';
+import { LoaiKhoiKienThucService } from './../loai-khoi-kien-thuc/loai-khoi-kien-thuc.service';
 import { ChuanDauRaNganhDaoTaoService } from './../chuan-dau-ra-nganh-dao-tao/chuan-dau-ra-nganh-dao-tao.service';
 import { KhoiKienThucService } from './../khoi-kien-thuc/khoi-kien-thuc.service';
 import { CTNGANHDAOTAO_MESSAGE } from 'constant/constant';
@@ -11,7 +15,11 @@ export class ExportsService {
   constructor(
     private chiTietNganhDaoTaoService: ChiTietNganhDaoTaoService,
     private khoiKienThucService: KhoiKienThucService,
-    private chuanDauRaNganhGomNhomService: ChuanDauRaNganhDaoTaoService
+    private chuanDauRaNganhGomNhomService: ChuanDauRaNganhDaoTaoService,
+    private loaiKhoiKienThucService: LoaiKhoiKienThucService,
+    private gomNhomService: GomNhomService,
+    private keHoachGiangDayService: KeHoachGiangDayService,
+    private chiTietKeHoachGiangDayService: ChiTietKeHoachService
   ) {}
   async exportsFilePdf(filter): Promise<any> {
     try {
@@ -36,12 +44,48 @@ export class ExportsService {
       const dieuKienTotNghiep = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.dieuKienTotNghiep', '');
       const khoiKienThucData = await this.khoiKienThucService.findAll({ idChiTietNganhDaoTao: result?.id });
       const khoiKienThuc = khoiKienThucData?.contents || [];
-      const chuanDauRaNganhDaoTaoData = await this.chuanDauRaNganhGomNhomService.findAll({
-        nganhDaoTao: result?.id,
-        limit: 10000
-      });
-      const chuanDauRaNganhDaoTao = chuanDauRaNganhDaoTaoData?.contents || [];
+      let chuanDauRaNganhDaoTao = [];
+      try {
+        const chuanDauRaNganhDaoTaoData = await this.chuanDauRaNganhGomNhomService.findAll({
+          nganhDaoTao: result?.id,
+          limit: 10000
+        });
+        chuanDauRaNganhDaoTao = chuanDauRaNganhDaoTaoData?.contents || [];
+      } catch (error) {
+        chuanDauRaNganhDaoTao = [];
+      }
       const results = groupBy(chuanDauRaNganhDaoTao, 'parent.ma');
+      const loaiKhoiKienThucArray = khoiKienThuc.map(async (item) => {
+        const results = await this.loaiKhoiKienThucService.findAllWithHaveSelectField({
+          idKhoiKienThuc: item?.id,
+          createdAt: 'ASC'
+        });
+        return { ...item, loaiKhoiKienThuc: results || [] };
+      });
+      const dataResults = await Promise.all(loaiKhoiKienThucArray);
+      for (let i = 0; i < dataResults?.length; i++) {
+        const gomNhomPromise = dataResults[i]?.loaiKhoiKienThuc?.map(async (item) => {
+          const results = await this.gomNhomService.findAllWithSelectField({ idLKKT: item?.id });
+          return { ...item, gomNhom: results || [] };
+        });
+        const gomNhom = await Promise.all(gomNhomPromise);
+        dataResults[i] = { ...dataResults[i], loaiKhoiKienThuc: gomNhom };
+      }
+      let keHoachGiangDay = [];
+      try {
+        const keHoachGiangDayData = await this.keHoachGiangDayService.findAll({ nganhDaoTao: result?.id });
+        keHoachGiangDay = keHoachGiangDayData?.contents || [];
+      } catch (error) {
+        keHoachGiangDay = [];
+      }
+      const chiTietKHGDArr = keHoachGiangDay?.map(async (item) => {
+        const results = await this.chiTietKeHoachGiangDayService.findAllWithSelectField({
+          idKHGD: item?.id,
+          select: 'idCTGN,idCTGN.idGN'
+        });
+        return { ...item, chiTietKHGD: results || [] };
+      });
+      const chiTietKeHoach = await Promise.all(chiTietKHGDArr);
       const data = {
         khoa,
         coHoiNgheNghiep,
@@ -55,7 +99,9 @@ export class ExportsService {
         quiTrinhDaoTao,
         dieuKienTotNghiep,
         khoiKienThuc,
-        chuanDauRaNganhDaoTao: results
+        chuanDauRaNganhDaoTao: results,
+        cauTrucChuongTrinh: dataResults,
+        keHoachGiangDay: chiTietKeHoach
       };
       const fileName = `${maNganhDaoTao}_${khoa}.pdf`;
       return { data, fileName };

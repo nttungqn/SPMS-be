@@ -18,17 +18,23 @@ export default ({ subTitles = [], titles = [], data = [], tongSoTinChi = 0, fiel
      <table>
           <thead>
                <tr>
-                    <td rowspan='2'>#</td>
+                    <th style="border-bottom: none;">#</th>
                     ${titles
                       .map(
                         (item) =>
-                          `<th colspan='${item?.colspan}' rowspan='${item?.rowspan}' style="vertical-align:middle;">${item?.title}</th>`
+                          `<th ${item?.colspan ? `colspan='${item?.colspan}'` : ''}  ${
+                            item?.rowspan ? `rowspan='${item?.rowspan}'` : ''
+                          } style="vertical-align:middle;">${item?.title}</th>`
                       )
                       .join('\n')}
-                    <td rowspan='2'>Tống số tín chỉ khi tốt nghiệp(1+2+3+4)</td>
+                    <th style="border-bottom: none;">Tống số tín chỉ khi tốt nghiệp(1+2+3+4)</th>
                </tr>
                ${
-                 subTitles?.length ? `<tr>${subTitles.map((item) => `<th scope="col">${item}</th>`).join('')}</tr>` : ''
+                 subTitles?.length
+                   ? `<tr>${subTitles
+                       .map((item) => `<th scope="col" ${item ? '' : 'style="border: none;"'}>${item}</th>`)
+                       .join('')}</tr>`
+                   : ''
                }
           </thead>
           <tbody>
@@ -36,7 +42,7 @@ export default ({ subTitles = [], titles = [], data = [], tongSoTinChi = 0, fiel
                  .map(
                    (item, index) =>
                      `<tr>
-                    <td scope="row">${index + 1}</td>
+                    <td>${index + 1}</td>
                     ${fields.map((field) => `<td>${item[field]}</td>`).join('')}
                     ${
                       index === 0

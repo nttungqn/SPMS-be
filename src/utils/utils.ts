@@ -14,7 +14,6 @@ export function groupBy(objectArray, property) {
     acc[key].push({ ...obj });
     return acc;
   }, {});
-  //   console.log(`results`, results?.default[3]);
   return results?.default;
 }
 function addToGroup(arr = [], parentId = '', child = {}, preParent = '') {
