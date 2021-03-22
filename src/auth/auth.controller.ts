@@ -1,4 +1,19 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  CACHE_MANAGER,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { IdDto } from 'chuong-trinh-dao-tao/dto/Id.dto';
@@ -12,6 +27,8 @@ import { UpdateProfileDto } from './dto/updateProfile.dto';
 import * as lodash from 'lodash';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { VerifyEmailDto } from './dto/verifyEmail.dto';
+import { EmailDto } from './dto/email.dto';
+import { ForgotPasswordDto } from './dto/forgotPassword.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -119,6 +136,54 @@ export class AuthController {
       return res.json({ message: AUTH_MESSAGE.VERIFY_SUCCESSFULLY });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: AUTH_MESSAGE.VERIFY_FAILED });
+    }
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Query() email: EmailDto, @Res() res): Promise<any> {
+    const user = await this.usersService.findOne({ email, isDeleted: false });
+    if (!user) {
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: AUTH_MESSAGE.ACCOUNT_NOT_FOUND });
+    }
+    await this.authService.handleForgotPassword(user);
+    return new HttpException('OK', HttpStatus.OK);
+  }
+
+  @Get('forgot-password/:randomStr')
+  async getResetPassword(@Req() req, @Res() res, @Param() param: ForgotPasswordDto): Promise<any> {
+    const randomStr = param?.randomStr;
+
+    await this.authService.handleGetResetPassword(randomStr);
+    return new HttpException('OK', HttpStatus.OK);
+  }
+
+  @Post('forgot-password/:randomStr')
+  async postResetPassword(
+    @Req() req,
+    @Res() res,
+    @Param() param: ForgotPasswordDto,
+    @Body() updateData: ChangePasswordDto
+  ): Promise<any> {
+    try {
+      const randomStr = param?.randomStr;
+      const id = await this.authService.handleGetResetPassword(randomStr);
+      const userProfile = await this.usersService.findOne({ id: Number(id), isDeleted: false });
+      if (!userProfile) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGE.USER_ID_NOT_FOUND });
+      }
+      const checkPassword = await this.authService.comparePassword(updateData?.password, userProfile?.password);
+      if (!checkPassword) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGE.PASSWORD_INCORRECT });
+      }
+      const newPassword = await this.authService.hashPassword(updateData?.newPassword);
+      const userUpdated = await this.usersService.update(Number(id), {
+        password: newPassword
+      });
+      return res.status(HttpStatus.OK).json({ message: USER_MESSAGE.UPDATE_USER_SUCCESSFULLY, user: userUpdated });
+    } catch (error) {
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: USER_MESSAGE.UPDATE_USER_FAILED, error: lodash.get(error, 'response', 'error') });
     }
   }
 }

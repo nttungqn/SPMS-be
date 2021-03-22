@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { CacheModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -57,7 +57,8 @@ import { HoatDongDanhGiaModule } from './hoat-dong-danh-gia/hoat-dong-danh-gia.m
     MucTieuMonHocModule,
     ChiTietKeHoachModule,
     ChuanDauRaMonHocModule,
-    HoatDongDanhGiaModule
+    HoatDongDanhGiaModule,
+    CacheModule.register()
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

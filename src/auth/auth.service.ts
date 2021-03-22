@@ -1,15 +1,26 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  HttpStatus,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './interfaces/jwt-payload';
-import { JWT_SECRET } from 'config/config';
-import { AUTH_MESSAGE, EXPIREDIN, SALT } from 'constant/constant';
+import { FE_ROUTE, JWT_SECRET } from 'config/config';
+import { AUTH_MESSAGE, EXPIREDIN, SALT, TTL_RESET_PASSWORD } from 'constant/constant';
 import { UsersService } from 'users/users.service';
 import { IUser } from 'users/interfaces/users.interface';
+import { UsersEntity } from 'users/entity/user.entity';
+import { Cache } from 'cache-manager';
+import { randomstring } from 'randomstring';
+import { sendMailResetPassword } from 'utils/sendMail';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService, @Inject(CACHE_MANAGER) private cacheManager: Cache) {}
   async login(email: string, password: string): Promise<any> {
     try {
       const user = await this.usersService.findOne({ email });
@@ -116,5 +127,27 @@ export class AuthService {
   async checkEmailToken(token: string): Promise<any> {
     const { email = '' } = this.checkToken(token);
     return email;
+  }
+
+  async handleForgotPassword(user: UsersEntity) {
+    try {
+      const randomStr = randomstring.generate();
+      await this.cacheManager.set(randomStr, user.id, { ttl: TTL_RESET_PASSWORD });
+      const urlResetPassword = `${FE_ROUTE}/forgot-password/${randomStr}`;
+      await sendMailResetPassword(user, urlResetPassword);
+      return;
+    } catch (error) {
+      return new InternalServerErrorException(AUTH_MESSAGE.SOME_THING_WENT_WRONG);
+    }
+  }
+
+  async handleGetResetPassword(radomStr: string) {
+    try {
+      const userId = await this.cacheManager.get(radomStr);
+      if (!userId) return new NotFoundException(AUTH_MESSAGE.ACCOUNT_NOT_FOUND);
+      return userId;
+    } catch (error) {
+      return new NotFoundException(AUTH_MESSAGE.LINK_NOT_FOUND);
+    }
   }
 }
