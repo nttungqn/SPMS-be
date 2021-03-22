@@ -13,29 +13,55 @@ export class UsersService {
   constructor(@InjectRepository(UsersEntity) private readonly usersRepository: Repository<UsersEntity>) {}
 
   async findAll(filter: FilterUser) {
-    const { page = 0, limit = LIMIT, search = '', ...other } = filter;
-    const skip = page * limit;
-    const querySearch = search
-      ? [
-          { firstName: Like(`%${search}%`) },
-          { lastName: Like(`%${search}%`) },
-          { email: Like(`%${search}%`) },
-          { username: Like(`%${search}%`) }
-        ]
-      : {};
-    const query = {
-      ...querySearch,
-      ...other
-    };
+    try {
+      const { page = 0, limit = LIMIT, search = '', sortBy = '', sortType = '', ...other } = filter;
+      const skip = Number(page) * Number(limit);
+      const querySearch = search
+        ? [
+            { firstName: Like(`%${search}%`), ...other },
+            { lastName: Like(`%${search}%`), ...other },
+            { email: Like(`%${search}%`), ...other },
+            { username: Like(`%${search}%`), ...other }
+          ]
+        : { ...other };
 
-    const [results, total] = await this.usersRepository.findAndCount({
-      where: query,
-      relations: ['role'],
-      skip,
-      take: limit,
-      ...other
-    });
-    return { contents: results, total, page: Number(page) };
+      let sortQuery = {};
+      if (sortBy && sortType) {
+        switch (sortBy) {
+          case 'id':
+            sortQuery = { id: sortType };
+            break;
+          case 'firstName':
+            sortQuery = { firstName: sortType };
+            break;
+          case 'lastName':
+            sortQuery = { lastName: sortType };
+            break;
+          case 'email':
+            sortQuery = { email: sortType };
+            break;
+          case 'updatedAt':
+            sortQuery = { updatedAt: sortType };
+            break;
+          case 'createdAt':
+            sortQuery = { createdAt: sortType };
+            break;
+          default:
+            break;
+        }
+      }
+      const [results, total] = await this.usersRepository.findAndCount({
+        where: querySearch,
+        relations: ['role'],
+        order: sortQuery,
+        skip,
+        take: limit,
+        ...other
+      });
+      return { contents: results, total, page: Number(page) };
+    } catch (error) {
+      return new InternalServerErrorException(USER_MESSAGE.INTERAL_SERVER_ERROR);
+    }
   }
 
   async findOne(query): Promise<any> {

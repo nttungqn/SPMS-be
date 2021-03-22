@@ -30,7 +30,7 @@ export class UpdateUserDto {
 
   @ApiProperty()
   @OneToOne(() => RolesEntity, (role) => role.name)
-  @JoinColumn({ name: 'role' })
+  @JoinColumn({ name: 'roleID' })
   @IsNumberString()
   @IsOptional()
   role: number;

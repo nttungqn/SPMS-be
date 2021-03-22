@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsOptional } from 'class-validator';
+import { IsBoolean, IsIn, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class BaseFilterDto {
   @ApiProperty({ required: false, default: 0 })
@@ -22,4 +22,21 @@ export class FilterUser extends BaseFilterDto {
   @IsNumberString()
   @IsOptional()
   readonly role?: number;
+
+  @ApiProperty({ required: false, description: 'Trạng thái user - isDeleted: true | false' })
+  @IsOptional()
+  readonly isDeleted?: boolean;
+
+  @ApiProperty({
+    required: false,
+    description: 'Sort by column: id, firstName, lastName, email, username, updatedAt, createdAt'
+  })
+  @IsIn(['id', 'firstName', 'lastName', 'email', 'username', 'updatedAt', 'createdAt'])
+  @IsOptional()
+  readonly sortBy?: 'id' | 'firstName' | 'lastName' | 'email' | 'username' | 'updatedAt' | 'createdAt';
+
+  @ApiProperty({ required: false, description: 'Sort by type: ASC, DESC' })
+  @IsIn(['ASC', 'DESC'])
+  @IsOptional()
+  readonly sortType?: 'ASC' | 'DESC';
 }

@@ -10,7 +10,7 @@ export class UsersEntity extends UpdateUserDto {
   id: number;
 
   @ApiProperty()
-  @Column()
+  @Column({ name: 'password' })
   password: string;
 
   @ApiProperty()
