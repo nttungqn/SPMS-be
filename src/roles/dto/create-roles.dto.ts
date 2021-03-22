@@ -9,7 +9,8 @@ export class CreateRolesDto {
   name?: string;
 
   @ApiProperty()
-  @Column({ name: 'value' })
+  @Column({ name: 'value', default: 0 })
   @IsOptional()
+  @IsNumberString()
   value?: number;
 }

@@ -57,10 +57,11 @@ export class RolesService {
 
   async remove(id: number) {
     const result = await this.rolesRepository.findOne(id, { where: { isDeleted: false } });
-    if (!result) throw new NotFoundException();
+    if (!result) throw new NotFoundException(ROLES_MESSAGE.ROLES_ID_NOT_FOUND);
     try {
       return await this.rolesRepository.save({
         ...result,
+        updatedAt: new Date(),
         isDeleted: true
       });
     } catch (error) {
