@@ -10,8 +10,4 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-  @Get('a')
-  async getHelloa() {
-    return await generateTemplate();
-  }
 }
