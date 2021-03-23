@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+import { generateTemplate } from 'utils/templateCTDT/templateCTDT';
 import { AppService } from './app.service';
 
 @Controller()

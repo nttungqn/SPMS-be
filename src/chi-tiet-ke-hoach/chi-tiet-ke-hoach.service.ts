@@ -40,7 +40,10 @@ export class ChiTietKeHoachService {
       relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy', 'idCTGN.gomNhom'],
       skip,
       take: limit,
-      ...other
+      where: {
+        isDeleted: false,
+        ...other
+      }
     });
     results.forEach((e) => {
       delete e.idCTGN['gomNhom']['chiTietGomNhom'];
@@ -84,5 +87,17 @@ export class ChiTietKeHoachService {
     } catch (error) {
       throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED);
     }
+  }
+  async findAllWithSelectField(filter) {
+    const { page = 0, limit = LIMIT, select = '', ...other } = filter;
+    const query = {
+      isDeleted: false,
+      ...other
+    };
+    const results = await this.chiTietKeHoachRepository.find({
+      relations: select ? select?.split(',') : [],
+      where: query
+    });
+    return results;
   }
 }

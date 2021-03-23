@@ -120,4 +120,19 @@ export class LoaiKhoiKienThucService {
   private async isExist(createTypeOfKnowledgeBlockDto: CreateLoaiKhoiKienThucDto): Promise<boolean> {
     return !createTypeOfKnowledgeBlockDto ? true : false;
   }
+  async findAllWithHaveSelectField(filter: any) {
+    const { page = 0, limit = LIMIT, idKhoiKienThuc, createdAt, select = '' } = filter;
+    const queryBy_KhoiKienThuc = idKhoiKienThuc ? { khoiKienThuc: idKhoiKienThuc } : {};
+    const queryOrder: OrderByCondition = createdAt ? { createdAt } : {};
+    const query: LoaiKhoiKienThucEntity = {
+      isDeleted: false,
+      ...queryBy_KhoiKienThuc
+    };
+    const [results, total] = await this.typeOfKnowledgeBlockRepository.findAndCount({
+      relations: select ? select?.split(',') : [],
+      where: query,
+      order: queryOrder
+    });
+    return results;
+  }
 }
