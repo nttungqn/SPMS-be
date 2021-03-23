@@ -41,3 +41,23 @@ function addToGroup(arr = [], parentId = '', child = {}, preParent = '') {
     });
   }
 }
+export const getMimetype = (signature) => {
+  switch (signature.toUpperCase()) {
+    case '89504E47':
+      return 'image/png';
+    case '47494638':
+      return 'image/gif';
+    // case '25504446':
+    //   return 'application/pdf';
+    case 'FFD8FFDB':
+    case 'FFD8FFE0': //JPEG IMAGE
+    case 'FFD8FFE1': //Digital camera JPG using Exchangeable
+    case 'FFD8FFE2': //CANNON EOS JPEG FILE
+    case 'FFD8FFE8': //Still Picture Interchange File Format
+      return 'image/jpeg';
+    // case '504B0304':
+    //   return 'application/zip';
+    default:
+      return null;
+  }
+};

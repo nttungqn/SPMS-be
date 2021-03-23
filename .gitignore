@@ -37,3 +37,4 @@ lerna-debug.log*
 .env
 Procfile
 .env.production
+src/assets/images

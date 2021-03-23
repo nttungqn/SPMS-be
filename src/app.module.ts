@@ -32,6 +32,7 @@ import { HoatDongDanhGiaModule } from './hoat-dong-danh-gia/hoat-dong-danh-gia.m
 import { SoKhopModule } from './so-khop/so-khop.module';
 import { RolesModule } from 'roles/roles.module';
 import { ExportsModule } from './exports/exports.module';
+import { UploadFileModule } from './upload-file/upload-file.module';
 
 @Module({
   imports: [
@@ -64,7 +65,8 @@ import { ExportsModule } from './exports/exports.module';
     SoKhopModule,
     RolesModule,
     UsersModule,
-    ExportsModule
+    ExportsModule,
+    UploadFileModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
