@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [KeHoachGiangDayModule, ChiTietGomNhomModule, TypeOrmModule.forFeature([ChiTietKeHoachEntity])],
   providers: [ChiTietKeHoachService],
-  controllers: [ChiTietKeHoachController]
+  controllers: [ChiTietKeHoachController],
+  exports: [ChiTietKeHoachService]
 })
 export class ChiTietKeHoachModule {}

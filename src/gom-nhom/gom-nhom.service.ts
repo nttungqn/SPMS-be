@@ -96,4 +96,23 @@ export class GomNhomService {
       throw new InternalServerErrorException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED);
     }
   }
+  async findAllWithSelectField(filter): Promise<GomNhomEntity[] | any> {
+    const { limit = LIMIT, page = 0, search = '', select = '', ...otherParam } = filter;
+    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
+    const query = {
+      isDeleted: false,
+      ...querySearch,
+      ...otherParam
+    };
+
+    try {
+      const results = await this.gomNhomRepository.find({
+        where: query,
+        relations: select ? select?.split(',') : []
+      });
+      return results;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
 }

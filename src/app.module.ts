@@ -31,6 +31,7 @@ import { ChuanDauRaMonHocModule } from './chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-
 import { HoatDongDanhGiaModule } from './hoat-dong-danh-gia/hoat-dong-danh-gia.module';
 import { SoKhopModule } from './so-khop/so-khop.module';
 import { RolesModule } from 'roles/roles.module';
+import { ExportsModule } from './exports/exports.module';
 
 @Module({
   imports: [
@@ -62,7 +63,8 @@ import { RolesModule } from 'roles/roles.module';
     HoatDongDanhGiaModule,
     SoKhopModule,
     RolesModule,
-    UsersModule
+    UsersModule,
+    ExportsModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
