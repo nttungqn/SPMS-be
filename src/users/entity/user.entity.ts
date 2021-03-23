@@ -1,31 +1,35 @@
-import { RolesEntity } from 'roles/entity/roles.entity';
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { TABLE_NAME } from 'constant/constant';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { UpdateUserDto } from './../dto/update-user.dto';
 
-@Entity('users')
-export class UsersEntity {
+@Entity(TABLE_NAME.USERS)
+export class UsersEntity extends UpdateUserDto {
+  @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'ID' })
   id: number;
-  @Column()
-  firstName: string;
-  @Column()
-  lastName: string;
-  @Column()
-  email: string;
-  @Column()
-  username: string;
-  @Column()
+
+  @ApiProperty()
+  @Column({ name: 'password' })
   password: string;
-  @OneToOne(() => RolesEntity, (role) => role.name)
-  @JoinColumn()
-  role: number;
+
+  @ApiProperty()
   @Column({ default: new Date() })
   createdAt: Date;
+
+  @ApiProperty()
   @Column()
   updatedAt: Date;
+
+  @ApiProperty()
   @Column({ default: false })
   isDeleted: boolean;
+
+  @ApiProperty()
   @Column({ default: false })
   isActive: boolean;
+
+  @ApiProperty()
   @Column({ name: 'tokenVerifyEmail' })
   tokenVerifyEmail: string;
 }

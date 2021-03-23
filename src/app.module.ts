@@ -29,6 +29,9 @@ import { MucTieuMonHocModule } from './muc-tieu-mon-hoc/muc-tieu-mon-hoc.module'
 import { ChiTietKeHoachModule } from './chi-tiet-ke-hoach/chi-tiet-ke-hoach.module';
 import { ChuanDauRaMonHocModule } from './chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.module';
 import { HoatDongDanhGiaModule } from './hoat-dong-danh-gia/hoat-dong-danh-gia.module';
+import { SoKhopModule } from './so-khop/so-khop.module';
+import { RolesModule } from 'roles/roles.module';
+import { ExportsModule } from './exports/exports.module';
 
 @Module({
   imports: [
@@ -58,7 +61,11 @@ import { HoatDongDanhGiaModule } from './hoat-dong-danh-gia/hoat-dong-danh-gia.m
     ChiTietKeHoachModule,
     ChuanDauRaMonHocModule,
     HoatDongDanhGiaModule,
-    CacheModule.register()
+    CacheModule.register(),
+    SoKhopModule,
+    RolesModule,
+    UsersModule,
+    ExportsModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
