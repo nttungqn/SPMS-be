@@ -37,22 +37,26 @@ export class ChiTietKeHoachService {
     const { page = 0, limit = LIMIT, ...other } = filter;
     const skip = page * limit;
     const [results, total] = await this.chiTietKeHoachRepository.findAndCount({
-      relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy'],
+      relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy', 'idCTGN.gomNhom'],
       skip,
       take: limit,
       ...other
+    });
+    results.forEach((e) => {
+      delete e.idCTGN['gomNhom']['chiTietGomNhom'];
     });
     return { contents: results, total, page: Number(page) };
   }
 
   async findOne(id: number) {
     const result = await this.chiTietKeHoachRepository.findOne(id, {
-      relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy'],
+      relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy', 'idCTGN.gomNhom'],
       where: { isDeleted: false }
     });
     if (!result) {
       throw new NotFoundException(CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_ID_NOT_FOUND);
     }
+    delete result.idCTGN['gomNhom']['chiTietGomNhom'];
     return result;
   }
 
