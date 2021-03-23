@@ -30,6 +30,7 @@ import { ChiTietKeHoachModule } from './chi-tiet-ke-hoach/chi-tiet-ke-hoach.modu
 import { ChuanDauRaMonHocModule } from './chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.module';
 import { HoatDongDanhGiaModule } from './hoat-dong-danh-gia/hoat-dong-danh-gia.module';
 import { SoKhopModule } from './so-khop/so-khop.module';
+import { RolesModule } from 'roles/roles.module';
 
 @Module({
   imports: [
@@ -59,7 +60,9 @@ import { SoKhopModule } from './so-khop/so-khop.module';
     ChiTietKeHoachModule,
     ChuanDauRaMonHocModule,
     HoatDongDanhGiaModule,
-    SoKhopModule
+    SoKhopModule,
+    RolesModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
