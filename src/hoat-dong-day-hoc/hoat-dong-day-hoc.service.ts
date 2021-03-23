@@ -24,16 +24,16 @@ export class HoatDongDayHocService {
       where: query,
       skip,
       take: Number(limit),
-      relations: ['idCD', 'createdBy', 'updatedBy']
+      relations: ['createdBy', 'updatedBy']
     });
     const total = await this.hoatDongDayHocRepository.count({ ...query });
     return { contents: results, total, page: Number(page) };
   }
 
-  async findById(id: number): Promise<HoatDongDayHocEntity | any> {
+  async findOne(id: number): Promise<HoatDongDayHocEntity | any> {
     const result = await this.hoatDongDayHocRepository.findOne({
       where: { id, isDeleted: false },
-      relations: ['idCD', 'createdBy', 'updatedBy']
+      relations: ['createdBy', 'updatedBy']
     });
     if (!result) {
       throw new NotFoundException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_ID_NOT_FOUND);

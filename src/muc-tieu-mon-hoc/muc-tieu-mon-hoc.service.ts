@@ -57,7 +57,7 @@ export class MucTieuMonHocService {
     const skip = page * limit;
     const searchByIdSyllabus = idSyllabus ? { syllabus: idSyllabus } : {};
     if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
-    const query: MucTieuMonHocEntity = {
+    const query = {
       isDeleted: false,
       ...searchByIdSyllabus
     };
@@ -137,8 +137,8 @@ export class MucTieuMonHocService {
   async isExist(oldData: MucTieuMonHocEntity, newData: MucTieuMonHocEntity): Promise<boolean> {
     const { syllabus, ma }: MucTieuMonHocEntity = newData;
     if (!(syllabus || ma)) return false;
-    const loaiDanhGia: MucTieuMonHocEntity = { ...oldData, ...newData };
-    const queryByMaAndSlylabus: MucTieuMonHocEntity = { syllabus: loaiDanhGia.syllabus, ma: loaiDanhGia.ma };
+    const loaiDanhGia = { ...oldData, ...newData };
+    const queryByMaAndSlylabus = { syllabus: loaiDanhGia.syllabus, ma: loaiDanhGia.ma };
     const notID = oldData?.id ? { id: Not(Number(oldData.id)) } : {};
     const query = {
       isDeleted: false,
@@ -152,7 +152,7 @@ export class MucTieuMonHocService {
     if (!(newData.syllabus || newData.ma)) return false;
     const { syllabus, ma } = { ...oldData, ...newData };
     const notID = oldData?.id ? { id: Not(Number(oldData.id)) } : {};
-    const queryByMaAndSlylabus: MucTieuMonHocEntity = { syllabus, ma };
+    const queryByMaAndSlylabus = { syllabus, ma };
     const query = {
       isDeleted: false,
       ...queryByMaAndSlylabus,

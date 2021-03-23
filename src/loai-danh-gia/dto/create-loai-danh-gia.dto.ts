@@ -1,28 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Syllabus } from 'syllabus/entity/syllabus.entity';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
 export class CreateLoaiDanhGiaDto {
-  @ApiProperty()
-  @ManyToOne(() => Syllabus)
-  @JoinColumn({ name: 'idSyllabus' })
-  @Column({ name: 'idSyllabus' })
+  @ApiProperty({ required: true })
   @IsNotEmpty()
-  syllabus?: number;
+  idSyllabus?: number;
 
-  @ApiProperty()
-  @Column({ name: 'ma' })
+  @ApiProperty({ required: true })
   @IsNotEmpty()
   ma?: string;
 
-  @ApiProperty()
-  @Column({ name: 'ten' })
+  @ApiProperty({ required: true })
   @IsNotEmpty()
   ten?: string;
 
   @ApiProperty()
-  @Column({ name: 'tyLe' })
   @IsOptional()
+  @IsNumber()
   tyLe?: number;
+
+  @ApiProperty()
+  @IsString({ each: true })
+  @IsOptional()
+  chuanDauRaMonHoc?: string[];
 }

@@ -12,6 +12,7 @@ import { UpdateProfileDto } from './dto/updateProfile.dto';
 import * as lodash from 'lodash';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { VerifyEmailDto } from './dto/verifyEmail.dto';
+import { EmailDto } from './dto/email.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -117,6 +118,19 @@ export class AuthController {
       }
       await this.usersService.update(result?.id, { ...result, isActive: true });
       return res.json({ message: AUTH_MESSAGE.VERIFY_SUCCESSFULLY });
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: AUTH_MESSAGE.VERIFY_FAILED });
+    }
+  }
+  @Post('forgot-password/:email')
+  async sendLinkResetPassword(@Req() req, @Res() res, @Param() param: EmailDto): Promise<any> {
+    try {
+      const email = await this.usersService.findOne({ email: param?.email, isDeleted: false });
+      if (!email) {
+        res.status(HttpStatus.BAD_REQUEST).json({ message: AUTH_MESSAGE.EMAIL_NOT_EXIST });
+      }
+
+      // send link reset password to reset email
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: AUTH_MESSAGE.VERIFY_FAILED });
     }

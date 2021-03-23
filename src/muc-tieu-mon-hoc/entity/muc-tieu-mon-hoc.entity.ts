@@ -1,7 +1,16 @@
 import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
 import { TABLE_NAME } from 'constant/constant';
 import { Syllabus } from 'syllabus/entity/syllabus.entity';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  AfterLoad,
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn
+} from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity({ name: TABLE_NAME.MUCTIEUMONHOC })
@@ -44,4 +53,9 @@ export class MucTieuMonHocEntity {
 
   @Column({ name: 'isDeleted' })
   isDeleted?: boolean;
+
+  @AfterLoad()
+  afterLoad() {
+    this.chuanDauRaCDIO = this.chuanDauRaCDIO.filter((e) => e.isDeleted === false);
+  }
 }

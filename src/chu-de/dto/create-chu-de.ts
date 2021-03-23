@@ -1,30 +1,40 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 import { LoaiKeHoachGiangDayEntity } from 'loai-ke-hoach-giang-day/entity/loaiKeHoachGiangDay.entity';
 import { Syllabus } from 'syllabus/entity/syllabus.entity';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
-export class CreateChuDeDTO {
-  @ApiProperty()
-  @ManyToOne(() => Syllabus)
-  @JoinColumn({ name: 'idSyllabus' })
-  @Column({ name: 'idSyllabus' })
-  idSyllabus: number;
+export class CreateChuDeDto {
+  @ApiProperty({ required: true })
+  @IsInt()
+  idSyllabus?: number;
+
+  @ApiProperty({ required: true })
+  @IsInt()
+  idLKHGD?: number;
+
+  @ApiProperty({ required: true })
+  @IsString()
+  ma?: string;
 
   @ApiProperty()
-  @ManyToOne(() => LoaiKeHoachGiangDayEntity)
-  @JoinColumn({ name: 'idLKHGD' })
-  @Column({ name: 'idLKHGD' })
-  idLKHGD: number;
+  @IsString()
+  @IsOptional()
+  ten?: string;
 
   @ApiProperty()
-  @Column({ name: 'ma' })
-  ma: string;
+  @IsInt()
+  tuan?: number;
 
   @ApiProperty()
-  @Column({ name: 'ten' })
-  ten: string;
+  @IsString({ each: true })
+  hoatDongDanhGia?: string[];
 
   @ApiProperty()
-  @Column({ name: 'tuan' })
-  tuan: number;
+  @IsString({ each: true })
+  chuanDauRaMonHoc?: string[];
+
+  @ApiProperty()
+  @IsString({ each: true })
+  hoatDongDayHoc?: string[];
 }

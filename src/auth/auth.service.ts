@@ -38,7 +38,7 @@ export class AuthService {
       }
       const { tokenVerifyEmail } = await this.createEmailToken({ email: newData?.email });
       const newPassword = await this.hashPassword(newData?.password);
-      const user = await this.usersService.create({
+      await this.usersService.create({
         ...newData,
         password: newPassword,
         tokenVerifyEmail

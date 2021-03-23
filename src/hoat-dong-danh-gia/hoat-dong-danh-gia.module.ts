@@ -15,6 +15,7 @@ import { ChuanDauRaMonHocModule } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-ho
     ChuanDauRaMonHocModule
   ],
   controllers: [HoatDongDanhGiaController],
-  providers: [HoatDongDanhGiaService]
+  providers: [HoatDongDanhGiaService],
+  exports: [HoatDongDanhGiaService]
 })
 export class HoatDongDanhGiaModule {}
