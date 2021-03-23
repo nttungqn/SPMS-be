@@ -40,7 +40,10 @@ export class ChiTietKeHoachService {
       relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy', 'idCTGN.gomNhom'],
       skip,
       take: limit,
-      ...other
+      where: {
+        isDeleted: false,
+        ...other
+      }
     });
     results.forEach((e) => {
       delete e.idCTGN['gomNhom']['chiTietGomNhom'];
