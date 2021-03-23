@@ -57,7 +57,8 @@ import { HoatDongDanhGiaModule } from './hoat-dong-danh-gia/hoat-dong-danh-gia.m
     MucTieuMonHocModule,
     ChiTietKeHoachModule,
     ChuanDauRaMonHocModule,
-    HoatDongDanhGiaModule
+    HoatDongDanhGiaModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
