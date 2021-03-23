@@ -59,7 +59,8 @@ import { RolesModule } from 'roles/roles.module';
     ChiTietKeHoachModule,
     ChuanDauRaMonHocModule,
     HoatDongDanhGiaModule,
-    RolesModule
+    RolesModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]
