@@ -91,4 +91,8 @@ export class KhoiKienThucService {
   async isExist(createKhoiKienThucDto: CreateKhoiKienThucDto): Promise<boolean> {
     return createKhoiKienThucDto ? true : false;
   }
+  getAllByNganhDaoTaoAndKhoaTuyen(idNganhDaotao: number, khoa: number) {
+    this.knowledgeBlockRepository.createQueryBuilder('kkt');
+    //.leftJoin('kkt')
+  }
 }

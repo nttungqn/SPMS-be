@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CTNGANHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm';
+import { FilterCTNganhDaoTaoDto } from './dto/filterCTNganhDaoTao.dto';
 import { ChiTietNganhDaoTaoEntity } from './entity/chiTietNganhDaoTao.entity';
 import { IChiTietNganhDaoTao } from './interfaces/chiTietNganhDaoTao.interface';
 
@@ -10,7 +11,7 @@ export class ChiTietNganhDaoTaoService {
   @InjectRepository(ChiTietNganhDaoTaoEntity)
   private readonly chiTietNganhDTRepository: Repository<ChiTietNganhDaoTaoEntity>;
 
-  async findAll(filter: any): Promise<any> {
+  async findAll(filter: FilterCTNganhDaoTaoDto): Promise<any> {
     const { limit = LIMIT, page = 0, ...rest } = filter;
     const skip = Number(page) * Number(limit);
     const query = {
