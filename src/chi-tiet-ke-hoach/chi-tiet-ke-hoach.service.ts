@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { ChiTietKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
 import { KeHoachGiangDayService } from 'ke-hoach-giang-day/ke-hoach-giang-day.service';
 import { ChiTietGomNhomService } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.service';
-import { BaseFilterDto } from './dto/filter-chi-tiet-ke-hoach.dto';
+import { BaseFilterDto, FilterChiTietKeHoach } from './dto/filter-chi-tiet-ke-hoach.dto';
 
 @Injectable()
 export class ChiTietKeHoachService {
@@ -33,7 +33,7 @@ export class ChiTietKeHoachService {
     }
   }
 
-  async findAll(filter: BaseFilterDto) {
+  async findAll(filter: FilterChiTietKeHoach) {
     const { page = 0, limit = LIMIT, ...other } = filter;
     const skip = page * limit;
     const [results, total] = await this.chiTietKeHoachRepository.findAndCount({
