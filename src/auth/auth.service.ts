@@ -15,8 +15,9 @@ import { UsersService } from 'users/users.service';
 import { IUser } from 'users/interfaces/users.interface';
 import { UsersEntity } from 'users/entity/user.entity';
 import { Cache } from 'cache-manager';
-import { randomstring } from 'randomstring';
+import * as cryptoRandomString from 'crypto-random-string';
 import { sendMailResetPassword } from 'utils/sendMail';
+import { type } from 'os';
 
 @Injectable()
 export class AuthService {
@@ -131,11 +132,10 @@ export class AuthService {
 
   async handleForgotPassword(user: UsersEntity) {
     try {
-      const randomStr = randomstring.generate();
+      const randomStr = cryptoRandomString({ length: 20, type: 'base64' });
       await this.cacheManager.set(randomStr, user.id, { ttl: TTL_RESET_PASSWORD });
       const urlResetPassword = `${FE_ROUTE}/forgot-password/${randomStr}`;
-      await sendMailResetPassword(user, urlResetPassword);
-      return;
+      return await sendMailResetPassword(user, urlResetPassword);
     } catch (error) {
       return new InternalServerErrorException(AUTH_MESSAGE.SOME_THING_WENT_WRONG);
     }

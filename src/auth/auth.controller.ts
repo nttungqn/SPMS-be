@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Inject,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -29,6 +30,7 @@ import { ChangePasswordDto } from './dto/changePassword.dto';
 import { VerifyEmailDto } from './dto/verifyEmail.dto';
 import { EmailDto } from './dto/email.dto';
 import { ForgotPasswordDto } from './dto/forgotPassword.dto';
+import { ResetPassworDto } from './dto/resetPassword.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -140,17 +142,17 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  async forgotPassword(@Query() email: EmailDto, @Res() res): Promise<any> {
-    const user = await this.usersService.findOne({ email, isDeleted: false });
+  async forgotPassword(@Query() emailDto: EmailDto): Promise<any> {
+    const user = await this.usersService.findOne({ email: emailDto?.email, isDeleted: false });
     if (!user) {
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: AUTH_MESSAGE.ACCOUNT_NOT_FOUND });
+      return new NotFoundException(AUTH_MESSAGE.ACCOUNT_NOT_FOUND);
     }
     await this.authService.handleForgotPassword(user);
     return new HttpException('OK', HttpStatus.OK);
   }
 
   @Get('forgot-password/:randomStr')
-  async getResetPassword(@Req() req, @Res() res, @Param() param: ForgotPasswordDto): Promise<any> {
+  async getResetPassword(@Param() param: ForgotPasswordDto): Promise<any> {
     const randomStr = param?.randomStr;
 
     await this.authService.handleGetResetPassword(randomStr);
@@ -162,7 +164,7 @@ export class AuthController {
     @Req() req,
     @Res() res,
     @Param() param: ForgotPasswordDto,
-    @Body() updateData: ChangePasswordDto
+    @Body() updateData: ResetPassworDto
   ): Promise<any> {
     try {
       const randomStr = param?.randomStr;
@@ -171,15 +173,14 @@ export class AuthController {
       if (!userProfile) {
         return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGE.USER_ID_NOT_FOUND });
       }
-      const checkPassword = await this.authService.comparePassword(updateData?.password, userProfile?.password);
-      if (!checkPassword) {
-        return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGE.PASSWORD_INCORRECT });
+
+      if (updateData.password !== updateData.passwordConfirm) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: AUTH_MESSAGE.PASSWORD_NOT_MATCH });
       }
-      const newPassword = await this.authService.hashPassword(updateData?.newPassword);
-      const userUpdated = await this.usersService.update(Number(id), {
-        password: newPassword
-      });
-      return res.status(HttpStatus.OK).json({ message: USER_MESSAGE.UPDATE_USER_SUCCESSFULLY, user: userUpdated });
+
+      const newPassword = await this.authService.hashPassword(updateData?.password);
+      await this.usersService.update(Number(id), { password: newPassword });
+      return res.status(HttpStatus.OK).json({ message: USER_MESSAGE.UPDATE_USER_SUCCESSFULLY });
     } catch (error) {
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
