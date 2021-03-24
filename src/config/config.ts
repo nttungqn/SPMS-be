@@ -10,8 +10,9 @@ const DB_NAME = process.env.DB_NAME || 'qHtJYlp09Y';
 const SECRET_KEY = process.env.SECRET_KEY || 'secret_key';
 const JWT_SECRET = process.env.JWT_SECRET || 'JWT_SECRET';
 const FE_ROUTE = process.env.FE_ROUTE || 'http://localhost:3000';
-const EMAIL_MAIL = process.env.EMAIL_MAIL || 'ttpro2015@gmail.com';
-const PASSWORD_MAIL = process.env.PASSWORD_MAIL || 'sulropcniqutyenq';
+const EMAIL_MAIL = process.env.EMAIL_MAIL || '';
+const PASSWORD_MAIL = process.env.PASSWORD_MAIL || '';
+const PATH_STORE_IMAGE = process.env.PATH_STORE_IMAGE || 'src/assets/images';
 
 export {
   PORT,
@@ -24,5 +25,6 @@ export {
   JWT_SECRET,
   EMAIL_MAIL,
   PASSWORD_MAIL,
-  FE_ROUTE
+  FE_ROUTE,
+  PATH_STORE_IMAGE
 };
