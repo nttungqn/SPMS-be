@@ -10,5 +10,5 @@ export class FilterLoaiKhoiKienThuc extends BaseFilterDto {
   @ApiProperty({ required: false, description: 'Sắp xếp tăng dần,giảm dần (ASC | DESC) theo thời gian tạo' })
   @IsOptional()
   @IsIn(['ASC', 'DESC'])
-  createdAt: 'ASC' | 'DESC';
+  createdAt?: 'ASC' | 'DESC';
 }

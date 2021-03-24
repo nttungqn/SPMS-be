@@ -1,6 +1,15 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { KHOIKIENTHUC_MESSAGE, LIMIT } from 'constant/constant';
+import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
+import { LoaiKhoiKienThucService } from 'loai-khoi-kien-thuc/loai-khoi-kien-thuc.service';
+import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { Repository } from 'typeorm';
 import { CreateKhoiKienThucDto } from './dto/create-khoi-kien-thuc.dto';
 import { filterKnowledgeBlock } from './dto/filter-khoi-kien-thuc.dto';
@@ -10,7 +19,8 @@ import { KhoiKienThucEntity } from './entity/khoi-kien-thuc.entity';
 export class KhoiKienThucService {
   constructor(
     @InjectRepository(KhoiKienThucEntity)
-    private knowledgeBlockRepository: Repository<KhoiKienThucEntity>
+    private knowledgeBlockRepository: Repository<KhoiKienThucEntity>,
+    private loaiKhoiKienThucService: LoaiKhoiKienThucService
   ) {}
 
   async create(knowledgeBlock: KhoiKienThucEntity) {
@@ -91,8 +101,29 @@ export class KhoiKienThucService {
   async isExist(createKhoiKienThucDto: CreateKhoiKienThucDto): Promise<boolean> {
     return createKhoiKienThucDto ? true : false;
   }
-  getAllByNganhDaoTaoAndKhoaTuyen(idNganhDaotao: number, khoa: number) {
-    this.knowledgeBlockRepository.createQueryBuilder('kkt');
-    //.leftJoin('kkt')
+  async getAllByNganhDaoTaoAndKhoaTuyen(idNganhDaotao: number, khoa: number): Promise<MonHocEntity[]> {
+    const khoiKienThuc = await this.knowledgeBlockRepository
+      .createQueryBuilder('kkt')
+      .leftJoin('kkt.chiTietNganh', 'ctndt')
+      .where((qb) => {
+        qb.where('ctndt.nganhDaoTao =:idNganhDaotao And ctndt.khoa=:khoa', { idNganhDaotao, khoa });
+      })
+      .getMany();
+    if (khoiKienThuc.length === 0) {
+      throw new NotFoundException(`KHOA_${khoa}_NOT_FOUND`);
+    }
+    const subjects: MonHocEntity[] = [];
+    for (const ktk of khoiKienThuc) {
+      const { contents } = await this.loaiKhoiKienThucService.findAll({ limit: 1000, idKhoiKienThuc: ktk.id });
+      for (const loaiKhoiKienThuc of contents) {
+        const detail: LoaiKhoiKienThucEntity = await this.loaiKhoiKienThucService.findDetail(loaiKhoiKienThuc.id);
+        for (const gomNhom of detail.gomNhom) {
+          for (const chiTietGomNhom of gomNhom.chiTietGomNhom) {
+            subjects.push(chiTietGomNhom.monHoc);
+          }
+        }
+      }
+    }
+    return subjects;
   }
 }

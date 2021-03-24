@@ -92,4 +92,8 @@ export class MonHocService {
       throw new InternalServerErrorException(MONHOC_MESSAGE.DELETE_MONHOC_FAILED);
     }
   }
+  async getMonHocThayThe(idMonThayThe: number): Promise<MonHocEntity[]> {
+    const results = this.monHocRepository.find({ where: { isDeleted: false, monThayThe: idMonThayThe } });
+    return results;
+  }
 }

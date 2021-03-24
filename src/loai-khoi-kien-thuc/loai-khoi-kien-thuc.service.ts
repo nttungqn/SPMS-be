@@ -53,7 +53,7 @@ export class LoaiKhoiKienThucService {
     if (!result) throw new NotFoundException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND);
     return result;
   }
-  async findDetail(id: number) {
+  async findDetail(id: number): Promise<LoaiKhoiKienThucEntity> {
     let result;
     try {
       result = await this.typeOfKnowledgeBlockRepository.findOne(id, {
