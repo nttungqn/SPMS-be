@@ -29,7 +29,6 @@ import { FilterGomNhom } from './dto/filter-gom-nhom';
 import { GOMNHOM_MESSAGE } from 'constant/constant';
 import { FindAllGomNhomDtoResponse } from './dto/gom-nhom-response';
 import { GomNhomEntity } from './entity/gom-nhom.entity';
-import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 
 @ApiTags('gom-nhom')
 @Controller('gom-nhom')
@@ -42,7 +41,7 @@ export class GomNhomController {
   @ApiUnauthorizedResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_NOT_AUTHORIZED })
   @ApiOkResponse({ type: FindAllGomNhomDtoResponse })
   @Get()
-  async findAll(@Req() req, @Query() filter: FilterGomNhom): Promise<any> {
+  async findAll(@Query() filter: FilterGomNhom): Promise<any> {
     return await this.gomNhomService.findAll(filter);
   }
 
@@ -53,7 +52,7 @@ export class GomNhomController {
   @ApiUnauthorizedResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_NOT_AUTHORIZED })
   @ApiOkResponse({ type: GomNhomEntity })
   @Get(':id')
-  async findById(@Req() req, @Param() id: number): Promise<any> {
+  async findById(@Param() id: number): Promise<any> {
     return await this.gomNhomService.findById(Number(id));
   }
 
@@ -100,7 +99,7 @@ export class GomNhomController {
   @ApiInternalServerErrorResponse({ description: GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED })
   @ApiOkResponse({ description: GOMNHOM_MESSAGE.DELETE_GOMNHOM_SUCCESSFULLY })
   @Delete(':id')
-  async delete(@Req() req, @Param() id: number, @Res() res): Promise<any> {
+  async delete(@Req() req, @Param() id: number): Promise<any> {
     const user = req.user || {};
     await this.gomNhomService.delete(Number(id), user?.id);
     return new HttpException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_SUCCESSFULLY, HttpStatus.OK);

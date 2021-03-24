@@ -2,8 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CreateChiTietGomNhomDTO } from 'chi-tiet-gom-nhom/dto/create-chi-tiet-gom-nhom.dto';
 import { GomNhomEntity } from 'gom-nhom/entity/gom-nhom.entity';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
-import { addListener } from 'process';
-import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, AfterLoad } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
 

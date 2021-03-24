@@ -30,7 +30,6 @@ import { FilterMonHoc } from './dto/filter-mon-hoc.dto';
 import { MONHOC_MESSAGE } from 'constant/constant';
 import { FindAllMonHocDtoResponse } from './dto/mon-hoc.response.dto';
 import { MonHocEntity } from './entity/mon-hoc.entity';
-import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.dto';
 
 @ApiTags('mon-hoc')
 @Controller('mon-hoc')

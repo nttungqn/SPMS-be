@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { Syllabus } from 'syllabus/entity/syllabus.entity';
-import { Column, JoinColumn, ManyToOne } from 'typeorm';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateLoaiDanhGiaDto {
   @ApiProperty({ required: true })

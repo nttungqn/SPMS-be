@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { ChiTietKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
 import { KeHoachGiangDayService } from 'ke-hoach-giang-day/ke-hoach-giang-day.service';
 import { ChiTietGomNhomService } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.service';
-import { BaseFilterDto, FilterChiTietKeHoach } from './dto/filter-chi-tiet-ke-hoach.dto';
+import { FilterChiTietKeHoach } from './dto/filter-chi-tiet-ke-hoach.dto';
 
 @Injectable()
 export class ChiTietKeHoachService {

@@ -1,13 +1,6 @@
 import { BadRequestException, Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { SoKhopService } from './so-khop.service';
-import {
-  ApiBearerAuth,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-  ApiUnauthorizedResponse
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FilterSoKhopNganhDaoTao } from './dto/filter-so-khop.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RowSoKhopNganhDaoTao } from './dto/row-so-khop.dto';
