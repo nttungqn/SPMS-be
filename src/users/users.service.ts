@@ -46,6 +46,9 @@ export class UsersService {
           case 'createdAt':
             sortQuery = { createdAt: sortType };
             break;
+          case 'username':
+            sortQuery = { username: sortType };
+            break;
           default:
             break;
         }
