@@ -132,10 +132,12 @@ export class AuthController {
         return res.status(HttpStatus.BAD_REQUEST).json({ message: AUTH_MESSAGE.VERIFY_ERROR });
       }
       if (result?.isActive) {
-        return res.status(HttpStatus.OK).json({ message: AUTH_MESSAGE.TOKEN_VERIFED });
+        return res.status(HttpStatus.OK).json({ message: AUTH_MESSAGE.TOKEN_VERIFIED });
       }
       await this.usersService.update(result?.id, { ...result, isActive: true });
-      return res.json({ message: AUTH_MESSAGE.VERIFY_SUCCESSFULLY });
+      const { token } = await this.authService.createToken(result);
+      const { refreshToken } = await this.authService.createRefreshToken(result);
+      return res.json({ message: AUTH_MESSAGE.VERIFY_SUCCESSFULLY, data: { token, refreshToken, curUser: result } });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: AUTH_MESSAGE.VERIFY_FAILED });
     }
