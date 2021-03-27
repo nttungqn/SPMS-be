@@ -137,17 +137,17 @@ export class AuthService {
       const urlResetPassword = `${FE_ROUTE}/forgot-password/${randomStr}`;
       return await sendMailResetPassword(user, urlResetPassword);
     } catch (error) {
-      return new InternalServerErrorException(AUTH_MESSAGE.SOME_THING_WENT_WRONG);
+      throw new InternalServerErrorException(AUTH_MESSAGE.SOME_THING_WENT_WRONG);
     }
   }
 
   async handleGetResetPassword(radomStr: string) {
     try {
       const userId = await this.cacheManager.get(radomStr);
-      if (!userId) return new NotFoundException(AUTH_MESSAGE.ACCOUNT_NOT_FOUND);
+      if (!userId) throw new NotFoundException(AUTH_MESSAGE.ACCOUNT_NOT_FOUND);
       return userId;
     } catch (error) {
-      return new NotFoundException(AUTH_MESSAGE.LINK_NOT_FOUND);
+      throw new NotFoundException(AUTH_MESSAGE.LINK_NOT_FOUND);
     }
   }
 }
