@@ -10,7 +10,8 @@ import {
   Req,
   HttpException,
   HttpStatus,
-  ParseIntPipe
+  ParseIntPipe,
+  NotFoundException
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -36,7 +37,7 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
-  @ApiOperation({ summary: 'Lấy danh sách các chi tiết kế hoạch' })
+  @ApiOperation({ summary: 'Lấy danh sách các user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USER_NOT_AUTHORIZED })
   @ApiOkResponse({ type: FindAllUserDtoResponse })
   @Get()
@@ -46,13 +47,15 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
-  @ApiOperation({ summary: 'Lấy chi tiết kế hoạch' })
+  @ApiOperation({ summary: 'Lấy user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USERS_NOT_AUTHORIZED })
   @ApiNotFoundResponse({ description: USER_MESSAGE.USER_ID_NOT_FOUND })
   @ApiOkResponse({ type: UsersEntity })
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.usersService.findOne({ id });
+    if (!user) throw new NotFoundException(USER_MESSAGE.USER_ID_NOT_FOUND);
+    return user;
   }
 
   @UseGuards(AuthGuard('jwt'))
