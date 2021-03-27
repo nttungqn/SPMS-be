@@ -3,6 +3,7 @@ import { MAIL_OPTIONS } from 'constant/constant';
 import * as nodemailer from 'nodemailer';
 import { UsersEntity } from 'users/entity/user.entity';
 import { htmlTemplateEmail } from './htmlTemplateEmail';
+import { resetPasswordEmailTemplate } from './resetPasswordEmailTemplate';
 
 export interface IDataMail {
   title?: string;
@@ -62,7 +63,10 @@ export const sendMailResetPassword = async (user?: UsersEntity, urlResetPassword
     auth: {
       user: EMAIL_MAIL,
       pass: PASSWORD_MAIL
-    }
+    },
+    secure: false,
+    // here it goes
+    tls: { rejectUnauthorized: false }
   });
 
   const mailOptions = {
@@ -70,7 +74,7 @@ export const sendMailResetPassword = async (user?: UsersEntity, urlResetPassword
     to: user.email,
     subject: 'Reset password',
     text: 'You received message from SPMS',
-    html: `<p>Hi ${user.firstName} ${user.lastName}</p><p>We received a request to access your account ${user.email} through your email address.</p><p>Your url to reset password: <h3>${urlResetPassword}</h3></p>`
+    html: resetPasswordEmailTemplate(user, urlResetPassword)
   };
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {

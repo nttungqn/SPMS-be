@@ -15,6 +15,8 @@ export class UsersService {
   async findAll(filter: FilterUser) {
     try {
       const { page = 0, limit = LIMIT, search = '', sortBy = '', sortType = '', ...other } = filter;
+      if (other.isDeleted) other.isDeleted = String(other.isDeleted) === 'true';
+      if (other.isActive) other.isActive = String(other.isActive) === 'true';
       const skip = Number(page) * Number(limit);
       const querySearch = search
         ? [

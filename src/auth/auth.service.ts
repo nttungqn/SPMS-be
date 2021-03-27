@@ -132,7 +132,7 @@ export class AuthService {
 
   async handleForgotPassword(user: UsersEntity) {
     try {
-      const randomStr = cryptoRandomString({ length: 20, type: 'base64' });
+      const randomStr = cryptoRandomString({ length: 20, type: 'url-safe' });
       await this.cacheManager.set(randomStr, user.id, { ttl: TTL_RESET_PASSWORD });
       const urlResetPassword = `${FE_ROUTE}/forgot-password/${randomStr}`;
       return await sendMailResetPassword(user, urlResetPassword);
