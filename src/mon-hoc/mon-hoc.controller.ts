@@ -11,7 +11,10 @@ import {
   Req,
   HttpException,
   HttpStatus,
-  ParseIntPipe
+  ParseIntPipe,
+  Res,
+  UploadedFile,
+  UseInterceptors
 } from '@nestjs/common';
 import { MonHocService } from './mon-hoc.service';
 import { CreateMonHocDto } from './dto/create-mon-hoc.dto';
@@ -31,11 +34,26 @@ import { MONHOC_MESSAGE } from 'constant/constant';
 import { FindAllMonHocDtoResponse } from './dto/mon-hoc.response.dto';
 import { MonHocEntity } from './entity/mon-hoc.entity';
 import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.dto';
+import * as nodexlsv from 'node-xlsx';
+import * as fs from 'fs';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('mon-hoc')
 @Controller('mon-hoc')
 export class MonHocController {
   constructor(private readonly monHocService: MonHocService) {}
+  private headersFormat = [
+    'MÃ HP',
+    'TÊN HP',
+    'SỐ TC',
+    'LT',
+    'TH',
+    'BT',
+    'LOẠI HP',
+    'KHỐI KIẾN THỨC',
+    'LOẠI KIẾN THỨC',
+    'NGÀNH/CHUYÊN NGÀNH'
+  ];
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
@@ -102,5 +120,27 @@ export class MonHocController {
     const user = req.user || {};
     await this.monHocService.delete(id, user?.id);
     return new HttpException(MONHOC_MESSAGE.DELETE_MONHOC_SUCCESSFULLY, HttpStatus.OK);
+  }
+  @Post('import-data')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'import data từ file xlsx' })
+  @UseInterceptors(FileInterceptor('file', {}))
+  async importData(@UploadedFile() file, @Req() req, @Res() res) {
+    const sheets = await nodexlsv.parse(file?.buffer);
+    if (sheets.length) {
+      const sheetFirst = sheets[0];
+      const { name = 'sheet0', data = [] } = sheetFirst;
+      const headers = data.shift() || [];
+      const isCheckError = await this.monHocService.checkFormatFile(this.headersFormat, headers);
+      if (isCheckError?.isError) {
+        return isCheckError?.message;
+      }
+      const results = await this.monHocService.insertMonHoc(data, req?.user);
+      if (!results?.isError) {
+        return res.json(results);
+      }
+      return res.status(HttpStatus.NOT_FOUND).json(results);
+    }
   }
 }

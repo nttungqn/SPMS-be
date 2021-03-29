@@ -1,4 +1,11 @@
-import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  ConflictException,
+  HttpException,
+  BadRequestException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, MONHOC_MESSAGE } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
@@ -90,6 +97,51 @@ export class MonHocService {
       });
     } catch (error) {
       throw new InternalServerErrorException(MONHOC_MESSAGE.DELETE_MONHOC_FAILED);
+    }
+  }
+  async checkFormatFile(headers = [], test = []) {
+    if (!headers?.length || !test?.length) {
+      return { message: MONHOC_MESSAGE.IMPORT_INPUT_INVALID, isError: true };
+    }
+    for (let index = 0; index < headers.length; index++) {
+      const header = headers[index] || '';
+      const dataTest = test[index] || '';
+      if (header?.toUpperCase() !== dataTest?.toUpperCase()) {
+        return { message: MONHOC_MESSAGE.IMPORT_INPUT_INVALID, isError: true };
+      }
+    }
+    return { isError: false };
+  }
+  async insertMonHoc(data = [], user) {
+    if (!data?.length) {
+      throw new BadRequestException();
+    }
+    try {
+      const resultsArr = data?.map(async (e) => {
+        const ma = e[0] || '';
+        const tenTiengViet = e[1] || '';
+        const soTinChi = e[2] || 0;
+        const soTietLyThuyet = e[3] || 0;
+        const soTietThucHanh = e[4] || 0;
+        const soTietTuHoc = e[5] || 0;
+        await this.create({
+          ma,
+          tenTiengViet,
+          soTinChi,
+          soTietLyThuyet,
+          soTietThucHanh,
+          soTietTuHoc,
+          tenTiengAnh: '',
+          moTa: '',
+          taiNguyen: '',
+          createdBy: user?.id,
+          updatedBy: user?.id
+        });
+      });
+      await Promise.all(resultsArr);
+      return { message: MONHOC_MESSAGE.IMPORT_SUCCESSFULLY, isError: false };
+    } catch (error) {
+      return { message: MONHOC_MESSAGE.IMPORT_FAILED, isError: true, error };
     }
   }
 }
