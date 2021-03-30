@@ -7,6 +7,7 @@ import { NganhDaoTaoEntity } from './entity/nganhDaoTao.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([NganhDaoTaoEntity])],
   controllers: [CtdtController],
-  providers: [CtdtService]
+  providers: [CtdtService],
+  exports: [CtdtService]
 })
 export class CtdtModule {}

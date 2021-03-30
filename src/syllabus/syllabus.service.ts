@@ -36,24 +36,27 @@ export class SyllabusService {
   }
 
   async findAll(filter: GetSyllabusFilterDto): Promise<Syllabus[] | any> {
-    const { key, page = 0, limit = LIMIT, updatedAt } = filter;
+    const { key, page = 0, limit = LIMIT, updatedAt, createdBy } = filter;
     const skip = page * limit;
     const queryOrder: OrderByCondition = updatedAt ? { 'sy.updatedAt': updatedAt } : {};
+    const isDeleted = false;
+    const queryByCondition = `sy.isDeleted = ${isDeleted}`;
     const query = this.syllabusRepository
       .createQueryBuilder('sy')
       .leftJoinAndSelect('sy.monHoc', 'monHoc')
+      .leftJoinAndSelect('sy.createdBy', 'createdBy')
       .where((qb) => {
         key
           ? qb.where('(monHoc.TenTiengViet LIKE :key OR monHoc.TenTiengAnh LIKE :key)', {
               key: `%${key}%`
             })
           : {};
+        createdBy ? qb.andWhere('createdBy.id =:idUser', { idUser: createdBy }) : {};
       })
-      .leftJoinAndSelect('sy.createdBy', 'createdBy')
       .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
       .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
       .leftJoinAndSelect('sy.namHoc', 'namHoc')
-      .andWhere('sy.isDeleted=:isDeleted', { isDeleted: false })
+      .andWhere(queryByCondition)
       .take(limit)
       .skip(skip)
       .orderBy({ ...queryOrder });
@@ -106,6 +109,13 @@ export class SyllabusService {
     } catch (error) {
       throw new InternalServerErrorException(SYLLABUS_MESSAGE.DELETE_SYLLABUS_FAILED);
     }
+  }
+
+  async getCountSyllabus(idUser?: number): Promise<number> {
+    if (idUser) {
+      return await this.syllabusRepository.count({ createdBy: idUser, isDeleted: false });
+    }
+    return await this.syllabusRepository.count({ isDeleted: false });
   }
   async isExist(createSyllabusDto: Syllabus): Promise<boolean> {
     const { id, namHoc, monHoc, heDaoTao } = createSyllabusDto;

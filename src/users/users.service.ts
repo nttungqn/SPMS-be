@@ -7,6 +7,7 @@ import { sendMail } from 'utils/sendMail';
 import { UsersEntity } from './entity/user.entity';
 import { IUser } from './interfaces/users.interface';
 import { FilterUser } from './dto/filter-user.dto';
+import { Role } from 'guards/roles.enum';
 
 @Injectable()
 export class UsersService {
@@ -116,7 +117,16 @@ export class UsersService {
       throw new InternalServerErrorException(USER_MESSAGE.UPDATE_USER_FAILED);
     }
   }
-
+  async getCountUser(type: Role) {
+    const query = this.usersRepository
+      .createQueryBuilder('users')
+      .leftJoin('users.role', 'roles')
+      .where((qb) => {
+        qb.where('roles.value = :value', { value: Number(type) });
+      })
+      .andWhere('users.isDeleted = :isDeleted and users.isActive = :isActive', { isDeleted: false, isActive: true });
+    return await query.getCount();
+  }
   async remove(id: number, idUser: number) {
     const result = await this.usersRepository.findOne(id, { where: { isDeleted: false } });
     if (!result) throw new NotFoundException(USER_MESSAGE.USER_ID_NOT_FOUND);
