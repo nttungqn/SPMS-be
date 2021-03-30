@@ -24,7 +24,7 @@ export class AuthService {
   constructor(private readonly usersService: UsersService, @Inject(CACHE_MANAGER) private cacheManager: Cache) {}
   async login(email: string, password: string): Promise<any> {
     try {
-      const user = await this.usersService.findOne({ email });
+      const user = await this.usersService.findOne({ email, isDeleted: false });
       if (!user) {
         return { status: HttpStatus.BAD_REQUEST, data: { message: AUTH_MESSAGE.EMAIL_NOT_EXIST } };
       }
