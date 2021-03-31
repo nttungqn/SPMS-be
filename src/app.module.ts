@@ -34,6 +34,7 @@ import { RolesModule } from 'roles/roles.module';
 import { ExportsModule } from './exports/exports.module';
 import { MonHocTruocModule } from './mon-hoc-truoc/mon-hoc-truoc.module';
 import { UploadFileModule } from './upload-file/upload-file.module';
+import { ThongKeModule } from './thong-ke/thong-ke.module';
 
 @Module({
   imports: [
@@ -69,7 +70,9 @@ import { UploadFileModule } from './upload-file/upload-file.module';
     UsersModule,
     ExportsModule,
     MonHocTruocModule,
-    UploadFileModule
+    UploadFileModule,
+    UploadFileModule,
+    ThongKeModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

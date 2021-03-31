@@ -6,10 +6,12 @@ export class GetSyllabusFilterDto extends BaseFilterDto {
   @ApiProperty({ required: false, default: 'Tên của môn học' })
   @IsOptional()
   @IsNotEmpty()
-  key: string;
+  key?: string;
+
+  createdBy?: number;
 
   @ApiProperty({ required: false, description: 'Sắp xếp tăng dần,giảm dần ASC | DESC ' })
   @IsOptional()
   @IsIn(['ASC', 'DESC'])
-  updatedAt: 'ASC' | 'DESC';
+  updatedAt?: 'ASC' | 'DESC';
 }
