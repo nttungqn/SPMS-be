@@ -33,6 +33,7 @@ import { SoKhopModule } from './so-khop/so-khop.module';
 import { RolesModule } from 'roles/roles.module';
 import { ExportsModule } from './exports/exports.module';
 import { UploadFileModule } from './upload-file/upload-file.module';
+import { ThongKeModule } from './thong-ke/thong-ke.module';
 
 @Module({
   imports: [
@@ -67,7 +68,8 @@ import { UploadFileModule } from './upload-file/upload-file.module';
     RolesModule,
     UsersModule,
     ExportsModule,
-    UploadFileModule
+    UploadFileModule,
+    ThongKeModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

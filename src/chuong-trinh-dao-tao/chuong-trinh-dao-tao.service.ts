@@ -90,4 +90,7 @@ export class ChuongTrinhDaoTaoService {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  async getCountCTDT(): Promise<number> {
+    return await this.chuongTrinhDaoTaoRepository.count({ isDeleted: false });
+  }
 }

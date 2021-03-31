@@ -37,6 +37,8 @@ import { SyllabusResponse } from './Responses/syllbus.response';
 import { Roles } from 'guards/roles.decorator';
 import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
+import { GetUser } from 'auth/user.decorator';
+import { UsersEntity } from 'users/entity/user.entity';
 
 @ApiTags('Syllabus')
 @Controller('syllabus')
@@ -62,6 +64,16 @@ export class SyllabusController {
       createdAt: new Date()
     });
     return new HttpException(SYLLABUS_MESSAGE.CREATE_SYLLABUS_SUCCESSFULLY, HttpStatus.CREATED);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy danh sách syllabus của giáo vien' })
+  @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
+  @ApiOkResponse({ description: 'OK', type: FindAllSyllabusResponse })
+  @Get('/user')
+  async findAllByUser(@Query() filter: GetSyllabusFilterDto, @GetUser() user: UsersEntity) {
+    return await this.syllabusService.findAll({ ...filter, createdBy: user.id });
   }
 
   @UseGuards(AuthGuard('jwt'))

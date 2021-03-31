@@ -88,4 +88,7 @@ export class CtdtService {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  async getCount(): Promise<number> {
+    return await this.nganhDaoTaoRepository.count({ isDeleted: false });
+  }
 }
