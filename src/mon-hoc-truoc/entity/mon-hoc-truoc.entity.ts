@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
 import { TABLE_NAME } from 'constant/constant';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: TABLE_NAME.MONHOCTRUOC })
 export class MonHocTruocEntity {

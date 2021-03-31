@@ -1,4 +1,20 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  CACHE_MANAGER,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Inject,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { IdDto } from 'chuong-trinh-dao-tao/dto/Id.dto';
@@ -13,6 +29,8 @@ import * as lodash from 'lodash';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { VerifyEmailDto } from './dto/verifyEmail.dto';
 import { EmailDto } from './dto/email.dto';
+import { ForgotPasswordDto } from './dto/forgotPassword.dto';
+import { ResetPassworDto } from './dto/resetPassword.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -114,25 +132,61 @@ export class AuthController {
         return res.status(HttpStatus.BAD_REQUEST).json({ message: AUTH_MESSAGE.VERIFY_ERROR });
       }
       if (result?.isActive) {
-        return res.status(HttpStatus.OK).json({ message: AUTH_MESSAGE.TOKEN_VERIFED });
+        return res.status(HttpStatus.OK).json({ message: AUTH_MESSAGE.TOKEN_VERIFIED });
       }
       await this.usersService.update(result?.id, { ...result, isActive: true });
-      return res.json({ message: AUTH_MESSAGE.VERIFY_SUCCESSFULLY });
+      const { token } = await this.authService.createToken(result);
+      const { refreshToken } = await this.authService.createRefreshToken(result);
+      return res.json({ message: AUTH_MESSAGE.VERIFY_SUCCESSFULLY, data: { token, refreshToken, curUser: result } });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: AUTH_MESSAGE.VERIFY_FAILED });
     }
   }
-  @Post('forgot-password/:email')
-  async sendLinkResetPassword(@Req() req, @Res() res, @Param() param: EmailDto): Promise<any> {
+
+  @Post('forgot-password')
+  async forgotPassword(@Query() emailDto: EmailDto): Promise<any> {
+    const user = await this.usersService.findOne({ email: emailDto?.email, isDeleted: false });
+    if (!user) {
+      return new NotFoundException(AUTH_MESSAGE.ACCOUNT_NOT_FOUND);
+    }
+    await this.authService.handleForgotPassword(user);
+    return new HttpException('OK', HttpStatus.OK);
+  }
+
+  @Get('forgot-password/:randomStr')
+  async getResetPassword(@Param() param: ForgotPasswordDto): Promise<any> {
+    const randomStr = param?.randomStr;
+
+    await this.authService.handleGetResetPassword(randomStr);
+    return new HttpException('OK', HttpStatus.OK);
+  }
+
+  @Post('forgot-password/:randomStr')
+  async postResetPassword(
+    @Req() req,
+    @Res() res,
+    @Param() param: ForgotPasswordDto,
+    @Body() updateData: ResetPassworDto
+  ): Promise<any> {
     try {
-      const email = await this.usersService.findOne({ email: param?.email, isDeleted: false });
-      if (!email) {
-        res.status(HttpStatus.BAD_REQUEST).json({ message: AUTH_MESSAGE.EMAIL_NOT_EXIST });
+      const randomStr = param?.randomStr;
+      const id = await this.authService.handleGetResetPassword(randomStr);
+      const userProfile = await this.usersService.findOne({ id: Number(id), isDeleted: false });
+      if (!userProfile) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGE.USER_ID_NOT_FOUND });
       }
 
-      // send link reset password to reset email
+      if (updateData.password !== updateData.passwordConfirm) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: AUTH_MESSAGE.PASSWORD_NOT_MATCH });
+      }
+
+      const newPassword = await this.authService.hashPassword(updateData?.password);
+      await this.usersService.update(Number(id), { password: newPassword });
+      return res.status(HttpStatus.OK).json({ message: USER_MESSAGE.UPDATE_USER_SUCCESSFULLY });
     } catch (error) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: AUTH_MESSAGE.VERIFY_FAILED });
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: USER_MESSAGE.UPDATE_USER_FAILED, error: lodash.get(error, 'response', 'error') });
     }
   }
 }

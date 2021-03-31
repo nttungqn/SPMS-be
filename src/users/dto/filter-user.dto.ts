@@ -27,6 +27,10 @@ export class FilterUser extends BaseFilterDto {
   @IsOptional()
   readonly isDeleted?: boolean;
 
+  @ApiProperty({ required: false, description: 'Trạng thái hoạt động user - isActive: true | false' })
+  @IsOptional()
+  readonly isActive?: boolean;
+
   @ApiProperty({
     required: false,
     description: 'Sort by column: id, firstName, lastName, email, username, updatedAt, createdAt'

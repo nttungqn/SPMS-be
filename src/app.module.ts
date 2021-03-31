@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { CacheModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -33,6 +33,7 @@ import { SoKhopModule } from './so-khop/so-khop.module';
 import { RolesModule } from 'roles/roles.module';
 import { ExportsModule } from './exports/exports.module';
 import { MonHocTruocModule } from './mon-hoc-truoc/mon-hoc-truoc.module';
+import { UploadFileModule } from './upload-file/upload-file.module';
 
 @Module({
   imports: [
@@ -62,11 +63,13 @@ import { MonHocTruocModule } from './mon-hoc-truoc/mon-hoc-truoc.module';
     ChiTietKeHoachModule,
     ChuanDauRaMonHocModule,
     HoatDongDanhGiaModule,
+    CacheModule.register(),
     SoKhopModule,
     RolesModule,
     UsersModule,
     ExportsModule,
-    MonHocTruocModule
+    MonHocTruocModule,
+    UploadFileModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService]

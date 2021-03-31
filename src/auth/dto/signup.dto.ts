@@ -10,7 +10,6 @@ export class SignUpDto {
   readonly lastName: string;
   @ApiProperty()
   @IsString()
-  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/gi)
   readonly email: string;
   @ApiProperty()
   @IsString()

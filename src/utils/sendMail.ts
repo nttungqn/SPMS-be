@@ -1,7 +1,9 @@
 import { EMAIL_MAIL, FE_ROUTE, PASSWORD_MAIL } from 'config/config';
 import { MAIL_OPTIONS } from 'constant/constant';
 import * as nodemailer from 'nodemailer';
+import { UsersEntity } from 'users/entity/user.entity';
 import { htmlTemplateEmail } from './htmlTemplateEmail';
+import { resetPasswordEmailTemplate } from './resetPasswordEmailTemplate';
 
 export interface IDataMail {
   title?: string;
@@ -44,6 +46,35 @@ export const sendMail = async (
     subject: subject || MAIL_OPTIONS.DEFAULT_SUBJECT,
     html: template || htmlTemplateEmail(dataRender),
     attachments: attachments || null
+  };
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log('Message error mail:', error);
+    } else {
+      console.log('sent mail');
+    }
+  });
+  transporter.close();
+};
+
+export const sendMailResetPassword = async (user?: UsersEntity, urlResetPassword?: string) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: EMAIL_MAIL,
+      pass: PASSWORD_MAIL
+    },
+    secure: false,
+    // here it goes
+    tls: { rejectUnauthorized: false }
+  });
+
+  const mailOptions = {
+    from: EMAIL_MAIL,
+    to: user.email,
+    subject: 'Reset password',
+    text: 'You received message from SPMS',
+    html: resetPasswordEmailTemplate(user, urlResetPassword)
   };
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
