@@ -95,16 +95,14 @@ export class KhoiKienThucService {
   async isExist(createKhoiKienThucDto: CreateKhoiKienThucDto): Promise<boolean> {
     return createKhoiKienThucDto ? true : false;
   }
-  async getAllByNganhDaoTaoAndKhoaTuyen(idNganhDaotao: number, khoa: number): Promise<MonHocEntity[]> {
-    const khoiKienThuc = await this.knowledgeBlockRepository
-      .createQueryBuilder('kkt')
-      .leftJoin('kkt.chiTietNganh', 'ctndt')
-      .where((qb) => {
-        qb.where('ctndt.nganhDaoTao =:idNganhDaotao And ctndt.khoa=:khoa', { idNganhDaotao, khoa });
-      })
-      .getMany();
+
+  async getAllSubjectByIdChiTietNganhDaotao(idChiTietNganhDaoTao: number): Promise<MonHocEntity[]> {
+    const khoiKienThuc = await this.knowledgeBlockRepository.find({
+      chiTietNganh: idChiTietNganhDaoTao,
+      isDeleted: false
+    });
     if (khoiKienThuc.length === 0) {
-      throw new NotFoundException(`KHOA_${khoa}_NOT_FOUND`);
+      throw new NotFoundException();
     }
     const subjects: MonHocEntity[] = [];
     for (const ktk of khoiKienThuc) {

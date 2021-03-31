@@ -20,6 +20,6 @@ export class SoKhopController {
     if (Number(khoaTuyenNam1) >= Number(khoaTuyenNam2)) {
       throw new BadRequestException();
     }
-    return this.soKhopService.soKhopNganhDaotao(id, filter);
+    return this.soKhopService.soKhopNganhDaoTao(id, filter);
   }
 }

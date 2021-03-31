@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumberString, IsOptional } from 'class-validator';
-import { Column } from 'typeorm';
+import { TABLE_NAME } from 'constant/constant';
+import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
+import { Column, JoinTable, ManyToMany } from 'typeorm';
 
 export class CreateMonHocDto {
   @ApiProperty()

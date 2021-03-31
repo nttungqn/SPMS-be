@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CTNGANHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm';
@@ -93,5 +93,16 @@ export class ChiTietNganhDaoTaoService {
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+  async getOneByKhoaAndNganhDaoTao(khoa: number, idNganhDaoTao: number) {
+    const result = await this.chiTietNganhDTRepository.findOne({
+      khoa: khoa,
+      nganhDaoTao: idNganhDaoTao,
+      isDeleted: false
+    });
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
   }
 }

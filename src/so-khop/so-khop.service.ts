@@ -1,28 +1,36 @@
 import { Injectable } from '@nestjs/common';
+import { ChiTietNganhDaoTaoService } from 'chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
 import { KhoiKienThucService } from 'khoi-kien-thuc/khoi-kien-thuc.service';
+import { MonHocTruocService } from 'mon-hoc-truoc/mon-hoc-truoc.service';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
-import { MonHocService } from 'mon-hoc/mon-hoc.service';
 import { FilterSoKhopNganhDaoTao } from './dto/filter-so-khop.dto';
 import { RowSoKhopNganhDaoTao } from './dto/row-so-khop.dto';
 
 @Injectable()
 export class SoKhopService {
-  constructor(private khoiKienThucService: KhoiKienThucService, private monHocService: MonHocService) {}
-  async soKhopNganhDaotao(id: number, filter: FilterSoKhopNganhDaoTao) {
+  constructor(
+    private khoiKienThucService: KhoiKienThucService,
+    private monHocTruocService: MonHocTruocService,
+    private chiTietNganhDaotaoService: ChiTietNganhDaoTaoService
+  ) {}
+  async soKhopNganhDaoTao(idNganhDaoTao: number, filter: FilterSoKhopNganhDaoTao) {
     const { khoaTuyenNam1, khoaTuyenNam2 } = filter;
-    const firstSubjects: MonHocEntity[] = await this.khoiKienThucService.getAllByNganhDaoTaoAndKhoaTuyen(
-      id,
-      Number(khoaTuyenNam1)
+    const chiTietNganhDaotaoKhoa1 = await this.chiTietNganhDaotaoService.getOneByKhoaAndNganhDaoTao(
+      Number(khoaTuyenNam1),
+      idNganhDaoTao
     );
-    const secondSubjects: MonHocEntity[] = await this.khoiKienThucService.getAllByNganhDaoTaoAndKhoaTuyen(
-      id,
-      Number(khoaTuyenNam2)
+    const firstSubjects: MonHocEntity[] = await this.khoiKienThucService.getAllSubjectByIdChiTietNganhDaotao(
+      chiTietNganhDaotaoKhoa1.id
     );
 
-    // type rowSoKhop = {
-    //   first: MonHocEntity;
-    //   second: MonHocEntity[];
-    // };
+    const chiTietNganhDaotaoKhoa2 = await this.chiTietNganhDaotaoService.getOneByKhoaAndNganhDaoTao(
+      Number(khoaTuyenNam2),
+      idNganhDaoTao
+    );
+    const secondSubjects: MonHocEntity[] = await this.khoiKienThucService.getAllSubjectByIdChiTietNganhDaotao(
+      chiTietNganhDaotaoKhoa2.id
+    );
+
     const soKhop: RowSoKhopNganhDaoTao[] = [];
     const oldSubjecs: MonHocEntity[] = [];
 
@@ -51,24 +59,34 @@ export class SoKhopService {
         first: oldSunject,
         second: []
       };
-      let currentSubject = [oldSunject];
+      let current: MonHocEntity[] = [oldSunject]; // Danh sách tìm kiếm môn học thay thế hiện tại
       for (let i = Number(khoaTuyenNam1); i <= Number(khoaTuyenNam2); i++) {
-        const next: MonHocEntity[] = [];
-        for (const current of currentSubject) {
-          const thayThe = await this.monHocService.getMonHocThayThe(current.id);
-          for (const e of thayThe) {
-            for (let index = 0; index < secondSubjects.length; index++) {
+        const next: MonHocEntity[] = []; // Danh sách tìm kiếm môn học thay thế cho năm tiếp theo
+        for (let j = 0; j < current.length; j++) {
+          const monThayThe = await this.monHocTruocService.getMonHocThayThe(current[j].id, i); //Danh sách môn thay thế theo năm
+          if (monThayThe.length === 0) {
+            // Không tìm thấy môn thay thế tại năm i
+            next.push(current[j]);
+            break;
+          }
+          for (const e of monThayThe) {
+            let index = 0;
+            const lenght = secondSubjects.length;
+            for (; index < lenght; index++) {
+              //Tìm môn học phù hợp
               if (secondSubjects[index].ma === e.ma) {
                 row.second.push(e);
                 secondSubjects.splice(index, 1);
+                current.splice(j, 1);
                 break;
-              } else {
-                next.push(e);
               }
             }
+            if (index === lenght)
+              //Không tìm thấy môn học phù hợp
+              next.push(e); // Thêm vào danh sách tìm vào lần tiếp theo
           }
         }
-        currentSubject = next;
+        current = next;
       }
       soKhop.push(row);
     }
