@@ -32,7 +32,6 @@ import { HoatDongDanhGiaModule } from './hoat-dong-danh-gia/hoat-dong-danh-gia.m
 import { SoKhopModule } from './so-khop/so-khop.module';
 import { RolesModule } from 'roles/roles.module';
 import { ExportsModule } from './exports/exports.module';
-import { MonHocTruocModule } from './mon-hoc-truoc/mon-hoc-truoc.module';
 import { UploadFileModule } from './upload-file/upload-file.module';
 import { ThongKeModule } from './thong-ke/thong-ke.module';
 
@@ -69,7 +68,6 @@ import { ThongKeModule } from './thong-ke/thong-ke.module';
     RolesModule,
     UsersModule,
     ExportsModule,
-    MonHocTruocModule,
     UploadFileModule,
     UploadFileModule,
     ThongKeModule

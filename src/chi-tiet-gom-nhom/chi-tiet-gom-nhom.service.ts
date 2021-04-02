@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, CHITIETGOMNHOM_MESSAGE } from 'constant/constant';
+import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { Repository } from 'typeorm';
 import { ChiTietGomNhomEntity } from './entity/chi-tiet-gom-nhom.entity';
 
@@ -85,5 +86,17 @@ export class ChiTietGomNhomService {
     } catch (error) {
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
     }
+  }
+
+  async getMonHocThayThe(idMonHoc: number): Promise<MonHocEntity[]> {
+    const result = await this.chiTietGomNhomRepository
+      .createQueryBuilder('ctgn')
+      .leftJoinAndSelect('ctgn.ctgnMonHoctruoc', 'ctgnMonHoctruoc')
+      .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+      .where((qb) => {
+        qb.leftJoinAndSelect('ctgnMonHoctruoc.monHoc', 'monHocTr').where(`monHocTr.id = ${idMonHoc}`);
+      })
+      .getMany();
+    return result.map((e) => e.monHoc);
   }
 }

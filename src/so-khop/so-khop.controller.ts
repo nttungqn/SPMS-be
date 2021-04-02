@@ -10,8 +10,8 @@ import { RowSoKhopNganhDaoTao } from './dto/row-so-khop.dto';
 export class SoKhopController {
   constructor(private readonly soKhopService: SoKhopService) {}
 
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('token')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin so khớp môn học của 1 ngành đào tạo trong 2 năm' })
   @ApiOkResponse({ description: 'OK', type: [RowSoKhopNganhDaoTao] })
   @Get('/nganh-dao-tao/:idNganhDaoTao')
@@ -20,6 +20,6 @@ export class SoKhopController {
     if (Number(khoaTuyenNam1) >= Number(khoaTuyenNam2)) {
       throw new BadRequestException();
     }
-    return this.soKhopService.soKhopNganhDaoTaoV2(id, filter);
+    return this.soKhopService.soKhopNganhDaoTao(id, filter);
   }
 }
