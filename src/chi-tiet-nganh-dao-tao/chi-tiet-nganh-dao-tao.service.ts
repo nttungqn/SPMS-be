@@ -101,7 +101,7 @@ export class ChiTietNganhDaoTaoService {
       isDeleted: false
     });
     if (!result) {
-      throw new NotFoundException();
+      throw new NotFoundException(`KHOA_${khoa}_NOT_FOUND`);
     }
     return result;
   }

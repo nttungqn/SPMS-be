@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
+import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 import { TABLE_NAME } from 'constant/constant';
-import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: TABLE_NAME.MONHOCTRUOC })
 export class MonHocTruocEntity {
@@ -10,23 +9,11 @@ export class MonHocTruocEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
-  @ApiProperty()
-  @ManyToOne(() => MonHocEntity)
-  @JoinColumn({ name: 'idMonHoc' })
-  monHocThayThe: MonHocEntity;
+  @OneToOne(() => ChiTietGomNhomEntity)
+  @JoinColumn({ name: 'idCTGNMonHoc' })
+  ctgnMonHoc: ChiTietGomNhomEntity;
 
-  @ApiProperty()
-  @ManyToOne(() => MonHocEntity)
-  @JoinColumn({ name: 'idMonHocTruoc' })
-  idMonHocTruoc: MonHocEntity;
-
-  @ApiProperty()
-  @ManyToOne(() => ChiTietNganhDaoTaoEntity, { eager: true })
-  @JoinColumn({ name: 'idKhoaMonHoc' })
-  ctndtMonHoc: ChiTietNganhDaoTaoEntity;
-
-  @ApiProperty()
-  @ManyToOne(() => ChiTietNganhDaoTaoEntity, { eager: true })
-  @JoinColumn({ name: 'idKhoaMonHocTruoc' })
-  ctndtMonHocTruoc: ChiTietNganhDaoTaoEntity;
+  @OneToOne(() => ChiTietGomNhomEntity)
+  @JoinColumn({ name: 'idCTGNMonHocTruoc' })
+  ctgnMonHocTruoc: ChiTietGomNhomEntity;
 }
