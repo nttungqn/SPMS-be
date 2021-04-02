@@ -10,11 +10,11 @@ export class CreateMonHocTruocDto {
   @IsNumberString()
   idMonHocTruoc: number;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Id chi tiết ngành đào tạo của môn học trước' })
   @IsNumberString()
-  idKhoaMonHoc: number;
+  idChiTietNganhDaoTao: number;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Id chi tiết gom nhóm ' })
   @IsNumberString()
-  idKhoaMonHocTruoc: number;
+  idChiTietGomNhom: number;
 }

@@ -63,7 +63,7 @@ export class SoKhopService {
       for (let i = Number(khoaTuyenNam1); i <= Number(khoaTuyenNam2); i++) {
         const next: MonHocEntity[] = []; // Danh sách tìm kiếm môn học thay thế cho năm tiếp theo
         for (let j = 0; j < current.length; j++) {
-          const monThayThe = await this.monHocTruocService.getMonHocThayThe(current[j].id, i); //Danh sách môn thay thế theo năm
+          const monThayThe = await this.monHocTruocService.getMonHocThayThe(current[j].id, i, Number(khoaTuyenNam2)); //Danh sách môn thay thế theo năm
           if (monThayThe.length === 0) {
             // Không tìm thấy môn thay thế tại năm i
             next.push(current[j]);
