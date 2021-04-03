@@ -32,11 +32,21 @@ import { ChiTietGomNhomEntity } from './entity/chi-tiet-gom-nhom.entity';
 import { UpdateChiTietGomNhomDTO } from './dto/update-chi-tiet-gom-nhom.dto';
 import { GetUser } from 'auth/user.decorator';
 import { UsersEntity } from 'users/entity/user.entity';
+import { FilterByNganhDaoTao } from './dto/filter-by-nganh-dao-tao.dto';
 
 @ApiTags('chi-tiet-gom-nhom')
 @Controller('chi-tiet-gom-nhom')
 export class ChiTietGomNhomController {
   constructor(private readonly chiTietGomNhomService: ChiTietGomNhomService) {}
+
+  @Get('/nganh-dao-tao/:idNganhDaotao/khoa-tuyen/:khoa')
+  async getAllSubject(
+    @Param('idNganhDaotao', ParseIntPipe) idNganhDaoTao: number,
+    @Param('khoa', ParseIntPipe) khoa: number,
+    @Query() filter: FilterByNganhDaoTao
+  ) {
+    return await this.chiTietGomNhomService.getAllSubjects(idNganhDaoTao, khoa, filter);
+  }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')

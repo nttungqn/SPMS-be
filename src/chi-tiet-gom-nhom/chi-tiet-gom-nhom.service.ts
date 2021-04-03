@@ -4,6 +4,7 @@ import { LIMIT, CHITIETGOMNHOM_MESSAGE } from 'constant/constant';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { Repository } from 'typeorm';
 import { CreateChiTietGomNhomDTO } from './dto/create-chi-tiet-gom-nhom.dto';
+import { FilterByNganhDaoTao } from './dto/filter-by-nganh-dao-tao.dto';
 import { UpdateChiTietGomNhomDTO } from './dto/update-chi-tiet-gom-nhom.dto';
 import { ChiTietGomNhomEntity } from './entity/chi-tiet-gom-nhom.entity';
 
@@ -130,5 +131,39 @@ export class ChiTietGomNhomService {
       })
       .getMany();
     return result.map((e) => e.monHoc);
+  }
+  async getAllSubjects(khoa: number, idNganhDaoTao: number, filter: FilterByNganhDaoTao) {
+    const { limit = LIMIT, page = 0, tenMonHoc, maMonHoc } = filter;
+    const skip = Number(page) * Number(limit);
+    const [results, total] = await this.chiTietGomNhomRepository
+      .createQueryBuilder('ctgn')
+      .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
+      .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+      .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom')
+      .where((qb) => {
+        qb.where((qb) => {
+          qb.leftJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc')
+            .where((qb) => {
+              qb.leftJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc')
+                .where((qb) => {
+                  qb.leftJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh')
+                    .where(`chiTietNganh.khoa = ${khoa} and chiTietNganh.nganhDaoTao = ${idNganhDaoTao}`)
+                    .andWhere(`chiTietNganh.isDeleted = ${false}`);
+                })
+                .andWhere(`khoiKienThuc.isDeleted = ${false}`);
+            })
+            .andWhere(`gomNhom.isDeleted = ${false}`);
+        });
+        tenMonHoc
+          ? qb.andWhere(`monHoc.tenTiengViet LIKE '%${tenMonHoc}%' OR monHoc.tenTiengAnh LIKE '%${tenMonHoc}%'`)
+          : {};
+        maMonHoc ? qb.orWhere(`monHoc.ma LIKE '%${maMonHoc}%'`) : {};
+      })
+      .andWhere(`ctgn.isDeleted = ${false}`)
+      .take(limit)
+      .skip(skip)
+      .getManyAndCount();
+    return { contents: results, total, page: Number(page) };
   }
 }

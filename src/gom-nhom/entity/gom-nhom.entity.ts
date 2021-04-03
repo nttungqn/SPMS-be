@@ -43,6 +43,6 @@ export class GomNhomEntity extends CreateGomNhomDTO {
 
   @AfterLoad()
   afterLoad() {
-    this.chiTietGomNhom = this.chiTietGomNhom.filter((ctgn) => ctgn.isDeleted === false);
+    this.chiTietGomNhom = this.chiTietGomNhom?.filter((ctgn) => ctgn.isDeleted === false);
   }
 }
