@@ -35,8 +35,4 @@ export class MonHocEntity extends CreateMonHocDto {
   @ApiProperty()
   @Column({ name: 'isDeleted' })
   isDeleted?: boolean;
-
-  @ApiProperty()
-  @Column({ name: 'idMonThayThe' })
-  monThayThe?: number; //Môn học trước
 }

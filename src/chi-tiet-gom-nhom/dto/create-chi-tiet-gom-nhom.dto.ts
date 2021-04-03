@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column } from 'typeorm';
-import { IsInt, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateChiTietGomNhomDTO {
   @ApiProperty()
@@ -8,7 +7,7 @@ export class CreateChiTietGomNhomDTO {
   idGN?: number;
 
   @ApiProperty()
-  @IsNumberString()
+  @IsInt()
   idMH?: number;
 
   @ApiProperty()
@@ -19,5 +18,5 @@ export class CreateChiTietGomNhomDTO {
   @ApiProperty()
   @IsInt()
   @IsOptional()
-  idChiTietGomNhom?: number;
+  idCTGNMonHocTruoc?: number;
 }

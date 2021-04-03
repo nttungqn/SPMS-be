@@ -38,6 +38,7 @@ export class ChiTietGomNhomEntity {
   @ApiProperty()
   @OneToOne(() => ChiTietGomNhomEntity)
   @JoinColumn({ name: 'idCTGNMonHocTruoc' })
+  @Column({ name: 'idCTGNMonHocTruoc' })
   ctgnMonHoctruoc?: ChiTietGomNhomEntity;
 
   @ApiProperty()

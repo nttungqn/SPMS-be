@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, CHITIETGOMNHOM_MESSAGE } from 'constant/constant';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { Repository } from 'typeorm';
+import { CreateChiTietGomNhomDTO } from './dto/create-chi-tiet-gom-nhom.dto';
+import { UpdateChiTietGomNhomDTO } from './dto/update-chi-tiet-gom-nhom.dto';
 import { ChiTietGomNhomEntity } from './entity/chi-tiet-gom-nhom.entity';
 
 @Injectable()
@@ -44,9 +46,27 @@ export class ChiTietGomNhomService {
     return result;
   }
 
-  async create(newData: ChiTietGomNhomEntity): Promise<any> {
+  async create(newData: CreateChiTietGomNhomDTO, idUser: number): Promise<any> {
+    const { idCTGNMonHocTruoc } = newData;
+    const chiTietGomNhom: ChiTietGomNhomEntity = {
+      ...newData,
+      createdBy: idUser,
+      updatedBy: idUser,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    if (idCTGNMonHocTruoc) {
+      const ctgnMonHoctruoc = await this.chiTietGomNhomRepository.findOne({
+        id: newData.idCTGNMonHocTruoc,
+        isDeleted: false
+      });
+      if (!ctgnMonHoctruoc) {
+        throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);
+      }
+      chiTietGomNhom.ctgnMonHoctruoc = ctgnMonHoctruoc;
+    }
     try {
-      const ctGomNhom = await this.chiTietGomNhomRepository.create(newData);
+      const ctGomNhom = await this.chiTietGomNhomRepository.create(chiTietGomNhom);
       const saved = await this.chiTietGomNhomRepository.save(ctGomNhom);
       return saved;
     } catch (error) {
@@ -54,18 +74,30 @@ export class ChiTietGomNhomService {
     }
   }
 
-  async update(id: number, updatedData: ChiTietGomNhomEntity): Promise<any> {
+  async update(id: number, updatedData: UpdateChiTietGomNhomDTO, idUser: number): Promise<any> {
     const ctGomNhom = await this.chiTietGomNhomRepository.findOne({ id, isDeleted: false });
     if (!ctGomNhom) {
       throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);
     }
-
-    try {
-      return await this.chiTietGomNhomRepository.save({
-        ...ctGomNhom,
-        ...updatedData,
-        updatedAt: new Date()
+    const chiTietGomNhom: ChiTietGomNhomEntity = {
+      ...ctGomNhom,
+      ...updatedData,
+      updatedBy: idUser,
+      updatedAt: new Date()
+    };
+    const { idCTGNMonHocTruoc } = updatedData;
+    if (idCTGNMonHocTruoc) {
+      const ctgnMonHoctruoc = await this.chiTietGomNhomRepository.findOne({
+        id: updatedData.idCTGNMonHocTruoc,
+        isDeleted: false
       });
+      if (!ctgnMonHoctruoc) {
+        throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);
+      }
+      chiTietGomNhom.ctgnMonHoctruoc = ctgnMonHoctruoc;
+    }
+    try {
+      return await this.chiTietGomNhomRepository.save(chiTietGomNhom);
     } catch (error) {
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.UPDATE_CHITIETGOMNHOM_FAILED);
     }
