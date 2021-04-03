@@ -143,11 +143,11 @@ export class ChiTietGomNhomService {
       .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom')
       .where((qb) => {
         qb.where((qb) => {
-          qb.leftJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc')
+          qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc')
             .where((qb) => {
-              qb.leftJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc')
+              qb.innerJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc')
                 .where((qb) => {
-                  qb.leftJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh')
+                  qb.innerJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh')
                     .where(`chiTietNganh.khoa = ${khoa} and chiTietNganh.nganhDaoTao = ${idNganhDaoTao}`)
                     .andWhere(`chiTietNganh.isDeleted = ${false}`);
                 })
@@ -158,7 +158,7 @@ export class ChiTietGomNhomService {
         tenMonHoc
           ? qb.andWhere(`monHoc.tenTiengViet LIKE '%${tenMonHoc}%' OR monHoc.tenTiengAnh LIKE '%${tenMonHoc}%'`)
           : {};
-        maMonHoc ? qb.orWhere(`monHoc.ma LIKE '%${maMonHoc}%'`) : {};
+        maMonHoc ? qb.andWhere(`monHoc.ma LIKE '%${maMonHoc}%'`) : {};
       })
       .andWhere(`ctgn.isDeleted = ${false}`)
       .take(limit)
