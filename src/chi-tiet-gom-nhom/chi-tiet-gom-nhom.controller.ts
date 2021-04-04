@@ -45,7 +45,7 @@ export class ChiTietGomNhomController {
     @Param('khoa', ParseIntPipe) khoa: number,
     @Query() filter: FilterByNganhDaoTao
   ) {
-    return await this.chiTietGomNhomService.getAllSubjects(idNganhDaoTao, khoa, filter);
+    return await this.chiTietGomNhomService.getAllSubjects(khoa, idNganhDaoTao, filter);
   }
 
   @UseGuards(AuthGuard('jwt'))

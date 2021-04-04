@@ -94,15 +94,4 @@ export class ChiTietNganhDaoTaoService {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  async getOneByKhoaAndNganhDaoTao(khoa: number, idNganhDaoTao: number) {
-    const result = await this.chiTietNganhDTRepository.findOne({
-      khoa: khoa,
-      nganhDaoTao: idNganhDaoTao,
-      isDeleted: false
-    });
-    if (!result) {
-      throw new NotFoundException(`KHOA_${khoa}_NOT_FOUND`);
-    }
-    return result;
-  }
 }

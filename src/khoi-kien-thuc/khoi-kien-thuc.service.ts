@@ -95,27 +95,4 @@ export class KhoiKienThucService {
   async isExist(createKhoiKienThucDto: CreateKhoiKienThucDto): Promise<boolean> {
     return createKhoiKienThucDto ? true : false;
   }
-
-  async getAllSubjectByIdChiTietNganhDaotao(idChiTietNganhDaoTao: number): Promise<MonHocEntity[]> {
-    const khoiKienThuc = await this.knowledgeBlockRepository.find({
-      chiTietNganh: idChiTietNganhDaoTao,
-      isDeleted: false
-    });
-    if (khoiKienThuc.length === 0) {
-      throw new NotFoundException();
-    }
-    const subjects: MonHocEntity[] = [];
-    for (const ktk of khoiKienThuc) {
-      const { contents } = await this.loaiKhoiKienThucService.findAll({ limit: 1000, idKhoiKienThuc: ktk.id });
-      for (const loaiKhoiKienThuc of contents) {
-        const detail: LoaiKhoiKienThucEntity = await this.loaiKhoiKienThucService.findDetail(loaiKhoiKienThuc.id);
-        for (const gomNhom of detail.gomNhom) {
-          for (const chiTietGomNhom of gomNhom.chiTietGomNhom) {
-            subjects.push(chiTietGomNhom.monHoc);
-          }
-        }
-      }
-    }
-    return subjects;
-  }
 }

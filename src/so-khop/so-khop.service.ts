@@ -1,35 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { ChiTietGomNhomService } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.service';
-import { ChiTietNganhDaoTaoService } from 'chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
-import { KhoiKienThucService } from 'khoi-kien-thuc/khoi-kien-thuc.service';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
+import { MonHocService } from 'mon-hoc/mon-hoc.service';
 import { FilterSoKhopNganhDaoTao } from './dto/filter-so-khop.dto';
 import { RowSoKhopNganhDaoTao } from './dto/row-so-khop.dto';
 
 @Injectable()
 export class SoKhopService {
-  constructor(
-    private khoiKienThucService: KhoiKienThucService,
-    private chiTietNganhDaotaoService: ChiTietNganhDaoTaoService,
-    private chiTietGomNhomService: ChiTietGomNhomService
-  ) {}
+  constructor(private chiTietGomNhomService: ChiTietGomNhomService, private monHocService: MonHocService) {}
 
   async soKhopNganhDaoTao(idNganhDaoTao: number, filter: FilterSoKhopNganhDaoTao) {
     const { khoaTuyenNam1, khoaTuyenNam2 } = filter;
-    const chiTietNganhDaotaoKhoa1 = await this.chiTietNganhDaotaoService.getOneByKhoaAndNganhDaoTao(
-      Number(khoaTuyenNam1),
-      idNganhDaoTao
-    );
-    const firstSubjects: MonHocEntity[] = await this.khoiKienThucService.getAllSubjectByIdChiTietNganhDaotao(
-      chiTietNganhDaotaoKhoa1.id
-    );
 
-    const chiTietNganhDaotaoKhoa2 = await this.chiTietNganhDaotaoService.getOneByKhoaAndNganhDaoTao(
-      Number(khoaTuyenNam2),
-      idNganhDaoTao
+    const firstSubjects: MonHocEntity[] = await this.monHocService.getAllSubjectByNganhDaoTaoAndKhoaTuyen(
+      idNganhDaoTao,
+      Number(khoaTuyenNam1)
     );
-    const secondSubjects: MonHocEntity[] = await this.khoiKienThucService.getAllSubjectByIdChiTietNganhDaotao(
-      chiTietNganhDaotaoKhoa2.id
+    const secondSubjects: MonHocEntity[] = await this.monHocService.getAllSubjectByNganhDaoTaoAndKhoaTuyen(
+      idNganhDaoTao,
+      Number(khoaTuyenNam2)
     );
 
     const soKhop: RowSoKhopNganhDaoTao[] = [];
