@@ -79,6 +79,9 @@ export class HoatDongDanhGiaService {
       .leftJoinAndSelect('hddg.updatedBy', 'updatedBy')
       .leftJoinAndSelect('hddg.createdBy', 'createdBy')
       .leftJoinAndSelect('hddg.chuanDauRaMonHoc', 'chuanDauRaMonHoc')
+      .where((qb) => {
+        qb.where('chuanDauRaMonHoc.isDeleted =:isDeleted', { isDeleted: false });
+      })
       .skip(skip)
       .take(limit)
       .getManyAndCount();
@@ -86,10 +89,17 @@ export class HoatDongDanhGiaService {
   }
 
   async findOne(id: number) {
-    const found = await this.hoatDongDanhGiaService.findOne(id, {
-      relations: ['createdBy', 'updatedBy'],
-      where: { isDeleted: false }
-    });
+    const found = await this.hoatDongDanhGiaService
+      .createQueryBuilder('hddg')
+      .leftJoinAndSelect('hddg.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('hddg.createdBy', 'createdBy')
+      .leftJoinAndSelect('hddg.chuanDauRaMonHoc', 'chuanDauRaMonHoc')
+      .where((qb) => {
+        qb.where('chuanDauRaMonHoc.isDeleted =:isDeleted', { isDeleted: false });
+      })
+      .andWhere('hddg.id = :id', { id: id })
+      .andWhere('hddg.isDeleted =:isDeleted', { isDeleted: false })
+      .getOne();
     if (!found) {
       throw new NotFoundException(HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_ID_NOT_FOUND);
     }

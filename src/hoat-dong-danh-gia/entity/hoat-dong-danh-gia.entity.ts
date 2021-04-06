@@ -36,7 +36,7 @@ export class HoatDongDanhGiaEntity {
   @Column({ name: 'tyLe' })
   tyLe?: number;
 
-  @ManyToMany(() => ChuanDauRaMonHocEntity, { eager: true, cascade: true })
+  @ManyToMany(() => ChuanDauRaMonHocEntity, { cascade: true })
   @JoinTable({
     name: TABLE_NAME.HOATDONGDANHGIA_CHUANDAURAMONHOC,
     joinColumn: { name: 'idHDDG', referencedColumnName: 'id' },

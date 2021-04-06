@@ -56,6 +56,6 @@ export class MucTieuMonHocEntity {
 
   @AfterLoad()
   afterLoad() {
-    this.chuanDauRaCDIO = this.chuanDauRaCDIO.filter((e) => e.isDeleted === false);
+    this.chuanDauRaCDIO = this.chuanDauRaCDIO?.filter((e) => e.isDeleted === false);
   }
 }
