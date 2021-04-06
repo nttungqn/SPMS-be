@@ -63,9 +63,9 @@ export class HoatDongDanhGiaEntity {
 
   @AfterLoad()
   afterLoad() {
-    this.chuanDauRaMonHoc = this.chuanDauRaMonHoc.filter((e) => {
-      return e.isDeleted === false;
-    });
+    // this.chuanDauRaMonHoc = this.chuanDauRaMonHoc?.filter((e) => {
+    //   return e.isDeleted === false;
+    // });
   }
 }
 export const KeyHDDG = {

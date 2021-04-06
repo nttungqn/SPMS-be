@@ -33,14 +33,27 @@ export class ChuDeService {
       ...querySearch,
       ...otherParam
     };
-
-    const results = await this.chuDeRepository.find({
-      where: query,
-      skip,
-      take: Number(limit),
-      relations: ['createdBy', 'updatedBy', 'hoatDongDanhGia', 'chuanDauRaMonHoc', 'hoatDongDayHoc']
-    });
-    const total = await this.chuDeRepository.count({ ...query });
+    const [results, total] = await this.chuDeRepository
+      .createQueryBuilder('cd')
+      .leftJoinAndSelect('cd.createdBy', 'createdBy')
+      .leftJoinAndSelect('cd.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia')
+      .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc')
+      .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc')
+      .where((qb) => {
+        qb.leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'hddgchuanDauRaMonHoc')
+          .where((qb) => {
+            qb.where(`hddgchuanDauRaMonHoc.isDeleted = ${false}`);
+          })
+          .andWhere(`hoatDongDanhGia.isDeleted = ${false}`)
+          .andWhere(`chuanDauRaMonHoc.isDeleted = ${false}`)
+          .andWhere(`hoatDongDayHoc.isDeleted = ${false}`);
+      })
+      .where(query)
+      .skip(skip)
+      .take(limit)
+      .andWhere(`cd.isDeleted = ${false}`)
+      .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }
 
