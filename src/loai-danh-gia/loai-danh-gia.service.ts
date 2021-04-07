@@ -48,24 +48,50 @@ export class LoaiDanhGiaService {
       isDeleted: false,
       ...searchByIdSyllabus
     };
-    const [results, total] = await this.loaiDanhGiaRepository.findAndCount({
-      relations: ['createdBy', 'updatedBy', 'chuanDauRaMonHoc', 'hoatDongDanhGia'],
-      where: query,
-      skip,
-      take: limit
-    });
+    const [results, total] = await this.loaiDanhGiaRepository
+      .createQueryBuilder('ldg')
+      .leftJoinAndSelect('ldg.syllabus', 'syllabus')
+      .leftJoinAndSelect('ldg.createdBy', 'createdBy')
+      .leftJoinAndSelect('ldg.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('ldg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
+      .leftJoinAndSelect('ldg.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
+      .where((qb) => {
+        qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+          .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+          .leftJoinAndSelect('syllabus.monHoc', 'monHoc')
+          .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
+      })
+      .where(query)
+      .andWhere(`ldg.isDeleted = ${false}`)
+      .take(limit)
+      .skip(skip)
+      .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }
 
   async findOne(id: number) {
     let result: any;
     try {
-      result = await this.loaiDanhGiaRepository.findOne(id, {
-        relations: ['createdBy', 'updatedBy', 'chuanDauRaMonHoc', 'hoatDongDanhGia'],
-        where: { isDeleted: false }
-      });
+      result = await this.loaiDanhGiaRepository
+        .createQueryBuilder('ldg')
+        .leftJoinAndSelect('ldg.syllabus', 'syllabus')
+        .leftJoinAndSelect('ldg.createdBy', 'createdBy')
+        .leftJoinAndSelect('ldg.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('ldg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
+        .leftJoinAndSelect('ldg.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
+        .where((qb) => {
+          qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+            .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+            .leftJoinAndSelect('syllabus.monHoc', 'monHoc')
+            .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
+        })
+        .where({
+          isDeleted: false,
+          id
+        })
+        .getOne();
     } catch (error) {
-      throw new InternalServerErrorException(LOAIDANHGIA_MESSAGE.CREATE_LOAIDANHGIA_FAILED);
+      throw new InternalServerErrorException();
     }
     if (!result) throw new NotFoundException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_ID_NOT_FOUND);
     return result;

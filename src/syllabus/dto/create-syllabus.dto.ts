@@ -9,14 +9,14 @@ export class CreateSyllabusDto {
   @ApiProperty({ description: 'IdMonHoc' })
   @IsInt()
   @Column({ name: 'idMH' })
-  @ManyToOne(() => MonHocEntity)
+  @ManyToOne(() => MonHocEntity, { eager: true })
   @JoinColumn({ name: 'idMH' })
   monHoc?: number;
 
   @ApiProperty({ description: 'Id Hệ Đào Tạo' })
   @IsInt()
   @Column({ name: 'idHDT' })
-  @ManyToOne(() => HeDaoTaoEntity)
+  @ManyToOne(() => HeDaoTaoEntity, { eager: true })
   @JoinColumn({ name: 'idHDT' })
   heDaoTao?: number;
 

@@ -27,7 +27,7 @@ export class ChiTietGomNhomEntity extends CreateChiTietGomNhomDTO {
   @JoinColumn({ name: 'ID_GomNhom' })
   gomNhom?: GomNhomEntity;
 
-  @OneToOne(() => MonHocEntity, (monHoc) => monHoc.chiTietGomNhom, { eager: true })
+  @OneToOne(() => MonHocEntity, (monHoc) => monHoc.chiTietGomNhom)
   @JoinColumn({ name: 'ID_MonHoc' })
   monHoc?: MonHocEntity;
 

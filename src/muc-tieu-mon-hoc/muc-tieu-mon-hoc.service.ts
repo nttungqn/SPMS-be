@@ -61,15 +61,23 @@ export class MucTieuMonHocService {
       isDeleted: false,
       ...searchByIdSyllabus
     };
-    const order = idSyllabus ? { ma: 'ASC' } : {};
     try {
-      const [results, total] = await this.mucTieuMonHocEntityRepository.findAndCount({
-        relations: ['createdBy', 'updatedBy', 'chuanDauRaCDIO'],
-        where: query,
-        skip,
-        take: limit,
-        ...order
-      });
+      const [results, total] = await this.mucTieuMonHocEntityRepository
+        .createQueryBuilder('mtmh')
+        .leftJoinAndSelect('mtmh.createdBy', 'createdBy')
+        .leftJoinAndSelect('mtmh.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('mtmh.syllabus', 'syllabus')
+        .leftJoinAndSelect('mtmh.chuanDauRaCDIO', 'chuanDauRaCDIO', `chuanDauRaCDIO.isDeleted = ${false}`)
+        .where((qb) => {
+          qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+            .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+            .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
+        })
+        .where(query)
+        .skip(skip)
+        .take(limit)
+        .orderBy(idSyllabus ? { 'mtmh.ma': 'ASC' } : {})
+        .getManyAndCount();
       return { contents: results, total, page: Number(page) };
     } catch (error) {
       throw new InternalServerErrorException();
@@ -79,10 +87,22 @@ export class MucTieuMonHocService {
   async findOne(id: number) {
     let result: any;
     try {
-      result = await this.mucTieuMonHocEntityRepository.findOne(id, {
-        relations: ['createdBy', 'updatedBy', 'chuanDauRaCDIO'],
-        where: { isDeleted: false }
-      });
+      result = await this.mucTieuMonHocEntityRepository
+        .createQueryBuilder('mtmh')
+        .leftJoinAndSelect('mtmh.createdBy', 'createdBy')
+        .leftJoinAndSelect('mtmh.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('mtmh.syllabus', 'syllabus')
+        .leftJoinAndSelect('mtmh.chuanDauRaCDIO', 'chuanDauRaCDIO', `chuanDauRaCDIO.isDeleted = ${false}`)
+        .where((qb) => {
+          qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+            .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+            .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
+        })
+        .where({
+          isDeleted: false,
+          id
+        })
+        .getOne();
     } catch (error) {
       throw new InternalServerErrorException();
     }
