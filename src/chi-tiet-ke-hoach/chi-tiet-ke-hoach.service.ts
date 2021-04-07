@@ -5,8 +5,7 @@ import { Repository } from 'typeorm';
 import { ChiTietKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
 import { KeHoachGiangDayService } from 'ke-hoach-giang-day/ke-hoach-giang-day.service';
 import { ChiTietGomNhomService } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.service';
-import { BaseFilterDto, FilterChiTietKeHoach } from './dto/filter-chi-tiet-ke-hoach.dto';
-import { query } from 'express';
+import { FilterChiTietKeHoach } from './dto/filter-chi-tiet-ke-hoach.dto';
 
 @Injectable()
 export class ChiTietKeHoachService {
@@ -44,10 +43,11 @@ export class ChiTietKeHoachService {
       .leftJoinAndSelect('ctkhgd.idKHGD', 'idKHGD')
       .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN')
       .where((qb) => {
-        qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom')
-          .leftJoinAndSelect('idCTGN.monHoc', 'monHoc')
-          .where(`idCTGN.isDeleted = ${false}`)
-          .andWhere(`gomNhom.isDeleted = ${false}`);
+        qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom', `idCTGN.isDeleted = ${false}`).leftJoinAndSelect(
+          'idCTGN.monHoc',
+          'monHoc',
+          `gomNhom.isDeleted = ${false}`
+        );
       })
       .where({
         isDeleted: false,
@@ -71,10 +71,11 @@ export class ChiTietKeHoachService {
       .leftJoinAndSelect('ctkhgd.idKHGD', 'idKHGD')
       .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN')
       .where((qb) => {
-        qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom')
-          .leftJoinAndSelect('idCTGN.monHoc', 'monHoc')
-          .where(`idCTGN.isDeleted = ${false}`)
-          .andWhere(`gomNhom.isDeleted = ${false}`);
+        qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom', `idCTGN.isDeleted = ${false}`).leftJoinAndSelect(
+          'idCTGN.monHoc',
+          'monHoc',
+          `gomNhom.isDeleted = ${false}`
+        );
       })
       .andWhere(`ctkhgd.id = ${id}`)
       .andWhere(`ctkhgd.isDeleted = ${false}`)

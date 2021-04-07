@@ -50,17 +50,16 @@ export class LoaiDanhGiaService {
     };
     const [results, total] = await this.loaiDanhGiaRepository
       .createQueryBuilder('ldg')
+      .leftJoinAndSelect('ldg.syllabus', 'syllabus')
       .leftJoinAndSelect('ldg.createdBy', 'createdBy')
       .leftJoinAndSelect('ldg.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('ldg.chuanDauRaMonHoc', 'chuanDauRaMonHoc')
-      .leftJoinAndSelect('ldg.hoatDongDanhGia', 'hoatDongDanhGia')
+      .leftJoinAndSelect('ldg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
+      .leftJoinAndSelect('ldg.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
       .where((qb) => {
-        qb.leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh')
-          .where((qb) => {
-            qb.where(`cdrmh.isDeleted = ${false}`);
-          })
-          .andWhere(`hoatDongDanhGia.isDeleted = ${false}`)
-          .andWhere(`chuanDauRaMonHoc.isDeleted = ${false}`);
+        qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+          .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+          .leftJoinAndSelect('syllabus.monHoc', 'monHoc')
+          .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
       })
       .where(query)
       .andWhere(`ldg.isDeleted = ${false}`)
@@ -75,17 +74,16 @@ export class LoaiDanhGiaService {
     try {
       result = await this.loaiDanhGiaRepository
         .createQueryBuilder('ldg')
+        .leftJoinAndSelect('ldg.syllabus', 'syllabus')
         .leftJoinAndSelect('ldg.createdBy', 'createdBy')
         .leftJoinAndSelect('ldg.updatedBy', 'updatedBy')
-        .leftJoinAndSelect('ldg.chuanDauRaMonHoc', 'chuanDauRaMonHoc')
-        .leftJoinAndSelect('ldg.hoatDongDanhGia', 'hoatDongDanhGia')
+        .leftJoinAndSelect('ldg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
+        .leftJoinAndSelect('ldg.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
         .where((qb) => {
-          qb.leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh')
-            .where((qb) => {
-              qb.where(`cdrmh.isDeleted = ${false}`);
-            })
-            .andWhere(`hoatDongDanhGia.isDeleted = ${false}`)
-            .andWhere(`chuanDauRaMonHoc.isDeleted = ${false}`);
+          qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+            .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+            .leftJoinAndSelect('syllabus.monHoc', 'monHoc')
+            .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
         })
         .where({
           isDeleted: false,

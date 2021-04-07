@@ -74,9 +74,8 @@ export class ChuanDauRaMonHocService {
       }
       const [results, total] = await this.chuanDauRaMonHocService
         .createQueryBuilder('cdr')
-        .leftJoin('cdr.mucTieuMonHoc', 'mtmh')
+        .leftJoin('cdr.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted =:isDeleted', { isDeleted: false })
         .where(query)
-        .andWhere('mtmh.isDeleted =:isDeleted', { isDeleted: false })
         .andWhere('cdr.isDeleted =:isDeleted', { isDeleted: false })
         .leftJoinAndSelect('cdr.updatedBy', 'updatedBy')
         .leftJoinAndSelect('cdr.createdBy', 'createdBy')

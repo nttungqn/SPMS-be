@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException, ConflictEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
 import { CHUDE_MESSAGE, LIMIT } from 'constant/constant';
-import { HoatDongDanhGiaEntity } from 'hoat-dong-danh-gia/entity/hoat-dong-danh-gia.entity';
+import { query } from 'express';
 import { HoatDongDanhGiaService } from 'hoat-dong-danh-gia/hoat-dong-danh-gia.service';
 import { HoatDongDayHocService } from 'hoat-dong-day-hoc/hoat-dong-day-hoc.service';
 import { LoaiKeHoachGiangDayService } from 'loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.service';
@@ -37,17 +37,20 @@ export class ChuDeService {
       .createQueryBuilder('cd')
       .leftJoinAndSelect('cd.createdBy', 'createdBy')
       .leftJoinAndSelect('cd.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia')
-      .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc')
-      .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc')
+      .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
+      .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
+      .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc', `hoatDongDayHoc.isDeleted = ${false}`)
+      .leftJoinAndSelect('cd.idSyllabus', 'syllabus')
+      .leftJoinAndSelect('cd.idLKHGD', 'lhkgd')
       .where((qb) => {
-        qb.leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'hddgchuanDauRaMonHoc')
-          .where((qb) => {
-            qb.where(`hddgchuanDauRaMonHoc.isDeleted = ${false}`);
-          })
-          .andWhere(`hoatDongDanhGia.isDeleted = ${false}`)
-          .andWhere(`chuanDauRaMonHoc.isDeleted = ${false}`)
-          .andWhere(`hoatDongDayHoc.isDeleted = ${false}`);
+        qb.leftJoinAndSelect(
+          'hoatDongDanhGia.chuanDauRaMonHoc',
+          'hddgchuanDauRaMonHoc',
+          `hddgchuanDauRaMonHoc.isDeleted = ${false}`
+        )
+          .leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+          .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+          .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
       })
       .where(query)
       .skip(skip)
@@ -58,10 +61,27 @@ export class ChuDeService {
   }
 
   async findOne(id: number): Promise<ChuDeEntity | any> {
-    const result = await this.chuDeRepository.findOne({
-      where: { id, isDeleted: false },
-      relations: ['createdBy', 'updatedBy', 'hoatDongDanhGia', 'chuanDauRaMonHoc', 'hoatDongDayHoc']
-    });
+    const query = await this.chuDeRepository
+      .createQueryBuilder('cd')
+      .leftJoinAndSelect('cd.createdBy', 'createdBy')
+      .leftJoinAndSelect('cd.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
+      .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
+      .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc', `hoatDongDayHoc.isDeleted = ${false}`)
+      .leftJoinAndSelect('cd.idSyllabus', 'syllabus')
+      .leftJoinAndSelect('cd.idLKHGD', 'lhkgd')
+      .where((qb) => {
+        qb.leftJoinAndSelect(
+          'hoatDongDanhGia.chuanDauRaMonHoc',
+          'hddgchuanDauRaMonHoc',
+          `hddgchuanDauRaMonHoc.isDeleted = ${false}`
+        )
+          .leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+          .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+          .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
+      })
+      .andWhere(`cd.isDeleted = ${false} and cd.id = ${id}`);
+    const result = await query.getOne();
     if (!result) {
       throw new NotFoundException(CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND);
     }
