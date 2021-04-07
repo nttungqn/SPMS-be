@@ -60,14 +60,12 @@ export class LoaiKhoiKienThucService {
         .createQueryBuilder('lkkt')
         .leftJoinAndSelect('lkkt.createdBy', 'createdBy')
         .leftJoinAndSelect('lkkt.updatedBy', 'updatedBy')
-        .leftJoinAndSelect('lkkt.gomNhom', 'gomNhom')
-        .leftJoinAndSelect('lkkt.khoiKienThuc', 'khoiKienThuc')
+        .leftJoinAndSelect('lkkt.gomNhom', 'gomNhom', `gomNhom.isDeleted = ${false}`)
+        .leftJoinAndSelect('lkkt.khoiKienThuc', 'khoiKienThuc', `khoiKienThuc.isDeleted = ${false}`)
         .where((qb) => {
-          qb.leftJoinAndSelect('gomNhom.chiTietGomNhom', 'chiTietGomNhom')
-            .where((qb) => {
-              qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
-            })
-            .andWhere(`gomNhom.isDeleted = ${false}`);
+          qb.leftJoinAndSelect('gomNhom.chiTietGomNhom', 'chiTietGomNhom').where((qb) => {
+            qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
+          });
         })
         .andWhere(`lkkt.id = ${id}`)
         .andWhere(`lkkt.isDeleted = ${false}`)
