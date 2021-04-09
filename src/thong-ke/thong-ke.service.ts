@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ChuDeEntity } from 'chu-de/entity/chu-de.entity';
 import { ChuanDauRaMonHocEntity } from 'chuan-dau-ra-mon-hoc/entity/chuan-dau-ra-mon-hoc.entity';
-import { ChuanDauRaEntity } from 'chuan-dau-ra/entity/chuanDauRa.entity';
 import { ChuongTrinhDaoTaoService } from 'chuong-trinh-dao-tao/chuong-trinh-dao-tao.service';
 import { CtdtService } from 'ctdt/ctdt.service';
 import { Role } from 'guards/roles.enum';
@@ -59,26 +58,50 @@ export class ThongKeService {
       count_tuan: number;
     }[] = await query.getRawMany();
 
-    //return chuanDauRaMonHocCountByTuan;
-    const queryMuTieuMonHoc = await con
-      .getRepository(MucTieuMonHocEntity)
-      .find({ isDeleted: false, syllabus: idSyllabus });
-    const result = [];
-    for (const mtmh of queryMuTieuMonHoc) {
-      const row = new ThongKeChuanDauRaRow();
-      row.mucTieuMonHoc = mtmh;
+    // Danh Sách các mục tiêu môn học
+    const mucTieuMonHoc = await con.getRepository(MucTieuMonHocEntity).find({ isDeleted: false, syllabus: idSyllabus });
 
-      for (const cdrmh of chuanDauRaMonHocCountByTuan) {
-        if (cdrmh.idMTMH === mtmh.id) {
-          const cdrmhEntiy = await con
-            .getRepository(ChuanDauRaMonHocEntity)
-            .findOne({ id: Number(cdrmh.idCDRMH), isDeleted: false });
-          row.count += Number(cdrmh.count_tuan);
-          row.chuanDauRaMonHoc.push({ cdrmh: cdrmhEntiy, count: Number(cdrmh.count_tuan) });
+    //Danh Sách các chuẩn đầu ra của syllabus
+    const chuanDauRaMonHoc = await con
+      .getRepository(ChuanDauRaMonHocEntity)
+      .createQueryBuilder('cdrmh')
+      .leftJoin('cdrmh.mucTieuMonHoc', 'mtmh', 'mtmh.idSyllabus = :idSyllabus and mtmh.isDeleted = :isDeleted', {
+        idSyllabus: idSyllabus,
+        isDeleted
+      })
+      .where('cdrmh.isDeleted = :isDeleted', { isDeleted })
+      .getMany();
+
+    const chuanDauRaMonHocAnCount = chuanDauRaMonHoc.map((e) => {
+      const result = {
+        cdrmh: e,
+        count: 0
+      };
+      for (let index = 0; index < chuanDauRaMonHocCountByTuan.length; index++) {
+        if (chuanDauRaMonHocCountByTuan[index].idCDRMH === e.id) {
+          result.count = Number(chuanDauRaMonHocCountByTuan[index].count_tuan);
+          chuanDauRaMonHocCountByTuan.splice(index, 1);
+          break;
         }
       }
-      result.push(row);
+      return result;
+    });
+
+    //Thực hiện gom nhóm các chuẩn đầu ra theo từng mục tiêu môn học
+    const results = [];
+    let total = 0;
+    for (const mtmh of mucTieuMonHoc) {
+      const row = new ThongKeChuanDauRaRow();
+      row.mucTieuMonHoc = mtmh;
+      for (let index = 0; index < chuanDauRaMonHocAnCount.length; index++) {
+        if (chuanDauRaMonHocAnCount[index].cdrmh.mucTieuMonHoc === mtmh.id) {
+          row.chuanDauRaMonHoc.push(chuanDauRaMonHocAnCount[index]);
+          row.count += Number(chuanDauRaMonHocAnCount[index].count);
+        }
+      }
+      results.push(row);
+      total += row.count;
     }
-    return result;
+    return { contents: results, total };
   }
 }
