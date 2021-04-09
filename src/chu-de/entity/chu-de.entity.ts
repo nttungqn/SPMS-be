@@ -7,7 +7,6 @@ import {
   ManyToOne,
   ManyToMany,
   JoinTable,
-  AfterLoad,
   BaseEntity
 } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
@@ -18,7 +17,7 @@ import { HoatDongDayHocEntity } from 'hoat-dong-day-hoc/entity/hoat-dong-day-hoc
 import { LoaiKeHoachGiangDayEntity } from 'loai-ke-hoach-giang-day/entity/loaiKeHoachGiangDay.entity';
 import { Syllabus } from 'syllabus/entity/syllabus.entity';
 
-@Entity(TABLE_NAME.CHUDE, { orderBy: { tuan: 'ASC' } })
+@Entity(TABLE_NAME.CHUDE)
 export class ChuDeEntity extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'id' })
