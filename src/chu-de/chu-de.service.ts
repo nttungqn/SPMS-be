@@ -38,7 +38,15 @@ export class ChuDeService {
       where: query,
       skip,
       take: Number(limit),
-      relations: ['createdBy', 'updatedBy', 'hoatDongDanhGia', 'chuanDauRaMonHoc', 'hoatDongDayHoc']
+      relations: [
+        'createdBy',
+        'updatedBy',
+        'hoatDongDanhGia',
+        'chuanDauRaMonHoc',
+        'hoatDongDayHoc',
+        'idSyllabus',
+        'idLKHGD'
+      ]
     });
     const total = await this.chuDeRepository.count({ ...query });
     return { contents: results, total, page: Number(page) };

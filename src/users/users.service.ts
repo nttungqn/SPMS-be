@@ -143,4 +143,24 @@ export class UsersService {
       throw new InternalServerErrorException(USER_MESSAGE.DELETE_USER_FAILED);
     }
   }
+
+  async deleteAll() {
+    try {
+      return await this.usersRepository.createQueryBuilder('users').update().set({ isDeleted: true }).execute();
+    } catch (error) {
+      throw new InternalServerErrorException(USER_MESSAGE.DELETE_ALL_USER_FAILED);
+    }
+  }
+
+  async deleteMutipleUsers(ids: Array<number>) {
+    try {
+      return await this.usersRepository
+        .createQueryBuilder('users')
+        .update()
+        .set({ isDeleted: true })
+        .andWhere('users.ID IN (:...ids)');
+    } catch (error) {
+      throw new InternalServerErrorException(USER_MESSAGE.DELETE_ALL_USER_FAILED);
+    }
+  }
 }
