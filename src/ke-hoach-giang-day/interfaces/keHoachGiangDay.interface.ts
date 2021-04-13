@@ -1,7 +1,7 @@
 export interface IKeHoachGiangDay {
   readonly id?: number;
   readonly maKeHoach?: string;
-  readonly tenHocKy?: number;
+  readonly tenHocKy?: string;
   readonly sTT?: number;
   readonly nganhDaoTao?: number;
   readonly createdAt?: Date;

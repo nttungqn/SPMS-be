@@ -12,9 +12,8 @@ export class FilterKeHoachGiangDayDto extends BaseFilterDto {
   @IsOptional()
   readonly nganhDaoTao: number;
   @ApiProperty({ required: false, description: 'tên học kỳ' })
-  @IsNumberString()
   @IsOptional()
-  readonly tenHocKy: number;
+  readonly tenHocKy: string;
   @ApiProperty({ required: false, description: 'số thứ tự' })
   @IsNumberString()
   @IsOptional()

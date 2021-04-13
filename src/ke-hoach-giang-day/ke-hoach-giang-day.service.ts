@@ -1,5 +1,6 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ChiTietNganhDaoTaoService } from 'chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
 import { KEHOACHGIANGDAY_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm';
 import { CreateKeHoachGiangDayDto } from './dto/createKeHoachGiangDay.dto';
@@ -7,8 +8,11 @@ import { KeHoachGiangDayEntity } from './entity/keHoachGiangDay.entity';
 
 @Injectable()
 export class KeHoachGiangDayService {
-  @InjectRepository(KeHoachGiangDayEntity)
-  private readonly keHoachGiangDayRepository: Repository<KeHoachGiangDayEntity>;
+  constructor(
+    @InjectRepository(KeHoachGiangDayEntity)
+    private readonly keHoachGiangDayRepository: Repository<KeHoachGiangDayEntity>,
+    private readonly chiTietNganhDaoTaoService: ChiTietNganhDaoTaoService
+  ) {}
 
   async findAll(filter: any): Promise<any> {
     const { limit = LIMIT, page = 0, ...rest } = filter;
@@ -48,6 +52,11 @@ export class KeHoachGiangDayService {
     });
     if (checkExist) {
       throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_MESSAGE_MAKEHOACH_CONFLIC, HttpStatus.CONFLICT);
+    }
+
+    const record = await this.chiTietNganhDaoTaoService.findById(newData.nganhDaoTao);
+    if (!record) {
+      throw new HttpException(KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED, HttpStatus.CONFLICT);
     }
     try {
       const newKeHoachGiangDay = await this.keHoachGiangDayRepository.create(newData);

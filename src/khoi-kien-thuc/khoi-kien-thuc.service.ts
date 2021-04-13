@@ -1,7 +1,9 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
 import { KHOIKIENTHUC_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm';
+import { ChiTietNganhDaoTaoService } from '../chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
 import { CreateKhoiKienThucDto } from './dto/create-khoi-kien-thuc.dto';
 import { filterKnowledgeBlock } from './dto/filter-khoi-kien-thuc.dto';
 import { KhoiKienThucEntity } from './entity/khoi-kien-thuc.entity';
@@ -10,12 +12,14 @@ import { KhoiKienThucEntity } from './entity/khoi-kien-thuc.entity';
 export class KhoiKienThucService {
   constructor(
     @InjectRepository(KhoiKienThucEntity)
-    private knowledgeBlockRepository: Repository<KhoiKienThucEntity>
+    private knowledgeBlockRepository: Repository<KhoiKienThucEntity>,
+    private chiTietNganhDaoTaoService: ChiTietNganhDaoTaoService
   ) {}
 
   async create(knowledgeBlock: KhoiKienThucEntity) {
-    if (await this.isExist(knowledgeBlock)) {
-      throw new ConflictException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_EXIST);
+    const record = await this.chiTietNganhDaoTaoService.findById(knowledgeBlock.chiTietNganh);
+    if (!record) {
+      throw new ConflictException(KHOIKIENTHUC_MESSAGE.ID_CHI_TIET_NGANH_DAO_TAO);
     }
     const { tinChiBatBuoc = 0, tinChiTuChonTuDo = 0, tinChiTuChon = 0 } = knowledgeBlock;
     knowledgeBlock.tongTinChi = tinChiBatBuoc + tinChiTuChonTuDo + tinChiTuChon;
@@ -86,9 +90,5 @@ export class KhoiKienThucService {
     } catch (error) {
       throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.DELETE_KHOIKIENTHUC_FAILED);
     }
-  }
-
-  async isExist(createKhoiKienThucDto: CreateKhoiKienThucDto): Promise<boolean> {
-    return createKhoiKienThucDto ? true : false;
   }
 }
