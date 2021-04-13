@@ -16,7 +16,7 @@ export class GomNhomEntity extends CreateGomNhomDTO {
   @JoinColumn({ name: 'ID_LoaiKhoiKienThuc' })
   loaiKhoiKienThuc?: LoaiKhoiKienThucEntity;
 
-  @OneToMany(() => ChiTietGomNhomEntity, (chiTietGomNhom) => chiTietGomNhom.gomNhom, { eager: true })
+  @OneToMany(() => ChiTietGomNhomEntity, (chiTietGomNhom) => chiTietGomNhom.gomNhom)
   chiTietGomNhom?: ChiTietGomNhomEntity[];
 
   @ApiProperty()
@@ -40,9 +40,4 @@ export class GomNhomEntity extends CreateGomNhomDTO {
   @ApiProperty()
   @Column({ name: 'isDeleted' })
   isDeleted?: boolean;
-
-  @AfterLoad()
-  afterLoad() {
-    this.chiTietGomNhom = this.chiTietGomNhom.filter((ctgn) => ctgn.isDeleted === false);
-  }
 }

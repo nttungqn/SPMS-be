@@ -11,7 +11,7 @@ export class GomNhomService {
   async findAll(filter): Promise<GomNhomEntity[] | any> {
     const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
     const skip = Number(page) * Number(limit);
-    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
+    const querySearch = search ? { tieuDe: Like(`%${search}%`) } : {};
     const query = {
       isDeleted: false,
       ...querySearch,
@@ -19,24 +19,39 @@ export class GomNhomService {
     };
 
     try {
-      const results = await this.gomNhomRepository.find({
-        where: query,
-        skip,
-        take: Number(limit),
-        relations: ['idLKKT', 'createdBy', 'updatedBy']
-      });
-      const total = await this.gomNhomRepository.count({ ...query });
+      const [results, total] = await this.gomNhomRepository
+        .createQueryBuilder('gn')
+        .leftJoinAndSelect('gn.idLKKT', 'idLKKT')
+        .leftJoinAndSelect('gn.createdBy', 'createdBy')
+        .leftJoinAndSelect('gn.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('gn.chiTietGomNhom', 'chiTietGomNhom')
+        .where((qb) => {
+          qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
+        })
+        .andWhere(query)
+        .skip(skip)
+        .take(limit)
+        .getManyAndCount();
       return { contents: results, total, page: Number(page) };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException();
     }
   }
 
   async findById(id: number): Promise<GomNhomEntity | any> {
-    const result = await this.gomNhomRepository.findOne({
-      where: { id, isDeleted: false },
-      relations: ['idLKKT', 'createdBy', 'updatedBy']
-    });
+    const result = await this.gomNhomRepository
+      .createQueryBuilder('gn')
+      .leftJoinAndSelect('gn.idLKKT', 'idLKKT')
+      .leftJoinAndSelect('gn.createdBy', 'createdBy')
+      .leftJoinAndSelect('gn.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('gn.chiTietGomNhom', 'chiTietGomNhom')
+      .where((qb) => {
+        qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc').andWhere(`chiTietGomNhom.isDeleted = ${false}`);
+      })
+      .andWhere(`gn.id = ${id}`)
+      .andWhere(`gn.isDeleted = ${false}`)
+      .getOne();
     if (!result) {
       throw new NotFoundException(GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND);
     }
@@ -98,7 +113,7 @@ export class GomNhomService {
   }
   async findAllWithSelectField(filter): Promise<GomNhomEntity[] | any> {
     const { limit = LIMIT, page = 0, search = '', select = '', ...otherParam } = filter;
-    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
+    const querySearch = search ? { tieuDe: Like(`%${search}%`) } : {};
     const query = {
       isDeleted: false,
       ...querySearch,

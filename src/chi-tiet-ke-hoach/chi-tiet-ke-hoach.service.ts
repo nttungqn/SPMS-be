@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { ChiTietKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
 import { KeHoachGiangDayService } from 'ke-hoach-giang-day/ke-hoach-giang-day.service';
 import { ChiTietGomNhomService } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.service';
-import { BaseFilterDto, FilterChiTietKeHoach } from './dto/filter-chi-tiet-ke-hoach.dto';
+import { FilterChiTietKeHoach } from './dto/filter-chi-tiet-ke-hoach.dto';
 
 @Injectable()
 export class ChiTietKeHoachService {
@@ -36,30 +36,53 @@ export class ChiTietKeHoachService {
   async findAll(filter: FilterChiTietKeHoach) {
     const { page = 0, limit = LIMIT, ...other } = filter;
     const skip = page * limit;
-    const [results, total] = await this.chiTietKeHoachRepository.findAndCount({
-      relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy', 'idCTGN.gomNhom'],
-      skip,
-      take: limit,
-      where: {
+    const [results, total] = await this.chiTietKeHoachRepository
+      .createQueryBuilder('ctkhgd')
+      .leftJoinAndSelect('ctkhgd.createdBy', 'createdBy')
+      .leftJoinAndSelect('ctkhgd.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('ctkhgd.idKHGD', 'idKHGD')
+      .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN')
+      .where((qb) => {
+        qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom', `idCTGN.isDeleted = ${false}`).leftJoinAndSelect(
+          'idCTGN.monHoc',
+          'monHoc',
+          `gomNhom.isDeleted = ${false}`
+        );
+      })
+      .where({
         isDeleted: false,
         ...other
-      }
-    });
-    results.forEach((e) => {
-      delete e.idCTGN['gomNhom']['chiTietGomNhom'];
-    });
-    return { contents: results, total, page: Number(page) };
+      })
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+    return {
+      contents: results,
+      total,
+      page: Number(page)
+    };
   }
 
   async findOne(id: number) {
-    const result = await this.chiTietKeHoachRepository.findOne(id, {
-      relations: ['idKHGD', 'idCTGN', 'createdBy', 'updatedBy', 'idCTGN.gomNhom'],
-      where: { isDeleted: false }
-    });
+    const result = await this.chiTietKeHoachRepository
+      .createQueryBuilder('ctkhgd')
+      .leftJoinAndSelect('ctkhgd.createdBy', 'createdBy')
+      .leftJoinAndSelect('ctkhgd.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('ctkhgd.idKHGD', 'idKHGD')
+      .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN')
+      .where((qb) => {
+        qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom', `idCTGN.isDeleted = ${false}`).leftJoinAndSelect(
+          'idCTGN.monHoc',
+          'monHoc',
+          `gomNhom.isDeleted = ${false}`
+        );
+      })
+      .andWhere(`ctkhgd.id = ${id}`)
+      .andWhere(`ctkhgd.isDeleted = ${false}`)
+      .getOne();
     if (!result) {
       throw new NotFoundException(CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_ID_NOT_FOUND);
     }
-    delete result.idCTGN['gomNhom']['chiTietGomNhom'];
     return result;
   }
 

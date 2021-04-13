@@ -2,7 +2,6 @@ import { ChuanDauRaMonHocEntity } from 'chuan-dau-ra-mon-hoc/entity/chuan-dau-ra
 import { TABLE_NAME } from 'constant/constant';
 import { LoaiDanhGiaEntity } from 'loai-danh-gia/entity/loai-danh-gia.entity';
 import {
-  AfterLoad,
   Column,
   Entity,
   JoinColumn,
@@ -36,7 +35,7 @@ export class HoatDongDanhGiaEntity {
   @Column({ name: 'tyLe' })
   tyLe?: number;
 
-  @ManyToMany(() => ChuanDauRaMonHocEntity, { eager: true, cascade: true })
+  @ManyToMany(() => ChuanDauRaMonHocEntity, { cascade: true })
   @JoinTable({
     name: TABLE_NAME.HOATDONGDANHGIA_CHUANDAURAMONHOC,
     joinColumn: { name: 'idHDDG', referencedColumnName: 'id' },
@@ -60,13 +59,6 @@ export class HoatDongDanhGiaEntity {
 
   @Column({ name: 'isDeleted' })
   isDeleted?: boolean;
-
-  @AfterLoad()
-  afterLoad() {
-    this.chuanDauRaMonHoc = this.chuanDauRaMonHoc.filter((e) => {
-      return e.isDeleted === false;
-    });
-  }
 }
 export const KeyHDDG = {
   ten: 'ten',

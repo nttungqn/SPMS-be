@@ -1,12 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.dto';
-import { IsIn, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty, IsNumberString, isNumberString, IsOptional } from 'class-validator';
 
 export class GetSyllabusFilterDto extends BaseFilterDto {
-  @ApiProperty({ required: false, default: 'Tên của môn học' })
+  @ApiProperty({ required: false, description: 'Tên của môn học' })
   @IsOptional()
   @IsNotEmpty()
   key?: string;
+
+  @ApiProperty({ required: false, description: 'Id của môn học' })
+  @IsOptional()
+  @IsNumberString()
+  idMonHoc: number;
+
+  @ApiProperty({ required: false, description: 'Id năm học' })
+  @IsOptional()
+  @IsNumberString()
+  idNamHoc: number;
+
+  @ApiProperty({ required: false, description: 'Id hệ đào tạo' })
+  @IsOptional()
+  @IsNumberString()
+  idHeDaotao: number;
 
   createdBy?: number;
 
