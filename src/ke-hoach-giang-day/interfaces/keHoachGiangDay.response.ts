@@ -9,7 +9,7 @@ export class KeHoachGiangDayDto {
   maKeHoach: string;
 
   @ApiProperty()
-  tenHocKy: number;
+  tenHocKy: string;
 
   @ApiProperty()
   sTT: number;

@@ -29,6 +29,7 @@ import { FindAllUserDtoResponse } from './dto/user.response.dto';
 import { FilterUser } from './dto/filter-user.dto';
 import { UsersEntity } from './entity/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { DeleteMutipleUsersDto } from './dto/delete-multiple-users.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -86,5 +87,28 @@ export class UsersController {
     const user = req.user || {};
     await this.usersService.remove(id, user?.id);
     return new HttpException(USER_MESSAGE.DELETE_USER_SUCCESSFULLY, HttpStatus.OK);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Xóa tất cả user' })
+  @ApiUnauthorizedResponse({ description: USER_MESSAGE.USERS_NOT_AUTHORIZED })
+  @ApiInternalServerErrorResponse({ description: USER_MESSAGE.DELETE_USER_FAILED })
+  @ApiOkResponse({ description: USER_MESSAGE.DELETE_USER_SUCCESSFULLY })
+  @Delete()
+  async deleteAll() {
+    await this.usersService.deleteAll();
+    return new HttpException(USER_MESSAGE.DELETE_ALL_USER_SUCCESSFULLY, HttpStatus.OK);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Xóa một số user' })
+  @ApiUnauthorizedResponse({ description: USER_MESSAGE.USER_NOT_AUTHORIZED })
+  @ApiOkResponse({ description: USER_MESSAGE.DELETE_USER_SUCCESSFULLY })
+  @Put()
+  deleteMutipleUsers(@Body() data: DeleteMutipleUsersDto) {
+    const ids = data.ids;
+    return this.usersService.deleteMutipleUsers(ids);
   }
 }
