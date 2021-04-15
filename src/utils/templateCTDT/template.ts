@@ -25,7 +25,7 @@ import renderTables from 'utils/templateCTDT/components/tables';
 import { getStringHtml } from './components/list';
 import renderTableSubject, { generateHeader } from 'utils/templateCTDT/components/tableSubject';
 
-export default (data) => `
+export default async (data) => `
 <!DOCTYPE html>
 <html>
      <head>
@@ -99,6 +99,50 @@ export default (data) => `
            .row.muctieucuthe > ul{
                 padding: 0;
            }
+      </style>
+      <style>
+        table, td, th {
+          border: 1px solid black;
+        }
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        th{
+          text-align: center;
+        }
+        td, th {
+          padding: 10px;
+        }
+      </style>
+      <style>
+      table {
+        page-break-after: always;
+      }
+      tr {
+        page-break-inside: avoid;
+      }
+      table tr {
+        break-inside: avoid !important;
+      }
+      thead {display: table-header-group !important;}
+      tbody {display: table-row-group !important;}
+      tfoot {display: table-header-group !important;}
+        table, td, th {
+          border: 1px solid black;
+        }
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        th{
+          text-align: center;
+        }
+        td, th {
+          padding: 10px;
+        }
       </style>
      </head>
      <body>
@@ -251,12 +295,12 @@ export default (data) => `
                                                                                     { title: 'Ghi Chú' }
                                                                                   ],
                                                                                   fields: [
-                                                                                    'monHoc.ma',
-                                                                                    'monHoc.tenTiengViet',
-                                                                                    'monHoc.soTinChi',
-                                                                                    'monHoc.soTietLyThuyet',
-                                                                                    'monHoc.soTietThucHanh',
-                                                                                    'monHoc.soTietTuHoc',
+                                                                                    'idMH.ma',
+                                                                                    'idMH.tenTiengViet',
+                                                                                    'idMH.soTinChi',
+                                                                                    'idMH.soTietLyThuyet',
+                                                                                    'idMH.soTietThucHanh',
+                                                                                    'idMH.soTietTuHoc',
                                                                                     'groupType',
                                                                                     'ghiChu'
                                                                                   ],
@@ -324,12 +368,12 @@ export default (data) => `
                                                        <tr>
                                                             <td>${index + 1}</td>
                                                             ${[
-                                                              'idCTGN.monHoc.ma',
-                                                              'idCTGN.monHoc.tenTiengViet',
-                                                              'idCTGN.monHoc.soTinChi',
-                                                              'idCTGN.monHoc.soTietLyThuyet',
-                                                              'idCTGN.monHoc.soTietThucHanh',
-                                                              'idCTGN.monHoc.soTietTuHoc',
+                                                              'idCTGN.idMH.ma',
+                                                              'idCTGN.idMH.tenTiengViet',
+                                                              'idCTGN.idMH.soTinChi',
+                                                              'idCTGN.idMH.soTietLyThuyet',
+                                                              'idCTGN.idMH.soTietThucHanh',
+                                                              'idCTGN.idMH.soTietTuHoc',
                                                               'idCTGN.idGN.loaiNhom',
                                                               'idCTGN.idGN.ghiChu'
                                                             ]

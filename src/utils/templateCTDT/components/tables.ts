@@ -1,20 +1,4 @@
 export default ({ subTitles = [], titles = [], data = [], tongSoTinChi = 0, fields = [] }) => `
-      <style>
-        table, td, th {
-          border: 1px solid black;
-        }
-        
-        table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-        th{
-          text-align: center;
-        }
-        td, th {
-          padding: 10px;
-        }
-      </style>
      <table>
           <thead>
                <tr>
