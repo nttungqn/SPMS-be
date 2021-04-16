@@ -4,34 +4,6 @@ export default ({ subTitles = [], titles = [], data = [], fields = [], tongTC = 
     return '';
   }
   return `
-      <style>
-      table {
-        page-break-after: always;
-      }
-      tr {
-        page-break-inside: avoid;
-      }
-      table tr {
-        break-inside: avoid !important;
-      }
-      thead {display: table-header-group !important;}
-      tbody {display: table-row-group !important;}
-      tfoot {display: table-header-group !important;}
-        table, td, th {
-          border: 1px solid black;
-        }
-        
-        table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-        th{
-          text-align: center;
-        }
-        td, th {
-          padding: 10px;
-        }
-      </style>
      <table>
           ${generateHeader(titles, subTitles)}
           <tbody>
