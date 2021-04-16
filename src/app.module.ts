@@ -69,6 +69,7 @@ import { ThongKeModule } from './thong-ke/thong-ke.module';
     UsersModule,
     ExportsModule,
     UploadFileModule,
+    UploadFileModule,
     ThongKeModule
   ],
   controllers: [AppController],

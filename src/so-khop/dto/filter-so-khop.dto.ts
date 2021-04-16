@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNumberString } from 'class-validator';
 
 export class FilterSoKhopNganhDaoTao {
   @ApiProperty({ required: true })
-  @IsString()
+  @IsNumberString()
   khoaTuyenNam1: string;
 
   @ApiProperty({ required: true })
-  @IsString()
+  @IsNumberString()
   khoaTuyenNam2: string;
 }

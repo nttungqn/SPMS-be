@@ -1,4 +1,3 @@
-import { IChuongTrinhDaoTao } from './interfaces/chuongTrinhDaoTao.interface';
 import {
   Body,
   Controller,

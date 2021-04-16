@@ -2,7 +2,6 @@ import { Injectable, InternalServerErrorException, NotFoundException, ConflictEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
 import { CHUDE_MESSAGE, LIMIT } from 'constant/constant';
-import { query } from 'express';
 import { HoatDongDanhGiaService } from 'hoat-dong-danh-gia/hoat-dong-danh-gia.service';
 import { HoatDongDayHocService } from 'hoat-dong-day-hoc/hoat-dong-day-hoc.service';
 import { LoaiKeHoachGiangDayService } from 'loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.service';

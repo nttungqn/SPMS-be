@@ -33,7 +33,6 @@ import { FilterMonHoc } from './dto/filter-mon-hoc.dto';
 import { MONHOC_MESSAGE } from 'constant/constant';
 import { FindAllMonHocDtoResponse } from './dto/mon-hoc.response.dto';
 import { MonHocEntity } from './entity/mon-hoc.entity';
-import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.dto';
 import * as nodexlsv from 'node-xlsx';
 import * as fs from 'fs';
 import { FileInterceptor } from '@nestjs/platform-express';
