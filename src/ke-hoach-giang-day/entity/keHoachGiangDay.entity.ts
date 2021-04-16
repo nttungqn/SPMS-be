@@ -16,9 +16,9 @@ export class KeHoachGiangDayEntity {
   maKeHoach: string;
 
   @ApiProperty()
-  @IsInt()
+  @IsString()
   @Column({ name: 'TenHocKy' })
-  tenHocKy: number;
+  tenHocKy: string;
 
   @ApiProperty()
   @IsInt()

@@ -10,7 +10,6 @@ import {
   Put,
   Query,
   Req,
-  Res,
   UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -68,8 +67,7 @@ export class GomNhomController {
     return await this.gomNhomService.create({
       ...newData,
       createdBy: user?.id,
-      updatedBy: user?.id,
-      afterLoad: GomNhomEntity.prototype.afterLoad
+      updatedBy: user?.id
     });
   }
 
@@ -81,12 +79,11 @@ export class GomNhomController {
   @ApiInternalServerErrorResponse({ description: GOMNHOM_MESSAGE.UPDATE_GOMNHOM_FAILED })
   @ApiOkResponse({ description: GOMNHOM_MESSAGE.UPDATE_GOMNHOM_SUCCESSFULLY })
   @Put(':id')
-  async update(@Req() req, @Param() id: number, @Body() updatedData: CreateGomNhomDTO): Promise<any> {
+  async update(@Req() req, @Param('id') id: number, @Body() updatedData: CreateGomNhomDTO): Promise<any> {
     const user = req.user || {};
     await this.gomNhomService.update(Number(id), {
       ...updatedData,
-      updatedBy: user?.id,
-      afterLoad: GomNhomEntity.prototype.afterLoad
+      updatedBy: user?.id
     });
     return new HttpException(GOMNHOM_MESSAGE.UPDATE_GOMNHOM_SUCCESSFULLY, HttpStatus.OK);
   }

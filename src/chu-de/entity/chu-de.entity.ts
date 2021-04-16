@@ -7,7 +7,8 @@ import {
   ManyToOne,
   ManyToMany,
   JoinTable,
-  AfterLoad
+  AfterLoad,
+  BaseEntity
 } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
@@ -18,7 +19,7 @@ import { LoaiKeHoachGiangDayEntity } from 'loai-ke-hoach-giang-day/entity/loaiKe
 import { Syllabus } from 'syllabus/entity/syllabus.entity';
 
 @Entity(TABLE_NAME.CHUDE, { orderBy: { tuan: 'ASC' } })
-export class ChuDeEntity {
+export class ChuDeEntity extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
@@ -92,19 +93,6 @@ export class ChuDeEntity {
     inverseJoinColumn: { name: 'idHoatDongDayHoc', referencedColumnName: 'id' }
   })
   hoatDongDayHoc?: HoatDongDayHocEntity[];
-
-  @AfterLoad()
-  afterLoad() {
-    this.hoatDongDanhGia = this.hoatDongDanhGia.filter((e) => {
-      return e.isDeleted === false;
-    });
-    this.chuanDauRaMonHoc = this.chuanDauRaMonHoc.filter((e) => {
-      return e.isDeleted === false;
-    });
-    this.hoatDongDayHoc = this.hoatDongDayHoc.filter((e) => {
-      return e.isDeleted === false;
-    });
-  }
 }
 export const KEY_CD = {
   idSyllabus: 'idSyllabus',

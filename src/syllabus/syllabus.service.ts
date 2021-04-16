@@ -36,11 +36,14 @@ export class SyllabusService {
   }
 
   async findAll(filter: GetSyllabusFilterDto): Promise<Syllabus[] | any> {
-    const { key, page = 0, limit = LIMIT, updatedAt, createdBy } = filter;
+    const { key, page = 0, limit = LIMIT, updatedAt, createdBy, idHeDaotao, idMonHoc, idNamHoc } = filter;
     const skip = page * limit;
     const queryOrder: OrderByCondition = updatedAt ? { 'sy.updatedAt': updatedAt } : {};
     const isDeleted = false;
     const queryByCondition = `sy.isDeleted = ${isDeleted}`;
+    const queryByIDNamHoc = idNamHoc ? { namHoc: idNamHoc } : {};
+    const queryByIDHeDaoTao = idHeDaotao ? { heDaoTao: idHeDaotao } : {};
+    const queryByIDMonHoc = idMonHoc ? { monHoc: idMonHoc } : {};
     const query = this.syllabusRepository
       .createQueryBuilder('sy')
       .leftJoinAndSelect('sy.monHoc', 'monHoc')
@@ -53,6 +56,11 @@ export class SyllabusService {
           : {};
         createdBy ? qb.andWhere('createdBy.id =:idUser', { idUser: createdBy }) : {};
       })
+      .where({
+        ...queryByIDHeDaoTao,
+        ...queryByIDMonHoc,
+        ...queryByIDNamHoc
+      })
       .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
       .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
       .leftJoinAndSelect('sy.namHoc', 'namHoc')
@@ -61,7 +69,7 @@ export class SyllabusService {
       .skip(skip)
       .orderBy({ ...queryOrder });
     const [results, total] = await query.getManyAndCount();
-    return { contents: results, total, page: page };
+    return { contents: results, total, page: Number(page) };
   }
 
   async findOne(id: number): Promise<Syllabus> {

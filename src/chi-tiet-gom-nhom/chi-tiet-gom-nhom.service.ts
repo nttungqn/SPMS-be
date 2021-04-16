@@ -23,13 +23,12 @@ export class ChiTietGomNhomService {
     };
 
     try {
-      const results = await this.chiTietGomNhomRepository.find({
+      const [results, total] = await this.chiTietGomNhomRepository.findAndCount({
         where: query,
         skip,
         take: Number(limit),
-        relations: ['createdBy', 'updatedBy']
+        relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
       });
-      const total = await this.chiTietGomNhomRepository.count({ ...query });
       return { contents: results, total, page: Number(page) };
     } catch (error) {
       throw new InternalServerErrorException();
@@ -39,7 +38,7 @@ export class ChiTietGomNhomService {
   async findById(id: number): Promise<ChiTietGomNhomEntity | any> {
     const result = await this.chiTietGomNhomRepository.findOne({
       where: { id, isDeleted: false },
-      relations: ['createdBy', 'updatedBy']
+      relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
     });
     if (!result) {
       throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);

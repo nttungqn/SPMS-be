@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumberString, IsOptional } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 import { Column } from 'typeorm';
 
 export class CreateMonHocDto {
@@ -19,22 +19,22 @@ export class CreateMonHocDto {
   tenTiengAnh: string;
 
   @ApiProperty()
-  @IsNumberString()
+  @IsInt()
   @Column({ name: 'soTinChi' })
   soTinChi: number;
 
   @ApiProperty()
-  @IsNumberString()
+  @IsInt()
   @Column({ name: 'soTietLyThuyet' })
   soTietLyThuyet: number;
 
   @ApiProperty()
-  @IsNumberString()
+  @IsInt()
   @Column({ name: 'soTietThucHanh' })
   soTietThucHanh: number;
 
   @ApiProperty()
-  @IsNumberString()
+  @IsInt()
   @Column({ name: 'soTietTuHoc' })
   soTietTuHoc: number;
 

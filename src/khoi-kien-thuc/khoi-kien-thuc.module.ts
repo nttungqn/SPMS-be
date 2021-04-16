@@ -3,10 +3,10 @@ import { KhoiKienThucService } from './khoi-kien-thuc.service';
 import { KhoiKienThucController } from './khoi-kien-thuc.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { KhoiKienThucEntity } from './entity/khoi-kien-thuc.entity';
-import { LoaiKhoiKienThucModule } from 'loai-khoi-kien-thuc/loai-khoi-kien-thuc.module';
+import { ChiTietNganhDaoTaoModule } from 'chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([KhoiKienThucEntity]), LoaiKhoiKienThucModule],
+  imports: [TypeOrmModule.forFeature([KhoiKienThucEntity]), ChiTietNganhDaoTaoModule],
   controllers: [KhoiKienThucController],
   providers: [KhoiKienThucService],
   exports: [KhoiKienThucService]

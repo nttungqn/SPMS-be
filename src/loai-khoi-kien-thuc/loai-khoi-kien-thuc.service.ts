@@ -26,7 +26,7 @@ export class LoaiKhoiKienThucService {
     const queryBy_KhoiKienThuc = idKhoiKienThuc ? { khoiKienThuc: idKhoiKienThuc } : {};
     const queryOrder: OrderByCondition = createdAt ? { createdAt } : {};
     const skip = page * limit;
-    const query: LoaiKhoiKienThucEntity = {
+    const query = {
       isDeleted: false,
       ...queryBy_KhoiKienThuc
     };
@@ -53,13 +53,23 @@ export class LoaiKhoiKienThucService {
     if (!result) throw new NotFoundException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND);
     return result;
   }
-  async findDetail(id: number): Promise<LoaiKhoiKienThucEntity> {
-    let result;
+  async findDetail(id: number) {
+    let result: LoaiKhoiKienThucEntity;
     try {
-      result = await this.typeOfKnowledgeBlockRepository.findOne(id, {
-        relations: ['khoiKienThuc', 'createdBy', 'updatedBy', 'gomNhom'],
-        where: { isDeleted: false }
-      });
+      result = await this.typeOfKnowledgeBlockRepository
+        .createQueryBuilder('lkkt')
+        .leftJoinAndSelect('lkkt.createdBy', 'createdBy')
+        .leftJoinAndSelect('lkkt.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('lkkt.gomNhom', 'gomNhom', `gomNhom.isDeleted = ${false}`)
+        .leftJoinAndSelect('lkkt.khoiKienThuc', 'khoiKienThuc', `khoiKienThuc.isDeleted = ${false}`)
+        .where((qb) => {
+          qb.leftJoinAndSelect('gomNhom.chiTietGomNhom', 'chiTietGomNhom').where((qb) => {
+            qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
+          });
+        })
+        .andWhere(`lkkt.id = ${id}`)
+        .andWhere(`lkkt.isDeleted = ${false}`)
+        .getOne();
     } catch (error) {
       throw new InternalServerErrorException();
     }

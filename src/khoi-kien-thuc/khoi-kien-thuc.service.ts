@@ -1,11 +1,8 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { KHOIKIENTHUC_MESSAGE, LIMIT } from 'constant/constant';
-import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
-import { LoaiKhoiKienThucService } from 'loai-khoi-kien-thuc/loai-khoi-kien-thuc.service';
-import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { Repository } from 'typeorm';
-import { CreateKhoiKienThucDto } from './dto/create-khoi-kien-thuc.dto';
+import { ChiTietNganhDaoTaoService } from '../chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
 import { filterKnowledgeBlock } from './dto/filter-khoi-kien-thuc.dto';
 import { KhoiKienThucEntity } from './entity/khoi-kien-thuc.entity';
 
@@ -14,12 +11,13 @@ export class KhoiKienThucService {
   constructor(
     @InjectRepository(KhoiKienThucEntity)
     private knowledgeBlockRepository: Repository<KhoiKienThucEntity>,
-    private loaiKhoiKienThucService: LoaiKhoiKienThucService
+    private chiTietNganhDaoTaoService: ChiTietNganhDaoTaoService
   ) {}
 
   async create(knowledgeBlock: KhoiKienThucEntity) {
-    if (await this.isExist(knowledgeBlock)) {
-      throw new ConflictException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_EXIST);
+    const record = await this.chiTietNganhDaoTaoService.findById(knowledgeBlock.chiTietNganh);
+    if (!record) {
+      throw new ConflictException(KHOIKIENTHUC_MESSAGE.ID_CHI_TIET_NGANH_DAO_TAO);
     }
     const { tinChiBatBuoc = 0, tinChiTuChonTuDo = 0, tinChiTuChon = 0 } = knowledgeBlock;
     knowledgeBlock.tongTinChi = tinChiBatBuoc + tinChiTuChonTuDo + tinChiTuChon;
@@ -90,9 +88,5 @@ export class KhoiKienThucService {
     } catch (error) {
       throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.DELETE_KHOIKIENTHUC_FAILED);
     }
-  }
-
-  async isExist(createKhoiKienThucDto: CreateKhoiKienThucDto): Promise<boolean> {
-    return createKhoiKienThucDto ? true : false;
   }
 }

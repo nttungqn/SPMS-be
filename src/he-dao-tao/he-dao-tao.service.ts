@@ -73,7 +73,7 @@ export class HeDaotaoService {
   private async checkConflictException(id: number, createTypeOfEducationDto: CreateHeDaoTaoDto) {
     const { ma, ten } = createTypeOfEducationDto;
     const query = this.typeOfEduRepository.createQueryBuilder('tod');
-    query.andWhere('(tod.code=:code OR tod.name=:name)', { ma, ten });
+    query.where('(tod.ma=:ma OR tod.ten=:ten)', { ma, ten });
     query.andWhere('(tod.isDeleted=:isDeleted AND tod.id!=:id)', { isDeleted: false, id });
     const found = await query.getOne();
     if (found) {

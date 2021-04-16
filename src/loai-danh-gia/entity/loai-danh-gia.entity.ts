@@ -1,10 +1,8 @@
 import { ChuanDauRaMonHocEntity } from 'chuan-dau-ra-mon-hoc/entity/chuan-dau-ra-mon-hoc.entity';
 import { TABLE_NAME } from 'constant/constant';
 import { HoatDongDanhGiaEntity } from 'hoat-dong-danh-gia/entity/hoat-dong-danh-gia.entity';
-import { CreateLoaiDanhGiaDto } from 'loai-danh-gia/dto/create-loai-danh-gia.dto';
 import { Syllabus } from 'syllabus/entity/syllabus.entity';
 import {
-  AfterLoad,
   Column,
   Entity,
   JoinColumn,
@@ -63,16 +61,6 @@ export class LoaiDanhGiaEntity {
   @OneToMany(() => HoatDongDanhGiaEntity, (hddg) => hddg.loaiDanhGia)
   @JoinColumn({ name: 'id' })
   hoatDongDanhGia?: HoatDongDanhGiaEntity[];
-
-  @AfterLoad()
-  afterLoad() {
-    this.chuanDauRaMonHoc = this.chuanDauRaMonHoc.filter((e) => {
-      return e.isDeleted === false;
-    });
-    this.hoatDongDanhGia = this.hoatDongDanhGia.filter((e) => {
-      return e.isDeleted === false;
-    });
-  }
 }
 export const KEY_LDG = {
   idSyllabus: 'syllabus',
