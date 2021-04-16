@@ -146,7 +146,7 @@ export class MonHocService {
   async getAllSubjectByNganhDaoTaoAndKhoaTuyen(idNganhDaoTao: number, khoaTuyen: number) {
     const subjects = await this.monHocRepository
       .createQueryBuilder('mh')
-      .leftJoin('mh.chiTietGomNhom', 'chiTietGomNhom')
+      .leftJoinAndSelect('mh.chiTietGomNhom', 'chiTietGomNhom')
       .where((qb) => {
         qb.leftJoin('chiTietGomNhom.gomNhom', 'gomNhom')
           .where((qb) => {

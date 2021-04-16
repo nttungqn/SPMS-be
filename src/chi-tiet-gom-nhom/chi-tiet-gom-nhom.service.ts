@@ -126,7 +126,9 @@ export class ChiTietGomNhomService {
       .leftJoinAndSelect('ctgn.ctgnMonHoctruoc', 'ctgnMonHoctruoc')
       .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
       .where((qb) => {
-        qb.leftJoinAndSelect('ctgnMonHoctruoc.monHoc', 'monHocTr').where(`monHocTr.id = ${idMonHoc}`);
+        qb.leftJoinAndSelect('monHoc.chiTietGomNhom', 'chiTietGomNhom', 'chiTietGomNhom.isDeleted = false')
+          .leftJoinAndSelect('ctgnMonHoctruoc.monHoc', 'monHocTr')
+          .where(`monHocTr.id = ${idMonHoc}`);
       })
       .getMany();
     return result.map((e) => e.monHoc);
