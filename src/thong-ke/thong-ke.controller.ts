@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ThongKeService } from './thong-ke.service';
 import { GetUser } from 'auth/user.decorator';
 import { UsersEntity } from 'users/entity/user.entity';
@@ -28,5 +28,10 @@ export class ThongKeController {
   @Get('/intro-page')
   intro() {
     return this.thongKeService.intro();
+  }
+
+  @Get('/syllabus/:idSyllabus/chuan-dau-ra-mon-hoc')
+  thongKeChuanDauRaTrongSyllabus(@Param('idSyllabus', new ParseIntPipe()) idSyllabus: number) {
+    return this.thongKeService.thongKeSoLuongChuanDauRaTrongSyllabus(idSyllabus);
   }
 }
