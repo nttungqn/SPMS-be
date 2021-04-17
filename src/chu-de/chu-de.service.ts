@@ -5,8 +5,9 @@ import { CHUDE_MESSAGE, LIMIT } from 'constant/constant';
 import { HoatDongDanhGiaService } from 'hoat-dong-danh-gia/hoat-dong-danh-gia.service';
 import { HoatDongDayHocService } from 'hoat-dong-day-hoc/hoat-dong-day-hoc.service';
 import { LoaiKeHoachGiangDayService } from 'loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.service';
+import { Syllabus } from 'syllabus/entity/syllabus.entity';
 import { SyllabusService } from 'syllabus/syllabus.service';
-import { Like, Not, Repository } from 'typeorm';
+import { Connection, getConnection, Like, Not, Repository } from 'typeorm';
 import { CreateChuDeDto } from './dto/create-chu-de';
 import { FilterChuDe } from './dto/filter-chu-de';
 import { UpdateChuDeDTO } from './dto/update-chu-de';
@@ -55,6 +56,7 @@ export class ChuDeService {
       .skip(skip)
       .take(limit)
       .andWhere(`cd.isDeleted = ${false}`)
+      .orderBy('cd.tuan', 'ASC')
       .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }
