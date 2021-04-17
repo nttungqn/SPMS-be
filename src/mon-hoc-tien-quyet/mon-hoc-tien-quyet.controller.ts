@@ -34,13 +34,17 @@ import { FilterMonHocKienQuyet } from './dto/filter-mon-hoc-tien-quyet.dto';
 import { MONHOCTIENQUYET_MESSAGE } from 'constant/constant';
 import { FindAllMonHocTienQuyetResponse } from './Responses/find-all-mon-hoc-tien-quyet.response';
 import { MonHocTienQuyetResponse } from './Responses/mon-hoc-tien-quyet.response';
+import { RolesGuard } from 'guards/roles.guard';
+import { Roles } from 'guards/roles.decorator';
+import { Role } from 'guards/roles.enum';
 
 @ApiTags('mon-hoc-tien-quyet')
 @Controller('mon-hoc-tien-quyet')
 export class MonHocTienQuyetController {
   constructor(private readonly prerequisiteSubjectService: MonHocTienQuyetService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới Môn học tiên quyết' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })
@@ -60,7 +64,8 @@ export class MonHocTienQuyetController {
     return new HttpException(MONHOCTIENQUYET_MESSAGE.CREATE_MONHOCTIENQUYET_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các  Môn học tiên quyết' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })
@@ -70,7 +75,8 @@ export class MonHocTienQuyetController {
     return this.prerequisiteSubjectService.findAllPrereSuject(null, filter);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các môn học tiên quyết của một môn học' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })
@@ -83,7 +89,8 @@ export class MonHocTienQuyetController {
     return this.prerequisiteSubjectService.findAllPrereSuject(id, filter);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin một Môn học tiên quyết' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })
@@ -94,7 +101,8 @@ export class MonHocTienQuyetController {
     return this.prerequisiteSubjectService.findById(id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật một Môn học tiên quyết' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })
@@ -117,7 +125,8 @@ export class MonHocTienQuyetController {
     return new HttpException(MONHOCTIENQUYET_MESSAGE.UPDATE_MONHOCTIENQUYET_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một Môn học tiên quyết' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })

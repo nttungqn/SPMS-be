@@ -47,7 +47,7 @@ export class SyllabusController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
-  @Roles(Role.GIAOVIEN)
+  @Roles([Role.GIAOVIEN])
   @ApiOperation({ summary: 'Tạo mới một Syllabus' })
   @ApiCreatedResponse({ description: SYLLABUS_MESSAGE.CREATE_SYLLABUS_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: SYLLABUS_MESSAGE.CREATE_SYLLABUS_FAILED })
@@ -66,7 +66,8 @@ export class SyllabusController {
     return new HttpException(SYLLABUS_MESSAGE.CREATE_SYLLABUS_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách syllabus của giáo vien' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -76,7 +77,8 @@ export class SyllabusController {
     return await this.syllabusService.findAll({ ...filter, createdBy: user.id });
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -86,7 +88,8 @@ export class SyllabusController {
     return await this.syllabusService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin một Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -97,7 +100,8 @@ export class SyllabusController {
     return this.syllabusService.findOne(id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.GIAOVIEN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -111,7 +115,8 @@ export class SyllabusController {
     return new HttpException(SYLLABUS_MESSAGE.UPDATE_SYLLABUS_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.GIAOVIEN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })

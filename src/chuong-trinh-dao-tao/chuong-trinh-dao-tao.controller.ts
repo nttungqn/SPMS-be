@@ -29,6 +29,9 @@ import { FilterChuongTrinhDaoTao } from './dto/filterChuongTrinhDaoTao.dto';
 import { IdDto } from './dto/Id.dto';
 import * as lodash from 'lodash';
 import { ChuongTrinhDaoTaoDto, ChuongTrinhDaoTaoResponseDto } from './interfaces/chuongTrinhTaoDao.response';
+import { RolesGuard } from 'guards/roles.guard';
+import { Roles } from 'guards/roles.decorator';
+import { Role } from 'guards/roles.enum';
 
 @ApiTags('chuong-trinh-dao-tao')
 @Controller('chuong-trinh-dao-tao')
@@ -50,8 +53,9 @@ export class ChuongTrinhDaoTaoController {
     const { id } = param;
     return await this.chuongTrinhDaoTaoService.findById(Number(id));
   }
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiCreatedResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED })
   @ApiOperation({ summary: 'tạo mới chương trình đào tạo' })
@@ -70,8 +74,9 @@ export class ChuongTrinhDaoTaoController {
       .status(HttpStatus.CREATED)
       .json({ message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
   }
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiOkResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_FAILED })
   @ApiOperation({ summary: 'cập nhật thông tin của 1 chương trình đào tạo' })
@@ -89,8 +94,9 @@ export class ChuongTrinhDaoTaoController {
     }
     return res.status(HttpStatus.OK).json({ message: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
   }
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiOkResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_FAILED })
   @ApiOperation({ summary: 'xóa thông tin của 1 chương trình đào tạo' })
