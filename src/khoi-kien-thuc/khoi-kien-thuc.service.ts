@@ -1,10 +1,8 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
 import { KHOIKIENTHUC_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm';
 import { ChiTietNganhDaoTaoService } from '../chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
-import { CreateKhoiKienThucDto } from './dto/create-khoi-kien-thuc.dto';
 import { filterKnowledgeBlock } from './dto/filter-khoi-kien-thuc.dto';
 import { KhoiKienThucEntity } from './entity/khoi-kien-thuc.entity';
 

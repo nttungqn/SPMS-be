@@ -65,7 +65,10 @@ export class ExportsService {
       const dataResults = await Promise.all(loaiKhoiKienThucArray);
       for (let i = 0; i < dataResults?.length; i++) {
         const gomNhomPromise = dataResults[i]?.loaiKhoiKienThuc?.map(async (item) => {
-          const results = await this.gomNhomService.findAllWithSelectField({ idLKKT: item?.id });
+          const results = await this.gomNhomService.findAllWithSelectField({
+            idLKKT: item?.id,
+            select: 'chiTietGomNhom,chiTietGomNhom.idMH'
+          });
           return { ...item, gomNhom: results || [] };
         });
         const gomNhom = await Promise.all(gomNhomPromise);
@@ -81,7 +84,7 @@ export class ExportsService {
       const chiTietKHGDArr = keHoachGiangDay?.map(async (item) => {
         const results = await this.chiTietKeHoachGiangDayService.findAllWithSelectField({
           idKHGD: item?.id,
-          select: 'idCTGN,idCTGN.idGN'
+          select: 'idCTGN,idCTGN.idGN,idCTGN.idMH'
         });
         return { ...item, chiTietKHGD: results || [] };
       });

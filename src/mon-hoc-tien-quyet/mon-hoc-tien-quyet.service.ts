@@ -1,8 +1,6 @@
 import {
   BadRequestException,
   ConflictException,
-  HttpException,
-  HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException
@@ -65,7 +63,7 @@ export class MonHocTienQuyetService {
     const { page = 0, limit = LIMIT, type } = filter;
     const skip = page * limit;
     const queryByType = type ? { condition: Number(type) } : {};
-    const queryByIdSubject = id ? { subject: id } : {};
+    const queryByIdSubject = id ? { monHoc: id } : {};
     const query = {
       isDeleted: false,
       ...queryByIdSubject,

@@ -1,8 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
-import { LoaiKeHoachGiangDayEntity } from 'loai-ke-hoach-giang-day/entity/loaiKeHoachGiangDay.entity';
-import { Syllabus } from 'syllabus/entity/syllabus.entity';
-import { Column, JoinColumn, ManyToOne } from 'typeorm';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateChuDeDto {
   @ApiProperty({ required: true })

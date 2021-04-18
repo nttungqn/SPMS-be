@@ -3,7 +3,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
   ConflictException,
-  HttpException,
   BadRequestException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -143,5 +142,33 @@ export class MonHocService {
     } catch (error) {
       return { message: MONHOC_MESSAGE.IMPORT_FAILED, isError: true, error };
     }
+  }
+  async getAllSubjectByNganhDaoTaoAndKhoaTuyen(idNganhDaoTao: number, khoaTuyen: number) {
+    const subjects = await this.monHocRepository
+      .createQueryBuilder('mh')
+      .leftJoinAndSelect('mh.chiTietGomNhom', 'chiTietGomNhom')
+      .where((qb) => {
+        qb.leftJoin('chiTietGomNhom.gomNhom', 'gomNhom')
+          .where((qb) => {
+            qb.leftJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc')
+              .where((qb) => {
+                qb.leftJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc')
+                  .where((qb) => {
+                    qb.leftJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh')
+                      .where(`chiTietNganh.khoa = ${khoaTuyen}`)
+                      .andWhere(`chiTietNganh.nganhDaoTao = ${idNganhDaoTao}`)
+                      .andWhere(`chiTietNganh.isDeleted = ${false}`);
+                  })
+                  .andWhere(`khoiKienThuc.isDeleted = ${false}`);
+              })
+              .andWhere(`loaiKhoiKienThuc.isDeleted = ${false}`);
+          })
+          .andWhere(`chiTietGomNhom.isDeleted = ${false}`);
+      })
+      .getMany();
+    if (subjects.length === 0) {
+      throw new BadRequestException(`KHOA_${khoaTuyen}_MONHOC_EMPTY`);
+    }
+    return subjects;
   }
 }

@@ -11,7 +11,6 @@ import {
   Put,
   Query,
   Req,
-  Res,
   UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -31,11 +30,23 @@ import { CHITIETGOMNHOM_MESSAGE } from './../constant/constant';
 import { FindAllChiTietGomNhomDtoResponse } from './dto/chi-tiet-gom-nhom.dto';
 import { ChiTietGomNhomEntity } from './entity/chi-tiet-gom-nhom.entity';
 import { UpdateChiTietGomNhomDTO } from './dto/update-chi-tiet-gom-nhom.dto';
+import { GetUser } from 'auth/user.decorator';
+import { UsersEntity } from 'users/entity/user.entity';
+import { FilterByNganhDaoTao } from './dto/filter-by-nganh-dao-tao.dto';
 
 @ApiTags('chi-tiet-gom-nhom')
 @Controller('chi-tiet-gom-nhom')
 export class ChiTietGomNhomController {
   constructor(private readonly chiTietGomNhomService: ChiTietGomNhomService) {}
+
+  @Get('/nganh-dao-tao/:idNganhDaotao/khoa-tuyen/:khoa')
+  async getAllSubject(
+    @Param('idNganhDaotao', ParseIntPipe) idNganhDaoTao: number,
+    @Param('khoa', ParseIntPipe) khoa: number,
+    @Query() filter: FilterByNganhDaoTao
+  ) {
+    return await this.chiTietGomNhomService.getAllSubjects(khoa, idNganhDaoTao, filter);
+  }
 
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
@@ -65,13 +76,9 @@ export class ChiTietGomNhomController {
   @ApiInternalServerErrorResponse({ description: CHITIETGOMNHOM_MESSAGE.CREATE_CHITIETGOMNHOM_FAILED })
   @ApiOkResponse({ description: CHITIETGOMNHOM_MESSAGE.CREATE_CHITIETGOMNHOM_SUCCESSFULLY })
   @Post()
-  async create(@Req() req, @Body() newData: CreateChiTietGomNhomDTO): Promise<any> {
-    const user = req.user || {};
-    return await this.chiTietGomNhomService.create({
-      ...newData,
-      createdBy: user?.id,
-      updatedBy: user?.id
-    });
+  async create(@Body() newData: CreateChiTietGomNhomDTO, @GetUser() user: UsersEntity): Promise<any> {
+    await this.chiTietGomNhomService.create(newData, user.id);
+    return new HttpException(CHITIETGOMNHOM_MESSAGE.CREATE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -82,9 +89,12 @@ export class ChiTietGomNhomController {
   @ApiInternalServerErrorResponse({ description: CHITIETGOMNHOM_MESSAGE.UPDATE_CHITIETGOMNHOM_FAILED })
   @ApiOkResponse({ description: CHITIETGOMNHOM_MESSAGE.UPDATE_CHITIETGOMNHOM_SUCCESSFULLY })
   @Put(':id')
-  async update(@Req() req, @Param('id') id: number, @Body() updatedData: UpdateChiTietGomNhomDTO): Promise<any> {
-    const user = req.user || {};
-    await this.chiTietGomNhomService.update(Number(id), { ...updatedData, updatedBy: user?.id });
+  async update(
+    @Param('id') id: number,
+    @Body() updatedData: UpdateChiTietGomNhomDTO,
+    @GetUser() user: UsersEntity
+  ): Promise<any> {
+    await this.chiTietGomNhomService.update(Number(id), updatedData, user.id);
     return new HttpException(CHITIETGOMNHOM_MESSAGE.UPDATE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.OK);
   }
 

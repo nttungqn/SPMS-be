@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MonHocEntity } from '../entity/mon-hoc.entity';
-import { FilterMonHoc } from './filter-mon-hoc.dto';
-
 export class BaseResponseDto {
   @ApiProperty()
   readonly page?: number;
