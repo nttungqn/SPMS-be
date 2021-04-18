@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsOptional } from 'class-validator';
+import { IsIn, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class BaseFilterDto {
   @ApiProperty({ required: false, default: 0 })
@@ -37,4 +37,23 @@ export class FilterGomNhom extends BaseFilterDto {
   @IsOptional()
   @IsNumberString()
   readonly soTCBB: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'Sort by column: id, idLKKT.ten, maGN, loaiNhom, stt, tieuDe, soTCBB, updatedAt, createdAt'
+  })
+  @IsIn(['id', 'idLKKT.ten', 'maGN', 'loaiNhom', 'stt', 'tieuDe', 'soTCBB', 'updatedAt', 'createdAt'])
+  @IsOptional()
+  readonly sortBy?: 'id' | 'idLKKT.ten' | 'maGN' | 'loaiNhom' | 'stt' | 'tieuDe' | 'soTCBB' | 'updatedAt' | 'createdAt';
+
+  @ApiProperty({ required: false, description: 'Sort by type: ASC, DESC' })
+  @IsIn(['ASC', 'DESC'])
+  @IsOptional()
+  readonly sortType?: 'ASC' | 'DESC';
+}
+
+export class DeleteMultipleRows {
+  @ApiProperty({ required: true, description: 'Delete multiple ids: ids=1,2,3,..' })
+  @IsString()
+  readonly ids?: string;
 }

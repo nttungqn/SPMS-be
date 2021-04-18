@@ -1,25 +1,30 @@
 import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GOMNHOM_MESSAGE, LIMIT } from 'constant/constant';
+import { LoaiKhoiKienThucService } from 'loai-khoi-kien-thuc/loai-khoi-kien-thuc.service';
 import { Like, Repository } from 'typeorm';
 import { GomNhomEntity } from './entity/gom-nhom.entity';
 
 @Injectable()
 export class GomNhomService {
-  constructor(@InjectRepository(GomNhomEntity) private gomNhomRepository: Repository<GomNhomEntity>) {}
+  constructor(
+    @InjectRepository(GomNhomEntity) private gomNhomRepository: Repository<GomNhomEntity>,
+    private loaiKhoiKienThucService: LoaiKhoiKienThucService
+  ) {}
 
   async findAll(filter): Promise<GomNhomEntity[] | any> {
-    const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
+    let { sortBy = '' } = filter;
+    const { limit = LIMIT, page = 0, search = '', sortType = 'ASC', ...otherParam } = filter;
     const skip = Number(page) * Number(limit);
-    const querySearch = search ? { tieuDe: Like(`%${search}%`) } : {};
     const query = {
       isDeleted: false,
-      ...querySearch,
       ...otherParam
     };
 
+    if (sortBy != 'idLKKT.ten' && sortBy != '') sortBy = 'gn.' + sortBy;
+
     try {
-      const [results, total] = await this.gomNhomRepository
+      const queryBuilder = this.gomNhomRepository
         .createQueryBuilder('gn')
         .leftJoinAndSelect('gn.idLKKT', 'idLKKT')
         .leftJoinAndSelect('gn.createdBy', 'createdBy')
@@ -28,10 +33,16 @@ export class GomNhomService {
         .where((qb) => {
           qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
         })
-        .andWhere(query)
-        .skip(skip)
-        .take(limit)
-        .getManyAndCount();
+        .andWhere(query);
+
+      if (search != '') {
+        queryBuilder.andWhere(
+          'idLKKT.ten LIKE :search OR gn.maGN LIKE :search OR gn.stt LIKE :search OR gn.soTCBB LIKE :search OR gn.loaiNhom LIKE :search OR gn.tieuDe LIKE :search',
+          { search: `%${search}%` }
+        );
+      }
+
+      const [results, total] = await queryBuilder.orderBy(sortBy, sortType).skip(skip).take(limit).getManyAndCount();
       return { contents: results, total, page: Number(page) };
     } catch (error) {
       console.log(error);
@@ -47,7 +58,7 @@ export class GomNhomService {
       .leftJoinAndSelect('gn.updatedBy', 'updatedBy')
       .leftJoinAndSelect('gn.chiTietGomNhom', 'chiTietGomNhom')
       .where((qb) => {
-        qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc').andWhere(`chiTietGomNhom.isDeleted = ${false}`);
+        qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
       })
       .andWhere(`gn.id = ${id}`)
       .andWhere(`gn.isDeleted = ${false}`)
@@ -62,6 +73,10 @@ export class GomNhomService {
     const checkExistName = await this.gomNhomRepository.findOne({ maGN: newData?.maGN, isDeleted: false });
     if (checkExistName) {
       throw new ConflictException(GOMNHOM_MESSAGE.GOMNHOM_EXIST);
+    }
+    const record = await this.loaiKhoiKienThucService.findOne(newData.idLKKT);
+    if (!record) {
+      throw new ConflictException(GOMNHOM_MESSAGE.GOMNHOM_FOREIGN_KEY_CONFLICT);
     }
     try {
       const gomNhom = await this.gomNhomRepository.create(newData);
@@ -127,7 +142,46 @@ export class GomNhomService {
       });
       return results;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED);
+    }
+  }
+
+  async deleteMultipleRows(ids: string, updatedBy?: number): Promise<any> {
+    const list_id = ids
+      .trim()
+      .split(',')
+      .map((x) => +x);
+    const records = await this.gomNhomRepository
+      .createQueryBuilder('gn')
+      .where('gn.id IN (:...ids)', { ids: list_id })
+      .andWhere(`gn.isDeleted = ${false}`)
+      .getCount();
+    if (list_id.length != records) {
+      throw new NotFoundException(GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND);
+    }
+
+    try {
+      await this.gomNhomRepository
+        .createQueryBuilder('gn')
+        .update(GomNhomEntity)
+        .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
+        .andWhere('id IN (:...ids)', { ids: list_id })
+        .execute();
+    } catch (error) {
+      throw new InternalServerErrorException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED);
+    }
+  }
+
+  async deleteAll(updatedBy?: number): Promise<any> {
+    try {
+      await this.gomNhomRepository
+        .createQueryBuilder('gn')
+        .update(GomNhomEntity)
+        .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
+        .where(`isDeleted = ${false}`)
+        .execute();
+    } catch (error) {
+      throw new InternalServerErrorException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED);
     }
   }
 }
