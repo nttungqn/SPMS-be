@@ -8,6 +8,7 @@ import {
   ForbiddenException
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { ROLES_MESSAGE } from 'constant/constant';
 import { ROLES_KEY } from './roles.decorator';
 import { Role } from './roles.enum';
 
@@ -26,7 +27,7 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
     const roleUser = user.role['value'];
     if (!requiredRoles.includes(roleUser)) {
-      throw new ForbiddenException();
+      throw new ForbiddenException(ROLES_MESSAGE.NO_PERMISTION);
     }
     return true;
   }

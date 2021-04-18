@@ -109,8 +109,11 @@ export class SyllabusController {
   @ApiConflictResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_EXIST })
   @ApiOkResponse({ description: SYLLABUS_MESSAGE.UPDATE_SYLLABUS_SUCCESSFULLY })
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateSyllabusDto: UpdateSyllabusDto, @Req() req) {
-    const user = req.user || {};
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateSyllabusDto: UpdateSyllabusDto,
+    @GetUser() user: UsersEntity
+  ) {
     await this.syllabusService.update(id, { ...updateSyllabusDto, updatedBy: user?.id, updatedAt: new Date() });
     return new HttpException(SYLLABUS_MESSAGE.UPDATE_SYLLABUS_SUCCESSFULLY, HttpStatus.OK);
   }

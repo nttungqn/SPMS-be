@@ -1,6 +1,7 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CHUANDAURAMONHOC_MESSAGE, LIMIT } from 'constant/constant';
+import { BaseService } from 'guards/base-service.dto';
 import { MucTieuMonHocService } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.service';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
@@ -10,17 +11,19 @@ import { UpdateChuanDauRaMonHocDto } from './dto/update-chuan-dau-ra-mon-hoc.dto
 import { ChuanDauRaMonHocEntity } from './entity/chuan-dau-ra-mon-hoc.entity';
 
 @Injectable()
-export class ChuanDauRaMonHocService {
+export class ChuanDauRaMonHocService extends BaseService {
   constructor(
     @InjectRepository(ChuanDauRaMonHocEntity)
     private chuanDauRaMonHocService: Repository<ChuanDauRaMonHocEntity>,
     private mucTieuMonHocService: MucTieuMonHocService,
     private syllabusService: SyllabusService
-  ) {}
+  ) {
+    super();
+  }
 
   async create(newData: CreateChuanDauRaMonHocDto, idUser: number) {
-    await this.mucTieuMonHocService.findOne(newData.mucTieuMonHoc);
-
+    const mucTieuMonHoc = await this.mucTieuMonHocService.findOne(newData.mucTieuMonHoc);
+    this.isOwner(mucTieuMonHoc.createdBy, idUser);
     const chuanDauRaMonHoc = new ChuanDauRaMonHocEntity();
     const { mucDo } = newData;
     if (mucDo) {
@@ -100,6 +103,7 @@ export class ChuanDauRaMonHocService {
 
   async update(id: number, newData: UpdateChuanDauRaMonHocDto, idUser: number) {
     const oldData = await this.chuanDauRaMonHocService.findOne(id, { where: { isDeleted: false } });
+    this.isOwner(oldData.createdBy, idUser);
 
     if (await this.isExistV2(oldData, newData))
       throw new ConflictException(CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_EXIST);
@@ -127,6 +131,7 @@ export class ChuanDauRaMonHocService {
 
   async remove(id: number, idUser: number) {
     const found = await this.findOne(id);
+    this.isOwner(found.createdBy, idUser);
     try {
       return await this.chuanDauRaMonHocService.save({
         ...found,
