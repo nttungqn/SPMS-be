@@ -25,7 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { GomNhomService } from './gom-nhom.service';
 import { CreateGomNhomDTO } from './dto/create-gom-nhom';
-import { FilterGomNhom } from './dto/filter-gom-nhom';
+import { DeleteMultipleRows, FilterGomNhom } from './dto/filter-gom-nhom';
 import { GOMNHOM_MESSAGE } from 'constant/constant';
 import { FindAllGomNhomDtoResponse } from './dto/gom-nhom-response';
 import { GomNhomEntity } from './entity/gom-nhom.entity';
@@ -97,9 +97,36 @@ export class GomNhomController {
   @ApiInternalServerErrorResponse({ description: GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED })
   @ApiOkResponse({ description: GOMNHOM_MESSAGE.DELETE_GOMNHOM_SUCCESSFULLY })
   @Delete(':id')
-  async delete(@Req() req, @Param('id') id: number, @Res() res): Promise<any> {
+  async delete(@Req() req, @Param('id') id: number): Promise<any> {
     const user = req.user || {};
     await this.gomNhomService.delete(Number(id), user?.id);
+    return new HttpException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_SUCCESSFULLY, HttpStatus.OK);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Xóa một số gom nhóm' })
+  @ApiNotFoundResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND })
+  @ApiUnauthorizedResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_NOT_AUTHORIZED })
+  @ApiInternalServerErrorResponse({ description: GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED })
+  @ApiOkResponse({ description: GOMNHOM_MESSAGE.DELETE_GOMNHOM_SUCCESSFULLY })
+  @Delete('/')
+  async deleteMultipleRows(@Req() req, @Query() query: DeleteMultipleRows): Promise<any> {
+    const user = req.user || {};
+    await this.gomNhomService.deleteMultipleRows(query?.ids, user?.id);
+    return new HttpException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_SUCCESSFULLY, HttpStatus.OK);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Xóa tất cả gom nhóm' })
+  @ApiUnauthorizedResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_NOT_AUTHORIZED })
+  @ApiInternalServerErrorResponse({ description: GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED })
+  @ApiOkResponse({ description: GOMNHOM_MESSAGE.DELETE_GOMNHOM_SUCCESSFULLY })
+  @Delete('/delete/all')
+  async deleteAll(@Req() req): Promise<any> {
+    const user = req.user || {};
+    await this.gomNhomService.deleteAll(user?.id);
     return new HttpException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_SUCCESSFULLY, HttpStatus.OK);
   }
 }
