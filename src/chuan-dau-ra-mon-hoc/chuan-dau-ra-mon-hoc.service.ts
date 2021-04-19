@@ -103,8 +103,12 @@ export class ChuanDauRaMonHocService extends BaseService {
 
   async update(id: number, newData: UpdateChuanDauRaMonHocDto, idUser: number) {
     const oldData = await this.chuanDauRaMonHocService.findOne(id, { where: { isDeleted: false } });
+    const { mucTieuMonHoc } = newData;
     this.isOwner(oldData.createdBy, idUser);
-
+    if (mucTieuMonHoc) {
+      const mtmh = await this.mucTieuMonHocService.findOne(newData.mucTieuMonHoc);
+      this.isOwner(mtmh.createdBy, idUser);
+    }
     if (await this.isExistV2(oldData, newData))
       throw new ConflictException(CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_EXIST);
     const { mucDo } = newData;

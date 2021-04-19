@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
-import { LIMIT, LOAIDANHGIA_MESSAGE, ROLES_MESSAGE } from 'constant/constant';
+import { LIMIT, LOAIDANHGIA_MESSAGE } from 'constant/constant';
 import { BaseService } from 'guards/base-service.dto';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
