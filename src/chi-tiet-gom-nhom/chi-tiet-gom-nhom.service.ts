@@ -15,22 +15,49 @@ export class ChiTietGomNhomService {
   ) {}
 
   async findAll(filter): Promise<ChiTietGomNhomEntity[] | any> {
-    const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
+    // const [results, total] = await this.chiTietGomNhomRepository.findAndCount({
+    //   where: query,
+    //   skip,
+    //   take: Number(limit),
+    //   relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
+    // });
+    // return { contents: results, total, page: Number(page) };
+
+    const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
     const skip = Number(page) * Number(limit);
     const query = {
       isDeleted: false,
       ...otherParam
     };
 
+    let sortByTemp = sortBy;
+    if (sortByTemp != 'gomNhom.tieuDe' && sortByTemp != 'monHoc.tenTiengViet' && sortByTemp != '')
+      sortByTemp = 'ctgn.' + sortByTemp;
+
     try {
-      const [results, total] = await this.chiTietGomNhomRepository.findAndCount({
-        where: query,
-        skip,
-        take: Number(limit),
-        relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
-      });
+      const queryBuilder = this.chiTietGomNhomRepository
+        .createQueryBuilder('ctgn')
+        .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+        .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom')
+        .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
+        .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
+        .where(query);
+
+      if (search != '') {
+        queryBuilder.andWhere(
+          'gomNhom.tieuDe LIKE :search OR monHoc.tenTiengViet LIKE :search OR ctgn.ghiChu LIKE :search',
+          { search: `%${search}%` }
+        );
+      }
+
+      const [results, total] = await queryBuilder
+        .orderBy(sortByTemp, sortType)
+        .skip(skip)
+        .take(limit)
+        .getManyAndCount();
       return { contents: results, total, page: Number(page) };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException();
     }
   }
@@ -166,5 +193,44 @@ export class ChiTietGomNhomService {
       .skip(skip)
       .getManyAndCount();
     return { contents: results, total, page: Number(page) };
+  }
+
+  async deleteMultipleRows(ids: string, updatedBy?: number): Promise<any> {
+    const list_id = ids
+      .trim()
+      .split(',')
+      .map((x) => +x);
+    const records = await this.chiTietGomNhomRepository
+      .createQueryBuilder('ctgn')
+      .where('ctgn.id IN (:...ids)', { ids: list_id })
+      .andWhere(`ctgn.isDeleted = ${false}`)
+      .getCount();
+    if (list_id.length != records) {
+      throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);
+    }
+
+    try {
+      await this.chiTietGomNhomRepository
+        .createQueryBuilder('ctgn')
+        .update(ChiTietGomNhomEntity)
+        .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
+        .andWhere('id IN (:...ids)', { ids: list_id })
+        .execute();
+    } catch (error) {
+      throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
+    }
+  }
+
+  async deleteAll(updatedBy?: number): Promise<any> {
+    try {
+      await this.chiTietGomNhomRepository
+        .createQueryBuilder('ctgn')
+        .update(ChiTietGomNhomEntity)
+        .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
+        .where(`isDeleted = ${false}`)
+        .execute();
+    } catch (error) {
+      throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
+    }
   }
 }
