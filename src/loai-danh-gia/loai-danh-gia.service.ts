@@ -110,7 +110,10 @@ export class LoaiDanhGiaService extends BaseService {
     const oldData = await this.findOne(id);
     this.isOwner(oldData.createdBy, idUser);
     const { idSyllabus } = newData;
-    if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
+    if (idSyllabus) {
+      const syllabus = await this.syllabusService.findOne(idSyllabus);
+      this.isOwner(syllabus.createdBy, idUser);
+    }
 
     if (await this.isExistV2(oldData, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
 

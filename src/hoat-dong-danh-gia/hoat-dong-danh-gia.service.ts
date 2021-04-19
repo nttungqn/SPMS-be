@@ -109,6 +109,11 @@ export class HoatDongDanhGiaService extends BaseService {
   async update(id: number, newData: UpdateHoatDongDanhGiaDto, idUser: number) {
     const oldData = await this.findOne(id);
     this.isOwner(oldData.createdBy, idUser);
+    const { idLoaiDanhGia } = newData;
+    if (idLoaiDanhGia) {
+      const loaiDanhGia = await this.findOne(newData.idLoaiDanhGia);
+      this.isOwner(loaiDanhGia.createdBy, idUser);
+    }
     if (await this.isExistV2(oldData, newData))
       throw new ConflictException(HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_EXIST);
     const { chuanDauRaMonHoc } = newData;
