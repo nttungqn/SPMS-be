@@ -13,15 +13,15 @@ export class GomNhomService {
   ) {}
 
   async findAll(filter): Promise<GomNhomEntity[] | any> {
-    let { sortBy = '' } = filter;
-    const { limit = LIMIT, page = 0, search = '', sortType = 'ASC', ...otherParam } = filter;
+    const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
     const skip = Number(page) * Number(limit);
     const query = {
       isDeleted: false,
       ...otherParam
     };
 
-    if (sortBy != 'idLKKT.ten' && sortBy != '') sortBy = 'gn.' + sortBy;
+    let sortByTemp = sortBy;
+    if (sortByTemp != 'idLKKT.ten' && sortByTemp != '') sortByTemp = 'gn.' + sortByTemp;
 
     try {
       const queryBuilder = this.gomNhomRepository
@@ -42,7 +42,11 @@ export class GomNhomService {
         );
       }
 
-      const [results, total] = await queryBuilder.orderBy(sortBy, sortType).skip(skip).take(limit).getManyAndCount();
+      const [results, total] = await queryBuilder
+        .orderBy(sortByTemp, sortType)
+        .skip(skip)
+        .take(limit)
+        .getManyAndCount();
       return { contents: results, total, page: Number(page) };
     } catch (error) {
       console.log(error);

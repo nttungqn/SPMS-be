@@ -33,6 +33,7 @@ import { UpdateChiTietGomNhomDTO } from './dto/update-chi-tiet-gom-nhom.dto';
 import { GetUser } from 'auth/user.decorator';
 import { UsersEntity } from 'users/entity/user.entity';
 import { FilterByNganhDaoTao } from './dto/filter-by-nganh-dao-tao.dto';
+import { DeleteMultipleRows } from 'gom-nhom/dto/filter-gom-nhom';
 
 @ApiTags('chi-tiet-gom-nhom')
 @Controller('chi-tiet-gom-nhom')
@@ -109,6 +110,33 @@ export class ChiTietGomNhomController {
   async delete(@Req() req, @Param('id') id: number): Promise<any> {
     const user = req.user || {};
     await this.chiTietGomNhomService.delete(Number(id), user?.id);
+    return new HttpException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.OK);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Xóa một số gom nhóm' })
+  @ApiNotFoundResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND })
+  @ApiUnauthorizedResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_NOT_AUTHORIZED })
+  @ApiInternalServerErrorResponse({ description: CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED })
+  @ApiOkResponse({ description: CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_SUCCESSFULLY })
+  @Delete('/')
+  async deleteMultipleRows(@Req() req, @Query() query: DeleteMultipleRows): Promise<any> {
+    const user = req.user || {};
+    await this.chiTietGomNhomService.deleteMultipleRows(query?.ids, user?.id);
+    return new HttpException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.OK);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Xóa tất cả gom nhóm' })
+  @ApiUnauthorizedResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_NOT_AUTHORIZED })
+  @ApiInternalServerErrorResponse({ description: CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED })
+  @ApiOkResponse({ description: CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_SUCCESSFULLY })
+  @Delete('/delete/all')
+  async deleteAll(@Req() req): Promise<any> {
+    const user = req.user || {};
+    await this.chiTietGomNhomService.deleteAll(user?.id);
     return new HttpException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.OK);
   }
 }
