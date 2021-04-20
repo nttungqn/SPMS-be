@@ -2,19 +2,19 @@ import { Injectable, InternalServerErrorException, NotFoundException, ConflictEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
 import { CHUDE_MESSAGE, LIMIT } from 'constant/constant';
-import { BaseService } from 'guards/base-service.dto';
 import { HoatDongDanhGiaService } from 'hoat-dong-danh-gia/hoat-dong-danh-gia.service';
 import { HoatDongDayHocService } from 'hoat-dong-day-hoc/hoat-dong-day-hoc.service';
 import { LoaiKeHoachGiangDayService } from 'loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.service';
+import { Syllabus } from 'syllabus/entity/syllabus.entity';
 import { SyllabusService } from 'syllabus/syllabus.service';
-import { Like, Not, Repository } from 'typeorm';
+import { Connection, getConnection, Like, Not, Repository } from 'typeorm';
 import { CreateChuDeDto } from './dto/create-chu-de';
 import { FilterChuDe } from './dto/filter-chu-de';
 import { UpdateChuDeDTO } from './dto/update-chu-de';
 import { ChuDeEntity, KEY_CD } from './entity/chu-de.entity';
 
 @Injectable()
-export class ChuDeService extends BaseService {
+export class ChuDeService {
   constructor(
     @InjectRepository(ChuDeEntity) private chuDeRepository: Repository<ChuDeEntity>,
     private syllabusService: SyllabusService,
@@ -22,9 +22,7 @@ export class ChuDeService extends BaseService {
     private hoatDongDayHocService: HoatDongDayHocService,
     private hoatDongDanhGiaService: HoatDongDanhGiaService,
     private chuanDauRaMonHocService: ChuanDauRaMonHocService
-  ) {
-    super();
-  }
+  ) {}
 
   async findAll(filter: FilterChuDe): Promise<ChuDeEntity[] | any> {
     const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
@@ -63,8 +61,8 @@ export class ChuDeService extends BaseService {
     return { contents: results, total, page: Number(page) };
   }
 
-  async findOne(id: number): Promise<ChuDeEntity> {
-    const query = this.chuDeRepository
+  async findOne(id: number): Promise<ChuDeEntity | any> {
+    const query = await this.chuDeRepository
       .createQueryBuilder('cd')
       .leftJoinAndSelect('cd.createdBy', 'createdBy')
       .leftJoinAndSelect('cd.updatedBy', 'updatedBy')
@@ -92,9 +90,9 @@ export class ChuDeService extends BaseService {
   }
 
   async create(newData: CreateChuDeDto, idUser: number): Promise<any> {
-    const syllabus = await this.syllabusService.findOne(newData.idSyllabus);
+    await this.syllabusService.findOne(newData.idSyllabus);
     await this.loaiKeHoachGiangDayService.findById(newData.idLKHGD);
-    this.isOwner(syllabus.createdBy, idUser);
+
     if (await this.isExist(null, newData)) {
       throw new ConflictException(CHUDE_MESSAGE.CHUDE_EXIST);
     }
@@ -116,7 +114,6 @@ export class ChuDeService extends BaseService {
 
   async update(id: number, newData: UpdateChuDeDTO, idUser: number): Promise<any> {
     const oldData = await this.findOne(id);
-    this.isOwner(oldData.createdBy, idUser);
 
     if (newData.idSyllabus) await this.syllabusService.findOne(newData.idSyllabus);
     if (newData.idLKHGD) await this.loaiKeHoachGiangDayService.findById(newData.idLKHGD);
@@ -138,7 +135,6 @@ export class ChuDeService extends BaseService {
 
   async delete(id: number, updatedBy?: number): Promise<any> {
     const chude = await this.chuDeRepository.findOne({ id, isDeleted: false });
-    this.isOwner(chude.createdBy, updatedBy);
     if (!chude) {
       throw new NotFoundException(CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND);
     }

@@ -1,14 +1,7 @@
-import {
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException
-} from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
 import { LIMIT, LOAIDANHGIA_MESSAGE } from 'constant/constant';
-import { BaseService } from 'guards/base-service.dto';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
 import { CreateLoaiDanhGiaDto } from './dto/create-loai-danh-gia.dto';
@@ -17,19 +10,17 @@ import { UpdateLoaiDanhGiaDto } from './dto/update-loai-danh-gia.dto';
 import { KEY_LDG, LoaiDanhGiaEntity } from './entity/loai-danh-gia.entity';
 
 @Injectable()
-export class LoaiDanhGiaService extends BaseService {
+export class LoaiDanhGiaService {
   constructor(
     @InjectRepository(LoaiDanhGiaEntity)
     private loaiDanhGiaRepository: Repository<LoaiDanhGiaEntity>,
     private syllabusService: SyllabusService,
     private chuanDauRaMonHocService: ChuanDauRaMonHocService
-  ) {
-    super();
-  }
+  ) {}
 
   async create(newData: CreateLoaiDanhGiaDto, idUser: number) {
-    const syllabus = await this.syllabusService.findOne(newData.idSyllabus);
-    this.isOwner(syllabus.createdBy, idUser);
+    await this.syllabusService.findOne(newData.idSyllabus);
+
     if (await this.isExistV2(null, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
 
     const loaiDanhGia = await this.createEntity(new LoaiDanhGiaEntity(), newData);
@@ -79,7 +70,7 @@ export class LoaiDanhGiaService extends BaseService {
   }
 
   async findOne(id: number) {
-    let result: LoaiDanhGiaEntity;
+    let result: any;
     try {
       result = await this.loaiDanhGiaRepository
         .createQueryBuilder('ldg')
@@ -108,12 +99,9 @@ export class LoaiDanhGiaService extends BaseService {
 
   async update(id: number, newData: UpdateLoaiDanhGiaDto, idUser: number) {
     const oldData = await this.findOne(id);
-    this.isOwner(oldData.createdBy, idUser);
+
     const { idSyllabus } = newData;
-    if (idSyllabus) {
-      const syllabus = await this.syllabusService.findOne(idSyllabus);
-      this.isOwner(syllabus.createdBy, idUser);
-    }
+    if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
 
     if (await this.isExistV2(oldData, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
 
@@ -134,7 +122,6 @@ export class LoaiDanhGiaService extends BaseService {
   async remove(id: number, idUser: number) {
     const result = await this.loaiDanhGiaRepository.findOne(id, { where: { isDeleted: false } });
     if (!result) throw new NotFoundException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_ID_NOT_FOUND);
-    this.isOwner(result.createdBy, idUser);
     try {
       return await this.loaiDanhGiaRepository.save({
         ...result,
