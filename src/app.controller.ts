@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { generateTemplate } from 'utils/templateCTDT/templateCTDT';
 import { AppService } from './app.service';
 
@@ -9,5 +9,14 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
+  }
+  @Get('search')
+  async search(@Query() query) {
+    try {
+      return await this.appService.search(query);
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
   }
 }
