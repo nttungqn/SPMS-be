@@ -4,13 +4,17 @@ import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swa
 import { FilterSoKhopNganhDaoTao } from './dto/filter-so-khop.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RowSoKhopNganhDaoTao } from './dto/row-so-khop.dto';
+import { RolesGuard } from 'guards/roles.guard';
+import { Roles } from 'guards/roles.decorator';
+import { Role } from 'guards/roles.enum';
 
 @ApiTags('so-khop')
 @Controller('so-khop')
 export class SoKhopController {
   constructor(private readonly soKhopService: SoKhopService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin so khớp môn học của 1 ngành đào tạo trong 2 năm' })
   @ApiOkResponse({ description: 'OK', type: [RowSoKhopNganhDaoTao] })

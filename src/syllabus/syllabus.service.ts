@@ -7,16 +7,19 @@ import { HeDaotaoService } from 'he-dao-tao/he-dao-tao.service';
 import { Not, OrderByCondition, Repository } from 'typeorm';
 import { GetSyllabusFilterDto } from './dto/filter-syllabus.dto';
 import { Syllabus } from './entity/syllabus.entity';
+import { BaseService } from 'guards/base-service.dto';
 
 @Injectable()
-export class SyllabusService {
+export class SyllabusService extends BaseService {
   constructor(
     @InjectRepository(Syllabus)
     private syllabusRepository: Repository<Syllabus>,
     private readonly shoolYearService: NamHocService,
     private readonly typeOfEduService: HeDaotaoService,
     private readonly subjectService: MonHocService
-  ) {}
+  ) {
+    super();
+  }
 
   async create(createSyllabus: Syllabus): Promise<Syllabus> {
     if (await this.isExist(createSyllabus)) {
@@ -85,6 +88,7 @@ export class SyllabusService {
 
   async update(id: number, updateSyllabus: Syllabus) {
     const sylabus = await this.syllabusRepository.findOne(id, { where: { isDeleted: false } });
+    this.isOwner(sylabus.createdBy, updateSyllabus.updatedBy);
     const { namHoc, heDaoTao, monHoc } = updateSyllabus;
     if (namHoc) {
       await this.shoolYearService.findById(namHoc);
@@ -112,6 +116,7 @@ export class SyllabusService {
 
   async remove(id: number, idUser: number) {
     const found = await this.findOne(id);
+    this.isOwner(found.createdBy, idUser);
     try {
       return await this.syllabusRepository.save({ ...found, updateBy: idUser, updatedAt: new Date(), isDeleted: true });
     } catch (error) {
