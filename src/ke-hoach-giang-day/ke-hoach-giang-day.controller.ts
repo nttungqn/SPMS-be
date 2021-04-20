@@ -29,17 +29,13 @@ import { KeHoachGiangDayService } from './ke-hoach-giang-day.service';
 import * as lodash from 'lodash';
 import { KEHOACHGIANGDAY_MESSAGE } from 'constant/constant';
 import { KeHoachGiangDayDto, KeHoachGiangDayResponseDto } from './interfaces/keHoachGiangDay.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
-import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('ke-hoach-giang-day')
 @Controller('ke-hoach-giang-day')
 export class KeHoachGiangDayController {
   constructor(private readonly keHoachGiangDayService: KeHoachGiangDayService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin kế hoạch giảng dạy' })
   @ApiOkResponse({ description: 'OK', type: KeHoachGiangDayResponseDto })
@@ -49,8 +45,7 @@ export class KeHoachGiangDayController {
     return await this.keHoachGiangDayService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin chi tiết của 1 kế hoạch giảng dạy' })
   @ApiOkResponse({ description: 'OK', type: KeHoachGiangDayDto })
@@ -61,8 +56,7 @@ export class KeHoachGiangDayController {
     return await this.keHoachGiangDayService.findById(Number(id));
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiCreatedResponse({ description: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED })
@@ -87,8 +81,7 @@ export class KeHoachGiangDayController {
       .json({ message: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY });
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Put(':id')
   @ApiOkResponse({ description: KEHOACHGIANGDAY_MESSAGE.UPDATE_KEHOACHGIANGDAY_SUCCESSFULLY })
@@ -113,8 +106,7 @@ export class KeHoachGiangDayController {
     return res.status(HttpStatus.OK).json({ message: KEHOACHGIANGDAY_MESSAGE.UPDATE_KEHOACHGIANGDAY_SUCCESSFULLY });
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @Delete(':id')
   @ApiOkResponse({ description: KEHOACHGIANGDAY_MESSAGE.DELETE_KEHOACHGIANGDAY_SUCCESSFULLY })

@@ -31,17 +31,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { NAMHOC_MESSAGE } from 'constant/constant';
 import { FindAllNamHocResponse } from './Responses/find-all-nam-hoc.response';
 import { NamHocResponse } from './Responses/nam-hoc.respones';
-import { RolesGuard } from 'guards/roles.guard';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 
 @ApiTags('nam-hoc')
 @Controller('nam-hoc')
 export class NamHocController {
   constructor(private readonly schoolYearService: NamHocService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới một năm học' })
   @ApiCreatedResponse({ description: NAMHOC_MESSAGE.CREATE_NAMHOC_SUCCESSFULLY })
@@ -55,8 +51,7 @@ export class NamHocController {
     return new HttpException(NAMHOC_MESSAGE.CREATE_NAMHOC_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các năm học' })
   @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
@@ -66,8 +61,7 @@ export class NamHocController {
     return this.schoolYearService.findAll();
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin một năm học' })
   @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
@@ -78,8 +72,7 @@ export class NamHocController {
     return this.schoolYearService.findById(id);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một năm học' })
   @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
@@ -93,8 +86,7 @@ export class NamHocController {
     return new HttpException(NAMHOC_MESSAGE.UPDATE_NAMHOC_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một năm học' })
   @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })

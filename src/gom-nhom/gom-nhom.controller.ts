@@ -28,17 +28,13 @@ import { DeleteMultipleRows, FilterGomNhom } from './dto/filter-gom-nhom';
 import { GOMNHOM_MESSAGE } from 'constant/constant';
 import { FindAllGomNhomDtoResponse } from './dto/gom-nhom-response';
 import { GomNhomEntity } from './entity/gom-nhom.entity';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
-import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('gom-nhom')
 @Controller('gom-nhom')
 export class GomNhomController {
   constructor(private readonly gomNhomService: GomNhomService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách gom nhom' })
   @ApiUnauthorizedResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_NOT_AUTHORIZED })
@@ -48,8 +44,7 @@ export class GomNhomController {
     return await this.gomNhomService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy chi tiết gom nhóm' })
   @ApiNotFoundResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND })
@@ -60,8 +55,7 @@ export class GomNhomController {
     return await this.gomNhomService.findById(Number(id));
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo gom nhóm' })
   @ApiUnauthorizedResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_NOT_AUTHORIZED })
@@ -77,8 +71,7 @@ export class GomNhomController {
     });
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật gom nhóm' })
   @ApiNotFoundResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND })
@@ -95,8 +88,7 @@ export class GomNhomController {
     return new HttpException(GOMNHOM_MESSAGE.UPDATE_GOMNHOM_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa gom nhóm' })
   @ApiNotFoundResponse({ description: GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND })

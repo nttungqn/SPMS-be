@@ -30,17 +30,13 @@ import { FilterChiTietKeHoach } from './dto/filter-chi-tiet-ke-hoach.dto';
 import { CHITIETKEHOACH_MESSAGE } from 'constant/constant';
 import { FindAllChiTietKeHoachDtoResponse } from './dto/chi-tiet-ke-hoach.dto.response';
 import { ChiTietKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
-import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('chi-tiet-ke-hoach')
 @Controller('chi-tiet-ke-hoach')
 export class ChiTietKeHoachController {
   constructor(private readonly chiTietKeHoachService: ChiTietKeHoachService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các chi tiết kế hoạch' })
   @ApiUnauthorizedResponse({ description: CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_NOT_AUTHORIZED })
@@ -50,8 +46,7 @@ export class ChiTietKeHoachController {
     return this.chiTietKeHoachService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy chi tiết kế hoạch' })
   @ApiUnauthorizedResponse({ description: CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_NOT_AUTHORIZED })
@@ -61,8 +56,7 @@ export class ChiTietKeHoachController {
     return this.chiTietKeHoachService.findOne(id);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo một chi tiết kế hoạch' })
   @ApiUnauthorizedResponse({ description: CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_NOT_AUTHORIZED })
@@ -79,8 +73,7 @@ export class ChiTietKeHoachController {
     });
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật một chi tiết kế hoạch' })
   @ApiUnauthorizedResponse({ description: CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_NOT_AUTHORIZED })
@@ -101,8 +94,7 @@ export class ChiTietKeHoachController {
     return new HttpException(CHITIETKEHOACH_MESSAGE.UPDATE_CHITIETKEHOACH_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một chi tiết kế hoạch' })
   @ApiUnauthorizedResponse({ description: CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_NOT_AUTHORIZED })

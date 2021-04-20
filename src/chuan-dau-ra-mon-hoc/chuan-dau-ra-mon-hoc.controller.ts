@@ -25,9 +25,6 @@ import {
 } from '@nestjs/swagger';
 import { GetUser } from 'auth/user.decorator';
 import { CHUANDAURAMONHOC_MESSAGE } from 'constant/constant';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
-import { RolesGuard } from 'guards/roles.guard';
 import { UsersEntity } from 'users/entity/user.entity';
 import { ChuanDauRaMonHocService } from './chuan-dau-ra-mon-hoc.service';
 import { CreateChuanDauRaMonHocDto } from './dto/create-chuan-dau-ra-mon-hoc.dto';
@@ -41,8 +38,7 @@ import { FilterChuanDauRaMonHocResponse } from './responses/filter-chuan-dau-ra-
 export class ChuanDauRaMonHocController {
   constructor(private readonly chuanDauRaMonHocService: ChuanDauRaMonHocService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin các chuẩn đầu ra môn học' })
   @ApiUnauthorizedResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_NOT_AUTHORIZED })
@@ -52,8 +48,7 @@ export class ChuanDauRaMonHocController {
     return this.chuanDauRaMonHocService.findAll(fillter);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới chuẩn đầu ra môn học' })
   @ApiUnauthorizedResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_NOT_AUTHORIZED })
@@ -67,8 +62,7 @@ export class ChuanDauRaMonHocController {
     return new HttpException(CHUANDAURAMONHOC_MESSAGE.CREATE_CHUANDAURAMONHOC_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin chuẩn đầu ra môn học' })
   @ApiUnauthorizedResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_NOT_AUTHORIZED })
@@ -79,8 +73,7 @@ export class ChuanDauRaMonHocController {
     return this.chuanDauRaMonHocService.findOne(id);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin chuẩn đầu ra môn học' })
   @ApiUnauthorizedResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_NOT_AUTHORIZED })
@@ -98,8 +91,7 @@ export class ChuanDauRaMonHocController {
     return new HttpException(CHUANDAURAMONHOC_MESSAGE.UPDATE_CHUANDAURAMONHOC_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một chuẩn đầu ra môn hoc' })
   @ApiUnauthorizedResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_NOT_AUTHORIZED })

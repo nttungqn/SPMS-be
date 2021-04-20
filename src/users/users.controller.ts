@@ -30,18 +30,14 @@ import { FilterUser } from './dto/filter-user.dto';
 import { UsersEntity } from './entity/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteMutipleUsersDto } from './dto/delete-multiple-users.dto';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
-import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiOperation({ summary: 'Lấy danh sách các user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USER_NOT_AUTHORIZED })
   @ApiOkResponse({ type: FindAllUserDtoResponse })
@@ -50,9 +46,8 @@ export class UsersController {
     return this.usersService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiOperation({ summary: 'Lấy user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USERS_NOT_AUTHORIZED })
   @ApiNotFoundResponse({ description: USER_MESSAGE.USER_ID_NOT_FOUND })
@@ -64,9 +59,8 @@ export class UsersController {
     return user;
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiOperation({ summary: 'Cập nhật một user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USERS_NOT_AUTHORIZED })
   @ApiInternalServerErrorResponse({ description: USER_MESSAGE.UPDATE_USER_FAILED })
@@ -82,9 +76,8 @@ export class UsersController {
     return new HttpException(USER_MESSAGE.UPDATE_USER_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiOperation({ summary: 'Xóa một user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USERS_NOT_AUTHORIZED })
   @ApiInternalServerErrorResponse({ description: USER_MESSAGE.DELETE_USER_FAILED })
@@ -96,9 +89,8 @@ export class UsersController {
     return new HttpException(USER_MESSAGE.DELETE_USER_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiOperation({ summary: 'Xóa tất cả user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USERS_NOT_AUTHORIZED })
   @ApiInternalServerErrorResponse({ description: USER_MESSAGE.DELETE_USER_FAILED })
@@ -109,9 +101,8 @@ export class UsersController {
     return new HttpException(USER_MESSAGE.DELETE_ALL_USER_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiOperation({ summary: 'Xóa một số user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USER_NOT_AUTHORIZED })
   @ApiOkResponse({ description: USER_MESSAGE.DELETE_USER_SUCCESSFULLY })
