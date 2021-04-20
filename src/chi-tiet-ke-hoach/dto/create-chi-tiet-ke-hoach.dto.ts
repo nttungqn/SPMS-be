@@ -9,7 +9,6 @@ export class CreateChiTietKeHoachDto {
   @ManyToOne(() => KeHoachGiangDayEntity)
   @JoinColumn({ name: 'ID_KeHoachGiangDay' })
   @Column({ name: 'ID_KeHoachGiangDay' })
-  @IsNumberString()
   @IsNotEmpty()
   idKHGD?: number;
 
@@ -17,7 +16,6 @@ export class CreateChiTietKeHoachDto {
   @ManyToOne(() => ChiTietGomNhomEntity)
   @JoinColumn({ name: 'ID_ChiTietGomNhom' })
   @Column({ name: 'ID_ChiTietGomNhom' })
-  @IsNumberString()
   @IsNotEmpty()
   idCTGN?: number;
 

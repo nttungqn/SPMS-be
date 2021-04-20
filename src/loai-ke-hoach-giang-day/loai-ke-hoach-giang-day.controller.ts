@@ -52,7 +52,7 @@ export class LoaiKeHoachGiangDayController {
   @ApiUnauthorizedResponse({ description: LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_NOT_AUTHORIZED })
   @ApiOkResponse({ type: LoaiKeHoachGiangDayEntity })
   @Get(':id')
-  async findById(@Req() req, @Param() id: number): Promise<any> {
+  async findById(@Req() req, @Param('id') id: number): Promise<any> {
     return await this.loaiKeHoachGiangDayService.findById(Number(id));
   }
 
@@ -83,7 +83,7 @@ export class LoaiKeHoachGiangDayController {
   @Put(':id')
   async update(
     @Req() req,
-    @Param() id: number,
+    @Param('id') id: number,
     @Body() updatedData: CreateLoaiKeHoachGiangDayDto,
     @Res() res
   ): Promise<any> {
