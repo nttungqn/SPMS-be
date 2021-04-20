@@ -56,14 +56,14 @@ export class SyllabusController {
   @Post()
   async create(@Body(ValidationPipe) createSyllabusDto: CreateSyllabusDto, @Req() req): Promise<Syllabus | any> {
     const user = req.user || {};
-    await this.syllabusService.create({
+    const syllabus = await this.syllabusService.create({
       ...createSyllabusDto,
       createdBy: user?.id,
       updatedBy: user?.id,
       updatedAt: new Date(),
       createdAt: new Date()
     });
-    return new HttpException(SYLLABUS_MESSAGE.CREATE_SYLLABUS_SUCCESSFULLY, HttpStatus.CREATED);
+    return { data: syllabus, status: HttpStatus.CREATED };
   }
 
   @UseGuards(AuthGuard('jwt'))

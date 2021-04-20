@@ -15,6 +15,7 @@ export class BaseFilterDto {
 
 export class FilterMonHoc extends BaseFilterDto {
   @ApiProperty({ required: false, description: ' this field search by Ten Tieng Viet' })
+  @IsOptional()
   readonly search?: string;
 
   @ApiProperty({ required: false })
