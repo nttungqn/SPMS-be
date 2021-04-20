@@ -20,6 +20,7 @@ import {
   ApiBearerAuth,
   ApiConflictResponse,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -30,6 +31,7 @@ import { FilterChiTietKeHoach } from './dto/filter-chi-tiet-ke-hoach.dto';
 import { CHITIETKEHOACH_MESSAGE } from 'constant/constant';
 import { FindAllChiTietKeHoachDtoResponse } from './dto/chi-tiet-ke-hoach.dto.response';
 import { ChiTietKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
+import { DeleteMultipleRows } from 'gom-nhom/dto/filter-gom-nhom';
 
 @ApiTags('chi-tiet-ke-hoach')
 @Controller('chi-tiet-ke-hoach')
@@ -104,6 +106,33 @@ export class ChiTietKeHoachController {
   async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
     const user = req.user || {};
     await this.chiTietKeHoachService.remove(id, user?.id);
+    return new HttpException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_SUCCESSFULLY, HttpStatus.OK);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Xóa một số chi tiết kế hoạch' })
+  @ApiNotFoundResponse({ description: CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_ID_NOT_FOUND })
+  @ApiUnauthorizedResponse({ description: CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_NOT_AUTHORIZED })
+  @ApiInternalServerErrorResponse({ description: CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED })
+  @ApiOkResponse({ description: CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_SUCCESSFULLY })
+  @Delete('/')
+  async deleteMultipleRows(@Req() req, @Query() query: DeleteMultipleRows): Promise<any> {
+    const user = req.user || {};
+    await this.chiTietKeHoachService.deleteMultipleRows(query?.ids, user?.id);
+    return new HttpException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_SUCCESSFULLY, HttpStatus.OK);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Xóa tất cả chi tiết kế hoạch' })
+  @ApiUnauthorizedResponse({ description: CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_NOT_AUTHORIZED })
+  @ApiInternalServerErrorResponse({ description: CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED })
+  @ApiOkResponse({ description: CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_SUCCESSFULLY })
+  @Delete('/delete/all')
+  async deleteAll(@Req() req): Promise<any> {
+    const user = req.user || {};
+    await this.chiTietKeHoachService.deleteAll(user?.id);
     return new HttpException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_SUCCESSFULLY, HttpStatus.OK);
   }
 }

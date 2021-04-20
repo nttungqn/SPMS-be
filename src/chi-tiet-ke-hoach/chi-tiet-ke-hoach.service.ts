@@ -34,33 +34,49 @@ export class ChiTietKeHoachService {
   }
 
   async findAll(filter: FilterChiTietKeHoach) {
-    const { page = 0, limit = LIMIT, ...other } = filter;
-    const skip = page * limit;
-    const [results, total] = await this.chiTietKeHoachRepository
-      .createQueryBuilder('ctkhgd')
-      .leftJoinAndSelect('ctkhgd.createdBy', 'createdBy')
-      .leftJoinAndSelect('ctkhgd.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('ctkhgd.idKHGD', 'idKHGD')
-      .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN')
-      .where((qb) => {
-        qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom', `idCTGN.isDeleted = ${false}`).leftJoinAndSelect(
-          'idCTGN.monHoc',
-          'monHoc',
-          `gomNhom.isDeleted = ${false}`
-        );
-      })
-      .where({
-        isDeleted: false,
-        ...other
-      })
-      .skip(skip)
-      .take(limit)
-      .getManyAndCount();
-    return {
-      contents: results,
-      total,
-      page: Number(page)
+    const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
+    const skip = Number(page) * Number(limit);
+    const query = {
+      isDeleted: false,
+      ...otherParam
     };
+
+    let sortByTemp = sortBy;
+    if (sortByTemp != 'idKHGD.maKeHoach' && sortByTemp != 'idCTGN.id' && sortByTemp != '')
+      sortByTemp = 'ctkhgd.' + sortByTemp;
+
+    try {
+      const queryBuilder = this.chiTietKeHoachRepository
+        .createQueryBuilder('ctkhgd')
+        .leftJoinAndSelect('ctkhgd.createdBy', 'createdBy')
+        .leftJoinAndSelect('ctkhgd.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('ctkhgd.idKHGD', 'idKHGD')
+        .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN')
+        .where((qb) => {
+          qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom', `idCTGN.isDeleted = ${false}`).leftJoinAndSelect(
+            'idCTGN.monHoc',
+            'monHoc',
+            `gomNhom.isDeleted = ${false}`
+          );
+        })
+        .where(query);
+
+      if (search != '') {
+        queryBuilder.andWhere('idKHGD.maKeHoach LIKE :search OR idCTGN.id LIKE :search OR ctkhgd.ghiChu LIKE :search', {
+          search: `%${search}%`
+        });
+      }
+
+      const [results, total] = await queryBuilder
+        .orderBy(sortByTemp, sortType)
+        .skip(skip)
+        .take(limit)
+        .getManyAndCount();
+      return { contents: results, total, page: Number(page) };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 
   async findOne(id: number) {
@@ -122,5 +138,44 @@ export class ChiTietKeHoachService {
       where: query
     });
     return results;
+  }
+
+  async deleteMultipleRows(ids: string, updatedBy?: number): Promise<any> {
+    const list_id = ids
+      .trim()
+      .split(',')
+      .map((x) => +x);
+    const records = await this.chiTietKeHoachRepository
+      .createQueryBuilder('ctkh')
+      .where('ctkh.id IN (:...ids)', { ids: list_id })
+      .andWhere(`ctkh.isDeleted = ${false}`)
+      .getCount();
+    if (list_id.length != records) {
+      throw new NotFoundException(CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_ID_NOT_FOUND);
+    }
+
+    try {
+      await this.chiTietKeHoachRepository
+        .createQueryBuilder('ctkh')
+        .update(ChiTietKeHoachEntity)
+        .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
+        .andWhere('id IN (:...ids)', { ids: list_id })
+        .execute();
+    } catch (error) {
+      throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED);
+    }
+  }
+
+  async deleteAll(updatedBy?: number): Promise<any> {
+    try {
+      await this.chiTietKeHoachRepository
+        .createQueryBuilder('ctgn')
+        .update(ChiTietKeHoachEntity)
+        .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
+        .where(`isDeleted = ${false}`)
+        .execute();
+    } catch (error) {
+      throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED);
+    }
   }
 }
