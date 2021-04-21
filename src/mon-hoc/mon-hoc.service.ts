@@ -7,7 +7,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, MONHOC_MESSAGE } from 'constant/constant';
-import { Like, Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
+import { CreateMonHocDto } from './dto/create-mon-hoc.dto';
 import { MonHocEntity } from './entity/mon-hoc.entity';
 
 @Injectable()
@@ -65,9 +66,7 @@ export class MonHocService {
       throw new NotFoundException(MONHOC_MESSAGE.MONHOC_ID_NOT_FOUND);
     }
 
-    // check Ma is exist
-    const monHocByMa = await this.monHocRepository.findOne({ ma: updatedData.ma, isDeleted: false });
-    if (monHocByMa) {
+    if (await this.isExist(monhoc, updatedData)) {
       throw new ConflictException(MONHOC_MESSAGE.MONHOC_EXIST);
     }
 
@@ -170,5 +169,18 @@ export class MonHocService {
       throw new BadRequestException(`KHOA_${khoaTuyen}_MONHOC_EMPTY`);
     }
     return subjects;
+  }
+  async isExist(oldData: MonHocEntity, newData: CreateMonHocDto): Promise<boolean> {
+    if (!newData.ma) return false;
+    const ma = newData.ma ? newData.ma : oldData.ma;
+    const notID = oldData?.id ? { id: Not(Number(oldData.id)) } : {};
+    const queryByMa = { ma };
+    const query = {
+      isDeleted: false,
+      ...queryByMa,
+      ...notID
+    };
+    const result = await this.monHocRepository.findOne({ where: query });
+    return result ? true : false;
   }
 }
