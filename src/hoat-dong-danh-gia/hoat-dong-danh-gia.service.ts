@@ -2,6 +2,7 @@ import { ConflictException, Injectable, InternalServerErrorException, NotFoundEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
 import { HOATDONGDANHGIA_MESSAGE, LIMIT } from 'constant/constant';
+import { BaseService } from 'guards/base-service.dto';
 import { LoaiDanhGiaService } from 'loai-danh-gia/loai-danh-gia.service';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
@@ -11,17 +12,20 @@ import { UpdateHoatDongDanhGiaDto } from './dto/update-hoat-dong-danh-gia.dto';
 import { HoatDongDanhGiaEntity, KeyHDDG } from './entity/hoat-dong-danh-gia.entity';
 
 @Injectable()
-export class HoatDongDanhGiaService {
+export class HoatDongDanhGiaService extends BaseService {
   constructor(
     @InjectRepository(HoatDongDanhGiaEntity)
     private hoatDongDanhGiaService: Repository<HoatDongDanhGiaEntity>,
     private syllabusService: SyllabusService,
     private loaiDanhGiaService: LoaiDanhGiaService,
     private chuaDauRaMonHocService: ChuanDauRaMonHocService
-  ) {}
+  ) {
+    super();
+  }
   async create(newData: CreateHoatDongDanhGiaDto, idUser: number) {
-    await this.findOne(newData.idLoaiDanhGia);
+    const loaiDanhGia = await this.findOne(newData.idLoaiDanhGia);
     if (await this.isExistV2(null, newData)) throw new ConflictException(HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_EXIST);
+    this.isOwner(loaiDanhGia.createdBy, idUser);
     const hoatDongDanhGia = new HoatDongDanhGiaEntity();
     const { chuanDauRaMonHoc } = newData;
     if (chuanDauRaMonHoc) {
@@ -104,6 +108,12 @@ export class HoatDongDanhGiaService {
 
   async update(id: number, newData: UpdateHoatDongDanhGiaDto, idUser: number) {
     const oldData = await this.findOne(id);
+    this.isOwner(oldData.createdBy, idUser);
+    const { idLoaiDanhGia } = newData;
+    if (idLoaiDanhGia) {
+      const loaiDanhGia = await this.findOne(newData.idLoaiDanhGia);
+      this.isOwner(loaiDanhGia.createdBy, idUser);
+    }
     if (await this.isExistV2(oldData, newData))
       throw new ConflictException(HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_EXIST);
     const { chuanDauRaMonHoc } = newData;
@@ -138,6 +148,7 @@ export class HoatDongDanhGiaService {
 
   async remove(id: number, idUser: number) {
     const found = await this.findOne(id);
+    this.isOwner(found.createdBy, idUser);
     try {
       return await this.hoatDongDanhGiaService.save({
         ...found,
