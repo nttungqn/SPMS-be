@@ -34,12 +34,17 @@ import { GetUser } from 'auth/user.decorator';
 import { UsersEntity } from 'users/entity/user.entity';
 import { FilterByNganhDaoTao } from './dto/filter-by-nganh-dao-tao.dto';
 import { DeleteMultipleRows } from 'gom-nhom/dto/filter-gom-nhom';
+import { Roles } from 'guards/roles.decorator';
+import { Role } from 'guards/roles.enum';
+import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('chi-tiet-gom-nhom')
 @Controller('chi-tiet-gom-nhom')
 export class ChiTietGomNhomController {
   constructor(private readonly chiTietGomNhomService: ChiTietGomNhomService) {}
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @Get('/nganh-dao-tao/:idNganhDaotao/khoa-tuyen/:khoa')
   async getAllSubject(
     @Param('idNganhDaotao', ParseIntPipe) idNganhDaoTao: number,
@@ -49,7 +54,8 @@ export class ChiTietGomNhomController {
     return await this.chiTietGomNhomService.getAllSubjects(khoa, idNganhDaoTao, filter);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách chi tiết gom nhom' })
   @ApiUnauthorizedResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_NOT_AUTHORIZED })
@@ -59,7 +65,8 @@ export class ChiTietGomNhomController {
     return await this.chiTietGomNhomService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy chi tiết gom nhóm' })
   @ApiNotFoundResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND })
@@ -70,7 +77,8 @@ export class ChiTietGomNhomController {
     return this.chiTietGomNhomService.findById(id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo chi tiết gom nhóm' })
   @ApiUnauthorizedResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_NOT_AUTHORIZED })
@@ -82,7 +90,8 @@ export class ChiTietGomNhomController {
     return new HttpException(CHITIETGOMNHOM_MESSAGE.CREATE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật chi tiết gom nhóm' })
   @ApiNotFoundResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND })
@@ -99,7 +108,8 @@ export class ChiTietGomNhomController {
     return new HttpException(CHITIETGOMNHOM_MESSAGE.UPDATE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa chi tiết gom nhóm' })
   @ApiNotFoundResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND })
@@ -113,7 +123,8 @@ export class ChiTietGomNhomController {
     return new HttpException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một số gom nhóm' })
   @ApiNotFoundResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND })
@@ -127,7 +138,8 @@ export class ChiTietGomNhomController {
     return new HttpException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa tất cả gom nhóm' })
   @ApiUnauthorizedResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_NOT_AUTHORIZED })

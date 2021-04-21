@@ -33,13 +33,17 @@ import { AuthGuard } from '@nestjs/passport';
 import { LOAIKHOIKIENTHUC_MESSAGE } from 'constant/constant';
 import { FindAllLoaiKhoiKienThuc } from './Responses/find-all-loai-khoi-kien-thuc.response';
 import { LoaiKhoiKienThucDetailResponse } from './Responses/loai-khoi-kien-thuc.detail.response';
+import { Roles } from 'guards/roles.decorator';
+import { Role } from 'guards/roles.enum';
+import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('loai-khoi-kien-thuc')
 @Controller('loai-khoi-kien-thuc')
 export class LoaiKhoiKienThucController {
   constructor(private readonly typeOfKnowledgeBlockService: LoaiKhoiKienThucService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các loại khối kiến thức' })
   @ApiUnauthorizedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_NOT_AUTHORIZED })
@@ -49,7 +53,8 @@ export class LoaiKhoiKienThucController {
     return this.typeOfKnowledgeBlockService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin một loại khối kiến thức' })
   @ApiUnauthorizedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_NOT_AUTHORIZED })
@@ -60,7 +65,8 @@ export class LoaiKhoiKienThucController {
     return this.typeOfKnowledgeBlockService.findDetail(id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới một loại khối kiến thức' })
   @ApiCreatedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.CREATE_LOAIKHOIKIENTHUC_SUCCESSFULLY })
@@ -78,7 +84,8 @@ export class LoaiKhoiKienThucController {
     return new HttpException(LOAIKHOIKIENTHUC_MESSAGE.CREATE_LOAIKHOIKIENTHUC_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một loại khối kiến thức' })
   @ApiUnauthorizedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_NOT_AUTHORIZED })
@@ -97,7 +104,8 @@ export class LoaiKhoiKienThucController {
     return new HttpException(LOAIKHOIKIENTHUC_MESSAGE.UPDATE_LOAIKHOIKIENTHUC_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một loại khối kiến thức' })
   @ApiUnauthorizedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_NOT_AUTHORIZED })
