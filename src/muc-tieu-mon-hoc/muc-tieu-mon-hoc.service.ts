@@ -2,6 +2,7 @@ import { ConflictException, Injectable, InternalServerErrorException, NotFoundEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaNganhDaoTaoService } from 'chuan-dau-ra-nganh-dao-tao/chuan-dau-ra-nganh-dao-tao.service';
 import { LIMIT, MUCTIEUMONHOC_MESSAGE } from 'constant/constant';
+import { BaseService } from 'guards/base-service.dto';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
 import { CreateMucTieuMonHocDto } from './dto/create-muc-tieu-mon-hoc.dto';
@@ -10,16 +11,20 @@ import { UpdateMucTieuMonHocDto } from './dto/update-muc-tieu-mon-hoc.dto';
 import { MucTieuMonHocEntity } from './entity/muc-tieu-mon-hoc.entity';
 
 @Injectable()
-export class MucTieuMonHocService {
+export class MucTieuMonHocService extends BaseService {
   constructor(
     @InjectRepository(MucTieuMonHocEntity)
     private mucTieuMonHocEntityRepository: Repository<MucTieuMonHocEntity>,
     private syllabusService: SyllabusService,
     private chuanDauRaNganhDaoTaoService: ChuanDauRaNganhDaoTaoService
-  ) {}
+  ) {
+    super();
+  }
 
   async create(newData: CreateMucTieuMonHocDto, idUser: number) {
-    await this.syllabusService.findOne(newData.syllabus);
+    const syllabus = await this.syllabusService.findOne(newData.syllabus);
+
+    this.isOwner(syllabus.createdBy, idUser);
 
     const mucTieuMonHoc = new MucTieuMonHocEntity();
     mucTieuMonHoc.syllabus = newData.syllabus;
@@ -112,6 +117,7 @@ export class MucTieuMonHocService {
 
   async update(id: number, newData: UpdateMucTieuMonHocDto, idUser: number) {
     const oldData = await this.mucTieuMonHocEntityRepository.findOne(id, { where: { isDeleted: false } });
+    this.isOwner(oldData.createdBy, idUser);
     const { chuanDauRaCDIO } = newData;
     if (await this.isExistV2(oldData, newData)) throw new ConflictException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_EXIST);
     if (chuanDauRaCDIO) {
@@ -142,6 +148,7 @@ export class MucTieuMonHocService {
   async remove(id: number, idUser: number) {
     const result = await this.mucTieuMonHocEntityRepository.findOne(id, { where: { isDeleted: false } });
     if (!result) throw new NotFoundException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_ID_NOT_FOUND);
+    this.isOwner(result.createdBy, idUser);
     try {
       return await this.mucTieuMonHocEntityRepository.save({
         ...result,

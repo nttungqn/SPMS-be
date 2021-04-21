@@ -29,12 +29,16 @@ import { CreateCTNganhDaoTaoDto } from './dto/createCTNganhDaoTao.dto';
 import { FilterCTNganhDaoTaoDto } from './dto/filterCTNganhDaoTao.dto';
 import * as lodash from 'lodash';
 import { ChiTietNganhDaoTaoDto, ChiTietNganhDaoTaoResponseDto } from './interfaces/chiTietNganhDaoTao.response';
+import { Roles } from 'guards/roles.decorator';
+import { Role } from 'guards/roles.enum';
+import { RolesGuard } from 'guards/roles.guard';
 @ApiTags('chi-tiet-nganh-dao-tao')
 @Controller('chi-tiet-nganh-dao-tao')
 export class ChiTietNganhDaoTaoController {
   constructor(private readonly chiTietNganhDaoTao: ChiTietNganhDaoTaoService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin của chi tiết ngành đào tạo' })
   @ApiOkResponse({ description: 'OK', type: ChiTietNganhDaoTaoResponseDto })
@@ -44,7 +48,8 @@ export class ChiTietNganhDaoTaoController {
     return await this.chiTietNganhDaoTao.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin của chi tiết ngành đào tạo theo id' })
   @ApiOkResponse({ description: 'OK', type: ChiTietNganhDaoTaoDto })
@@ -55,7 +60,8 @@ export class ChiTietNganhDaoTaoController {
     return await this.chiTietNganhDaoTao.findById(Number(id));
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiCreatedResponse({ description: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_FAILED })
@@ -78,7 +84,8 @@ export class ChiTietNganhDaoTaoController {
     return res.status(HttpStatus.CREATED).json({ message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY });
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: CTNGANHDAOTAO_MESSAGE.UPDATE_CTNGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CTNGANHDAOTAO_MESSAGE.UPDATE_CTNGANHDAOTAO_FAILED })
@@ -103,7 +110,8 @@ export class ChiTietNganhDaoTaoController {
     return res.status(HttpStatus.OK).json({ message: CTNGANHDAOTAO_MESSAGE.UPDATE_CTNGANHDAOTAO_SUCCESSFULLY });
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_FAILED })

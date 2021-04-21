@@ -2,6 +2,7 @@ import { ConflictException, Injectable, InternalServerErrorException, NotFoundEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
 import { LIMIT, LOAIDANHGIA_MESSAGE } from 'constant/constant';
+import { BaseService } from 'guards/base-service.dto';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
 import { CreateLoaiDanhGiaDto } from './dto/create-loai-danh-gia.dto';
@@ -10,16 +11,19 @@ import { UpdateLoaiDanhGiaDto } from './dto/update-loai-danh-gia.dto';
 import { KEY_LDG, LoaiDanhGiaEntity } from './entity/loai-danh-gia.entity';
 
 @Injectable()
-export class LoaiDanhGiaService {
+export class LoaiDanhGiaService extends BaseService {
   constructor(
     @InjectRepository(LoaiDanhGiaEntity)
     private loaiDanhGiaRepository: Repository<LoaiDanhGiaEntity>,
     private syllabusService: SyllabusService,
     private chuanDauRaMonHocService: ChuanDauRaMonHocService
-  ) {}
+  ) {
+    super();
+  }
 
   async create(newData: CreateLoaiDanhGiaDto, idUser: number) {
-    await this.syllabusService.findOne(newData.idSyllabus);
+    const syllabus = await this.syllabusService.findOne(newData.idSyllabus);
+    this.isOwner(syllabus.createdBy, idUser);
 
     if (await this.isExistV2(null, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
 
@@ -99,9 +103,12 @@ export class LoaiDanhGiaService {
 
   async update(id: number, newData: UpdateLoaiDanhGiaDto, idUser: number) {
     const oldData = await this.findOne(id);
-
+    this.isOwner(oldData.createdBy, idUser);
     const { idSyllabus } = newData;
-    if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
+    if (idSyllabus) {
+      const syllabus = await this.syllabusService.findOne(idSyllabus);
+      this.isOwner(syllabus.createdBy, idUser);
+    }
 
     if (await this.isExistV2(oldData, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
 
@@ -122,6 +129,7 @@ export class LoaiDanhGiaService {
   async remove(id: number, idUser: number) {
     const result = await this.loaiDanhGiaRepository.findOne(id, { where: { isDeleted: false } });
     if (!result) throw new NotFoundException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_ID_NOT_FOUND);
+    this.isOwner(result.createdBy, idUser);
     try {
       return await this.loaiDanhGiaRepository.save({
         ...result,
