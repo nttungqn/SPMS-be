@@ -63,7 +63,7 @@ export class ChuDeService extends BaseService {
     return { contents: results, total, page: Number(page) };
   }
 
-  async findOne(id: number): Promise<ChuDeEntity | any> {
+  async findOne(id: number): Promise<ChuDeEntity> {
     const query = await this.chuDeRepository
       .createQueryBuilder('cd')
       .leftJoinAndSelect('cd.createdBy', 'createdBy')
@@ -99,7 +99,7 @@ export class ChuDeService extends BaseService {
     if (await this.isExist(null, newData)) {
       throw new ConflictException(CHUDE_MESSAGE.CHUDE_EXIST);
     }
-    const chuDe = await this.createEntity(new ChuDeEntity(), newData);
+    const chuDe = await this.createEntity(new ChuDeEntity(), newData, newData.idSyllabus);
 
     try {
       const saved = await this.chuDeRepository.save({
@@ -118,14 +118,20 @@ export class ChuDeService extends BaseService {
   async update(id: number, newData: UpdateChuDeDTO, idUser: number): Promise<any> {
     const oldData = await this.findOne(id);
     this.isOwner(oldData.createdBy, idUser);
-
-    if (newData.idSyllabus) await this.syllabusService.findOne(newData.idSyllabus);
+    let { idSyllabus } = newData;
+    if (idSyllabus) {
+      await this.syllabusService.findOne(newData.idSyllabus);
+    } else {
+      const syllabys: any = oldData.idSyllabus;
+      const { id } = syllabys;
+      idSyllabus = id;
+    }
     if (newData.idLKHGD) await this.loaiKeHoachGiangDayService.findById(newData.idLKHGD);
 
     if (await this.isExist(oldData, newData)) {
       throw new ConflictException(CHUDE_MESSAGE.CHUDE_EXIST);
     }
-    const chuDe = await this.createEntity(oldData, newData);
+    const chuDe = await this.createEntity(oldData, newData, idSyllabus);
     try {
       return await this.chuDeRepository.save({
         ...chuDe,
@@ -170,35 +176,38 @@ export class ChuDeService extends BaseService {
     const result = await this.chuDeRepository.findOne({ where: query });
     return result ? true : false;
   }
-  private async createEntity(chuDe: ChuDeEntity, newData: CreateChuDeDto): Promise<ChuDeEntity> {
+  private async createEntity(chuDe: ChuDeEntity, newData: CreateChuDeDto, idSyllabus: number): Promise<ChuDeEntity> {
     const { chuanDauRaMonHoc, hoatDongDanhGia, hoatDongDayHoc } = newData;
     const dataUpdate = { chuanDauRaMonHoc, hoatDongDanhGia, hoatDongDayHoc };
-    for (const key in dataUpdate) {
-      if (Object.prototype.hasOwnProperty.call(dataUpdate, key)) {
-        if (!chuDe[key]) {
-          chuDe[key] = [];
-        } else if (dataUpdate[key]) {
-          chuDe[key] = chuDe[key].filter((e) => {
-            // Giữ lại những chuanDauRa có trong phần update
-            return dataUpdate[key].indexOf(e.id.toString()) >= 0;
-          });
-        }
-        const uniqueId = []; // Giữ những chuanDaura đã được push vào loaiDanhGia
-        const arrId = chuDe[key].map((e: any) => e.id.toString()); //Tạo ra 1 array chuanDauRa
-        //chưa xong
-        if (dataUpdate[key]) {
-          for (const idCDRMH of dataUpdate[key]) {
-            if (uniqueId.indexOf(idCDRMH) === -1) {
-              uniqueId.push(idCDRMH);
-              if (arrId.indexOf(idCDRMH) === -1) {
-                const service = this.getService(key);
-                const result = await service.findOne(Number(idCDRMH));
-                chuDe[key].push(result);
+    for (const key in keyService) {
+      if (!chuDe[key]) {
+        chuDe[key] = [];
+      } else if (dataUpdate[key]) {
+        chuDe[key] = chuDe[key].filter((e) => {
+          // Giữ lại những chuanDauRa có trong phần update
+          return dataUpdate[key].indexOf(e.id.toString()) >= 0;
+        });
+      }
+      const uniqueId = []; // Giữ những chuanDaura đã được push vào loaiDanhGia
+      const arrId = chuDe[key].map((e: any) => e.id.toString()); //Tạo ra 1 array chuanDauRa
+
+      if (dataUpdate[key]) {
+        for (const idData of dataUpdate[key]) {
+          if (uniqueId.indexOf(idData) === -1) {
+            uniqueId.push(idData);
+            if (arrId.indexOf(idData) === -1) {
+              const service = this.getService(keyService[key]);
+              let result;
+              if (keyService[key] === keyService.hoatDongDayHoc) {
+                result = await service.findOne(Number(idData));
+              } else {
+                result = await service.isInSyllabus(Number(idData), idSyllabus);
               }
+              chuDe[key].push(result);
             }
           }
-          delete newData[key];
         }
+        delete newData[key];
       }
     }
     for (const key in newData) {
@@ -208,14 +217,19 @@ export class ChuDeService extends BaseService {
     }
     return chuDe;
   }
-  private getService(key: string): ChuanDauRaMonHocService | HoatDongDanhGiaService | HoatDongDayHocService {
+  private getService(key: number): ChuanDauRaMonHocService | HoatDongDanhGiaService | HoatDongDayHocService {
     switch (key) {
-      case 'chuanDauRaMonHoc':
+      case keyService.chuanDauRaMonHoc:
         return this.chuanDauRaMonHocService;
-      case 'hoatDongDanhGia':
+      case keyService.hoatDongDanhGia:
         return this.hoatDongDanhGiaService;
-      case 'hoatDongDayHoc':
+      case keyService.hoatDongDayHoc:
         return this.hoatDongDayHocService;
     }
   }
 }
+const keyService = {
+  chuanDauRaMonHoc: 1,
+  hoatDongDanhGia: 2,
+  hoatDongDayHoc: 3
+};

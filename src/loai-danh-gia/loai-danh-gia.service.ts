@@ -27,7 +27,7 @@ export class LoaiDanhGiaService extends BaseService {
 
     if (await this.isExistV2(null, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
 
-    const loaiDanhGia = await this.createEntity(new LoaiDanhGiaEntity(), newData);
+    const loaiDanhGia = await this.createEntity(new LoaiDanhGiaEntity(), newData, newData.idSyllabus);
 
     try {
       const result = await this.loaiDanhGiaRepository.save({
@@ -74,7 +74,7 @@ export class LoaiDanhGiaService extends BaseService {
   }
 
   async findOne(id: number) {
-    let result: any;
+    let result: LoaiDanhGiaEntity;
     try {
       result = await this.loaiDanhGiaRepository
         .createQueryBuilder('ldg')
@@ -104,15 +104,19 @@ export class LoaiDanhGiaService extends BaseService {
   async update(id: number, newData: UpdateLoaiDanhGiaDto, idUser: number) {
     const oldData = await this.findOne(id);
     this.isOwner(oldData.createdBy, idUser);
-    const { idSyllabus } = newData;
+    let { idSyllabus } = newData;
     if (idSyllabus) {
       const syllabus = await this.syllabusService.findOne(idSyllabus);
       this.isOwner(syllabus.createdBy, idUser);
+    } else {
+      const syllabus: any = oldData.syllabus;
+      const { id } = syllabus;
+      idSyllabus = id;
     }
 
     if (await this.isExistV2(oldData, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
 
-    const loaiDanhGia = await this.createEntity(oldData, newData);
+    const loaiDanhGia = await this.createEntity(oldData, newData, idSyllabus);
 
     try {
       const result = await this.loaiDanhGiaRepository.save({
@@ -171,7 +175,11 @@ export class LoaiDanhGiaService extends BaseService {
     return result ? true : false;
   }
 
-  async createEntity(loaiDanhGia: LoaiDanhGiaEntity, newData: CreateLoaiDanhGiaDto): Promise<LoaiDanhGiaEntity> {
+  async createEntity(
+    loaiDanhGia: LoaiDanhGiaEntity,
+    newData: CreateLoaiDanhGiaDto,
+    idSyllabus: number
+  ): Promise<LoaiDanhGiaEntity> {
     const { chuanDauRaMonHoc } = newData;
     if (!loaiDanhGia.chuanDauRaMonHoc) {
       loaiDanhGia.chuanDauRaMonHoc = [];
@@ -188,7 +196,7 @@ export class LoaiDanhGiaService extends BaseService {
         if (uniqueId.indexOf(idCDRMH) === -1) {
           uniqueId.push(idCDRMH);
           if (arrChuanDauRaMonHoc.indexOf(idCDRMH) === -1) {
-            const result = await this.chuanDauRaMonHocService.findOne(Number(idCDRMH));
+            const result = await this.chuanDauRaMonHocService.isInSyllabus(Number(idCDRMH), idSyllabus);
             loaiDanhGia.chuanDauRaMonHoc.push(result);
           }
         }
