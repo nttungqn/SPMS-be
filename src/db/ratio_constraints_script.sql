@@ -63,12 +63,14 @@ DROP procedure IF EXISTS procedure_check_ration_before_insert;
 delimiter $$
 create procedure procedure_check_ration_before_insert(in newIDSyllabus int, in newTyLe double)
 begin
-	declare s double;
-    select sum(ldg.tyLe) into s
+	declare s int;
+    declare newTyLeInt int;
+    set newTyLeInt = newTyLe * 100;
+    select sum(ldg.tyLe * 100) into s
     from LoaiDanhGia ldg
     where ldg.idSyllabus = newIDSyllabus and ldg.isDeleted = false;
     
-    if(s + newTyLe > 1.0) then
+    if(s + newTyLeInt > 100) then
 		signal sqlstate '45000'
 			set message_text = 'Sum of ration not greater than 100%';
     end if;
@@ -80,12 +82,14 @@ DROP procedure IF EXISTS procedure_check_ration_before_update;
 delimiter $$
 create procedure procedure_check_ration_before_update(in newId int, in newIDSyllabus int, in newTyLe double)
 begin
-	declare s double;
-    select sum(ldg.tyLe) into s
+	declare s int;
+    declare newTyLeInt int;
+    set newTyLeInt = newTyLe * 100;
+    select sum(ldg.tyLe * 100) into s
     from LoaiDanhGia ldg
     where ldg.idSyllabus = newIDSyllabus and ldg.id != newId and ldg.isDeleted = false;
-    
-    if(s + newTyLe > 1.0) then
+
+    if(s + newTyLeInt > 100) then
 		signal sqlstate '45000'
 			set message_text = 'Sum of ration not greater than 100%';
     end if;
