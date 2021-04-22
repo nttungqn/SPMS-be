@@ -18,8 +18,7 @@ export class ChuanDauRaNganhDaoTaoEntity {
 
   @ApiProperty()
   @IsInt()
-  @OneToOne(() => ChuanDauRaNganhDaoTaoEntity)
-  @JoinColumn({ name: 'parentId' })
+  @Column({ name: 'parentId' })
   parent: number;
 
   @ApiProperty()

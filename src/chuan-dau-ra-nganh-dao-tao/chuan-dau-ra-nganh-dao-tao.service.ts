@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CHUANDAURA_NGANHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm/repository/Repository';
 import { CreateChuanDauRaNganhDaoTaoDto } from './dto/createChuanDauRaNDT.dto';
 import { ChuanDauRaNganhDaoTaoEntity } from './entity/chuanDauRaNganhDaoTao.entity';
+const LTT = require('list-to-tree');
 
 @Injectable()
 export class ChuanDauRaNganhDaoTaoService {
@@ -18,7 +19,7 @@ export class ChuanDauRaNganhDaoTaoService {
       ...rest
     };
     const results = await this.chuanDauRaNDTRepository.find({
-      relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy'],
+      relations: ['nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy'],
       skip,
       take: limit,
       where: query
@@ -33,7 +34,7 @@ export class ChuanDauRaNganhDaoTaoService {
   async findById(id: number): Promise<any> {
     const result = await this.chuanDauRaNDTRepository.findOne({
       where: { id, isDeleted: false },
-      relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
+      relations: ['nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
     });
     if (!result) {
       throw new HttpException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -100,4 +101,42 @@ export class ChuanDauRaNganhDaoTaoService {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  async getAllList(id: number): Promise<any> {
+    try {
+      const results = await this.chuanDauRaNDTRepository
+        .createQueryBuilder('c')
+        .leftJoinAndSelect('c.chuanDauRa', 'chuanDauRa')
+        .where(`c.nganhDaoTao = ${id}`)
+        .getMany();
+      const ltt = new LTT(results, {
+        key_id: 'id',
+        key_parent: 'parent'
+      });
+      const tree = ltt.GetTree();
+      return tree;
+    } catch (error) {
+      throw new InternalServerErrorException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_EMPTY);
+    }
+  }
 }
+
+// function groupBy(arr, fields) {
+//   let field = fields[0]               // one field at a time
+//   if (!field) return arr
+//   let retArr = Object.values(
+//      arr.reduce((obj, current) => {
+//         if (!obj[current[field]]) obj[current[field]] = {field: field, value: current[field],rows: []}
+//         obj[current[field]].rows.push(current)
+//         return obj
+//      }, {}))
+
+//   // recurse for each child's rows if there are remaining fields
+//   if (fields.length){
+//       retArr.forEach(obj => {
+//         obj.count = obj.rows.length
+//         obj.rows = groupBy(obj.rows, fields.slice(1))
+//       })
+//   }
+//   return retArr
+// }
