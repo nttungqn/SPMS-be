@@ -11,4 +11,7 @@ export class UpdateProfileDto {
   @ApiProperty({ required: false })
   @IsString()
   readonly username: string;
+  @ApiProperty({ required: false })
+  @IsString()
+  readonly avatar: string;
 }

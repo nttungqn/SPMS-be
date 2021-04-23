@@ -32,4 +32,8 @@ export class UsersEntity extends UpdateUserDto {
   @ApiProperty()
   @Column({ name: 'tokenVerifyEmail' })
   tokenVerifyEmail: string;
+
+  @ApiProperty()
+  @Column({ name: 'avatar' })
+  avatar: string;
 }
