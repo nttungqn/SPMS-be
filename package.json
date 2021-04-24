@@ -97,7 +97,6 @@
   },
   "lint-staged": {
     "src/**/*.ts": [
-      "npm run format",
       "npm run lint:fix"
     ]
   },
