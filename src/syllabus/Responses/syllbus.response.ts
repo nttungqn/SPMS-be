@@ -17,6 +17,15 @@ export class SyllabusResponse {
   @ApiProperty({ type: NamHocResponse })
   namHoc?: NamHocResponse;
 
+  @ApiProperty()
+  taiNguyen?: string;
+
+  @ApiProperty()
+  quiDinh?: string;
+
+  @ApiProperty()
+  moTa?: string;
+
   @ApiProperty({ type: UserResponse })
   createdBy?: UserResponse;
 
