@@ -130,8 +130,6 @@ export class MonHocService {
           soTietThucHanh,
           soTietTuHoc,
           tenTiengAnh: '',
-          moTa: '',
-          taiNguyen: '',
           createdBy: user?.id,
           updatedBy: user?.id
         });
