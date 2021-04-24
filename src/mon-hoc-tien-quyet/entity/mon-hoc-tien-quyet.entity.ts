@@ -30,7 +30,7 @@ export class MonHocTienQuyetEntity {
   @ApiProperty()
   @Column({ name: 'LoaiDK' })
   @IsNotEmpty()
-  @IsIn([1, 2])
+  @IsIn([1, 2, 3])
   loaiMonHoc: LoaiMonHoc;
 
   @Column({ name: 'createdAt' })
