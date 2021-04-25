@@ -92,7 +92,6 @@ export class SyllabusService extends BaseService {
       .andWhere('sy.isDeleted = false')
       .andWhere('sy.id = :id', { id });
     const found = await query.getOne();
-    console.log(query.getSql());
     if (!found) {
       throw new NotFoundException(SYLLABUS_MESSAGE.SYLLABUS_ID_NOT_FOUND);
     }
