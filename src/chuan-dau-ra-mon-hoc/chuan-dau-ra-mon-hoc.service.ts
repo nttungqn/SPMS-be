@@ -1,4 +1,10 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CHUANDAURAMONHOC_MESSAGE, LIMIT } from 'constant/constant';
 import { BaseService } from 'guards/base-service.dto';
@@ -160,5 +166,20 @@ export class ChuanDauRaMonHocService extends BaseService {
     };
     const result = await this.chuanDauRaMonHocService.findOne({ where: query });
     return result ? true : false;
+  }
+  async isInSyllabus(idChuanDauRa: number, idSyllabus: number) {
+    const query = this.chuanDauRaMonHocService
+      .createQueryBuilder('cdrmh')
+      .leftJoin('cdrmh.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted = false')
+      .leftJoinAndSelect('cdrmh.createdBy', 'createdBy')
+      .leftJoinAndSelect('cdrmh.updatedBy', 'updatedBy')
+      .where((qb) => {
+        qb.where('mtmh.syllabus = :idSyllabus', { idSyllabus });
+      })
+      .andWhere('cdrmh.isDeleted = false')
+      .andWhere('cdrmh.id = :idChuanDauRa', { idChuanDauRa });
+    const result = await query.getOne();
+    if (!result) throw new BadRequestException(`CHUANDAURA_${idChuanDauRa}_NOT_IN_SYLLABUS`);
+    return result;
   }
 }

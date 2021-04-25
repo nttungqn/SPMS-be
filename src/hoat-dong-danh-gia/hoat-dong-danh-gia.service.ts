@@ -1,4 +1,10 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
 import { HOATDONGDANHGIA_MESSAGE, LIMIT } from 'constant/constant';
@@ -23,9 +29,14 @@ export class HoatDongDanhGiaService extends BaseService {
     super();
   }
   async create(newData: CreateHoatDongDanhGiaDto, idUser: number) {
-    const loaiDanhGia = await this.findOne(newData.idLoaiDanhGia);
-    if (await this.isExistV2(null, newData)) throw new ConflictException(HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_EXIST);
+    const loaiDanhGia = await this.loaiDanhGiaService.findOne(newData.idLoaiDanhGia);
     this.isOwner(loaiDanhGia.createdBy, idUser);
+    //Lấy idSyllabus
+    const syllabus: any = loaiDanhGia.syllabus;
+    const { id } = syllabus;
+    const idSyllabus = id;
+    ///
+    if (await this.isExistV2(null, newData)) throw new ConflictException(HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_EXIST);
     const hoatDongDanhGia = new HoatDongDanhGiaEntity();
     const { chuanDauRaMonHoc } = newData;
     if (chuanDauRaMonHoc) {
@@ -34,7 +45,7 @@ export class HoatDongDanhGiaService extends BaseService {
       for (const idCDRMH of chuanDauRaMonHoc) {
         if (uniqueId.indexOf(idCDRMH) === -1) {
           uniqueId.push(idCDRMH);
-          const result = await this.chuaDauRaMonHocService.findOne(Number(idCDRMH));
+          const result = await this.chuaDauRaMonHocService.isInSyllabus(Number(idCDRMH), idSyllabus);
           hoatDongDanhGia.chuanDauRaMonHoc.push(result);
         }
       }
@@ -110,9 +121,18 @@ export class HoatDongDanhGiaService extends BaseService {
     const oldData = await this.findOne(id);
     this.isOwner(oldData.createdBy, idUser);
     const { idLoaiDanhGia } = newData;
+    let idSyllabus: number;
     if (idLoaiDanhGia) {
-      const loaiDanhGia = await this.findOne(newData.idLoaiDanhGia);
+      const loaiDanhGia = await this.loaiDanhGiaService.findOne(newData.idLoaiDanhGia);
       this.isOwner(loaiDanhGia.createdBy, idUser);
+
+      const syllabus: any = loaiDanhGia.syllabus;
+      const { id } = syllabus;
+      idSyllabus = id;
+    } else {
+      const loaiDanhGia: any = oldData.loaiDanhGia;
+      const { syllabus } = loaiDanhGia;
+      idSyllabus = syllabus;
     }
     if (await this.isExistV2(oldData, newData))
       throw new ConflictException(HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_EXIST);
@@ -123,7 +143,7 @@ export class HoatDongDanhGiaService extends BaseService {
       for (const idCDRMH of chuanDauRaMonHoc) {
         if (uniqueId.indexOf(idCDRMH) === -1) {
           uniqueId.push(idCDRMH);
-          const result = await this.chuaDauRaMonHocService.findOne(Number(idCDRMH));
+          const result = await this.chuaDauRaMonHocService.isInSyllabus(Number(idCDRMH), idSyllabus);
           oldData.chuanDauRaMonHoc.push(result);
         }
       }
@@ -173,5 +193,20 @@ export class HoatDongDanhGiaService extends BaseService {
     };
     const result = await this.hoatDongDanhGiaService.findOne({ where: query });
     return result ? true : false;
+  }
+  async isInSyllabus(idHoatDongDanhGia: number, idSyllabus: number) {
+    const query = this.hoatDongDanhGiaService
+      .createQueryBuilder('hddg')
+      .leftJoin('hddg.loaiDanhGia', 'ldg', 'ldg.isDeleted = false')
+      .leftJoinAndSelect('ldg.createdBy', 'createdBy')
+      .leftJoinAndSelect('ldg.updatedBy', 'updatedBy')
+      .where((qb) => {
+        qb.where('ldg.syllabus = :idSyllabus', { idSyllabus });
+      })
+      .andWhere('ldg.isDeleted = false')
+      .andWhere('ldg.id = :idHoatDongDanhGia', { idHoatDongDanhGia });
+    const result = await query.getOne();
+    if (!result) throw new BadRequestException(`HOATDONGDANHGIA_${idHoatDongDanhGia}_NOT_IN_SYLLABUS`);
+    return result;
   }
 }

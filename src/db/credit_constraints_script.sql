@@ -6,17 +6,18 @@ DROP TRIGGER IF EXISTS update_tcbb_gn_by_mh;
 delimiter $$
 CREATE TRIGGER update_tcbb_gn_by_mh after update on MonHoc for each row
 begin
-	if old.SoTinChi <> new.SoTinChi then
+	if old.SoTinChi <> new.SoTinChi and new.isDeleted = false then
 		update GomNhom gn
 		inner join (
 			select ctgn.ID_GomNhom, sum(mh.soTinChi) as TongTC_GN 
 			from ChiTietGomNhom ctgn
 			inner join MonHoc mh ON mh.id = ctgn.ID_MonHoc
 			inner join GomNhom gn on gn.ID = ctgn.ID_GomNhom
-			group by ctgn.ID_GomNhom ) nt1 
+			group by ctgn.ID_GomNhom
+            having ctgn.isDeleted = false and mh.isDeleted = false and gn.isDeleted = false) nt1 
 		on gn.ID = nt1.ID_GomNhom
 		set gn.SoTCBB = nt1.TongTC_GN
-        where gn.LoaiNhom = "BB";
+        where gn.LoaiNhom = "BB" and gn.isDeleted = false;
 	end if;
 end
 $$
@@ -27,7 +28,9 @@ DROP TRIGGER IF EXISTS trigger_update_ctgn;
 delimiter $$
 CREATE TRIGGER trigger_update_ctgn after update on ChiTietGomNhom for each row
 begin
-	call procedure_update_tcbb_gn_by_ctgn(new.ID_GomNhom);
+	if new.isDeleted = false then
+		call procedure_update_tcbb_gn_by_ctgn(new.ID_GomNhom);
+	end if;
 end
 $$
 delimiter ;
@@ -52,10 +55,10 @@ begin
 		inner join MonHoc mh ON mh.id = ctgn.ID_MonHoc
 		inner join GomNhom gn on gn.ID = ctgn.ID_GomNhom
 		group by ctgn.ID_GomNhom
-        having ctgn.ID_GomNhom = newIDGN) nt1 
+        having ctgn.ID_GomNhom = newIDGN and ctgn.isDeleted = false and mh.isDeleted = false and gn.isDeleted = false) nt1 
 	on gn.ID = nt1.ID_GomNhom 
 	set gn.SoTCBB = nt1.TongTC_GN
-    where gn.LoaiNhom = "BB";
+    where gn.LoaiNhom = "BB" and gn.isDeleted = false;
 end
 $$
 delimiter ;
@@ -66,7 +69,9 @@ DROP TRIGGER IF EXISTS trigger_update_gn;
 delimiter $$
 CREATE TRIGGER trigger_update_gn after update on GomNhom for each row
 begin
-	call procedure_update_ttc_lkkt_by_gn(new.ID_LoaiKhoiKienThuc);
+	if new.isDeleted = false then
+		call procedure_update_ttc_lkkt_by_gn(new.ID_LoaiKhoiKienThuc);
+	end if;
 end
 $$
 delimiter ;
@@ -90,7 +95,7 @@ begin
 		from LoaiKhoiKienThuc lkkt_temp
 		inner join GomNhom gn ON gn.ID_LoaiKhoiKienThuc = lkkt_temp.ID
 		group by lkkt_temp.ID
-        having lkkt_temp.ID = newIdLKKT) nt1 
+        having lkkt_temp.ID = newIdLKKT and lkkt_temp.isDeleted = false and gn.isDeleted = false) nt1 
 	on lkkt.ID = nt1.ID_KhoiKienThuc 
 	set lkkt.TongTC = nt1.TongTC;
 end

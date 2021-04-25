@@ -94,4 +94,7 @@ export class HoatDongDayHocService {
       throw new InternalServerErrorException(HOATDONGDAYHOC_MESSAGE.DELETE_HOATDONGDAYHOC_FAILED);
     }
   }
+  async isInSyllabus(idHoatDongDanhGia: number, idSyllabus: number) {
+    throw new InternalServerErrorException(`HOATDONGDAYHOC_${idHoatDongDanhGia}_NOT_IN_SYLLABUS`);
+  }
 }
