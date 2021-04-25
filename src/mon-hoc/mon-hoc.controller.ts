@@ -143,7 +143,7 @@ export class MonHocController {
       const headers = data.shift() || [];
       const isCheckError = await this.monHocService.checkFormatFile(this.headersFormat, headers);
       if (isCheckError?.isError) {
-        return isCheckError?.message;
+        return res.status(HttpStatus.BAD_REQUEST).json({ isError: true, message: isCheckError?.message });
       }
       const results = await this.monHocService.insertMonHoc(data, req?.user);
       if (!results?.isError) {
