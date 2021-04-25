@@ -76,10 +76,23 @@ export class SyllabusService extends BaseService {
   }
 
   async findOne(id: number): Promise<Syllabus> {
-    const found = await this.syllabusRepository.findOne(id, {
-      relations: ['createdBy', 'namHoc', 'heDaoTao', 'updatedBy', 'monHoc'],
-      where: { isDeleted: false }
-    });
+    const query = await this.syllabusRepository
+      .createQueryBuilder('sy')
+      .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
+      .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('sy.namHoc', 'namHoc')
+      .leftJoinAndSelect('sy.monHoc', 'monHoc')
+      .leftJoinAndSelect('sy.createdBy', 'createdBy')
+      .where((qb) => {
+        qb.leftJoinAndSelect('monHoc.monHocTienQuyet', 'mhtq', 'mhtq.isDeleted = false').leftJoinAndSelect(
+          'mhtq.monHocTruoc',
+          'mht'
+        );
+      })
+      .andWhere('sy.isDeleted = false')
+      .andWhere('sy.id = :id', { id });
+    const found = await query.getOne();
+    console.log(query.getSql());
     if (!found) {
       throw new NotFoundException(SYLLABUS_MESSAGE.SYLLABUS_ID_NOT_FOUND);
     }
