@@ -145,4 +145,26 @@ export class SyllabusService extends BaseService {
     });
     return found ? true : false;
   }
+  async search(filter) {
+    const { search: key, limit = LIMIT } = filter;
+    const isDeleted = false;
+    const queryByCondition = `sy.isDeleted = ${isDeleted}`;
+    const query = this.syllabusRepository
+      .createQueryBuilder('sy')
+      .leftJoinAndSelect('sy.monHoc', 'monHoc')
+      .where((qb) => {
+        key
+          ? qb.where('(monHoc.TenTiengViet LIKE :key OR monHoc.TenTiengAnh LIKE :key)', {
+              key: `%${key}%`
+            })
+          : {};
+      })
+      .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
+      .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('sy.namHoc', 'namHoc')
+      .andWhere(queryByCondition)
+      .take(limit);
+    const results = await query.getMany();
+    return results;
+  }
 }

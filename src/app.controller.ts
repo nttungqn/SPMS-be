@@ -15,7 +15,6 @@ export class AppController {
     try {
       return await this.appService.search(query);
     } catch (error) {
-      console.log(error);
       return [];
     }
   }
