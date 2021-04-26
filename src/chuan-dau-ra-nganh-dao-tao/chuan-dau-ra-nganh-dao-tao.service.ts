@@ -19,7 +19,7 @@ export class ChuanDauRaNganhDaoTaoService {
       ...rest
     };
     const results = await this.chuanDauRaNDTRepository.find({
-      relations: ['nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy'],
+      relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy'],
       skip,
       take: limit,
       where: query
@@ -104,12 +104,15 @@ export class ChuanDauRaNganhDaoTaoService {
 
   async getAllList(id: number): Promise<any> {
     try {
-      const results = await this.chuanDauRaNDTRepository
-        .createQueryBuilder('c')
-        .leftJoinAndSelect('c.chuanDauRa', 'chuanDauRa')
-        .where(`c.nganhDaoTao = ${id}`)
-        .getMany();
-      const ltt = new LTT(results, {
+      const results = await this.chuanDauRaNDTRepository.find({
+        relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
+      });
+      const tmp = results.map((x) => {
+        if (x.parent == null) x.parent = 0;
+        else x.parent = x.parent['id'];
+        return x;
+      });
+      const ltt = new LTT(tmp, {
         key_id: 'id',
         key_parent: 'parent'
       });
