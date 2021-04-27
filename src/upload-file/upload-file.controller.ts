@@ -15,18 +15,13 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
-import { PATH_STORE_IMAGE } from 'config/config';
+import { FIREBASECONFIG, PATH_STORE_IMAGE } from 'config/config';
 import { ViewFileDto } from './dto/viewFile.dto';
 import { getMimetype } from 'utils/utils';
-import { firebaseConfig } from 'constant/constant';
-
 import firebase from 'firebase/app';
 import 'xhr2';
 import 'firebase/storage';
 import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
-import { RolesGuard } from 'guards/roles.guard';
 import { GetUser } from 'auth/user.decorator';
 import { UsersEntity } from 'users/entity/user.entity';
 import { UploadFileService } from './upload-file.service';
@@ -42,8 +37,7 @@ export class UploadFileController {
       limits: { fileSize: 10485760 }
     })
   )
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập Nhật avatar' })
   @ApiOkResponse({ description: 'OK' })
@@ -77,7 +71,7 @@ export class UploadFileController {
         contentType: 'image/jpeg'
       };
       if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(FIREBASECONFIG);
       }
       const storage = firebase.storage();
       const storageRef = storage.ref();
