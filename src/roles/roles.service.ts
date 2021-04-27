@@ -31,6 +31,7 @@ export class RolesService {
     const [results, total] = await this.rolesRepository.findAndCount({
       skip,
       take: limit,
+      where: { isDeleted: false },
       ...other
     });
     return { contents: results, total, page: Number(page) };
