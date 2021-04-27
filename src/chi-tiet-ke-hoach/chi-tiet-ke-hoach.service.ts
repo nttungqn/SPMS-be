@@ -178,4 +178,13 @@ export class ChiTietKeHoachService {
       throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED);
     }
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.chiTietKeHoachRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED);
+    }
+  }
 }

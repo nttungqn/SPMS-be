@@ -209,4 +209,13 @@ export class HoatDongDanhGiaService extends BaseService {
     if (!result) throw new BadRequestException(`HOATDONGDANHGIA_${idHoatDongDanhGia}_NOT_IN_SYLLABUS`);
     return result;
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.hoatDongDanhGiaService.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(HOATDONGDANHGIA_MESSAGE.DELETE_HOATDONGDANHGIA_FAILED);
+    }
+  }
 }

@@ -1,4 +1,10 @@
-import { ConflictException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  ServiceUnavailableException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HEDAOTAO_MESSAGE } from 'constant/constant';
 import { Repository } from 'typeorm';
@@ -78,6 +84,15 @@ export class HeDaotaoService {
     const found = await query.getOne();
     if (found) {
       throw new ConflictException(HEDAOTAO_MESSAGE.HEDAOTAO_EXIST);
+    }
+  }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.typeOfEduRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(HEDAOTAO_MESSAGE.DELETE_HEDAOTAO_FAILED);
     }
   }
 }

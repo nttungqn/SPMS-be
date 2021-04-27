@@ -163,4 +163,13 @@ export class UsersService {
       throw new InternalServerErrorException(USER_MESSAGE.DELETE_ALL_USER_FAILED);
     }
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.usersRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(USER_MESSAGE.DELETE_USER_FAILED);
+    }
+  }
 }

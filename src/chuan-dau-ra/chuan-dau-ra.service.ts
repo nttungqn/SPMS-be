@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CHUANDAURA_MESSAGE, LIMIT } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
@@ -91,6 +91,15 @@ export class ChuanDauRaService {
       return deleted;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.chuanDauRaRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(CHUANDAURA_MESSAGE.DELETE_CHUANDAURA_FAILED);
     }
   }
 }

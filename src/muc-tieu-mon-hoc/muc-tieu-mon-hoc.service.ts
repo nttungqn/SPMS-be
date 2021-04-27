@@ -188,4 +188,13 @@ export class MucTieuMonHocService extends BaseService {
     const result = await this.mucTieuMonHocEntityRepository.findOne({ where: query });
     return result ? true : false;
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.mucTieuMonHocEntityRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(MUCTIEUMONHOC_MESSAGE.DELETE_MUCTIEUMONHOC_FAILED);
+    }
+  }
 }

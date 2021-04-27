@@ -210,4 +210,13 @@ export class LoaiDanhGiaService extends BaseService {
     }
     return loaiDanhGia;
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.loaiDanhGiaRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(LOAIDANHGIA_MESSAGE.DELETE_LOAIDANHGIA_FAILED);
+    }
+  }
 }

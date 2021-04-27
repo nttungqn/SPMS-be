@@ -13,7 +13,7 @@ export class MonHocTienQuyetEntity {
 
   @ApiProperty()
   @Column({ name: 'idMH' })
-  @ManyToOne(() => MonHocEntity)
+  @ManyToOne(() => MonHocEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idMH' })
   @IsNotEmpty()
   @IsInt()
@@ -21,7 +21,7 @@ export class MonHocTienQuyetEntity {
 
   @ApiProperty()
   @Column({ name: 'idMHTQ' })
-  @ManyToOne(() => MonHocEntity)
+  @ManyToOne(() => MonHocEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idMHTQ' })
   @IsNotEmpty()
   @IsInt()
@@ -36,14 +36,14 @@ export class MonHocTienQuyetEntity {
   @Column({ name: 'createdAt' })
   createdAt: Date;
 
-  @OneToOne(() => UsersEntity)
+  @OneToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createdBy' })
   createdBy: number;
 
   @Column({ name: 'updatedAt' })
   updatedAt: Date;
 
-  @OneToOne(() => UsersEntity)
+  @OneToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'updatedBy' })
   updatedBy: number;
 

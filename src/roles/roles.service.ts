@@ -69,4 +69,13 @@ export class RolesService {
       throw new InternalServerErrorException(ROLES_MESSAGE.DELETE_ROLES_FAILED);
     }
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.rolesRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(ROLES_MESSAGE.DELETE_ROLES_FAILED);
+    }
+  }
 }

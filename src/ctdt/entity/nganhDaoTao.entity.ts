@@ -29,14 +29,14 @@ export class NganhDaoTaoEntity {
   @Column()
   createdAt: Date;
 
-  @OneToOne(() => UsersEntity)
+  @OneToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createdBy' })
   createdBy: number;
 
   @Column()
   updatedAt: Date;
 
-  @OneToOne(() => UsersEntity)
+  @OneToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'updatedBy' })
   updatedBy: number;
 

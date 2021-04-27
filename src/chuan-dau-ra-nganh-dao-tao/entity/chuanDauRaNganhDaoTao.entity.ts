@@ -18,33 +18,33 @@ export class ChuanDauRaNganhDaoTaoEntity {
 
   @ApiProperty()
   @IsInt()
-  @OneToOne(() => ChuanDauRaNganhDaoTaoEntity)
+  @OneToOne(() => ChuanDauRaNganhDaoTaoEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'parentId' })
   parent: number;
 
   @ApiProperty()
   @IsInt()
-  @OneToOne(() => ChiTietNganhDaoTaoEntity)
+  @OneToOne(() => ChiTietNganhDaoTaoEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_ChiTietNganhDaoTao' })
   nganhDaoTao: number;
 
   @ApiProperty()
   @IsInt()
-  @OneToOne(() => ChuanDauRaEntity)
+  @OneToOne(() => ChuanDauRaEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_ChuanDauRa' })
   chuanDauRa: number;
 
   @Column()
   createdAt: Date;
 
-  @OneToOne(() => UsersEntity)
+  @OneToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createdBy' })
   createdBy: number;
 
   @Column()
   updatedAt: Date;
 
-  @OneToOne(() => UsersEntity)
+  @OneToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'updatedBy' })
   updatedBy: number;
 

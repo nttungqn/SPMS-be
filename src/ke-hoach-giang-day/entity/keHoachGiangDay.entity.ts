@@ -28,21 +28,21 @@ export class KeHoachGiangDayEntity {
   @ApiProperty()
   @IsInt()
   @Column({ name: 'ID_ChiTietNganhDaoTao' })
-  @ManyToOne(() => ChiTietNganhDaoTaoEntity)
+  @ManyToOne(() => ChiTietNganhDaoTaoEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_ChiTietNganhDaoTao' })
   nganhDaoTao: number;
 
   @Column()
   createdAt: Date;
 
-  @OneToOne(() => UsersEntity)
+  @OneToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createdBy' })
   createdBy: number;
 
   @Column()
   updatedAt: Date;
 
-  @OneToOne(() => UsersEntity)
+  @OneToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'updatedBy' })
   updatedBy: number;
 

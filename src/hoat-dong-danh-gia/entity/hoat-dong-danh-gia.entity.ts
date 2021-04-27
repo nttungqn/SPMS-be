@@ -19,7 +19,7 @@ export class HoatDongDanhGiaEntity {
   id?: number;
 
   @Column({ name: 'idLDG' })
-  @ManyToOne(() => LoaiDanhGiaEntity)
+  @ManyToOne(() => LoaiDanhGiaEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idLDG', referencedColumnName: 'id' })
   loaiDanhGia?: number;
 
