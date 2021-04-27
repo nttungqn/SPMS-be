@@ -1,5 +1,5 @@
 import { UploadFile } from './dto/uploadFile.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -10,24 +10,45 @@ import {
   Req,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
-import { PATH_STORE_IMAGE } from 'config/config';
+import { FIREBASECONFIG, PATH_STORE_IMAGE } from 'config/config';
 import { ViewFileDto } from './dto/viewFile.dto';
 import { getMimetype } from 'utils/utils';
+import firebase from 'firebase/app';
+import 'xhr2';
+import 'firebase/storage';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'auth/user.decorator';
+import { UsersEntity } from 'users/entity/user.entity';
+import { UploadFileService } from './upload-file.service';
 
 @ApiTags('upload-file')
 @Controller('upload-file')
 export class UploadFileController {
+  constructor(private uploadFileService: UploadFileService) {}
+
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
       limits: { fileSize: 10485760 }
     })
   )
-  async uploadFile(@UploadedFile() image, @Req() req, @Res() res, @Body() body: UploadFile) {
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Cập Nhật avatar' })
+  @ApiOkResponse({ description: 'OK' })
+  async uploadFile(
+    @UploadedFile() image,
+    @Req() req,
+    @Res() res,
+    @Body() body: UploadFile,
+    @GetUser() user: UsersEntity
+  ) {
+    global.XMLHttpRequest = require('xhr2');
     try {
       if (req?.fileValidationError) {
         return res.status(HttpStatus.PAYLOAD_TOO_LARGE).send({ error: 'ERROR_FILE_TOO_LARGE' });
@@ -45,9 +66,23 @@ export class UploadFileController {
         return res.status(HttpStatus.BAD_REQUEST).send({ error: 'Only image files are allowed!' });
       }
       const type = image.mimetype.replace('image/', '');
-      const id = Date.now();
-      fs.writeFileSync(`${PATH_STORE_IMAGE}/${id}.${type}`, buf);
-      return res.json({ url: `/upload-file/${id}.${type}` });
+
+      const metadata = {
+        contentType: 'image/jpeg'
+      };
+      if (!firebase.apps.length) {
+        firebase.initializeApp(FIREBASECONFIG);
+      }
+      const storage = firebase.storage();
+      const storageRef = storage.ref();
+      await storageRef
+        .child(`avatar_${user.id}.${type}`)
+        .put(buf, metadata)
+        .then(async (snap) => {
+          const url = await snap.ref.getDownloadURL();
+          await this.uploadFileService.updateAvatarUrl(url, user.id);
+          return res.json({ url: `${url}` });
+        });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'UPLOAD_FILE_FAILED' });
     }
