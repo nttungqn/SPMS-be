@@ -72,7 +72,6 @@ export class UploadFileController {
         return res.status(HttpStatus.BAD_REQUEST).send({ error: 'Only image files are allowed!' });
       }
       const type = image.mimetype.replace('image/', '');
-      const id = Date.now();
 
       const metadata = {
         contentType: 'image/jpeg'
@@ -83,7 +82,7 @@ export class UploadFileController {
       const storage = firebase.storage();
       const storageRef = storage.ref();
       await storageRef
-        .child(`${id}.${type}`)
+        .child(`avatar_${user.id}.${type}`)
         .put(buf, metadata)
         .then(async (snap) => {
           const url = await snap.ref.getDownloadURL();
