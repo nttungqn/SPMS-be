@@ -38,7 +38,7 @@ export class KhoiKienThucService {
     const queryByChiTietNganhDaoTao = idChiTietNganhDaoTao ? { chiTietNganh: idChiTietNganhDaoTao } : {};
     const skip = page * limit;
     const [results, total] = await this.knowledgeBlockRepository.findAndCount({
-      relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
+      relations: ['chiTietNganh', 'createdBy', 'updatedBy', 'chiTietNganh.nganhDaoTao'],
       where: { isDeleted: false, ...queryByChiTietNganhDaoTao },
       skip,
       take: limit
