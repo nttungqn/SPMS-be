@@ -6,7 +6,7 @@ import {
   BadRequestException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT, MONHOC_MESSAGE } from 'constant/constant';
+import { MONHOC_MESSAGE } from 'constant/constant';
 import { Like, Not, Repository } from 'typeorm';
 import { CreateMonHocDto } from './dto/create-mon-hoc.dto';
 import { MonHocEntity } from './entity/mon-hoc.entity';
@@ -16,22 +16,24 @@ export class MonHocService {
   constructor(@InjectRepository(MonHocEntity) private monHocRepository: Repository<MonHocEntity>) {}
 
   async findAll(filter): Promise<MonHocEntity[] | any> {
-    const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
-    const skip = Number(page) * Number(limit);
+    const { limit, page = 0, search = '', ...otherParam } = filter;
+    const skip = limit ? Number(page) * Number(limit) : null;
     const querySearch = search ? { tenTiengViet: Like(`%${search}%`) } : {};
     const query = {
       isDeleted: false,
       ...querySearch,
       ...otherParam
     };
-
+    const total = await this.monHocRepository.count({ ...query });
+    if (!limit && Number(page) > 0) {
+      return { contents: [], total, page: Number(page) };
+    }
     const results = await this.monHocRepository.find({
       where: query,
       skip,
       take: Number(limit),
       relations: ['createdBy', 'updatedBy']
     });
-    const total = await this.monHocRepository.count({ ...query });
     return { contents: results, total, page: Number(page) };
   }
 
