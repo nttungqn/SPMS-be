@@ -19,7 +19,7 @@ export class LoaiDanhGiaEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
 
-  @ManyToOne(() => Syllabus)
+  @ManyToOne(() => Syllabus, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idSyllabus' })
   @Column({ name: 'idSyllabus' })
   syllabus?: number;

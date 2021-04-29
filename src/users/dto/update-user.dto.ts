@@ -34,4 +34,6 @@ export class UpdateUserDto {
   @IsNumberString()
   @IsOptional()
   role: number;
+
+  avatar: string;
 }

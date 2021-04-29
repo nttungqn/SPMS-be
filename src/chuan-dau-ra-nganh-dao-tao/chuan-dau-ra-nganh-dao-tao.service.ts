@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CHUANDAURA_NGANHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm/repository/Repository';
 import { CreateChuanDauRaNganhDaoTaoDto } from './dto/createChuanDauRaNDT.dto';
 import { ChuanDauRaNganhDaoTaoEntity } from './entity/chuanDauRaNganhDaoTao.entity';
+const LTT = require('list-to-tree');
 
 @Injectable()
 export class ChuanDauRaNganhDaoTaoService {
@@ -33,7 +34,7 @@ export class ChuanDauRaNganhDaoTaoService {
   async findById(id: number): Promise<any> {
     const result = await this.chuanDauRaNDTRepository.findOne({
       where: { id, isDeleted: false },
-      relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
+      relations: ['nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
     });
     if (!result) {
       throw new HttpException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -98,6 +99,36 @@ export class ChuanDauRaNganhDaoTaoService {
       return deleted;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async getAllList(id: number): Promise<any> {
+    try {
+      const results = await this.chuanDauRaNDTRepository.find({
+        relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
+      });
+      const tmp = results.map((x) => {
+        if (x.parent == null) x.parent = 0;
+        else x.parent = x.parent['id'];
+        return x;
+      });
+      const ltt = new LTT(tmp, {
+        key_id: 'id',
+        key_parent: 'parent'
+      });
+      const tree = ltt.GetTree();
+      return tree;
+    } catch (error) {
+      throw new InternalServerErrorException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_EMPTY);
+    }
+  }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.chuanDauRaNDTRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(CHUANDAURA_NGANHDAOTAO_MESSAGE.DELETE_CHUANDAURA_NGANHDAOTAO_FAILED);
     }
   }
 }

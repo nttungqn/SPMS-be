@@ -34,6 +34,8 @@ import { RolesModule } from 'roles/roles.module';
 import { ExportsModule } from './exports/exports.module';
 import { UploadFileModule } from './upload-file/upload-file.module';
 import { ThongKeModule } from './thong-ke/thong-ke.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronService } from './cron/cron.service';
 
 @Module({
   imports: [
@@ -70,10 +72,11 @@ import { ThongKeModule } from './thong-ke/thong-ke.module';
     ExportsModule,
     UploadFileModule,
     UploadFileModule,
-    ThongKeModule
+    ThongKeModule,
+    ScheduleModule.forRoot()
   ],
   controllers: [AppController],
-  providers: [AppService, DatabaseConnectionService]
+  providers: [AppService, DatabaseConnectionService, CronService]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

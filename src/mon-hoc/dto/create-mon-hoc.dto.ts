@@ -37,14 +37,4 @@ export class CreateMonHocDto {
   @IsInt()
   @Column({ name: 'soTietTuHoc' })
   soTietTuHoc: number;
-
-  @ApiProperty()
-  @IsOptional()
-  @Column({ name: 'moTa' })
-  moTa: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @Column({ name: 'taiNguyen' })
-  taiNguyen: string;
 }

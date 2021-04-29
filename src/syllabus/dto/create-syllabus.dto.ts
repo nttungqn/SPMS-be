@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 import { HeDaoTaoEntity } from 'he-dao-tao/entity/type-of-education.entity';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { NamHocEntity } from 'nam-hoc/entity/nam-hoc.entity';
@@ -26,4 +26,22 @@ export class CreateSyllabusDto {
   @ManyToOne(() => NamHocEntity)
   @JoinColumn({ name: 'idNH' })
   namHoc?: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Column({ name: 'TaiNguyen' })
+  taiNguyen?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Column({ name: 'quiDinh' })
+  quiDinh?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Column({ name: 'moTa' })
+  moTa?: string;
 }

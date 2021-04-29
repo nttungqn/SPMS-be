@@ -129,4 +129,13 @@ export class MonHocTienQuyetService {
     const found = await this.prerequisiteSubjectRepository.findOne({ where: query });
     return found ? true : false;
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.prerequisiteSubjectRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(MONHOCTIENQUYET_MESSAGE.DELETE_MONHOCTIENQUYET_FAILED);
+    }
+  }
 }

@@ -31,6 +31,7 @@ export class RolesService {
     const [results, total] = await this.rolesRepository.findAndCount({
       skip,
       take: limit,
+      where: { isDeleted: false },
       ...other
     });
     return { contents: results, total, page: Number(page) };
@@ -65,6 +66,15 @@ export class RolesService {
         isDeleted: true
       });
     } catch (error) {
+      throw new InternalServerErrorException(ROLES_MESSAGE.DELETE_ROLES_FAILED);
+    }
+  }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.rolesRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(ROLES_MESSAGE.DELETE_ROLES_FAILED);
     }
   }

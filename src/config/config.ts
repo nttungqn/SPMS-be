@@ -15,6 +15,16 @@ const PASSWORD_MAIL = process.env.PASSWORD_MAIL || '';
 const PATH_STORE_IMAGE = process.env.PATH_STORE_IMAGE || 'src/assets/images';
 const DB_POOL_CONNECTION = +process.env.DB_POOL_CONNECTION || 5;
 
+const FIREBASECONFIG = {
+  apiKey: 'AIzaSyAg9kS0xBK9GagQy98fX_nSzN9Eg9SjDL8',
+  authDomain: 'spms-f664f.firebaseapp.com',
+  projectId: 'spms-f664f',
+  storageBucket: 'spms-f664f.appspot.com',
+  messagingSenderId: '106291459378',
+  appId: '1:106291459378:web:159476d3c4fdf5e51ad32b',
+  measurementId: 'G-B0QRZVC2GM',
+  databaseURL: 'https://spms-f664f.firebaseio.com'
+};
 export {
   PORT,
   DB_HOSTNAME,
@@ -28,5 +38,6 @@ export {
   PASSWORD_MAIL,
   FE_ROUTE,
   PATH_STORE_IMAGE,
-  DB_POOL_CONNECTION
+  DB_POOL_CONNECTION,
+  FIREBASECONFIG,
 };

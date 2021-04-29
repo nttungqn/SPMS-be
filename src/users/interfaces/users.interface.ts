@@ -11,4 +11,5 @@ export interface IUser {
   readonly isActive?: boolean;
   readonly isDeleted?: boolean;
   readonly tokenVerifyEmail?: string;
+  readonly avatar?: string;
 }

@@ -9,12 +9,12 @@ export class Syllabus extends CreateSyllabusDto {
   id?: number;
 
   @Column({ name: 'createdBy' })
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createdBy' })
   createdBy?: number;
 
   @Column({ name: 'updatedBy' })
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'updatedBy' })
   updatedBy?: number;
 

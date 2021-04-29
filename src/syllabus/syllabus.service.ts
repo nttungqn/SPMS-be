@@ -76,10 +76,22 @@ export class SyllabusService extends BaseService {
   }
 
   async findOne(id: number): Promise<Syllabus> {
-    const found = await this.syllabusRepository.findOne(id, {
-      relations: ['createdBy', 'namHoc', 'heDaoTao', 'updatedBy', 'monHoc'],
-      where: { isDeleted: false }
-    });
+    const query = await this.syllabusRepository
+      .createQueryBuilder('sy')
+      .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
+      .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('sy.namHoc', 'namHoc')
+      .leftJoinAndSelect('sy.monHoc', 'monHoc')
+      .leftJoinAndSelect('sy.createdBy', 'createdBy')
+      .where((qb) => {
+        qb.leftJoinAndSelect('monHoc.monHocTienQuyet', 'mhtq', 'mhtq.isDeleted = false').leftJoinAndSelect(
+          'mhtq.monHocTruoc',
+          'mht'
+        );
+      })
+      .andWhere('sy.isDeleted = false')
+      .andWhere('sy.id = :id', { id });
+    const found = await query.getOne();
     if (!found) {
       throw new NotFoundException(SYLLABUS_MESSAGE.SYLLABUS_ID_NOT_FOUND);
     }
@@ -144,5 +156,36 @@ export class SyllabusService extends BaseService {
       where: query
     });
     return found ? true : false;
+  }
+  async search(filter) {
+    const { search: key, limit = LIMIT } = filter;
+    const isDeleted = false;
+    const queryByCondition = `sy.isDeleted = ${isDeleted}`;
+    const query = this.syllabusRepository
+      .createQueryBuilder('sy')
+      .leftJoinAndSelect('sy.monHoc', 'monHoc')
+      .where((qb) => {
+        key
+          ? qb.where('(monHoc.TenTiengViet LIKE :key OR monHoc.TenTiengAnh LIKE :key)', {
+              key: `%${key}%`
+            })
+          : {};
+      })
+      .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
+      .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('sy.namHoc', 'namHoc')
+      .andWhere(queryByCondition)
+      .take(limit);
+    const results = await query.getMany();
+    return results;
+  }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.syllabusRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(SYLLABUS_MESSAGE.DELETE_SYLLABUS_FAILED);
+    }
   }
 }

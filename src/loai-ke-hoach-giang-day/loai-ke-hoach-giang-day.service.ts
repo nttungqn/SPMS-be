@@ -99,4 +99,13 @@ export class LoaiKeHoachGiangDayService {
       throw new InternalServerErrorException(LOAIKEHOACHGIANGDAY_MESSAGE.DELETE_LOAIKEHOACHGIANGDAY_FAILED);
     }
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.loaiKeHoachGiangDayEntity.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(LOAIKEHOACHGIANGDAY_MESSAGE.DELETE_LOAIKEHOACHGIANGDAY_FAILED);
+    }
+  }
 }

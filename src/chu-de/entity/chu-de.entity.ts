@@ -24,13 +24,13 @@ export class ChuDeEntity extends BaseEntity {
   id?: number;
 
   @ApiProperty()
-  @ManyToOne(() => Syllabus)
+  @ManyToOne(() => Syllabus, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idSyllabus' })
   @Column({ name: 'idSyllabus' })
   idSyllabus?: number;
 
   @ApiProperty()
-  @ManyToOne(() => LoaiKeHoachGiangDayEntity)
+  @ManyToOne(() => LoaiKeHoachGiangDayEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idLKHGD' })
   @Column({ name: 'idLKHGD' })
   idLKHGD?: number;
@@ -48,12 +48,12 @@ export class ChuDeEntity extends BaseEntity {
   tuan?: number;
 
   @ApiProperty()
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'updatedBy' })
   updatedBy?: number;
 
   @ApiProperty()
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createdBy' })
   createdBy?: number;
 

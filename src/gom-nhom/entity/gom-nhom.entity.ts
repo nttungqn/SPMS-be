@@ -12,20 +12,21 @@ export class GomNhomEntity extends CreateGomNhomDTO {
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
 
-  @ManyToOne(() => LoaiKhoiKienThucEntity)
+  @ManyToOne(() => LoaiKhoiKienThucEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_LoaiKhoiKienThuc' })
   loaiKhoiKienThuc?: LoaiKhoiKienThucEntity;
 
   @OneToMany(() => ChiTietGomNhomEntity, (chiTietGomNhom) => chiTietGomNhom.gomNhom)
+  @JoinColumn({ name: 'id' })
   chiTietGomNhom?: ChiTietGomNhomEntity[];
 
   @ApiProperty()
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'updatedBy' })
   updatedBy?: number;
 
   @ApiProperty()
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createdBy' })
   createdBy?: number;
 

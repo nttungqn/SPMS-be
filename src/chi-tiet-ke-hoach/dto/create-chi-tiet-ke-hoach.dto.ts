@@ -6,14 +6,14 @@ import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
 export class CreateChiTietKeHoachDto {
   @ApiProperty()
-  @ManyToOne(() => KeHoachGiangDayEntity)
+  @ManyToOne(() => KeHoachGiangDayEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_KeHoachGiangDay' })
   @Column({ name: 'ID_KeHoachGiangDay' })
   @IsNotEmpty()
   idKHGD?: number;
 
   @ApiProperty()
-  @ManyToOne(() => ChiTietGomNhomEntity)
+  @ManyToOne(() => ChiTietGomNhomEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_ChiTietGomNhom' })
   @Column({ name: 'ID_ChiTietGomNhom' })
   @IsNotEmpty()

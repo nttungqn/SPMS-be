@@ -11,12 +11,12 @@ export class LoaiKeHoachGiangDayEntity extends CreateLoaiKeHoachGiangDayDto {
   id?: number;
 
   @ApiProperty()
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'updatedBy' })
   updatedBy?: number;
 
   @ApiProperty()
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createdBy' })
   createdBy?: number;
 

@@ -11,7 +11,7 @@ export class ChuanDauRaMonHocEntity {
   ma?: string;
 
   @Column({ name: 'idMTMH' })
-  @ManyToOne(() => MucTieuMonHocEntity)
+  @ManyToOne(() => MucTieuMonHocEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idMTMH', referencedColumnName: 'id' })
   mucTieuMonHoc?: number;
 

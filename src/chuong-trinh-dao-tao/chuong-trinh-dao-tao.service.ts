@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
+import { HttpStatus, Injectable, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CHUONGTRINHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
@@ -92,5 +92,14 @@ export class ChuongTrinhDaoTaoService {
   }
   async getCountCTDT(): Promise<number> {
     return await this.chuongTrinhDaoTaoRepository.count({ isDeleted: false });
+  }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.chuongTrinhDaoTaoRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_FAILED);
+    }
   }
 }

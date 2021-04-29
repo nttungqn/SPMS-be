@@ -38,7 +38,7 @@ export class KhoiKienThucService {
     const queryByChiTietNganhDaoTao = idChiTietNganhDaoTao ? { chiTietNganh: idChiTietNganhDaoTao } : {};
     const skip = page * limit;
     const [results, total] = await this.knowledgeBlockRepository.findAndCount({
-      relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
+      relations: ['chiTietNganh', 'createdBy', 'updatedBy', 'chiTietNganh.nganhDaoTao'],
       where: { isDeleted: false, ...queryByChiTietNganhDaoTao },
       skip,
       take: limit
@@ -86,6 +86,15 @@ export class KhoiKienThucService {
         isDeleted: true
       });
     } catch (error) {
+      throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.DELETE_KHOIKIENTHUC_FAILED);
+    }
+  }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.knowledgeBlockRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.DELETE_KHOIKIENTHUC_FAILED);
     }
   }
