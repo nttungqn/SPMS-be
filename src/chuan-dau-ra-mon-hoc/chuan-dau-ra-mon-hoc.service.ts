@@ -59,42 +59,28 @@ export class ChuanDauRaMonHocService extends BaseService {
   }
 
   async findAll(filter: FilterChuanDauRaMonHocDto) {
-    const { page = 0, limit = LIMIT, idMucTieuMonHoc, idSyllabus } = filter;
+    const { page = 0, limit = LIMIT, idMucTieuMonHoc, idSyllabus, sortBy, sortType, searchKey } = filter;
     const skip = page * limit;
-
-    if (!(idMucTieuMonHoc || idSyllabus)) {
-      const [results, total] = await this.chuanDauRaMonHocService.findAndCount({
-        relations: ['createdBy', 'updatedBy'],
-        where: { isDeleted: false },
-        skip,
-        take: limit,
-        order: { ma: 'ASC' }
-      });
-      return { contents: results, total, page: page };
-    } else {
-      let query = '';
-      if (idSyllabus) {
-        await this.syllabusService.findOne(idSyllabus);
-        query = `mtmh.idSyllabus=${idSyllabus}`;
-      }
-      if (idMucTieuMonHoc) {
-        await this.mucTieuMonHocService.findOne(idMucTieuMonHoc);
-        if (idSyllabus) query += ' And ';
-        query += `mtmh.id=${idMucTieuMonHoc}`;
-      }
-      const [results, total] = await this.chuanDauRaMonHocService
-        .createQueryBuilder('cdr')
-        .leftJoin('cdr.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted =:isDeleted', { isDeleted: false })
-        .where(query)
-        .andWhere('cdr.isDeleted =:isDeleted', { isDeleted: false })
-        .leftJoinAndSelect('cdr.updatedBy', 'updatedBy')
-        .leftJoinAndSelect('cdr.createdBy', 'createdBy')
-        .skip(skip)
-        .take(limit)
-        .orderBy({ 'cdr.ma': 'ASC' })
-        .getManyAndCount();
-      return { contents: results, total, page: page };
-    }
+    const [results, total] = await this.chuanDauRaMonHocService
+      .createQueryBuilder('cdr')
+      .leftJoin('cdr.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted =:isDeleted', { isDeleted: false })
+      .leftJoinAndSelect('cdr.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('cdr.createdBy', 'createdBy')
+      .where((qb) => {
+        idSyllabus ? qb.andWhere('mtmh.idSyllabus = :idSyllabus', { idSyllabus }) : {};
+        idMucTieuMonHoc ? qb.andWhere('cdr.mucTieuMonHoc = :idMucTieuMonHoc', { idMucTieuMonHoc }) : {};
+        searchKey
+          ? qb.andWhere('cdr.ma LIKE :search OR cdr.mota LIKE :search OR cdr.mucDo LIKE :search', {
+              search: `%${searchKey}%`
+            })
+          : {};
+      })
+      .andWhere('cdr.isDeleted =:isDeleted', { isDeleted: false })
+      .skip(skip)
+      .take(limit)
+      .orderBy(sortBy ? `cdr.${sortBy}` : null, sortType)
+      .getManyAndCount();
+    return { contents: results, total, page: page };
   }
 
   async findOne(id: number) {
