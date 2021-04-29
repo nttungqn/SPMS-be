@@ -16,7 +16,10 @@ export class DatabaseConnectionService implements TypeOrmOptionsFactory {
       synchronize: false,
       dropSchema: false,
       logging: false,
-      entities: [this.getMigrationDirectory()]
+      entities: [this.getMigrationDirectory()],
+      extra: {
+        connectLimit: Config.DB_POOL_CONNECTION
+      }
     };
   }
   getMigrationDirectory() {

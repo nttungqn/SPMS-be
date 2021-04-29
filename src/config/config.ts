@@ -13,6 +13,7 @@ const FE_ROUTE = process.env.FE_ROUTE || 'http://localhost:3000';
 const EMAIL_MAIL = process.env.EMAIL_MAIL || '';
 const PASSWORD_MAIL = process.env.PASSWORD_MAIL || '';
 const PATH_STORE_IMAGE = process.env.PATH_STORE_IMAGE || 'src/assets/images';
+const DB_POOL_CONNECTION = +process.env.DB_POOL_CONNECTION || 5;
 
 const FIREBASECONFIG = {
   apiKey: 'AIzaSyAg9kS0xBK9GagQy98fX_nSzN9Eg9SjDL8',
@@ -37,5 +38,6 @@ export {
   PASSWORD_MAIL,
   FE_ROUTE,
   PATH_STORE_IMAGE,
-  FIREBASECONFIG
+  DB_POOL_CONNECTION,
+  FIREBASECONFIG,
 };
