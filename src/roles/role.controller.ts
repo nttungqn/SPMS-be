@@ -33,6 +33,7 @@ import { UpdateRolesDto } from './dto/update-roles.dto';
 import { Roles } from 'guards/roles.decorator';
 import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
+import { FilterRoles } from './dto/filter-roles.dto';
 
 @ApiTags('roles')
 @Controller('roles')
@@ -46,7 +47,7 @@ export class RolesController {
   @ApiUnauthorizedResponse({ description: ROLES_MESSAGE.ROLES_NOT_AUTHORIZED })
   @ApiOkResponse({ type: FindAllRolesDtoResponse })
   @Get()
-  findAll(@Query() filter: BaseFilterDto) {
+  findAll(@Query() filter: FilterRoles) {
     return this.rolesService.findAll(filter);
   }
 
