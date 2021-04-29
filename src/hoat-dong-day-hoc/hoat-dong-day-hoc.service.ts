@@ -1,7 +1,8 @@
 import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HOATDONGDAYHOC_MESSAGE, LIMIT } from 'constant/constant';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { FilterHoatDongDayHoc } from './dto/filter-hoat-đong-day-hoc';
 import { HoatDongDayHocEntity } from './entity/hoat-dong-day-hoc.entity';
 
 @Injectable()
@@ -10,23 +11,25 @@ export class HoatDongDayHocService {
     @InjectRepository(HoatDongDayHocEntity) private hoatDongDayHocRepository: Repository<HoatDongDayHocEntity>
   ) {}
 
-  async findAll(filter): Promise<HoatDongDayHocEntity[] | any> {
-    const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
+  async findAll(filter: FilterHoatDongDayHoc): Promise<HoatDongDayHocEntity[] | any> {
+    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
     const skip = Number(page) * Number(limit);
-    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
-    const query = {
-      isDeleted: false,
-      ...querySearch,
-      ...otherParam
-    };
-
-    const results = await this.hoatDongDayHocRepository.find({
-      where: query,
-      skip,
-      take: Number(limit),
-      relations: ['createdBy', 'updatedBy']
-    });
-    const total = await this.hoatDongDayHocRepository.count({ ...query });
+    const [results, total] = await this.hoatDongDayHocRepository
+      .createQueryBuilder('hddh')
+      .leftJoinAndSelect('hddh.createdBy', 'createdBy')
+      .leftJoinAndSelect('hddh.updatedBy', 'updatedBy')
+      .where((qb) => {
+        searchKey
+          ? qb.andWhere('hddh.ma LIKE :search OR hddh.ten LIKE :search', {
+              search: `%${searchKey}%`
+            })
+          : {};
+      })
+      .skip(skip)
+      .take(limit)
+      .andWhere('hddh.isDeleted = false')
+      .orderBy(sortBy ? `hddh.${sortBy}` : null, sortType)
+      .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }
 
