@@ -44,7 +44,7 @@ export class LoaiDanhGiaService extends BaseService {
   }
 
   async findAll(filter: FilterLoaiDanhGia) {
-    const { page = 0, limit = LIMIT, idSyllabus } = filter;
+    const { page = 0, limit = LIMIT, idSyllabus, sortBy, sortType, searchKey } = filter;
     const skip = page * limit;
     const searchByIdSyllabus = idSyllabus ? { syllabus: idSyllabus } : {};
     if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
@@ -64,11 +64,17 @@ export class LoaiDanhGiaService extends BaseService {
           .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
           .leftJoinAndSelect('syllabus.monHoc', 'monHoc')
           .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
+        idSyllabus ? qb.andWhere('ldg.syllabus = :idSyllabus', { idSyllabus }) : {};
+        searchKey
+          ? qb.andWhere('ldg.ten LIKE :search OR ldg.ma LIKE :search ', {
+              search: `%${searchKey}%`
+            })
+          : {};
       })
-      .where(query)
       .andWhere(`ldg.isDeleted = ${false}`)
       .take(limit)
       .skip(skip)
+      .orderBy(sortBy ? `ldg.${sortBy}` : null, sortType)
       .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }
