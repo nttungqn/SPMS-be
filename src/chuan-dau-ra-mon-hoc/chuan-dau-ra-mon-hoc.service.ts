@@ -182,4 +182,13 @@ export class ChuanDauRaMonHocService extends BaseService {
     if (!result) throw new BadRequestException(`CHUANDAURA_${idChuanDauRa}_NOT_IN_SYLLABUS`);
     return result;
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.chuanDauRaMonHocService.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(CHUANDAURAMONHOC_MESSAGE.DELETE_CHUANDAURAMONHOC_FAILED);
+    }
+  }
 }

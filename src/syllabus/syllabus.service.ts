@@ -179,4 +179,13 @@ export class SyllabusService extends BaseService {
     const results = await query.getMany();
     return results;
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.syllabusRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(SYLLABUS_MESSAGE.DELETE_SYLLABUS_FAILED);
+    }
+  }
 }

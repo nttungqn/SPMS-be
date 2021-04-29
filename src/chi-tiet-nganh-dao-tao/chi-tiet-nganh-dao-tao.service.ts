@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CTNGANHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm';
@@ -92,6 +92,15 @@ export class ChiTietNganhDaoTaoService {
       return deleted;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.chiTietNganhDTRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_FAILED);
     }
   }
 }

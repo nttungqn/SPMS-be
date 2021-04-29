@@ -183,4 +183,13 @@ export class MonHocService {
     const result = await this.monHocRepository.findOne({ where: query });
     return result ? true : false;
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.monHocRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(MONHOC_MESSAGE.DELETE_MONHOC_FAILED);
+    }
+  }
 }

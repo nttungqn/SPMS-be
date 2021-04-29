@@ -5,7 +5,7 @@ import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
 export class CreateGomNhomDTO {
   @ApiProperty()
-  @ManyToOne(() => LoaiKhoiKienThucEntity)
+  @ManyToOne(() => LoaiKhoiKienThucEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_LoaiKhoiKienThuc' })
   @Column({ name: 'ID_LoaiKhoiKienThuc' })
   @IsNumber()

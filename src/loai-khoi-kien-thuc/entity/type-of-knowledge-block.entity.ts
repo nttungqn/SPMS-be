@@ -10,6 +10,7 @@ export class LoaiKhoiKienThucEntity extends CreateLoaiKhoiKienThucDto {
   id?: number;
 
   @OneToMany(() => GomNhomEntity, (gomNhom) => gomNhom.loaiKhoiKienThuc)
+  @JoinColumn({ name: 'ID' })
   gomNhom?: GomNhomEntity[];
 
   @ManyToOne(() => UsersEntity)

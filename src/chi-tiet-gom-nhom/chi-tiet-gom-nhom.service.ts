@@ -233,4 +233,13 @@ export class ChiTietGomNhomService {
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
     }
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.chiTietGomNhomRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
+    }
+  }
 }

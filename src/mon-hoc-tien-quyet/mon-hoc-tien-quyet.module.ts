@@ -7,6 +7,7 @@ import { MonHocTienQuyetEntity } from './entity/mon-hoc-tien-quyet.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([MonHocTienQuyetEntity])],
   controllers: [MonHocTienQuyetController],
-  providers: [MonHocTienQuyetService]
+  providers: [MonHocTienQuyetService],
+  exports: [MonHocTienQuyetService]
 })
 export class MonHocTienQuyetModule {}

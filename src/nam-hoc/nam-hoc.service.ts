@@ -1,4 +1,10 @@
-import { ConflictException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  ServiceUnavailableException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NAMHOC_MESSAGE } from 'constant/constant';
 import { Repository } from 'typeorm';
@@ -78,6 +84,15 @@ export class NamHocService {
     const found = await query.getOne();
     if (found) {
       throw new ConflictException(NAMHOC_MESSAGE.NAMHOC_EXIST);
+    }
+  }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.schoolYearRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(NAMHOC_MESSAGE.DELETE_NAMHOC_FAILED);
     }
   }
 }

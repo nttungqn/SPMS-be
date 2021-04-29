@@ -89,4 +89,13 @@ export class KhoiKienThucService {
       throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.DELETE_KHOIKIENTHUC_FAILED);
     }
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.knowledgeBlockRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.DELETE_KHOIKIENTHUC_FAILED);
+    }
+  }
 }

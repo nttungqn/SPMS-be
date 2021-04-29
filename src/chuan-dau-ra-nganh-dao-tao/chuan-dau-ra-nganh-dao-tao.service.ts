@@ -122,24 +122,13 @@ export class ChuanDauRaNganhDaoTaoService {
       throw new InternalServerErrorException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_EMPTY);
     }
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.chuanDauRaNDTRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(CHUANDAURA_NGANHDAOTAO_MESSAGE.DELETE_CHUANDAURA_NGANHDAOTAO_FAILED);
+    }
+  }
 }
-
-// function groupBy(arr, fields) {
-//   let field = fields[0]               // one field at a time
-//   if (!field) return arr
-//   let retArr = Object.values(
-//      arr.reduce((obj, current) => {
-//         if (!obj[current[field]]) obj[current[field]] = {field: field, value: current[field],rows: []}
-//         obj[current[field]].rows.push(current)
-//         return obj
-//      }, {}))
-
-//   // recurse for each child's rows if there are remaining fields
-//   if (fields.length){
-//       retArr.forEach(obj => {
-//         obj.count = obj.rows.length
-//         obj.rows = groupBy(obj.rows, fields.slice(1))
-//       })
-//   }
-//   return retArr
-// }

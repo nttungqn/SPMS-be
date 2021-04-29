@@ -7,6 +7,7 @@ import { ChuanDauRaEntity } from './entity/chuanDauRa.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([ChuanDauRaEntity])],
   controllers: [ChuanDauRaController],
-  providers: [ChuanDauRaService]
+  providers: [ChuanDauRaService],
+  exports: [ChuanDauRaService]
 })
 export class ChuanDauRaModule {}

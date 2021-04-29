@@ -9,7 +9,7 @@ export class MucTieuMonHocEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
 
-  @ManyToOne(() => Syllabus)
+  @ManyToOne(() => Syllabus, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idSyllabus' })
   @Column({ name: 'idSyllabus' })
   syllabus?: number;
@@ -28,11 +28,11 @@ export class MucTieuMonHocEntity {
   })
   chuanDauRaCDIO?: ChuanDauRaNganhDaoTaoEntity[];
 
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'updatedBy' })
   updatedBy?: number;
 
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createdBy' })
   createdBy?: number;
 

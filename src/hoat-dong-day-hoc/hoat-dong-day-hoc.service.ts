@@ -97,4 +97,13 @@ export class HoatDongDayHocService {
   async isInSyllabus(idHoatDongDanhGia: number, idSyllabus: number) {
     throw new InternalServerErrorException(`HOATDONGDAYHOC_${idHoatDongDanhGia}_NOT_IN_SYLLABUS`);
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.hoatDongDayHocRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(HOATDONGDAYHOC_MESSAGE.DELETE_HOATDONGDAYHOC_FAILED);
+    }
+  }
 }

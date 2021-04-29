@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { GomNhomEntity } from 'gom-nhom/entity/gom-nhom.entity';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
-import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, BaseEntity } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
 
@@ -12,13 +12,13 @@ export class ChiTietGomNhomEntity {
   id?: number;
 
   @ApiProperty()
-  @ManyToOne(() => GomNhomEntity)
+  @ManyToOne(() => GomNhomEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_GomNhom' })
   @Column({ name: 'ID_GomNhom' })
   idGN?: number;
 
   @ApiProperty()
-  @ManyToOne(() => MonHocEntity)
+  @ManyToOne(() => MonHocEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_MonHoc' })
   @Column({ name: 'ID_MonHoc' })
   idMH?: number;
@@ -27,27 +27,27 @@ export class ChiTietGomNhomEntity {
   @Column({ name: 'GhiChu' })
   ghiChu?: string;
 
-  @ManyToOne(() => GomNhomEntity, (gomNhom) => gomNhom.chiTietGomNhom)
+  @ManyToOne(() => GomNhomEntity, (gomNhom) => gomNhom.chiTietGomNhom, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_GomNhom' })
   gomNhom?: GomNhomEntity;
 
-  @OneToOne(() => MonHocEntity, (monHoc) => monHoc.chiTietGomNhom)
+  @OneToOne(() => MonHocEntity, (monHoc) => monHoc.chiTietGomNhom, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_MonHoc' })
   monHoc?: MonHocEntity;
 
   @ApiProperty()
-  @OneToOne(() => ChiTietGomNhomEntity)
+  @OneToOne(() => ChiTietGomNhomEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idCTGNMonHocTruoc' })
   @Column({ name: 'idCTGNMonHocTruoc' })
   ctgnMonHoctruoc?: ChiTietGomNhomEntity;
 
   @ApiProperty()
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'updatedBy' })
   updatedBy?: number;
 
   @ApiProperty()
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createdBy' })
   createdBy?: number;
 

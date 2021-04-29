@@ -20,12 +20,12 @@ export class MonHocEntity extends CreateMonHocDto {
   monHocTienQuyet?: MonHocTienQuyetEntity[];
 
   @ApiProperty()
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'updatedBy' })
   updatedBy?: number;
 
   @ApiProperty()
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'createdBy' })
   createdBy?: number;
 

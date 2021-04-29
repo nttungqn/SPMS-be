@@ -227,6 +227,15 @@ export class ChuDeService extends BaseService {
         return this.hoatDongDayHocService;
     }
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.chuDeRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(CHUDE_MESSAGE.DELETE_CHUDE_FAILED);
+    }
+  }
 }
 const keyService = {
   chuanDauRaMonHoc: 1,

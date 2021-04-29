@@ -188,4 +188,13 @@ export class GomNhomService {
       throw new InternalServerErrorException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED);
     }
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.gomNhomRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED);
+    }
+  }
 }
