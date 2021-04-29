@@ -58,7 +58,7 @@ export class MucTieuMonHocService extends BaseService {
   }
 
   async findAll(filter: FilterMucTieuMonHoc) {
-    const { page = 0, limit = LIMIT, idSyllabus } = filter;
+    const { page = 0, limit = LIMIT, idSyllabus, sortBy, searchKey, sortType } = filter;
     const skip = page * limit;
     const searchByIdSyllabus = idSyllabus ? { syllabus: idSyllabus } : {};
     if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
@@ -77,11 +77,17 @@ export class MucTieuMonHocService extends BaseService {
           qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
             .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
             .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
+          idSyllabus ? qb.andWhere('mtmh.syllabus = :idSyllabus', { idSyllabus }) : {};
+          searchKey
+            ? qb.andWhere('mtmh.ma LIKE :search OR mtmh.mota LIKE :search', {
+                search: `%${searchKey}%`
+              })
+            : {};
         })
-        .where(query)
+        .andWhere('mtmh.isDeleted = false')
         .skip(skip)
         .take(limit)
-        .orderBy(idSyllabus ? { 'mtmh.ma': 'ASC' } : {})
+        .orderBy(sortBy ? `mtmh.${sortBy}` : null, sortType)
         .getManyAndCount();
       return { contents: results, total, page: Number(page) };
     } catch (error) {
