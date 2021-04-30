@@ -29,12 +29,10 @@ export class FilterChuDe extends BaseFilterDto {
   readonly idLKHGD: number;
 
   @ApiProperty({
-    required: false,
-    description: 'Sort a string in column: idSyllabus,idLKHGD,ma,ten,tuan,updatedAt,createdAt'
+    required: false
   })
   @IsOptional()
-  @IsIn(['idSyllabus', 'idLKHGD', 'ma', 'tuan', 'ten', 'updatedAt', 'createdAt', 'updatedBy', 'createdBy'])
-  sortBy: 'idSyllabus' | 'idLKHGD' | 'ma' | 'tuan' | 'ten' | 'updatedAt' | 'createdAt' | 'updatedBy' | 'createdBy';
+  sortBy: string;
 
   @ApiProperty({ required: false, description: 'ASC| DESC' })
   @IsOptional()

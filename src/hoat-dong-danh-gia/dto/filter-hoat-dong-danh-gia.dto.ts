@@ -17,13 +17,9 @@ export class FilterHoatDongDanhGia extends BaseFilterDto {
   @IsOptional()
   readonly searchKey?: string;
 
-  @ApiProperty({
-    required: false,
-    description: 'Sort a string in column: loaiDanhGia, ten, ma, moTa, tyLe, updatedAt, createdAt, updatedBy, createdBy'
-  })
+  @ApiProperty({ required: false })
   @IsOptional()
-  @IsIn(['loaiDanhGia', 'ten', 'ma', 'moTa', 'tyLe', 'updatedAt', 'createdAt', 'updatedBy', 'createdBy'])
-  sortBy: 'loaiDanhGia' | 'ma' | 'ten' | 'moTa' | 'tyLe' | 'updatedAt' | 'createdAt' | 'updatedBy' | 'createdBy';
+  sortBy: string;
 
   @ApiProperty({ required: false, description: 'ASC| DESC' })
   @IsOptional()

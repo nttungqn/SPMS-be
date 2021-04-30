@@ -28,16 +28,20 @@ export class RolesService {
   async findAll(filter: FilterRoles) {
     const { page = 0, limit = LIMIT, searchKey, sortBy, sortType } = filter;
     const skip = page * limit;
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     const [results, total] = await this.rolesRepository
       .createQueryBuilder('role')
-      .where('role.name LIKE :searchName OR role.value = :searchValue', {
+      .where((qb) => {
+        qb.leftJoinAndSelect('role.updatedBy', 'updatedBy').leftJoinAndSelect('role.createdBy', 'createdBy');
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `role.${sortBy}` : null, sortType);
+      })
+      .andWhere('role.name LIKE :searchName OR role.value = :searchValue', {
         searchName: `%${searchKey}%`,
         searchValue: Number.isNaN(Number(searchKey)) ? -1 : searchKey
       })
       .andWhere('role.isDeleted = true')
       .skip(skip)
       .take(limit)
-      .orderBy(sortBy ? `role.${sortBy}` : null, sortType)
       .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }

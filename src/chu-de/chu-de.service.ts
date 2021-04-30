@@ -29,6 +29,7 @@ export class ChuDeService extends BaseService {
   async findAll(filter: FilterChuDe): Promise<ChuDeEntity[] | any> {
     const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
     const skip = Number(page) * Number(limit);
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     const [results, total] = await this.chuDeRepository
       .createQueryBuilder('cd')
       .leftJoinAndSelect('cd.createdBy', 'createdBy')
@@ -47,6 +48,7 @@ export class ChuDeService extends BaseService {
           .leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
           .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
           .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `cd.${sortBy}` : null, sortType);
       })
       .andWhere('cd.ten LIKE :search OR cd.ma LIKE :search or cd.tuan = :tuan', {
         search: `%${searchKey}%`,
@@ -55,7 +57,6 @@ export class ChuDeService extends BaseService {
       .skip(skip)
       .take(limit)
       .andWhere(`cd.isDeleted = ${false}`)
-      .orderBy(sortBy ? `cd.${sortBy}` : null, sortType)
       .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }

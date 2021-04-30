@@ -60,12 +60,8 @@ export class MucTieuMonHocService extends BaseService {
   async findAll(filter: FilterMucTieuMonHoc) {
     const { page = 0, limit = LIMIT, idSyllabus, sortBy, searchKey, sortType } = filter;
     const skip = page * limit;
-    const searchByIdSyllabus = idSyllabus ? { syllabus: idSyllabus } : {};
     if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
-    const query = {
-      isDeleted: false,
-      ...searchByIdSyllabus
-    };
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     try {
       const [results, total] = await this.mucTieuMonHocEntityRepository
         .createQueryBuilder('mtmh')
@@ -83,11 +79,13 @@ export class MucTieuMonHocService extends BaseService {
                 search: `%${searchKey}%`
               })
             : {};
+          isSortFieldInForeignKey
+            ? qb.orderBy(sortBy, sortType)
+            : qb.orderBy(sortBy ? `mtmh.${sortBy}` : null, sortType);
         })
         .andWhere('mtmh.isDeleted = false')
         .skip(skip)
         .take(limit)
-        .orderBy(sortBy ? `mtmh.${sortBy}` : null, sortType)
         .getManyAndCount();
       return { contents: results, total, page: Number(page) };
     } catch (error) {

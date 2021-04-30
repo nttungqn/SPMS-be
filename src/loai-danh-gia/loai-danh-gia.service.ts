@@ -46,12 +46,8 @@ export class LoaiDanhGiaService extends BaseService {
   async findAll(filter: FilterLoaiDanhGia) {
     const { page = 0, limit = LIMIT, idSyllabus, sortBy, sortType, searchKey } = filter;
     const skip = page * limit;
-    const searchByIdSyllabus = idSyllabus ? { syllabus: idSyllabus } : {};
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
-    const query = {
-      isDeleted: false,
-      ...searchByIdSyllabus
-    };
     const [results, total] = await this.loaiDanhGiaRepository
       .createQueryBuilder('ldg')
       .leftJoinAndSelect('ldg.syllabus', 'syllabus')
@@ -70,11 +66,11 @@ export class LoaiDanhGiaService extends BaseService {
               search: `%${searchKey}%`
             })
           : {};
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `ldg.${sortBy}` : null, sortType);
       })
       .andWhere(`ldg.isDeleted = ${false}`)
       .take(limit)
       .skip(skip)
-      .orderBy(sortBy ? `ldg.${sortBy}` : null, sortType)
       .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }

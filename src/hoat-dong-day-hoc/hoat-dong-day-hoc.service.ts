@@ -14,6 +14,7 @@ export class HoatDongDayHocService {
   async findAll(filter: FilterHoatDongDayHoc): Promise<HoatDongDayHocEntity[] | any> {
     const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
     const skip = Number(page) * Number(limit);
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     const [results, total] = await this.hoatDongDayHocRepository
       .createQueryBuilder('hddh')
       .leftJoinAndSelect('hddh.createdBy', 'createdBy')
@@ -24,11 +25,11 @@ export class HoatDongDayHocService {
               search: `%${searchKey}%`
             })
           : {};
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `hddh.${sortBy}` : null, sortType);
       })
       .skip(skip)
       .take(limit)
       .andWhere('hddh.isDeleted = false')
-      .orderBy(sortBy ? `hddh.${sortBy}` : null, sortType)
       .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }

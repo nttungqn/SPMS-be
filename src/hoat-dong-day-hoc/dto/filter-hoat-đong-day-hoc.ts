@@ -7,13 +7,9 @@ export class FilterHoatDongDayHoc extends BaseFilterDto {
   @IsOptional()
   readonly searchKey?: string;
 
-  @ApiProperty({
-    required: false,
-    description: 'Sort a string in column: ma, ten,updatedAt, createdAt, updatedBy, createdBy'
-  })
+  @ApiProperty({ required: false })
   @IsOptional()
-  @IsIn(['ma', 'ten', 'updatedAt', 'createdAt', 'updatedBy', 'createdBy'])
-  sortBy: 'ma' | 'ten' | 'updatedAt' | 'createdAt' | 'updatedBy' | 'createdBy';
+  sortBy: string;
 
   @ApiProperty({ required: false, description: 'ASC| DESC' })
   @IsOptional()

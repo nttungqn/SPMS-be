@@ -7,10 +7,9 @@ export class FilterRoles extends BaseFilterDto {
   @IsOptional()
   searchKey: string;
 
-  @ApiProperty({ required: false, description: 'Sort a string in column: name,value,updatedAt,createdAt' })
+  @ApiProperty({ required: false })
   @IsOptional()
-  @IsIn(['name', 'value', 'updatedAt', 'createdAt'])
-  sortBy: 'name' | 'value' | 'updatedAt' | 'createdAt';
+  sortBy: string;
 
   @ApiProperty({ required: false, description: 'ASC| DESC' })
   @IsOptional()

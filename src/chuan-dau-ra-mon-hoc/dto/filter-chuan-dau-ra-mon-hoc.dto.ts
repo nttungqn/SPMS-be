@@ -17,13 +17,9 @@ export class FilterChuanDauRaMonHocDto extends BaseFilterDto {
   @IsOptional()
   readonly searchKey?: string;
 
-  @ApiProperty({
-    required: false,
-    description: 'Sort a string in column: ma, mucTieuMonHoc, mota, mucDo, updatedAt, createdAt, updatedBy, createdBy'
-  })
+  @ApiProperty({ required: false })
   @IsOptional()
-  @IsIn(['ma', 'mucTieuMonHoc', 'mota', 'mucDo', 'updatedAt', 'createdAt', 'updatedBy', 'createdBy'])
-  sortBy: 'ma' | 'mucTieuMonHoc' | 'mota' | 'mucDo' | 'updatedAt' | 'createdAt' | 'updatedBy' | 'createdBy';
+  sortBy: string;
 
   @ApiProperty({ required: false, description: 'ASC| DESC' })
   @IsOptional()

@@ -61,6 +61,7 @@ export class ChuanDauRaMonHocService extends BaseService {
   async findAll(filter: FilterChuanDauRaMonHocDto) {
     const { page = 0, limit = LIMIT, idMucTieuMonHoc, idSyllabus, sortBy, sortType, searchKey } = filter;
     const skip = page * limit;
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     const [results, total] = await this.chuanDauRaMonHocService
       .createQueryBuilder('cdr')
       .leftJoin('cdr.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted =:isDeleted', { isDeleted: false })
@@ -74,11 +75,11 @@ export class ChuanDauRaMonHocService extends BaseService {
               search: `%${searchKey}%`
             })
           : {};
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `cdr.${sortBy}` : null, sortType);
       })
       .andWhere('cdr.isDeleted =:isDeleted', { isDeleted: false })
       .skip(skip)
       .take(limit)
-      .orderBy(sortBy ? `cdr.${sortBy}` : null, sortType)
       .getManyAndCount();
     return { contents: results, total, page: page };
   }

@@ -13,12 +13,10 @@ export class FilterMucTieuMonHoc extends BaseFilterDto {
   readonly searchKey?: string;
 
   @ApiProperty({
-    required: false,
-    description: 'Sort a string in column: syllabus, ma, mota, mucDo, updatedAt, createdAt, updatedBy, createdBy'
+    required: false
   })
   @IsOptional()
-  @IsIn(['syllabus', 'ma', 'mota', 'updatedAt', 'createdAt', 'updatedBy', 'createdBy'])
-  sortBy: 'syllabus' | 'ma' | 'mota' | 'updatedAt' | 'createdAt' | 'updatedBy' | 'createdBy';
+  sortBy: string;
 
   @ApiProperty({ required: false, description: 'ASC| DESC' })
   @IsOptional()

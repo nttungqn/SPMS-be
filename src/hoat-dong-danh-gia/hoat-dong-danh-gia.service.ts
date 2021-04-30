@@ -73,6 +73,7 @@ export class HoatDongDanhGiaService extends BaseService {
   async findAll(filter: FilterHoatDongDanhGia) {
     const { page = 0, limit = LIMIT, sortBy, sortType, searchKey, idLoaiDanhGia, idSyllabus } = filter;
     const skip = page * limit;
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     const [results, total] = await this.hoatDongDanhGiaService
       .createQueryBuilder('hddg')
       .leftJoin('hddg.loaiDanhGia', 'ldg', 'ldg.isDeleted = false')
@@ -89,11 +90,11 @@ export class HoatDongDanhGiaService extends BaseService {
               tyle: Number.isNaN(Number(searchKey)) ? -1 : searchKey
             })
           : {};
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `hddg.${sortBy}` : null, sortType);
       })
       .andWhere('hddg.isDeleted = false')
       .skip(skip)
       .take(limit)
-      .orderBy(sortBy ? `hddg.${sortBy}` : null, sortType)
       .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }
