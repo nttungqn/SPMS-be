@@ -7,7 +7,7 @@ import { HoatDongDanhGiaService } from 'hoat-dong-danh-gia/hoat-dong-danh-gia.se
 import { HoatDongDayHocService } from 'hoat-dong-day-hoc/hoat-dong-day-hoc.service';
 import { LoaiKeHoachGiangDayService } from 'loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.service';
 import { SyllabusService } from 'syllabus/syllabus.service';
-import { Like, Not, Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateChuDeDto } from './dto/create-chu-de';
 import { FilterChuDe } from './dto/filter-chu-de';
 import { UpdateChuDeDTO } from './dto/update-chu-de';
@@ -27,14 +27,9 @@ export class ChuDeService extends BaseService {
   }
 
   async findAll(filter: FilterChuDe): Promise<ChuDeEntity[] | any> {
-    const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
+    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
     const skip = Number(page) * Number(limit);
-    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
-    const query = {
-      isDeleted: false,
-      ...querySearch,
-      ...otherParam
-    };
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     const [results, total] = await this.chuDeRepository
       .createQueryBuilder('cd')
       .leftJoinAndSelect('cd.createdBy', 'createdBy')
@@ -53,12 +48,15 @@ export class ChuDeService extends BaseService {
           .leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
           .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
           .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `cd.${sortBy}` : null, sortType);
       })
-      .where(query)
+      .andWhere('cd.ten LIKE :search OR cd.ma LIKE :search or cd.tuan = :tuan', {
+        search: `%${searchKey}%`,
+        tuan: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+      })
       .skip(skip)
       .take(limit)
       .andWhere(`cd.isDeleted = ${false}`)
-      .orderBy('cd.tuan', 'ASC')
       .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }

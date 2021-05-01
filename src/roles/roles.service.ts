@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.dto';
 import { LIMIT, ROLES_MESSAGE } from 'constant/constant';
 import { Repository } from 'typeorm';
+import { FilterRoles } from './dto/filter-roles.dto';
 import { RolesEntity } from './entity/roles.entity';
 
 @Injectable()
@@ -25,15 +25,24 @@ export class RolesService {
     }
   }
 
-  async findAll(filter: BaseFilterDto) {
-    const { page = 0, limit = LIMIT, ...other } = filter;
+  async findAll(filter: FilterRoles) {
+    const { page = 0, limit = LIMIT, searchKey, sortBy, sortType } = filter;
     const skip = page * limit;
-    const [results, total] = await this.rolesRepository.findAndCount({
-      skip,
-      take: limit,
-      where: { isDeleted: false },
-      ...other
-    });
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+    const [results, total] = await this.rolesRepository
+      .createQueryBuilder('role')
+      .where((qb) => {
+        qb.leftJoinAndSelect('role.updatedBy', 'updatedBy').leftJoinAndSelect('role.createdBy', 'createdBy');
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `role.${sortBy}` : null, sortType);
+      })
+      .andWhere('role.name LIKE :searchName OR role.value = :searchValue', {
+        searchName: `%${searchKey}%`,
+        searchValue: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+      })
+      .andWhere('role.isDeleted = true')
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
     return { contents: results, total, page: Number(page) };
   }
 

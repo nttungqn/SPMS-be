@@ -71,34 +71,32 @@ export class HoatDongDanhGiaService extends BaseService {
   }
 
   async findAll(filter: FilterHoatDongDanhGia) {
-    const { page = 0, limit = LIMIT } = filter;
+    const { page = 0, limit = LIMIT, sortBy, sortType, searchKey, idLoaiDanhGia, idSyllabus } = filter;
     const skip = page * limit;
-
-    let query = '';
-    const { idSyllabus, idLoaiDanhGia } = filter;
-    if (idSyllabus) {
-      await this.syllabusService.findOne(idSyllabus);
-      query = `ldg.idSyllabus=${idSyllabus}`;
-    }
-    if (idLoaiDanhGia) {
-      await this.loaiDanhGiaService.findOne(idLoaiDanhGia);
-      if (idSyllabus) query += ' And ';
-      query += `ldg.id=${idLoaiDanhGia}`;
-    }
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     const [results, total] = await this.hoatDongDanhGiaService
       .createQueryBuilder('hddg')
-      .leftJoin('hddg.loaiDanhGia', 'ldg')
-      .where(query ? query : {})
-      .andWhere('hddg.isDeleted =:isDeleted', { isDeleted: false })
-      .andWhere('ldg.isDeleted =:isDeleted', { isDeleted: false })
+      .leftJoin('hddg.loaiDanhGia', 'ldg', 'ldg.isDeleted = false')
       .leftJoinAndSelect('hddg.updatedBy', 'updatedBy')
       .leftJoinAndSelect('hddg.createdBy', 'createdBy')
       .leftJoinAndSelect('hddg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted =${false}`)
       .leftJoinAndSelect('hddg.loaiDanhGia', 'loaiDanhGia', `loaiDanhGia.isDeleted =${false}`)
+      .where((qb) => {
+        idSyllabus ? qb.where('ldg.idSyllabus = :idSyllabus', { idSyllabus }) : {};
+        idLoaiDanhGia ? qb.andWhere('ldg.id = :idLoaiDanhGia', { idLoaiDanhGia }) : {};
+        searchKey
+          ? qb.andWhere('hddg.ten LIKE :search OR hddg.ma LIKE :search OR hddg.tyle = :tyle', {
+              search: `%${searchKey}%`,
+              tyle: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+            })
+          : {};
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `hddg.${sortBy}` : null, sortType);
+      })
+      .andWhere('hddg.isDeleted = false')
       .skip(skip)
       .take(limit)
       .getManyAndCount();
-    return { contents: results, total, page: page };
+    return { contents: results, total, page: Number(page) };
   }
 
   async findOne(id: number) {

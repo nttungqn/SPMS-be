@@ -44,14 +44,10 @@ export class LoaiDanhGiaService extends BaseService {
   }
 
   async findAll(filter: FilterLoaiDanhGia) {
-    const { page = 0, limit = LIMIT, idSyllabus } = filter;
+    const { page = 0, limit = LIMIT, idSyllabus, sortBy, sortType, searchKey } = filter;
     const skip = page * limit;
-    const searchByIdSyllabus = idSyllabus ? { syllabus: idSyllabus } : {};
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
-    const query = {
-      isDeleted: false,
-      ...searchByIdSyllabus
-    };
     const [results, total] = await this.loaiDanhGiaRepository
       .createQueryBuilder('ldg')
       .leftJoinAndSelect('ldg.syllabus', 'syllabus')
@@ -64,8 +60,14 @@ export class LoaiDanhGiaService extends BaseService {
           .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
           .leftJoinAndSelect('syllabus.monHoc', 'monHoc')
           .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
+        idSyllabus ? qb.andWhere('ldg.syllabus = :idSyllabus', { idSyllabus }) : {};
+        searchKey
+          ? qb.andWhere('ldg.ten LIKE :search OR ldg.ma LIKE :search ', {
+              search: `%${searchKey}%`
+            })
+          : {};
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `ldg.${sortBy}` : null, sortType);
       })
-      .where(query)
       .andWhere(`ldg.isDeleted = ${false}`)
       .take(limit)
       .skip(skip)
