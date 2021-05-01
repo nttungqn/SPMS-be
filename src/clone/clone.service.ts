@@ -68,7 +68,20 @@ export class CloneService {
     });
     const khoiKienThuc = await this.conection
       .getRepository(KhoiKienThucEntity)
-      .find({ where: { isDeleted: false, chiTietNganh: idCTNDT } });
+      .createQueryBuilder('kkt')
+      .where((qb) => {
+        qb.leftJoinAndSelect('kkt.loaiKhoiKienThuc', 'lkkt', 'lkkt.isDeleted = false')
+          .leftJoinAndSelect('lkkt.gomNhom', 'gomNhom', `gomNhom.isDeleted = ${false}`)
+          .where((qb) => {
+            qb.leftJoinAndSelect('gomNhom.chiTietGomNhom', 'chiTietGomNhom').where((qb) => {
+              qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
+            });
+          });
+      })
+      .andWhere(`lkkt.khoiKienThuc = :idCTNDT`, { idCTNDT })
+      .andWhere(`lkkt.isDeleted = ${false}`)
+      .getMany();
+
     return { KhoiKienThuc: khoiKienThuc, LoaiKhoiKienThucClone: loaiKhoiKienThucList };
   }
   async updateLoaiKhoiKienThucDetailClone(

@@ -1,6 +1,7 @@
 import { TABLE_NAME } from 'constant/constant';
 import { CreateKhoiKienThucDto } from 'khoi-kien-thuc/dto/create-khoi-kien-thuc.dto';
-import { AfterLoad, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
+import { AfterLoad, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity({ name: TABLE_NAME.KHOIKIENTHUC })
@@ -9,6 +10,9 @@ export class KhoiKienThucEntity extends CreateKhoiKienThucDto {
   id?: number;
   @Column({ name: 'TongTC' })
   tongTinChi?: number;
+
+  @OneToMany(() => LoaiKhoiKienThucEntity, (lkkt) => lkkt.khoiKienThuc)
+  loaiKhoiKienThuc?: LoaiKhoiKienThucEntity[];
 
   @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'updatedBy' })
