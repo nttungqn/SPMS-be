@@ -12,11 +12,11 @@ export class GomNhomEntity extends CreateGomNhomDTO {
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
 
-  @ManyToOne(() => LoaiKhoiKienThucEntity, { onDelete: 'CASCADE' })
+  @ManyToOne(() => LoaiKhoiKienThucEntity, (lkkt) => lkkt.gomNhom, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_LoaiKhoiKienThuc' })
   loaiKhoiKienThuc?: LoaiKhoiKienThucEntity;
 
-  @OneToMany(() => ChiTietGomNhomEntity, (chiTietGomNhom) => chiTietGomNhom.gomNhom)
+  @OneToMany(() => ChiTietGomNhomEntity, (chiTietGomNhom) => chiTietGomNhom.gomNhom, { cascade: true })
   @JoinColumn({ name: 'id' })
   chiTietGomNhom?: ChiTietGomNhomEntity[];
 

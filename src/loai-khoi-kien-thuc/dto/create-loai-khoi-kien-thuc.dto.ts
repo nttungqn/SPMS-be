@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
-import { Column, JoinColumn, ManyToOne } from 'typeorm';
+import { BaseEntity, Column, JoinColumn, ManyToOne } from 'typeorm';
 
 export class CreateLoaiKhoiKienThucDto {
   //@Column({name:'ID_KhoiKienThuc'})

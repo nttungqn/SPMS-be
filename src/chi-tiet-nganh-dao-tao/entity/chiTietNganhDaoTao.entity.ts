@@ -2,11 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsString } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
 import { NganhDaoTaoEntity } from 'ctdt/entity/nganhDaoTao.entity';
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
+import { BaseEntity, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity(TABLE_NAME.CHITIETNGANHDAOTAO)
-export class ChiTietNganhDaoTaoEntity {
+export class ChiTietNganhDaoTaoEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'ID' })
   id: number;
 
@@ -47,4 +48,11 @@ export class ChiTietNganhDaoTaoEntity {
 
   @Column()
   isDeleted: boolean;
+
+  @OneToMany(() => KhoiKienThucEntity, (kkt) => kkt.chiTietNganh, {
+    onDelete: 'CASCADE',
+    persistence: false,
+    cascade: true
+  })
+  khoiKienThucList: KhoiKienThucEntity[];
 }
