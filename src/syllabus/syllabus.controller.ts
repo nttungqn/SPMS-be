@@ -67,7 +67,7 @@ export class SyllabusController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách syllabus của giáo vien' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -101,7 +101,7 @@ export class SyllabusController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -109,22 +109,24 @@ export class SyllabusController {
   @ApiConflictResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_EXIST })
   @ApiOkResponse({ description: SYLLABUS_MESSAGE.UPDATE_SYLLABUS_SUCCESSFULLY })
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateSyllabusDto: UpdateSyllabusDto, @Req() req) {
-    const user = req.user || {};
-    await this.syllabusService.update(id, { ...updateSyllabusDto, updatedBy: user?.id, updatedAt: new Date() });
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateSyllabusDto: UpdateSyllabusDto,
+    @GetUser() user: UsersEntity
+  ) {
+    await this.syllabusService.update(id, { ...updateSyllabusDto, updatedBy: user?.id, updatedAt: new Date() }, user);
     return new HttpException(SYLLABUS_MESSAGE.UPDATE_SYLLABUS_SUCCESSFULLY, HttpStatus.OK);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
   @ApiInternalServerErrorResponse({ description: SYLLABUS_MESSAGE.DELETE_SYLLABUS_FAILED })
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
-    const user = req.user || {};
-    await this.syllabusService.remove(id, user?.id);
+  async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: UsersEntity) {
+    await this.syllabusService.remove(id, user);
     return new HttpException(SYLLABUS_MESSAGE.DELETE_SYLLABUS_SUCCESSFULLY, HttpStatus.OK);
   }
 }

@@ -8,6 +8,7 @@ import { Not, OrderByCondition, Repository } from 'typeorm';
 import { GetSyllabusFilterDto } from './dto/filter-syllabus.dto';
 import { Syllabus } from './entity/syllabus.entity';
 import { BaseService } from 'guards/base-service.dto';
+import { UsersEntity } from 'users/entity/user.entity';
 
 @Injectable()
 export class SyllabusService extends BaseService {
@@ -98,9 +99,12 @@ export class SyllabusService extends BaseService {
     return found;
   }
 
-  async update(id: number, updateSyllabus: Syllabus) {
-    const sylabus = await this.syllabusRepository.findOne(id, { where: { isDeleted: false } });
-    this.isOwner(sylabus.createdBy, updateSyllabus.updatedBy);
+  async update(id: number, updateSyllabus: Syllabus, updateBy: UsersEntity) {
+    const sylabus = await this.syllabusRepository.findOne(id, {
+      where: { isDeleted: false },
+      relations: ['createdBy']
+    });
+    this.checkPermission(sylabus.createdBy, updateBy);
     const { namHoc, heDaoTao, monHoc } = updateSyllabus;
     if (namHoc) {
       await this.shoolYearService.findById(namHoc);
@@ -126,11 +130,16 @@ export class SyllabusService extends BaseService {
     return this.findOne(sylabus.id);
   }
 
-  async remove(id: number, idUser: number) {
+  async remove(id: number, user: UsersEntity) {
     const found = await this.findOne(id);
-    this.isOwner(found.createdBy, idUser);
+    this.checkPermission(found.createdBy, user);
     try {
-      return await this.syllabusRepository.save({ ...found, updateBy: idUser, updatedAt: new Date(), isDeleted: true });
+      return await this.syllabusRepository.save({
+        ...found,
+        updateBy: user.id,
+        updatedAt: new Date(),
+        isDeleted: true
+      });
     } catch (error) {
       throw new InternalServerErrorException(SYLLABUS_MESSAGE.DELETE_SYLLABUS_FAILED);
     }
