@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CHUANDAURAMONHOC_MESSAGE, LIMIT } from 'constant/constant';
 import { BaseService } from 'guards/base-service.dto';
 import { MucTieuMonHocService } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.service';
-import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { CreateChuanDauRaMonHocDto } from './dto/create-chuan-dau-ra-mon-hoc.dto';
@@ -22,8 +21,7 @@ export class ChuanDauRaMonHocService extends BaseService {
   constructor(
     @InjectRepository(ChuanDauRaMonHocEntity)
     private chuanDauRaMonHocService: Repository<ChuanDauRaMonHocEntity>,
-    private mucTieuMonHocService: MucTieuMonHocService,
-    private syllabusService: SyllabusService
+    private mucTieuMonHocService: MucTieuMonHocService
   ) {
     super();
   }
@@ -31,7 +29,7 @@ export class ChuanDauRaMonHocService extends BaseService {
   async create(newData: CreateChuanDauRaMonHocDto, createdBy: UsersEntity) {
     const mucTieuMonHoc = await this.mucTieuMonHocService.findOne(newData.mucTieuMonHoc);
     this.checkPermission(mucTieuMonHoc.createdBy, createdBy);
-
+    const muTieuMonHocCreatedBy: any = mucTieuMonHoc.createdBy;
     const chuanDauRaMonHoc = new ChuanDauRaMonHocEntity();
     const { mucDo } = newData;
     if (mucDo) {
@@ -49,7 +47,7 @@ export class ChuanDauRaMonHocService extends BaseService {
       const result = await this.chuanDauRaMonHocService.save({
         ...chuanDauRaMonHoc,
         createdAt: new Date(),
-        createdBy: createdBy.id,
+        createdBy: muTieuMonHocCreatedBy.id,
         updatedAt: new Date(),
         updatedBy: createdBy.id
       });

@@ -26,7 +26,7 @@ export class MucTieuMonHocService extends BaseService {
     const syllabus = await this.syllabusService.findOne(newData.syllabus);
 
     this.checkPermission(syllabus.createdBy, createdBy);
-
+    const syllabusCreatedBy: any = syllabus.createdBy;
     const mucTieuMonHoc = new MucTieuMonHocEntity();
     mucTieuMonHoc.syllabus = newData.syllabus;
     mucTieuMonHoc.ma = newData.ma;
@@ -48,7 +48,7 @@ export class MucTieuMonHocService extends BaseService {
       const result = await this.mucTieuMonHocEntityRepository.save({
         ...mucTieuMonHoc,
         createdAt: new Date(),
-        createdBy: createdBy.id,
+        createdBy: syllabusCreatedBy.id,
         updatedAt: new Date(),
         updatedBy: createdBy.id
       });

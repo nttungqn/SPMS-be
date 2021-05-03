@@ -94,6 +94,7 @@ export class ChuDeService extends BaseService {
     const syllabus = await this.syllabusService.findOne(newData.idSyllabus);
     await this.loaiKeHoachGiangDayService.findById(newData.idLKHGD);
     this.checkPermission(syllabus.createdBy, createdBy.id);
+    const syllabusCreatedBy: any = syllabus.createdBy;
 
     if (await this.isExist(null, newData)) {
       throw new ConflictException(CHUDE_MESSAGE.CHUDE_EXIST);
@@ -103,7 +104,7 @@ export class ChuDeService extends BaseService {
     try {
       const saved = await this.chuDeRepository.save({
         ...chuDe,
-        createdBy: createdBy.id,
+        createdBy: syllabusCreatedBy.id,
         updatedBy: createdBy.id,
         createdAt: new Date(),
         updatedAt: new Date()
