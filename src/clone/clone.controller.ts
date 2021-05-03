@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
 import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
@@ -23,17 +23,25 @@ export class CloneController {
     return this.cloneService.updateKhoiKienThuc(khoikienThucList, idCTNDT);
   }
 
-  @Get('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/loai-khoi-kien-thuc-detail')
+  @Get('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/loai-khoi-kien-thuc-chi-tiet')
   async getLoaiKhoiKienThuc(@Param('idCTNDTClone') idCTNDTClone: number, @Param('idCTNDT') idCTNDT: number) {
     return await this.cloneService.LoaiKhoiKienThucDetailClone(idCTNDTClone, idCTNDT);
   }
 
-  @Put('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/loai-khoi-kien-thuc-detail')
+  @Put('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/loai-khoi-kien-thuc-chi-tiet')
   async updateLoaiKhoiKienThuc(
     @Body() loaiKhoiKienThucList: LoaiKhoiKienThucEntity[],
     @Param('idCTNDTClone') idCTNDTClone: number,
     @Param('idCTNDT') idCTNDT: number
   ) {
     return await this.cloneService.updateLoaiKhoiKienThucDetailClone(loaiKhoiKienThucList, idCTNDTClone, idCTNDT);
+  }
+  @Get('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/ke-hoach-giang-day')
+  async getKeHoachGiangDay(@Param('idCTNDTClone') idCTNDTClone: number, @Param('idCTNDT') idCTNDT: number) {
+    return await this.cloneService.KeHoachGiangDayClone(idCTNDTClone, idCTNDT);
+  }
+  @Delete('/chi-tiet-nganh-dao-tao/:idKKT')
+  async khoiKienThuc(@Param('idKKT') idKKT: number) {
+    return await this.cloneService.deleteKhoiKienThuc(idKKT);
   }
 }

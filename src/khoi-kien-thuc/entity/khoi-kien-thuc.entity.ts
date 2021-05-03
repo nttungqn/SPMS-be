@@ -11,7 +11,7 @@ export class KhoiKienThucEntity extends CreateKhoiKienThucDto {
   @Column({ name: 'TongTC' })
   tongTinChi?: number;
 
-  @OneToMany(() => LoaiKhoiKienThucEntity, (lkkt) => lkkt.khoiKienThuc)
+  @OneToMany(() => LoaiKhoiKienThucEntity, (lkkt) => lkkt.khoiKienThuc, { onDelete: 'CASCADE' })
   loaiKhoiKienThuc?: LoaiKhoiKienThucEntity[];
 
   @ManyToOne(() => UsersEntity)

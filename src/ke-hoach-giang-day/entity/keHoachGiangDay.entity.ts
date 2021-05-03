@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ChiTietKeHoachEntity } from 'chi-tiet-ke-hoach/entity/chi-tiet-ke-hoach.entity';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
 import { IsInt, IsString } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 
 @Entity(TABLE_NAME.KEHOACHGIANGDAY)
@@ -48,4 +49,7 @@ export class KeHoachGiangDayEntity {
 
   @Column()
   isDeleted: boolean;
+
+  @OneToMany(() => ChiTietKeHoachEntity, (ctkh) => ctkh.idKHGD)
+  chiTietKeHoach?: ChiTietKeHoachEntity[];
 }
