@@ -28,7 +28,7 @@ export class ChuDeService extends BaseService {
   }
 
   async findAll(filter: FilterChuDe): Promise<ChuDeEntity[] | any> {
-    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
+    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, idLKHGD, idSyllabus } = filter;
     const skip = Number(page) * Number(limit);
     const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     const [results, total] = await this.chuDeRepository
@@ -50,10 +50,14 @@ export class ChuDeService extends BaseService {
           .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
           .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
         isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `cd.${sortBy}` : null, sortType);
-      })
-      .andWhere('cd.ten LIKE :search OR cd.ma LIKE :search or cd.tuan = :tuan', {
-        search: `%${searchKey}%`,
-        tuan: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+        idSyllabus ? qb.andWhere('syllabus.id = :idSyllabus', { idSyllabus }) : {};
+        idLKHGD ? qb.andWhere('lhkgd.id = :idLKHGD', { idLKHGD }) : {};
+        searchKey
+          ? qb.andWhere('cd.ten LIKE :search OR cd.ma LIKE :search or cd.tuan = :tuan', {
+              search: `%${searchKey}%`,
+              tuan: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+            })
+          : {};
       })
       .skip(skip)
       .take(limit)
@@ -93,7 +97,7 @@ export class ChuDeService extends BaseService {
   async create(newData: CreateChuDeDto, createdBy: UsersEntity): Promise<any> {
     const syllabus = await this.syllabusService.findOne(newData.idSyllabus);
     await this.loaiKeHoachGiangDayService.findById(newData.idLKHGD);
-    this.checkPermission(syllabus.createdBy, createdBy.id);
+    this.checkPermission(syllabus.createdBy, createdBy);
     const syllabusCreatedBy: any = syllabus.createdBy;
 
     if (await this.isExist(null, newData)) {

@@ -24,14 +24,17 @@ export class CreateChuDeDto {
   tuan?: number;
 
   @ApiProperty()
+  @IsOptional()
   @IsString({ each: true })
   hoatDongDanhGia?: string[];
 
   @ApiProperty()
+  @IsOptional()
   @IsString({ each: true })
   chuanDauRaMonHoc?: string[];
 
   @ApiProperty()
+  @IsOptional()
   @IsString({ each: true })
   hoatDongDayHoc?: string[];
 }

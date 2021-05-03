@@ -29,7 +29,6 @@ export class LoaiDanhGiaService extends BaseService {
     if (await this.isExistV2(null, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
 
     const loaiDanhGia = await this.createEntity(new LoaiDanhGiaEntity(), newData, newData.idSyllabus);
-
     try {
       const result = await this.loaiDanhGiaRepository.save({
         ...loaiDanhGia,

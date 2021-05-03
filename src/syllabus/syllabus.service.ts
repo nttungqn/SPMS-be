@@ -100,34 +100,39 @@ export class SyllabusService extends BaseService {
   }
 
   async update(id: number, updateSyllabus: Syllabus, updateBy: UsersEntity) {
-    const sylabus = await this.syllabusRepository.findOne(id, {
+    const syllabus = await this.syllabusRepository.findOne(id, {
       where: { isDeleted: false },
       relations: ['createdBy']
     });
-    this.checkPermission(sylabus.createdBy, updateBy);
+    this.checkPermission(syllabus.createdBy, updateBy);
     const { namHoc, heDaoTao, monHoc } = updateSyllabus;
     if (namHoc) {
       await this.shoolYearService.findById(namHoc);
-      sylabus.namHoc = namHoc;
+      syllabus.namHoc = namHoc;
     }
     if (heDaoTao) {
       await this.typeOfEduService.findById(heDaoTao);
-      sylabus.heDaoTao = heDaoTao;
+      syllabus.heDaoTao = heDaoTao;
     }
     if (monHoc) {
       await this.subjectService.findById(monHoc);
-      sylabus.monHoc = monHoc;
+      syllabus.monHoc = monHoc;
     }
 
-    if (await this.isExist(sylabus)) {
+    if (await this.isExist(syllabus)) {
       throw new ConflictException(SYLLABUS_MESSAGE.SYLLABUS_EXIST);
     }
     try {
-      await this.syllabusRepository.save({ ...sylabus, updateBy: updateSyllabus.updatedBy, updatedAt: new Date() });
+      await this.syllabusRepository.save({
+        ...syllabus,
+        ...updateSyllabus,
+        updateBy: updateBy.id,
+        updatedAt: new Date()
+      });
     } catch (error) {
       throw new InternalServerErrorException(SYLLABUS_MESSAGE.UPDATE_SYLLABUS_FAILED);
     }
-    return this.findOne(sylabus.id);
+    return this.findOne(syllabus.id);
   }
 
   async remove(id: number, user: UsersEntity) {
