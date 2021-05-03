@@ -51,7 +51,7 @@ export class HoatDongDanhGiaController {
   @ApiConflictResponse({ description: HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_EXIST })
   @Post()
   async create(@Body() createHoatDongDanhGiaDto: CreateHoatDongDanhGiaDto, @GetUser() user: UsersEntity) {
-    await this.hoatDongDanhGiaService.create(createHoatDongDanhGiaDto, user.id);
+    await this.hoatDongDanhGiaService.create(createHoatDongDanhGiaDto, user);
     return new HttpException(HOATDONGDANHGIA_MESSAGE.CREATE_HOATDONGDANHGIA_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
@@ -93,7 +93,7 @@ export class HoatDongDanhGiaController {
     @Body() updateHoatDongDanhGiaDto: UpdateHoatDongDanhGiaDto,
     @GetUser() user: UsersEntity
   ) {
-    await this.hoatDongDanhGiaService.update(id, updateHoatDongDanhGiaDto, user.id);
+    await this.hoatDongDanhGiaService.update(id, updateHoatDongDanhGiaDto, user);
     return new HttpException(HOATDONGDANHGIA_MESSAGE.UPDATE_HOATDONGDANHGIA_SUCCESSFULLY, HttpStatus.OK);
   }
 
@@ -107,7 +107,7 @@ export class HoatDongDanhGiaController {
   @ApiNotFoundResponse({ description: HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_ID_NOT_FOUND })
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: UsersEntity) {
-    await this.hoatDongDanhGiaService.remove(id, user.id);
+    await this.hoatDongDanhGiaService.remove(id, user);
     return new HttpException(HOATDONGDANHGIA_MESSAGE.DELETE_HOATDONGDANHGIA_SUCCESSFULLY, HttpStatus.OK);
   }
 }

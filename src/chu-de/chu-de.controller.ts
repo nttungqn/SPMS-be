@@ -71,7 +71,7 @@ export class ChuDeController {
   @ApiOkResponse({ description: CHUDE_MESSAGE.CREATE_CHUDE_SUCCESSFULLY })
   @Post()
   async create(@Body() newData: CreateChuDeDto, @GetUser() user: UsersEntity): Promise<any> {
-    await this.chuDeService.create(newData, user.id);
+    await this.chuDeService.create(newData, user);
     return new HttpException(CHUDE_MESSAGE.CREATE_CHUDE_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
@@ -88,7 +88,7 @@ export class ChuDeController {
     @Body() updatedData: UpdateChuDeDTO,
     @GetUser() user: UsersEntity
   ): Promise<any> {
-    await this.chuDeService.update(id, updatedData, user.id);
+    await this.chuDeService.update(id, updatedData, user);
     return new HttpException(CHUDE_MESSAGE.UPDATE_CHUDE_SUCCESSFULLY, HttpStatus.OK);
   }
 
@@ -101,7 +101,7 @@ export class ChuDeController {
   @ApiOkResponse({ description: CHUDE_MESSAGE.DELETE_CHUDE_SUCCESSFULLY })
   @Delete(':id')
   async delete(@Param('id') id: number, @GetUser() user: UsersEntity): Promise<any> {
-    await this.chuDeService.delete(Number(id), user?.id);
+    await this.chuDeService.delete(Number(id), user);
     return new HttpException(CHUDE_MESSAGE.DELETE_CHUDE_SUCCESSFULLY, HttpStatus.OK);
   }
 }

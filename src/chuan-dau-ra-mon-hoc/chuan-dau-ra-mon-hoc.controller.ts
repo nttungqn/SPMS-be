@@ -63,7 +63,7 @@ export class ChuanDauRaMonHocController {
   @ApiConflictResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_EXIST })
   @Post()
   async create(@Body() createChuanDauRaMonHocDto: CreateChuanDauRaMonHocDto, @GetUser() user: UsersEntity) {
-    await this.chuanDauRaMonHocService.create(createChuanDauRaMonHocDto, user.id);
+    await this.chuanDauRaMonHocService.create(createChuanDauRaMonHocDto, user);
     return new HttpException(CHUANDAURAMONHOC_MESSAGE.CREATE_CHUANDAURAMONHOC_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
@@ -94,7 +94,7 @@ export class ChuanDauRaMonHocController {
     @Body() updateChuanDauRaMonHocDto: UpdateChuanDauRaMonHocDto,
     @GetUser() user: UsersEntity
   ) {
-    await this.chuanDauRaMonHocService.update(id, updateChuanDauRaMonHocDto, user.id);
+    await this.chuanDauRaMonHocService.update(id, updateChuanDauRaMonHocDto, user);
     return new HttpException(CHUANDAURAMONHOC_MESSAGE.UPDATE_CHUANDAURAMONHOC_SUCCESSFULLY, HttpStatus.OK);
   }
 
@@ -108,7 +108,7 @@ export class ChuanDauRaMonHocController {
   @ApiNotFoundResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_ID_NOT_FOUND })
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: UsersEntity) {
-    await this.chuanDauRaMonHocService.remove(id, user.id);
+    await this.chuanDauRaMonHocService.remove(id, user);
     return new HttpException(CHUANDAURAMONHOC_MESSAGE.DELETE_CHUANDAURAMONHOC_SUCCESSFULLY, HttpStatus.OK);
   }
 }
