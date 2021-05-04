@@ -18,7 +18,7 @@ export class GomNhomEntity extends CreateGomNhomDTO {
 
   @OneToMany(() => ChiTietGomNhomEntity, (chiTietGomNhom) => chiTietGomNhom.gomNhom, {
     onDelete: 'CASCADE',
-    cascade: true
+    cascade: ['insert']
   })
   @JoinColumn({ name: 'id' })
   chiTietGomNhom?: ChiTietGomNhomEntity[];

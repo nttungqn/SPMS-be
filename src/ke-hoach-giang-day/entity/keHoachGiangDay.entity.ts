@@ -50,6 +50,6 @@ export class KeHoachGiangDayEntity {
   @Column()
   isDeleted: boolean;
 
-  @OneToMany(() => ChiTietKeHoachEntity, (ctkh) => ctkh.idKHGD)
+  @OneToMany(() => ChiTietKeHoachEntity, (ctkh) => ctkh.idKHGD, { cascade: ['insert'] })
   chiTietKeHoach?: ChiTietKeHoachEntity[];
 }

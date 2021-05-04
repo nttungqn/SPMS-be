@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Put } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
 import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
 import { CloneService } from './clone.service';
@@ -40,6 +42,34 @@ export class CloneController {
   async getKeHoachGiangDay(@Param('idCTNDTClone') idCTNDTClone: number, @Param('idCTNDT') idCTNDT: number) {
     return await this.cloneService.KeHoachGiangDayClone(idCTNDTClone, idCTNDT);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @Post('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/ke-hoach-giang-day')
+  async createKeHoachGiangDayClone(
+    @Body() keHoachGiangDayEntity: KeHoachGiangDayEntity[],
+    @Param('idCTNDTClone') idCTNDTClone: number,
+    @Param('idCTNDT') idCTNDT: number
+  ) {
+    return await this.cloneService.createKeHoachGiangDayClone(keHoachGiangDayEntity, idCTNDTClone, idCTNDT);
+  }
+
+  @Get('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/khoi-kien-thuc-chi-tiet')
+  async getKhoiKienThucDetail(@Param('idCTNDTClone') idCTNDTClone: number, @Param('idCTNDT') idCTNDT: number) {
+    return await this.cloneService.khoiKienThucDetailClone(idCTNDTClone, idCTNDT);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @Post('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/khoi-kien-thuc-chi-tiet')
+  async createKhoiKienThucDetail(
+    @Body() khoiKienThucList: KhoiKienThucEntity[],
+    @Param('idCTNDTClone') idCTNDTClone: number,
+    @Param('idCTNDT') idCTNDT: number
+  ) {
+    return await this.cloneService.createKhoiKienThucDetailClone(khoiKienThucList, idCTNDTClone, idCTNDT);
+  }
+
   @Delete('/chi-tiet-nganh-dao-tao/:idKKT')
   async khoiKienThuc(@Param('idKKT') idKKT: number) {
     return await this.cloneService.deleteKhoiKienThuc(idKKT);

@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
-import { GomNhomEntity } from 'gom-nhom/entity/gom-nhom.entity';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
 import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
@@ -11,6 +10,76 @@ import { Connection, getConnection } from 'typeorm';
 export class CloneService {
   constructor(private conection: Connection) {
     conection = getConnection();
+  }
+  async khoiKienThucDetailClone(idCTNDTClone: number, idCTNDT: number) {
+    const khoiKineThucRepository = this.conection.getRepository(KhoiKienThucEntity);
+    const khoiKienThucList = await khoiKineThucRepository
+      .createQueryBuilder('kkt')
+      .leftJoinAndSelect('kkt.loaiKhoiKienThuc', 'lkkt', 'lkkt.isDeleted = false')
+      .where((qb) => {
+        qb.leftJoinAndSelect('lkkt.gomNhom', 'gn', 'gn.isDeleted = false').where((qb) => {
+          qb.leftJoinAndSelect('gn.chiTietGomNhom', 'ctgn', 'ctgn.isDeleted = false').where((qb) => {
+            qb.leftJoinAndSelect('ctgn.monHoc', 'mh');
+          });
+        });
+      })
+      .andWhere('kkt.chiTietNganh = :idCTNDT', { idCTNDT })
+      .andWhere('kkt.isDeleted = false')
+      .getMany();
+    if (khoiKienThucList.length != 0) {
+      return khoiKienThucList;
+    }
+    const khoiKienThucListClone = await khoiKineThucRepository
+      .createQueryBuilder('kkt')
+      .leftJoinAndSelect('kkt.loaiKhoiKienThuc', 'lkkt', 'lkkt.isDeleted = false')
+      .where((qb) => {
+        qb.leftJoinAndSelect('lkkt.gomNhom', 'gn', 'gn.isDeleted = false').where((qb) => {
+          qb.leftJoinAndSelect('gn.chiTietGomNhom', 'ctgn', 'ctgn.isDeleted = false').where((qb) => {
+            qb.leftJoinAndSelect('ctgn.monHoc', 'mh');
+          });
+        });
+      })
+      .andWhere('kkt.chiTietNganh = :idCTNDTClone', { idCTNDTClone })
+      .getMany();
+
+    khoiKienThucListClone.forEach((kktE) => {
+      kktE.chiTietNganh = idCTNDT;
+      delete kktE.id;
+      delete kktE.createdAt;
+      delete kktE.updatedAt;
+      kktE.loaiKhoiKienThuc.forEach((lkktE) => {
+        delete lkktE.id;
+        lkktE.gomNhom.forEach((gnE) => {
+          delete gnE.id;
+          delete gnE.idLKKT;
+          delete gnE.loaiKhoiKienThuc;
+          delete gnE.createdAt;
+          delete gnE.updatedAt;
+          gnE.chiTietGomNhom.forEach((ctgnE) => {
+            delete ctgnE.id;
+            delete ctgnE.idGN;
+            delete ctgnE.ctgnMonHoctruoc;
+            delete ctgnE.gomNhom;
+            delete ctgnE.createdAt;
+            delete ctgnE.updatedAt;
+          });
+        });
+      });
+    });
+    return khoiKienThucListClone;
+  }
+  async createKhoiKienThucDetailClone(khoiKienThucList: KhoiKienThucEntity[], idCTNDTClone: number, idCTNDT: number) {
+    const ctndt = await this.conection
+      .getRepository(ChiTietNganhDaoTaoEntity)
+      .createQueryBuilder('ctndt')
+      .leftJoinAndSelect('ctndt.khoiKienThucList', 'kkt')
+      .where({ id: idCTNDT })
+      .getOne();
+    ctndt.khoiKienThucList = khoiKienThucList;
+    if (!ctndt) {
+      throw new NotFoundException();
+    }
+    await this.conection.getRepository(ChiTietNganhDaoTaoEntity).save(ctndt);
   }
   async khoiKienThucClone(idCTNDTClone: number, idCTNDT: number) {
     const khoiKineThucRepository = this.conection.getRepository(KhoiKienThucEntity);
@@ -48,11 +117,12 @@ export class CloneService {
       .leftJoinAndSelect('lkkt.gomNhom', 'gomNhom', `gomNhom.isDeleted = ${false}`)
       .leftJoinAndSelect('lkkt.khoiKienThuc', 'khoiKienThuc', `khoiKienThuc.isDeleted = ${false}`)
       .where((qb) => {
-        qb.leftJoinAndSelect('gomNhom.chiTietGomNhom', 'chiTietGomNhom').where((qb) => {
-          qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
-        });
+        qb.leftJoinAndSelect('gomNhom.chiTietGomNhom', 'chiTietGomNhom')
+          .where((qb) => {
+            qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
+          })
+          .andWhere('khoiKienThuc.chiTietNganh = :idCTNDTClone', { idCTNDTClone });
       })
-      .andWhere(`lkkt.khoiKienThuc = :idCTNDTClone`, { idCTNDTClone })
       .andWhere(`lkkt.isDeleted = ${false}`)
       .getMany();
     loaiKhoiKienThucList.forEach((lkkt) => {
@@ -99,19 +169,19 @@ export class CloneService {
   }
   async KeHoachGiangDayClone(idCTNDTClone: number, idCTNDT: number) {
     const chiTietGomNhomReposi = this.conection.getRepository(ChiTietGomNhomEntity);
-    const ctgn = await chiTietGomNhomReposi
+    const query = chiTietGomNhomReposi
       .createQueryBuilder('ctgn')
       .leftJoinAndSelect('ctgn.gomNhom', 'gn', 'gn.isDeleted = false')
       .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
       .where((qb) => {
         qb.leftJoin('gn.loaiKhoiKienThuc', 'lkkt', 'lkkt.isDeleted = false').where((qb) => {
-          qb.leftJoin('lkkt.khoiKienThuc', 'kkt', 'kkt.isDeleted = false').andWhere('kkt.chiTietNganh = :idCTNDT', {
-            idCTNDT
+          qb.leftJoin('lkkt.khoiKienThuc', 'kkt', 'kkt.isDeleted = false').where((qb) => {
+            qb.where('kkt.chiTietNganh = :idCTNDT', { idCTNDT });
           });
         });
       })
-      .andWhere('ctgn.isDeleted = false')
-      .getMany();
+      .andWhere('ctgn.isDeleted = false');
+    const ctgn = await query.getMany();
 
     const keHoachGiangDayReposi = this.conection.getRepository(KeHoachGiangDayEntity);
 
@@ -128,8 +198,10 @@ export class CloneService {
       .getMany();
 
     let khgdCurent: KeHoachGiangDayEntity[];
+    let deleteIdFlag = true;
     if (khgd.length > 0) {
       khgdCurent = khgd;
+      deleteIdFlag = false;
     } else {
       const khgdClone = await keHoachGiangDayReposi
         .createQueryBuilder('khgd')
@@ -150,7 +222,16 @@ export class CloneService {
     }
 
     for (const khgdE of khgdCurent) {
+      if (deleteIdFlag) {
+        delete khgdE.id;
+        khgdE.nganhDaoTao = Number(idCTNDT);
+      }
       for (const ctkhE of khgdE.chiTietKeHoach) {
+        if (deleteIdFlag) {
+          delete ctkhE.id;
+          delete ctkhE.idKHGD;
+          delete ctkhE.idCTGN;
+        }
         const length = ctgn.length;
         let index = 0;
         for (; index < length; index++) {
@@ -167,6 +248,16 @@ export class CloneService {
     }
     return { khgd: khgdCurent, chiTietGomNhom: ctgn };
   }
+
+  async createKeHoachGiangDayClone(
+    keHoachGiangDayEntity: KeHoachGiangDayEntity[],
+    idCTNDTClone: number,
+    idCTNDT: number
+  ) {
+    const keHoachGiangDayReposi = this.conection.getRepository(KeHoachGiangDayEntity);
+    keHoachGiangDayReposi.save(keHoachGiangDayEntity);
+  }
+
   async deleteKhoiKienThuc(idKKT: number) {
     try {
       const khoiKienThuc = await this.conection.getRepository(ChiTietGomNhomEntity).delete(idKKT);

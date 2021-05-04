@@ -9,7 +9,7 @@ export class LoaiKhoiKienThucEntity extends CreateLoaiKhoiKienThucDto {
   @PrimaryGeneratedColumn({ name: 'ID' })
   id?: number;
 
-  @OneToMany(() => GomNhomEntity, (gomNhom) => gomNhom.loaiKhoiKienThuc, { onDelete: 'CASCADE', cascade: true })
+  @OneToMany(() => GomNhomEntity, (gomNhom) => gomNhom.loaiKhoiKienThuc, { onDelete: 'CASCADE', cascade: ['insert'] })
   @JoinColumn({ name: 'ID' })
   gomNhom?: GomNhomEntity[];
 
