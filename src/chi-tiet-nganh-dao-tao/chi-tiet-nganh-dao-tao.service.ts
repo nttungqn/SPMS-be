@@ -1,7 +1,15 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CTNGANHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
 import { Repository } from 'typeorm';
+import { FilterIsExistChiTietCTDT } from './dto/filter-exist-CTNganhDaoTao.dto';
 import { FilterCTNganhDaoTaoDto } from './dto/filterCTNganhDaoTao.dto';
 import { ChiTietNganhDaoTaoEntity } from './entity/chiTietNganhDaoTao.entity';
 import { IChiTietNganhDaoTao } from './interfaces/chiTietNganhDaoTao.interface';
@@ -10,6 +18,19 @@ import { IChiTietNganhDaoTao } from './interfaces/chiTietNganhDaoTao.interface';
 export class ChiTietNganhDaoTaoService {
   @InjectRepository(ChiTietNganhDaoTaoEntity)
   private readonly chiTietNganhDTRepository: Repository<ChiTietNganhDaoTaoEntity>;
+
+  async isExist(filter: FilterIsExistChiTietCTDT) {
+    const { khoa, idNganhDaoTao } = filter;
+    if (isNaN(Number(khoa))) {
+      throw new BadRequestException('KHOA_IS_NUMBER');
+    }
+    const checkExistData = await this.chiTietNganhDTRepository.findOne({
+      khoa: Number(khoa),
+      nganhDaoTao: idNganhDaoTao,
+      isDeleted: false
+    });
+    return checkExistData ? checkExistData : null;
+  }
 
   async findAll(filter: FilterCTNganhDaoTaoDto): Promise<any> {
     const { limit = LIMIT, page = 0, ...rest } = filter;
