@@ -62,8 +62,9 @@ export class LoaiDanhGiaService extends BaseService {
           .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
         idSyllabus ? qb.andWhere('ldg.syllabus = :idSyllabus', { idSyllabus }) : {};
         searchKey
-          ? qb.andWhere('ldg.ten LIKE :search OR ldg.ma LIKE :search ', {
-              search: `%${searchKey}%`
+          ? qb.andWhere('ldg.ten LIKE :search OR ldg.ma LIKE :search OR ldg.tyle = :tyle', {
+              search: `%${searchKey}%`,
+              tyle: Number.isNaN(Number(searchKey)) ? -1 : searchKey
             })
           : {};
         isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `ldg.${sortBy}` : null, sortType);

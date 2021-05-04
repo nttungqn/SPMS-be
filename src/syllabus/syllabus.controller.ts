@@ -12,7 +12,8 @@ import {
   ParseIntPipe,
   Query,
   HttpException,
-  HttpStatus
+  HttpStatus,
+  HttpCode
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -54,6 +55,7 @@ export class SyllabusController {
   @ApiConflictResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_EXIST })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body(ValidationPipe) createSyllabusDto: CreateSyllabusDto, @Req() req): Promise<Syllabus | any> {
     const user = req.user || {};
     const syllabus = await this.syllabusService.create({
@@ -63,7 +65,7 @@ export class SyllabusController {
       updatedAt: new Date(),
       createdAt: new Date()
     });
-    return { data: syllabus, status: HttpStatus.CREATED };
+    return { id: syllabus.id, message: SYLLABUS_MESSAGE.CREATE_SYLLABUS_SUCCESSFULLY };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
