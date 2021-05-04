@@ -2,6 +2,7 @@ import { HttpStatus, Injectable, HttpException, InternalServerErrorException } f
 import { InjectRepository } from '@nestjs/typeorm';
 import { CHUONGTRINHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
+import { FilterIsExistCTDT } from './dto/filter-is-exist-chuong-trinh-dao-tao.dto';
 import { ChuongTrinhDaoTaoEntity } from './entity/chuongTrinhDaoTao.entity';
 import { IChuongTrinhDaoTao } from './interfaces/chuongTrinhDaoTao.interface';
 
@@ -100,6 +101,34 @@ export class ChuongTrinhDaoTaoService {
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException(CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_FAILED);
+    }
+  }
+  async isExist(filter: FilterIsExistCTDT) {
+    try {
+      const { ten = '', maCTDT = '' } = filter;
+      if (ten || maCTDT) {
+        const foundTen = ten
+          ? await this.chuongTrinhDaoTaoRepository.findOne({
+              where: [{ ten: ten, isDeleted: false }]
+            })
+          : null;
+        const foundMa = maCTDT
+          ? await this.chuongTrinhDaoTaoRepository.findOne({
+              where: [{ maCTDT: maCTDT, isDeleted: false }]
+            })
+          : null;
+        let result = '';
+        if (foundTen) {
+          result += '_TEN';
+        }
+        if (foundMa) {
+          result += '_MA';
+        }
+        return result ? 'CONFLICT' + result : null;
+      }
+      return null;
+    } catch (error) {
+      throw new InternalServerErrorException();
     }
   }
 }

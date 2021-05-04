@@ -70,18 +70,20 @@ export class ChiTietNganhDaoTaoController {
   async create(@Req() req, @Body() newData: CreateCTNganhDaoTaoDto, @Res() res): Promise<any> {
     const user = req.user || {};
     try {
-      await this.chiTietNganhDaoTao.create({
+      const ctndt = await this.chiTietNganhDaoTao.create({
         ...newData,
         createdBy: user?.id,
         updatedBy: user?.id
       });
+      return res
+        .status(HttpStatus.CREATED)
+        .json({ message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY, data: ctndt });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_FAILED,
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return res.status(HttpStatus.CREATED).json({ message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY });
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
