@@ -5,6 +5,7 @@ import { LIMIT, LOAIDANHGIA_MESSAGE } from 'constant/constant';
 import { BaseService } from 'guards/base-service.dto';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
+import { UsersEntity } from 'users/entity/user.entity';
 import { CreateLoaiDanhGiaDto } from './dto/create-loai-danh-gia.dto';
 import { FilterLoaiDanhGia } from './dto/filter-loai-danh-gia.dto';
 import { UpdateLoaiDanhGiaDto } from './dto/update-loai-danh-gia.dto';
@@ -21,21 +22,20 @@ export class LoaiDanhGiaService extends BaseService {
     super();
   }
 
-  async create(newData: CreateLoaiDanhGiaDto, idUser: number) {
+  async create(newData: CreateLoaiDanhGiaDto, createdBy: UsersEntity) {
     const syllabus = await this.syllabusService.findOne(newData.idSyllabus);
-    this.isOwner(syllabus.createdBy, idUser);
-
+    this.checkPermission(syllabus.createdBy, createdBy);
+    const syllabusCreatedBy: any = syllabus.createdBy;
     if (await this.isExistV2(null, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
 
     const loaiDanhGia = await this.createEntity(new LoaiDanhGiaEntity(), newData, newData.idSyllabus);
-
     try {
       const result = await this.loaiDanhGiaRepository.save({
         ...loaiDanhGia,
         createdAt: new Date(),
-        createdBy: idUser,
+        createdBy: syllabusCreatedBy.id,
         updatedAt: new Date(),
-        updatedBy: idUser
+        updatedBy: createdBy.id
       });
       return this.findOne(result.id);
     } catch (error) {
@@ -103,13 +103,13 @@ export class LoaiDanhGiaService extends BaseService {
     return result;
   }
 
-  async update(id: number, newData: UpdateLoaiDanhGiaDto, idUser: number) {
+  async update(id: number, newData: UpdateLoaiDanhGiaDto, updatedBy: UsersEntity) {
     const oldData = await this.findOne(id);
-    this.isOwner(oldData.createdBy, idUser);
+    this.checkPermission(oldData.createdBy, updatedBy);
     let { idSyllabus } = newData;
     if (idSyllabus) {
       const syllabus = await this.syllabusService.findOne(idSyllabus);
-      this.isOwner(syllabus.createdBy, idUser);
+      this.checkPermission(syllabus.createdBy, updatedBy);
     } else {
       const syllabus: any = oldData.syllabus;
       const { id } = syllabus;
@@ -123,7 +123,7 @@ export class LoaiDanhGiaService extends BaseService {
     try {
       const result = await this.loaiDanhGiaRepository.save({
         ...loaiDanhGia,
-        updatedBy: idUser,
+        updatedBy: updatedBy.id,
         updatedAt: new Date()
       });
       return this.findOne(result.id);
@@ -132,15 +132,18 @@ export class LoaiDanhGiaService extends BaseService {
     }
   }
 
-  async remove(id: number, idUser: number) {
-    const result = await this.loaiDanhGiaRepository.findOne(id, { where: { isDeleted: false } });
+  async remove(id: number, user: UsersEntity) {
+    const result = await this.loaiDanhGiaRepository.findOne(id, {
+      where: { isDeleted: false },
+      relations: ['createdBy']
+    });
     if (!result) throw new NotFoundException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_ID_NOT_FOUND);
-    this.isOwner(result.createdBy, idUser);
+    this.checkPermission(result.createdBy, user);
     try {
       return await this.loaiDanhGiaRepository.save({
         ...result,
         updatedAt: new Date(),
-        updatedBy: idUser,
+        updatedBy: user.id,
         isDeleted: true
       });
     } catch (error) {

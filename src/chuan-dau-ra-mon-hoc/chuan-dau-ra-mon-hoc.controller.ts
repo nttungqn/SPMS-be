@@ -53,7 +53,7 @@ export class ChuanDauRaMonHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới chuẩn đầu ra môn học' })
   @ApiUnauthorizedResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_NOT_AUTHORIZED })
@@ -63,7 +63,7 @@ export class ChuanDauRaMonHocController {
   @ApiConflictResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_EXIST })
   @Post()
   async create(@Body() createChuanDauRaMonHocDto: CreateChuanDauRaMonHocDto, @GetUser() user: UsersEntity) {
-    await this.chuanDauRaMonHocService.create(createChuanDauRaMonHocDto, user.id);
+    await this.chuanDauRaMonHocService.create(createChuanDauRaMonHocDto, user);
     return new HttpException(CHUANDAURAMONHOC_MESSAGE.CREATE_CHUANDAURAMONHOC_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
@@ -80,7 +80,7 @@ export class ChuanDauRaMonHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin chuẩn đầu ra môn học' })
   @ApiUnauthorizedResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_NOT_AUTHORIZED })
@@ -94,12 +94,12 @@ export class ChuanDauRaMonHocController {
     @Body() updateChuanDauRaMonHocDto: UpdateChuanDauRaMonHocDto,
     @GetUser() user: UsersEntity
   ) {
-    await this.chuanDauRaMonHocService.update(id, updateChuanDauRaMonHocDto, user.id);
+    await this.chuanDauRaMonHocService.update(id, updateChuanDauRaMonHocDto, user);
     return new HttpException(CHUANDAURAMONHOC_MESSAGE.UPDATE_CHUANDAURAMONHOC_SUCCESSFULLY, HttpStatus.OK);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một chuẩn đầu ra môn hoc' })
   @ApiUnauthorizedResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_NOT_AUTHORIZED })
@@ -108,7 +108,7 @@ export class ChuanDauRaMonHocController {
   @ApiNotFoundResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_ID_NOT_FOUND })
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: UsersEntity) {
-    await this.chuanDauRaMonHocService.remove(id, user.id);
+    await this.chuanDauRaMonHocService.remove(id, user);
     return new HttpException(CHUANDAURAMONHOC_MESSAGE.DELETE_CHUANDAURAMONHOC_SUCCESSFULLY, HttpStatus.OK);
   }
 }

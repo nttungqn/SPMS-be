@@ -9,8 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CHUANDAURAMONHOC_MESSAGE, LIMIT } from 'constant/constant';
 import { BaseService } from 'guards/base-service.dto';
 import { MucTieuMonHocService } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.service';
-import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
+import { UsersEntity } from 'users/entity/user.entity';
 import { CreateChuanDauRaMonHocDto } from './dto/create-chuan-dau-ra-mon-hoc.dto';
 import { FilterChuanDauRaMonHocDto } from './dto/filter-chuan-dau-ra-mon-hoc.dto';
 import { UpdateChuanDauRaMonHocDto } from './dto/update-chuan-dau-ra-mon-hoc.dto';
@@ -21,16 +21,15 @@ export class ChuanDauRaMonHocService extends BaseService {
   constructor(
     @InjectRepository(ChuanDauRaMonHocEntity)
     private chuanDauRaMonHocService: Repository<ChuanDauRaMonHocEntity>,
-    private mucTieuMonHocService: MucTieuMonHocService,
-    private syllabusService: SyllabusService
+    private mucTieuMonHocService: MucTieuMonHocService
   ) {
     super();
   }
 
-  async create(newData: CreateChuanDauRaMonHocDto, idUser: number) {
+  async create(newData: CreateChuanDauRaMonHocDto, createdBy: UsersEntity) {
     const mucTieuMonHoc = await this.mucTieuMonHocService.findOne(newData.mucTieuMonHoc);
-    this.isOwner(mucTieuMonHoc.createdBy, idUser);
-
+    this.checkPermission(mucTieuMonHoc.createdBy, createdBy);
+    const muTieuMonHocCreatedBy: any = mucTieuMonHoc.createdBy;
     const chuanDauRaMonHoc = new ChuanDauRaMonHocEntity();
     const { mucDo } = newData;
     if (mucDo) {
@@ -48,9 +47,9 @@ export class ChuanDauRaMonHocService extends BaseService {
       const result = await this.chuanDauRaMonHocService.save({
         ...chuanDauRaMonHoc,
         createdAt: new Date(),
-        createdBy: idUser,
+        createdBy: muTieuMonHocCreatedBy.id,
         updatedAt: new Date(),
-        updatedBy: idUser
+        updatedBy: createdBy.id
       });
       return this.findOne(result.id);
     } catch (error) {
@@ -95,13 +94,16 @@ export class ChuanDauRaMonHocService extends BaseService {
     return found;
   }
 
-  async update(id: number, newData: UpdateChuanDauRaMonHocDto, idUser: number) {
-    const oldData = await this.chuanDauRaMonHocService.findOne(id, { where: { isDeleted: false } });
+  async update(id: number, newData: UpdateChuanDauRaMonHocDto, updatedBy: UsersEntity) {
+    const oldData = await this.chuanDauRaMonHocService.findOne(id, {
+      where: { isDeleted: false },
+      relations: ['createdBy']
+    });
     const { mucTieuMonHoc } = newData;
-    this.isOwner(oldData.createdBy, idUser);
+    this.checkPermission(oldData.createdBy, updatedBy);
     if (mucTieuMonHoc) {
       const mtmh = await this.mucTieuMonHocService.findOne(newData.mucTieuMonHoc);
-      this.isOwner(mtmh.createdBy, idUser);
+      this.checkPermission(mtmh.createdBy, updatedBy);
     }
     if (await this.isExistV2(oldData, newData))
       throw new ConflictException(CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_EXIST);
@@ -119,7 +121,7 @@ export class ChuanDauRaMonHocService extends BaseService {
       const result = await this.chuanDauRaMonHocService.save({
         ...oldData,
         updatedAt: new Date(),
-        updatedBy: idUser
+        updatedBy: updatedBy.id
       });
       return this.findOne(result.id);
     } catch (error) {
@@ -127,13 +129,13 @@ export class ChuanDauRaMonHocService extends BaseService {
     }
   }
 
-  async remove(id: number, idUser: number) {
+  async remove(id: number, user: UsersEntity) {
     const found = await this.findOne(id);
-    this.isOwner(found.createdBy, idUser);
+    this.checkPermission(found.createdBy, user);
     try {
       return await this.chuanDauRaMonHocService.save({
         ...found,
-        updateBy: idUser,
+        updateBy: user.id,
         updatedAt: new Date(),
         isDeleted: true
       });

@@ -3,6 +3,7 @@ export enum Role {
   USER = 5,
   SINHVIEN = 10,
   GIAOVIEN = 15,
-  QUANLY = 20,
-  ADMIN = 25
+  GIAOVU = 20,
+  QUANLY = 25,
+  ADMIN = 30
 }

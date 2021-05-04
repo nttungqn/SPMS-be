@@ -10,8 +10,8 @@ import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-h
 import { HOATDONGDANHGIA_MESSAGE, LIMIT } from 'constant/constant';
 import { BaseService } from 'guards/base-service.dto';
 import { LoaiDanhGiaService } from 'loai-danh-gia/loai-danh-gia.service';
-import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
+import { UsersEntity } from 'users/entity/user.entity';
 import { CreateHoatDongDanhGiaDto } from './dto/create-hoat-dong-danh-gia.dto';
 import { FilterHoatDongDanhGia } from './dto/filter-hoat-dong-danh-gia.dto';
 import { UpdateHoatDongDanhGiaDto } from './dto/update-hoat-dong-danh-gia.dto';
@@ -22,15 +22,15 @@ export class HoatDongDanhGiaService extends BaseService {
   constructor(
     @InjectRepository(HoatDongDanhGiaEntity)
     private hoatDongDanhGiaService: Repository<HoatDongDanhGiaEntity>,
-    private syllabusService: SyllabusService,
     private loaiDanhGiaService: LoaiDanhGiaService,
     private chuaDauRaMonHocService: ChuanDauRaMonHocService
   ) {
     super();
   }
-  async create(newData: CreateHoatDongDanhGiaDto, idUser: number) {
+  async create(newData: CreateHoatDongDanhGiaDto, createdBy: UsersEntity) {
     const loaiDanhGia = await this.loaiDanhGiaService.findOne(newData.idLoaiDanhGia);
-    this.isOwner(loaiDanhGia.createdBy, idUser);
+    this.checkPermission(loaiDanhGia.createdBy, createdBy);
+    const loaiDanhGiaCreatedBy: any = loaiDanhGia.createdBy;
     //Lấy idSyllabus
     const syllabus: any = loaiDanhGia.syllabus;
     const { id } = syllabus;
@@ -60,9 +60,9 @@ export class HoatDongDanhGiaService extends BaseService {
       const result = await this.hoatDongDanhGiaService.save({
         ...hoatDongDanhGia,
         createdAt: new Date(),
-        createdBy: idUser,
+        createdBy: loaiDanhGiaCreatedBy.id,
         updatedAt: new Date(),
-        updatedBy: idUser
+        updatedBy: createdBy.id
       });
       return this.findOne(result.id);
     } catch (error) {
@@ -115,14 +115,14 @@ export class HoatDongDanhGiaService extends BaseService {
     return found;
   }
 
-  async update(id: number, newData: UpdateHoatDongDanhGiaDto, idUser: number) {
+  async update(id: number, newData: UpdateHoatDongDanhGiaDto, updateBy: UsersEntity) {
     const oldData = await this.findOne(id);
-    this.isOwner(oldData.createdBy, idUser);
+    this.checkPermission(oldData.createdBy, updateBy);
     const { idLoaiDanhGia } = newData;
     let idSyllabus: number;
     if (idLoaiDanhGia) {
       const loaiDanhGia = await this.loaiDanhGiaService.findOne(newData.idLoaiDanhGia);
-      this.isOwner(loaiDanhGia.createdBy, idUser);
+      this.checkPermission(loaiDanhGia.createdBy, updateBy);
 
       const syllabus: any = loaiDanhGia.syllabus;
       const { id } = syllabus;
@@ -156,7 +156,7 @@ export class HoatDongDanhGiaService extends BaseService {
       const result = await this.hoatDongDanhGiaService.save({
         ...oldData,
         updatedAt: new Date(),
-        updatedBy: idUser
+        updatedBy: updateBy.id
       });
       return this.findOne(result.id);
     } catch (error) {
@@ -164,13 +164,13 @@ export class HoatDongDanhGiaService extends BaseService {
     }
   }
 
-  async remove(id: number, idUser: number) {
+  async remove(id: number, user: UsersEntity) {
     const found = await this.findOne(id);
-    this.isOwner(found.createdBy, idUser);
+    this.checkPermission(found.createdBy, user);
     try {
       return await this.hoatDongDanhGiaService.save({
         ...found,
-        updateBy: idUser,
+        updateBy: user.id,
         updatedAt: new Date(),
         isDeleted: true
       });
