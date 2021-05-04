@@ -31,7 +31,7 @@ export class ChiTietGomNhomEntity {
   @JoinColumn({ name: 'ID_GomNhom' })
   gomNhom?: GomNhomEntity;
 
-  @OneToOne(() => MonHocEntity, (monHoc) => monHoc.chiTietGomNhom, { onDelete: 'CASCADE' })
+  @OneToOne(() => MonHocEntity, (monHoc) => monHoc.chiTietGomNhom)
   @JoinColumn({ name: 'ID_MonHoc' })
   monHoc?: MonHocEntity;
 
