@@ -63,7 +63,7 @@ export class ChuanDauRaMonHocService extends BaseService {
     const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     const [results, total] = await this.chuanDauRaMonHocService
       .createQueryBuilder('cdr')
-      .leftJoin('cdr.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted =:isDeleted', { isDeleted: false })
+      .leftJoinAndSelect('cdr.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted =:isDeleted', { isDeleted: false })
       .leftJoinAndSelect('cdr.updatedBy', 'updatedBy')
       .leftJoinAndSelect('cdr.createdBy', 'createdBy')
       .where((qb) => {
@@ -85,7 +85,7 @@ export class ChuanDauRaMonHocService extends BaseService {
 
   async findOne(id: number) {
     const found = await this.chuanDauRaMonHocService.findOne(id, {
-      relations: ['createdBy', 'updatedBy'],
+      relations: ['mucTieuMonHoc', 'createdBy', 'updatedBy'],
       where: { isDeleted: false }
     });
     if (!found) {

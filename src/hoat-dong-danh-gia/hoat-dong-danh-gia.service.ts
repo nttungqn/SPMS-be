@@ -73,6 +73,7 @@ export class HoatDongDanhGiaService extends BaseService {
   async findAll(filter: FilterHoatDongDanhGia) {
     const { page = 0, limit = LIMIT, sortBy, sortType, searchKey, idLoaiDanhGia, idSyllabus } = filter;
     const skip = page * limit;
+    console.log(Number.isNaN(Number(searchKey)) ? -1 : Number(searchKey));
     const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     const [results, total] = await this.hoatDongDanhGiaService
       .createQueryBuilder('hddg')
@@ -85,9 +86,9 @@ export class HoatDongDanhGiaService extends BaseService {
         idSyllabus ? qb.where('ldg.idSyllabus = :idSyllabus', { idSyllabus }) : {};
         idLoaiDanhGia ? qb.andWhere('ldg.id = :idLoaiDanhGia', { idLoaiDanhGia }) : {};
         searchKey
-          ? qb.andWhere('hddg.ten LIKE :search OR hddg.ma LIKE :search OR hddg.tyle = :tyle', {
+          ? qb.andWhere('hddg.ten LIKE :search OR hddg.ma LIKE :search OR hddg.tyLe = :tyle', {
               search: `%${searchKey}%`,
-              tyle: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+              tyle: Number.isNaN(Number(searchKey)) ? -1 : Number(searchKey)
             })
           : {};
         isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `hddg.${sortBy}` : null, sortType);
