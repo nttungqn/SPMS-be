@@ -39,6 +39,9 @@ import { FilterIsExistCTDT } from './dto/filter-is-exist-chuong-trinh-dao-tao.dt
 export class ChuongTrinhDaoTaoController {
   constructor(private readonly chuongTrinhDaoTaoService: ChuongTrinhDaoTaoService) {}
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
+  @ApiBearerAuth('token')
   @Get('/is-exits')
   async isExist(@Query() filter: FilterIsExistCTDT) {
     const found = await this.chuongTrinhDaoTaoService.isExist(filter);
@@ -73,16 +76,16 @@ export class ChuongTrinhDaoTaoController {
   async create(@Req() req, @Res() res, @Body() newData: CreateChuongTrinhDaoTaoDto) {
     const user = req.user || {};
     try {
-      await this.chuongTrinhDaoTaoService.create({ ...newData, createdBy: user?.id, updatedBy: user?.id });
+      const data = await this.chuongTrinhDaoTaoService.create({ ...newData, createdBy: user?.id, updatedBy: user?.id });
+      return res
+        .status(HttpStatus.CREATED)
+        .json({ message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY, data: data });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED,
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return res
-      .status(HttpStatus.CREATED)
-      .json({ message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles([Role.QUANLY, Role.ADMIN])
