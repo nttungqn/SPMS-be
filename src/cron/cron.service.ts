@@ -16,6 +16,7 @@ import { KeHoachGiangDayService } from 'ke-hoach-giang-day/ke-hoach-giang-day.se
 import { KhoiKienThucService } from 'khoi-kien-thuc/khoi-kien-thuc.service';
 import { LoaiDanhGiaService } from 'loai-danh-gia/loai-danh-gia.service';
 import { LoaiKeHoachGiangDayService } from 'loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.service';
+import { LoaiKhoiKienThucService } from 'loai-khoi-kien-thuc/loai-khoi-kien-thuc.service';
 import { MonHocTienQuyetService } from 'mon-hoc-tien-quyet/mon-hoc-tien-quyet.service';
 import { MonHocService } from 'mon-hoc/mon-hoc.service';
 import { MucTieuMonHocService } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.service';
@@ -49,13 +50,15 @@ export class CronService {
     private namHocServicen: NamHocService,
     private rolesService: RolesService,
     private syllabusService: SyllabusService,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private loaiKhoiKienThucService: LoaiKhoiKienThucService
   ) {}
   private readonly logger = new Logger(CronService.name);
 
-  @Cron('* * * 1 *')
+  @Cron('* * * * 1 *')
   async handleCron() {
     this.logger.debug('Cron job start');
+    await this.chuongTrinhDaoTaoService.deleteRowIsDeleted();
     await this.chiTietGomNhomService.deleteRowIsDeleted();
     await this.chiTietKeHoachService.deleteRowIsDeleted();
     await this.chiTietNganhDaoTaoService.deleteRowIsDeleted();
@@ -63,13 +66,12 @@ export class CronService {
     await this.chuanDauRaMonHocService.deleteRowIsDeleted();
     await this.chuanDauRaNganhDaoTaoService.deleteRowIsDeleted();
     await this.chuDeService.deleteRowIsDeleted();
-    await this.chuongTrinhDaoTaoService.deleteRowIsDeleted();
-    // await this.gomNhomService.deleteRowIsDeleted();
+    await this.gomNhomService.deleteRowIsDeleted();
     await this.heDaotaoService.deleteRowIsDeleted();
     await this.hoatDongDanhGiaService.deleteRowIsDeleted();
     await this.hoatDongDayHocService.deleteRowIsDeleted();
     await this.keHoachGiangDayService.deleteRowIsDeleted();
-    // await this.khoiKienThucService.deleteRowIsDeleted();
+    await this.khoiKienThucService.deleteRowIsDeleted();
     await this.loaiDanhGiaService.deleteRowIsDeleted();
     await this.loaiKeHoachGiangDayService.deleteRowIsDeleted();
     await this.monHocService.deleteRowIsDeleted();
@@ -79,6 +81,7 @@ export class CronService {
     await this.rolesService.deleteRowIsDeleted();
     await this.syllabusService.deleteRowIsDeleted();
     await this.usersService.deleteRowIsDeleted();
+    await this.loaiKhoiKienThucService.deleteRowIsDeleted();
     this.logger.debug('Delete successfully');
   }
 }

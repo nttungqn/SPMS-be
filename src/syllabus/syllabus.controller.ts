@@ -12,7 +12,8 @@ import {
   ParseIntPipe,
   Query,
   HttpException,
-  HttpStatus
+  HttpStatus,
+  HttpCode
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -54,6 +55,7 @@ export class SyllabusController {
   @ApiConflictResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_EXIST })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body(ValidationPipe) createSyllabusDto: CreateSyllabusDto, @Req() req): Promise<Syllabus | any> {
     const user = req.user || {};
     const syllabus = await this.syllabusService.create({
@@ -63,11 +65,11 @@ export class SyllabusController {
       updatedAt: new Date(),
       createdAt: new Date()
     });
-    return { data: syllabus, status: HttpStatus.CREATED };
+    return { id: syllabus.id, message: SYLLABUS_MESSAGE.CREATE_SYLLABUS_SUCCESSFULLY };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách syllabus của giáo vien' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -101,7 +103,7 @@ export class SyllabusController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -109,22 +111,24 @@ export class SyllabusController {
   @ApiConflictResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_EXIST })
   @ApiOkResponse({ description: SYLLABUS_MESSAGE.UPDATE_SYLLABUS_SUCCESSFULLY })
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateSyllabusDto: UpdateSyllabusDto, @Req() req) {
-    const user = req.user || {};
-    await this.syllabusService.update(id, { ...updateSyllabusDto, updatedBy: user?.id, updatedAt: new Date() });
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateSyllabusDto: UpdateSyllabusDto,
+    @GetUser() user: UsersEntity
+  ) {
+    await this.syllabusService.update(id, { ...updateSyllabusDto, updatedBy: user?.id, updatedAt: new Date() }, user);
     return new HttpException(SYLLABUS_MESSAGE.UPDATE_SYLLABUS_SUCCESSFULLY, HttpStatus.OK);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
   @ApiInternalServerErrorResponse({ description: SYLLABUS_MESSAGE.DELETE_SYLLABUS_FAILED })
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
-    const user = req.user || {};
-    await this.syllabusService.remove(id, user?.id);
+  async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: UsersEntity) {
+    await this.syllabusService.remove(id, user);
     return new HttpException(SYLLABUS_MESSAGE.DELETE_SYLLABUS_SUCCESSFULLY, HttpStatus.OK);
   }
 }

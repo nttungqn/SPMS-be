@@ -35,6 +35,8 @@ import { MucTieuMonHocResponse } from './Responses/muc-tieu-mon-hoc.response';
 import { Roles } from 'guards/roles.decorator';
 import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
+import { GetUser } from 'auth/user.decorator';
+import { UsersEntity } from 'users/entity/user.entity';
 
 @ApiTags('muc-tieu-mon-hoc')
 @Controller('muc-tieu-mon-hoc')
@@ -65,7 +67,7 @@ export class MucTieuMonHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới Mục tiêu môn học' })
   @ApiUnauthorizedResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_NOT_AUTHORIZED })
@@ -73,14 +75,13 @@ export class MucTieuMonHocController {
   @ApiInternalServerErrorResponse({ description: MUCTIEUMONHOC_MESSAGE.CREATE_MUCTIEUMONHOC_FAILED })
   @ApiConflictResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_EXIST })
   @Post()
-  async create(@Body() createMucTieuMonHocDto: CreateMucTieuMonHocDto, @Req() req) {
-    const user = req.user || {};
-    await this.mucTieuMonHocService.create(createMucTieuMonHocDto, user?.id);
+  async create(@Body() createMucTieuMonHocDto: CreateMucTieuMonHocDto, @GetUser() user: UsersEntity) {
+    await this.mucTieuMonHocService.create(createMucTieuMonHocDto, user);
     return new HttpException(MUCTIEUMONHOC_MESSAGE.CREATE_MUCTIEUMONHOC_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin Mục tiêu môn học' })
   @ApiUnauthorizedResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_NOT_AUTHORIZED })
@@ -92,15 +93,14 @@ export class MucTieuMonHocController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateMucTieuMonHocDto: UpdateMucTieuMonHocDto,
-    @Req() req
+    user: UsersEntity
   ) {
-    const user = req.user || {};
-    await this.mucTieuMonHocService.update(id, updateMucTieuMonHocDto, user.id);
+    await this.mucTieuMonHocService.update(id, updateMucTieuMonHocDto, user);
     return new HttpException(MUCTIEUMONHOC_MESSAGE.UPDATE_MUCTIEUMONHOC_SUCCESSFULLY, HttpStatus.OK);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một Mục tiêu môn học' })
   @ApiUnauthorizedResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_NOT_AUTHORIZED })
@@ -108,9 +108,8 @@ export class MucTieuMonHocController {
   @ApiNotFoundResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_ID_NOT_FOUND })
   @ApiOkResponse({ description: MUCTIEUMONHOC_MESSAGE.DELETE_MUCTIEUMONHOC_SUCCESSFULLY })
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
-    const user = req.user || {};
-    await this.mucTieuMonHocService.remove(id, user?.id);
+  async remove(@Param('id', ParseIntPipe) id: number, user: UsersEntity) {
+    await this.mucTieuMonHocService.remove(id, user);
     return new HttpException(MUCTIEUMONHOC_MESSAGE.DELETE_MUCTIEUMONHOC_SUCCESSFULLY, HttpStatus.OK);
   }
 }

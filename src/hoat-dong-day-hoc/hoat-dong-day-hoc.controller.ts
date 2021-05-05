@@ -56,7 +56,7 @@ export class HoatDongDayHocController {
   @ApiUnauthorizedResponse({ description: HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_NOT_AUTHORIZED })
   @ApiOkResponse({ type: HoatDongDayHocEntity })
   @Get(':id')
-  async findById(@Req() req, @Param() id: number): Promise<any> {
+  async findById(@Param('id') id: number): Promise<any> {
     return await this.hoatDongDayHocService.findOne(Number(id));
   }
 
@@ -87,7 +87,7 @@ export class HoatDongDayHocController {
   @ApiInternalServerErrorResponse({ description: HOATDONGDAYHOC_MESSAGE.UPDATE_HOATDONGDAYHOC_FAILED })
   @ApiOkResponse({ description: HOATDONGDAYHOC_MESSAGE.UPDATE_HOATDONGDAYHOC_SUCCESSFULLY })
   @Put(':id')
-  async update(@Req() req, @Param() id: number, @Body() updatedData: CreateHoatDongDayHocDTO): Promise<any> {
+  async update(@Req() req, @Param('id') id: number, @Body() updatedData: CreateHoatDongDayHocDTO): Promise<any> {
     const user = req.user || {};
     await this.hoatDongDayHocService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     return new HttpException(HOATDONGDAYHOC_MESSAGE.UPDATE_HOATDONGDAYHOC_SUCCESSFULLY, HttpStatus.OK);
@@ -102,7 +102,7 @@ export class HoatDongDayHocController {
   @ApiInternalServerErrorResponse({ description: HOATDONGDAYHOC_MESSAGE.DELETE_HOATDONGDAYHOC_FAILED })
   @ApiOkResponse({ description: HOATDONGDAYHOC_MESSAGE.DELETE_HOATDONGDAYHOC_SUCCESSFULLY })
   @Delete(':id')
-  async delete(@Req() req, @Param() id: number): Promise<any> {
+  async delete(@Req() req, @Param('id') id: number): Promise<any> {
     const user = req.user || {};
     await this.hoatDongDayHocService.delete(Number(id), user?.id);
     return new HttpException(HOATDONGDAYHOC_MESSAGE.DELETE_HOATDONGDAYHOC_SUCCESSFULLY, HttpStatus.OK);

@@ -69,7 +69,7 @@ export class ChuDeEntity extends BaseEntity {
   @Column({ name: 'isDeleted' })
   isDeleted?: boolean;
 
-  @ManyToMany(() => HoatDongDanhGiaEntity, { cascade: true })
+  @ManyToMany(() => HoatDongDanhGiaEntity)
   @JoinTable({
     name: TABLE_NAME.CHUDE_HOATDONGDANHGIA,
     joinColumn: { name: 'idChuDe', referencedColumnName: 'id' },
