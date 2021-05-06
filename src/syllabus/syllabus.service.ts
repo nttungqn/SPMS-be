@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT, SYLLABUS_MESSAGE } from 'constant/constant';
+import { LIMIT, REDIS_CACHE_VARS, SYLLABUS_MESSAGE } from 'constant/constant';
 import { MonHocService } from 'mon-hoc/mon-hoc.service';
 import { NamHocService } from 'nam-hoc/nam-hoc.service';
 import { HeDaotaoService } from 'he-dao-tao/he-dao-tao.service';
@@ -8,6 +8,8 @@ import { Not, OrderByCondition, Repository } from 'typeorm';
 import { GetSyllabusFilterDto } from './dto/filter-syllabus.dto';
 import { Syllabus } from './entity/syllabus.entity';
 import { BaseService } from 'guards/base-service.dto';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class SyllabusService extends BaseService {
@@ -16,7 +18,8 @@ export class SyllabusService extends BaseService {
     private syllabusRepository: Repository<Syllabus>,
     private readonly shoolYearService: NamHocService,
     private readonly typeOfEduService: HeDaotaoService,
-    private readonly subjectService: MonHocService
+    private readonly subjectService: MonHocService,
+    private cacheManager: RedisCacheService
   ) {
     super();
   }
@@ -39,63 +42,78 @@ export class SyllabusService extends BaseService {
   }
 
   async findAll(filter: GetSyllabusFilterDto): Promise<Syllabus[] | any> {
-    const { key, page = 0, limit = LIMIT, updatedAt, createdBy, idHeDaotao, idMonHoc, idNamHoc } = filter;
-    const skip = page * limit;
-    const queryOrder: OrderByCondition = updatedAt ? { 'sy.updatedAt': updatedAt } : {};
-    const isDeleted = false;
-    const queryByCondition = `sy.isDeleted = ${isDeleted}`;
-    const queryByIDNamHoc = idNamHoc ? { namHoc: idNamHoc } : {};
-    const queryByIDHeDaoTao = idHeDaotao ? { heDaoTao: idHeDaotao } : {};
-    const queryByIDMonHoc = idMonHoc ? { monHoc: idMonHoc } : {};
-    const query = this.syllabusRepository
-      .createQueryBuilder('sy')
-      .leftJoinAndSelect('sy.monHoc', 'monHoc')
-      .leftJoinAndSelect('sy.createdBy', 'createdBy')
-      .where((qb) => {
-        key
-          ? qb.where('(monHoc.TenTiengViet LIKE :key OR monHoc.TenTiengAnh LIKE :key)', {
-              key: `%${key}%`
-            })
-          : {};
-        createdBy ? qb.andWhere('createdBy.id =:idUser', { idUser: createdBy }) : {};
-      })
-      .where({
-        ...queryByIDHeDaoTao,
-        ...queryByIDMonHoc,
-        ...queryByIDNamHoc
-      })
-      .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
-      .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('sy.namHoc', 'namHoc')
-      .andWhere(queryByCondition)
-      .take(limit)
-      .skip(skip)
-      .orderBy({ ...queryOrder });
-    const [results, total] = await query.getManyAndCount();
-    return { contents: results, total, page: Number(page) };
+    const key = format(REDIS_CACHE_VARS.LIST_SYLLABUS_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { key, page = 0, limit = LIMIT, updatedAt, createdBy, idHeDaotao, idMonHoc, idNamHoc } = filter;
+      const skip = page * limit;
+      const queryOrder: OrderByCondition = updatedAt ? { 'sy.updatedAt': updatedAt } : {};
+      const isDeleted = false;
+      const queryByCondition = `sy.isDeleted = ${isDeleted}`;
+      const queryByIDNamHoc = idNamHoc ? { namHoc: idNamHoc } : {};
+      const queryByIDHeDaoTao = idHeDaotao ? { heDaoTao: idHeDaotao } : {};
+      const queryByIDMonHoc = idMonHoc ? { monHoc: idMonHoc } : {};
+      const query = this.syllabusRepository
+        .createQueryBuilder('sy')
+        .leftJoinAndSelect('sy.monHoc', 'monHoc')
+        .leftJoinAndSelect('sy.createdBy', 'createdBy')
+        .where((qb) => {
+          key
+            ? qb.where('(monHoc.TenTiengViet LIKE :key OR monHoc.TenTiengAnh LIKE :key)', {
+                key: `%${key}%`
+              })
+            : {};
+          createdBy ? qb.andWhere('createdBy.id =:idUser', { idUser: createdBy }) : {};
+        })
+        .where({
+          ...queryByIDHeDaoTao,
+          ...queryByIDMonHoc,
+          ...queryByIDNamHoc
+        })
+        .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
+        .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('sy.namHoc', 'namHoc')
+        .andWhere(queryByCondition)
+        .take(limit)
+        .skip(skip)
+        .orderBy({ ...queryOrder });
+      const [list, total] = await query.getManyAndCount();
+      result = { contents: list, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_SYLLABUS_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findOne(id: number): Promise<Syllabus> {
-    const query = await this.syllabusRepository
-      .createQueryBuilder('sy')
-      .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
-      .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('sy.namHoc', 'namHoc')
-      .leftJoinAndSelect('sy.monHoc', 'monHoc')
-      .leftJoinAndSelect('sy.createdBy', 'createdBy')
-      .where((qb) => {
-        qb.leftJoinAndSelect('monHoc.monHocTienQuyet', 'mhtq', 'mhtq.isDeleted = false').leftJoinAndSelect(
-          'mhtq.monHocTruoc',
-          'mht'
-        );
-      })
-      .andWhere('sy.isDeleted = false')
-      .andWhere('sy.id = :id', { id });
-    const found = await query.getOne();
-    if (!found) {
-      throw new NotFoundException(SYLLABUS_MESSAGE.SYLLABUS_ID_NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_SYLLABUS_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const query = await this.syllabusRepository
+        .createQueryBuilder('sy')
+        .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
+        .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('sy.namHoc', 'namHoc')
+        .leftJoinAndSelect('sy.monHoc', 'monHoc')
+        .leftJoinAndSelect('sy.createdBy', 'createdBy')
+        .where((qb) => {
+          qb.leftJoinAndSelect('monHoc.monHocTienQuyet', 'mhtq', 'mhtq.isDeleted = false').leftJoinAndSelect(
+            'mhtq.monHocTruoc',
+            'mht'
+          );
+        })
+        .andWhere('sy.isDeleted = false')
+        .andWhere('sy.id = :id', { id });
+      result = await query.getOne();
+      if (!result) {
+        throw new NotFoundException(SYLLABUS_MESSAGE.SYLLABUS_ID_NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_SYLLABUS_CACHE_TTL);
     }
-    return found;
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async update(id: number, updateSyllabus: Syllabus) {

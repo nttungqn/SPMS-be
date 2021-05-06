@@ -1,17 +1,20 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { KHOIKIENTHUC_MESSAGE, LIMIT } from 'constant/constant';
+import { KHOIKIENTHUC_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { Repository } from 'typeorm';
 import { ChiTietNganhDaoTaoService } from '../chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
 import { filterKnowledgeBlock } from './dto/filter-khoi-kien-thuc.dto';
 import { KhoiKienThucEntity } from './entity/khoi-kien-thuc.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class KhoiKienThucService {
   constructor(
     @InjectRepository(KhoiKienThucEntity)
     private knowledgeBlockRepository: Repository<KhoiKienThucEntity>,
-    private chiTietNganhDaoTaoService: ChiTietNganhDaoTaoService
+    private chiTietNganhDaoTaoService: ChiTietNganhDaoTaoService,
+    private cacheManager: RedisCacheService
   ) {}
 
   async create(knowledgeBlock: KhoiKienThucEntity) {
@@ -37,21 +40,28 @@ export class KhoiKienThucService {
     const { page = 0, limit = LIMIT, idChiTietNganhDaoTao } = filter;
     const queryByChiTietNganhDaoTao = idChiTietNganhDaoTao ? { chiTietNganh: idChiTietNganhDaoTao } : {};
     const skip = page * limit;
-    const [results, total] = await this.knowledgeBlockRepository.findAndCount({
+    const [list, total] = await this.knowledgeBlockRepository.findAndCount({
       relations: ['chiTietNganh', 'createdBy', 'updatedBy', 'chiTietNganh.nganhDaoTao'],
       where: { isDeleted: false, ...queryByChiTietNganhDaoTao },
       skip,
       take: limit
     });
-    return { contents: results, total, page: Number(page) };
+    return { contents: list, total, page: Number(page) };
   }
 
   async findOne(id: number) {
-    const result = await this.knowledgeBlockRepository.findOne(id, {
-      relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
-      where: { isDeleted: false }
-    });
-    if (!result) throw new NotFoundException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_ID_NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_KKT_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const result = await this.knowledgeBlockRepository.findOne(id, {
+        relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
+        where: { isDeleted: false }
+      });
+      if (!result) throw new NotFoundException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_ID_NOT_FOUND);
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_KKT_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 

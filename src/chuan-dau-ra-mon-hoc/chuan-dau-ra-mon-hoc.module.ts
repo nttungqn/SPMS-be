@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocEntity } from './entity/chuan-dau-ra-mon-hoc.entity';
 import { MucTieuMonHocModule } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.module';
 import { SyllabusModule } from 'syllabus/syllabus.module';
+import { RedisCacheModule } from 'cache/redisCache.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ChuanDauRaMonHocEntity]), MucTieuMonHocModule, SyllabusModule],
+  imports: [TypeOrmModule.forFeature([ChuanDauRaMonHocEntity]), MucTieuMonHocModule, SyllabusModule, RedisCacheModule],
   controllers: [ChuanDauRaMonHocController],
   providers: [ChuanDauRaMonHocService],
   exports: [ChuanDauRaMonHocService]

@@ -1,47 +1,65 @@
 import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChiTietNganhDaoTaoService } from 'chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
-import { KEHOACHGIANGDAY_MESSAGE, LIMIT } from 'constant/constant';
+import { KEHOACHGIANGDAY_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { Repository } from 'typeorm';
 import { CreateKeHoachGiangDayDto } from './dto/createKeHoachGiangDay.dto';
 import { KeHoachGiangDayEntity } from './entity/keHoachGiangDay.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class KeHoachGiangDayService {
   constructor(
     @InjectRepository(KeHoachGiangDayEntity)
     private readonly keHoachGiangDayRepository: Repository<KeHoachGiangDayEntity>,
-    private readonly chiTietNganhDaoTaoService: ChiTietNganhDaoTaoService
+    private readonly chiTietNganhDaoTaoService: ChiTietNganhDaoTaoService,
+    private cacheManager: RedisCacheService
   ) {}
 
   async findAll(filter: any): Promise<any> {
-    const { limit = LIMIT, page = 0, ...rest } = filter;
-    const skip = Number(page) * Number(limit);
-    const query = {
-      isDeleted: false,
-      ...rest
-    };
-    const results = await this.keHoachGiangDayRepository.find({
-      relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.nganhDaoTao'],
-      skip,
-      take: limit,
-      where: query
-    });
-    if (!results.length) {
-      throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_EMPTY, HttpStatus.NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.LIST_KHGD_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, ...rest } = filter;
+      const skip = Number(page) * Number(limit);
+      const query = {
+        isDeleted: false,
+        ...rest
+      };
+      const list = await this.keHoachGiangDayRepository.find({
+        relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.nganhDaoTao'],
+        skip,
+        take: limit,
+        where: query
+      });
+      if (!list.length) {
+        throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_EMPTY, HttpStatus.NOT_FOUND);
+      }
+      const total = await this.keHoachGiangDayRepository.count({ ...query });
+      result = { contents: list, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_KHGD_CACHE_TTL);
     }
-    const total = await this.keHoachGiangDayRepository.count({ ...query });
-    return { contents: results, total, page: Number(page) };
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findById(id: number): Promise<any> {
-    const result = await this.keHoachGiangDayRepository.findOne({
-      where: { id, isDeleted: false },
-      relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.nganhDaoTao']
-    });
-    if (!result) {
-      throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_KHGD_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.keHoachGiangDayRepository.findOne({
+        where: { id, isDeleted: false },
+        relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.nganhDaoTao']
+      });
+      if (!result) {
+        throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_KHGD_CACHE_TTL);
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 

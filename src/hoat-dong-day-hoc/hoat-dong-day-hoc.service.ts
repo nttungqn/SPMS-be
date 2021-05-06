@@ -1,43 +1,61 @@
 import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HOATDONGDAYHOC_MESSAGE, LIMIT } from 'constant/constant';
+import { HOATDONGDAYHOC_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
 import { HoatDongDayHocEntity } from './entity/hoat-dong-day-hoc.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class HoatDongDayHocService {
   constructor(
-    @InjectRepository(HoatDongDayHocEntity) private hoatDongDayHocRepository: Repository<HoatDongDayHocEntity>
+    @InjectRepository(HoatDongDayHocEntity) private hoatDongDayHocRepository: Repository<HoatDongDayHocEntity>,
+    private cacheManager: RedisCacheService
   ) {}
 
   async findAll(filter): Promise<HoatDongDayHocEntity[] | any> {
-    const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
-    const skip = Number(page) * Number(limit);
-    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
-    const query = {
-      isDeleted: false,
-      ...querySearch,
-      ...otherParam
-    };
+    const key = format(REDIS_CACHE_VARS.LIST_HDDH_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
+      const skip = Number(page) * Number(limit);
+      const querySearch = search ? { ten: Like(`%${search}%`) } : {};
+      const query = {
+        isDeleted: false,
+        ...querySearch,
+        ...otherParam
+      };
 
-    const results = await this.hoatDongDayHocRepository.find({
-      where: query,
-      skip,
-      take: Number(limit),
-      relations: ['createdBy', 'updatedBy']
-    });
-    const total = await this.hoatDongDayHocRepository.count({ ...query });
-    return { contents: results, total, page: Number(page) };
+      const list = await this.hoatDongDayHocRepository.find({
+        where: query,
+        skip,
+        take: Number(limit),
+        relations: ['createdBy', 'updatedBy']
+      });
+      const total = await this.hoatDongDayHocRepository.count({ ...query });
+      result = { contents: list, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_HDDH_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findOne(id: number): Promise<HoatDongDayHocEntity | any> {
-    const result = await this.hoatDongDayHocRepository.findOne({
-      where: { id, isDeleted: false },
-      relations: ['createdBy', 'updatedBy']
-    });
-    if (!result) {
-      throw new NotFoundException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_ID_NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.hoatDongDayHocRepository.findOne({
+        where: { id, isDeleted: false },
+        relations: ['createdBy', 'updatedBy']
+      });
+      if (!result) {
+        throw new NotFoundException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_ID_NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_TTL);
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 

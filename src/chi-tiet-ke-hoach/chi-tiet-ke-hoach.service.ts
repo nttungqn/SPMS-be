@@ -1,11 +1,13 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT, CHITIETKEHOACH_MESSAGE } from 'constant/constant';
+import { LIMIT, CHITIETKEHOACH_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { Repository } from 'typeorm';
 import { ChiTietKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
 import { KeHoachGiangDayService } from 'ke-hoach-giang-day/ke-hoach-giang-day.service';
 import { ChiTietGomNhomService } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.service';
 import { FilterChiTietKeHoach } from './dto/filter-chi-tiet-ke-hoach.dto';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class ChiTietKeHoachService {
@@ -13,7 +15,8 @@ export class ChiTietKeHoachService {
     @InjectRepository(ChiTietKeHoachEntity)
     private chiTietKeHoachRepository: Repository<ChiTietKeHoachEntity>,
     private keHoachGiangDayService: KeHoachGiangDayService,
-    private chiTietGomNhomService: ChiTietGomNhomService
+    private chiTietGomNhomService: ChiTietGomNhomService,
+    private cacheManager: RedisCacheService
   ) {}
 
   async create(newData: ChiTietKeHoachEntity) {
@@ -34,19 +37,63 @@ export class ChiTietKeHoachService {
   }
 
   async findAll(filter: FilterChiTietKeHoach) {
-    const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
-    const skip = Number(page) * Number(limit);
-    const query = {
-      isDeleted: false,
-      ...otherParam
-    };
+    const key = format(REDIS_CACHE_VARS.LIST_CHI_TIET_KE_HOACH_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
+      const skip = Number(page) * Number(limit);
+      const query = {
+        isDeleted: false,
+        ...otherParam
+      };
 
-    let sortByTemp = sortBy;
-    if (sortByTemp != 'idKHGD.maKeHoach' && sortByTemp != 'idCTGN.id' && sortByTemp != '')
-      sortByTemp = 'ctkhgd.' + sortByTemp;
+      let sortByTemp = sortBy;
+      if (sortByTemp != 'idKHGD.maKeHoach' && sortByTemp != 'idCTGN.id' && sortByTemp != '')
+        sortByTemp = 'ctkhgd.' + sortByTemp;
 
-    try {
-      const queryBuilder = this.chiTietKeHoachRepository
+      try {
+        const queryBuilder = this.chiTietKeHoachRepository
+          .createQueryBuilder('ctkhgd')
+          .leftJoinAndSelect('ctkhgd.createdBy', 'createdBy')
+          .leftJoinAndSelect('ctkhgd.updatedBy', 'updatedBy')
+          .leftJoinAndSelect('ctkhgd.idKHGD', 'idKHGD')
+          .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN')
+          .where((qb) => {
+            qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom', `idCTGN.isDeleted = ${false}`).leftJoinAndSelect(
+              'idCTGN.monHoc',
+              'monHoc',
+              `gomNhom.isDeleted = ${false}`
+            );
+          })
+          .where(query);
+
+        if (search != '') {
+          queryBuilder.andWhere(
+            'idKHGD.maKeHoach LIKE :search OR idCTGN.id LIKE :search OR ctkhgd.ghiChu LIKE :search',
+            {
+              search: `%${search}%`
+            }
+          );
+        }
+
+        const [list, total] = await queryBuilder.orderBy(sortByTemp, sortType).skip(skip).take(limit).getManyAndCount();
+        result = { contents: list, total, page: Number(page) };
+        await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_KE_HOACH_CACHE_TTL);
+      } catch (error) {
+        console.log(error);
+        throw new InternalServerErrorException();
+      }
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
+  }
+
+  async findOne(id: number) {
+    const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_KE_HOACH_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.chiTietKeHoachRepository
         .createQueryBuilder('ctkhgd')
         .leftJoinAndSelect('ctkhgd.createdBy', 'createdBy')
         .leftJoinAndSelect('ctkhgd.updatedBy', 'updatedBy')
@@ -59,46 +106,16 @@ export class ChiTietKeHoachService {
             `gomNhom.isDeleted = ${false}`
           );
         })
-        .where(query);
-
-      if (search != '') {
-        queryBuilder.andWhere('idKHGD.maKeHoach LIKE :search OR idCTGN.id LIKE :search OR ctkhgd.ghiChu LIKE :search', {
-          search: `%${search}%`
-        });
+        .andWhere(`ctkhgd.id = ${id}`)
+        .andWhere(`ctkhgd.isDeleted = ${false}`)
+        .getOne();
+      if (!result) {
+        throw new NotFoundException(CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_ID_NOT_FOUND);
       }
-
-      const [results, total] = await queryBuilder
-        .orderBy(sortByTemp, sortType)
-        .skip(skip)
-        .take(limit)
-        .getManyAndCount();
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHI_TIET_KE_HOACH_CACHE_TTL);
     }
-  }
 
-  async findOne(id: number) {
-    const result = await this.chiTietKeHoachRepository
-      .createQueryBuilder('ctkhgd')
-      .leftJoinAndSelect('ctkhgd.createdBy', 'createdBy')
-      .leftJoinAndSelect('ctkhgd.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('ctkhgd.idKHGD', 'idKHGD')
-      .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN')
-      .where((qb) => {
-        qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom', `idCTGN.isDeleted = ${false}`).leftJoinAndSelect(
-          'idCTGN.monHoc',
-          'monHoc',
-          `gomNhom.isDeleted = ${false}`
-        );
-      })
-      .andWhere(`ctkhgd.id = ${id}`)
-      .andWhere(`ctkhgd.isDeleted = ${false}`)
-      .getOne();
-    if (!result) {
-      throw new NotFoundException(CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_ID_NOT_FOUND);
-    }
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 
@@ -128,16 +145,23 @@ export class ChiTietKeHoachService {
     }
   }
   async findAllWithSelectField(filter) {
-    const { page = 0, limit = LIMIT, select = '', ...other } = filter;
-    const query = {
-      isDeleted: false,
-      ...other
-    };
-    const results = await this.chiTietKeHoachRepository.find({
-      relations: select ? select?.split(',') : [],
-      where: query
-    });
-    return results;
+    const key = format(REDIS_CACHE_VARS.LIST_CTKH_SF_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { page = 0, limit = LIMIT, select = '', ...other } = filter;
+      const query = {
+        isDeleted: false,
+        ...other
+      };
+      result = await this.chiTietKeHoachRepository.find({
+        relations: select ? select?.split(',') : [],
+        where: query
+      });
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CTKH_SF_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async deleteMultipleRows(ids: string, updatedBy?: number): Promise<any> {

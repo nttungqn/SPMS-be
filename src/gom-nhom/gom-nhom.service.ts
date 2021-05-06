@@ -1,30 +1,70 @@
 import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GOMNHOM_MESSAGE, LIMIT } from 'constant/constant';
+import { GOMNHOM_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { LoaiKhoiKienThucService } from 'loai-khoi-kien-thuc/loai-khoi-kien-thuc.service';
 import { Like, Repository } from 'typeorm';
 import { GomNhomEntity } from './entity/gom-nhom.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class GomNhomService {
   constructor(
     @InjectRepository(GomNhomEntity) private gomNhomRepository: Repository<GomNhomEntity>,
-    private loaiKhoiKienThucService: LoaiKhoiKienThucService
+    private loaiKhoiKienThucService: LoaiKhoiKienThucService,
+    private cacheManager: RedisCacheService
   ) {}
 
   async findAll(filter): Promise<GomNhomEntity[] | any> {
-    const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
-    const skip = Number(page) * Number(limit);
-    const query = {
-      isDeleted: false,
-      ...otherParam
-    };
+    const key = format(REDIS_CACHE_VARS.LIST_GOM_NHOM_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
+      const skip = Number(page) * Number(limit);
+      const query = {
+        isDeleted: false,
+        ...otherParam
+      };
 
-    let sortByTemp = sortBy;
-    if (sortByTemp != 'idLKKT.ten' && sortByTemp != '') sortByTemp = 'gn.' + sortByTemp;
+      let sortByTemp = sortBy;
+      if (sortByTemp != 'idLKKT.ten' && sortByTemp != '') sortByTemp = 'gn.' + sortByTemp;
 
-    try {
-      const queryBuilder = this.gomNhomRepository
+      try {
+        const queryBuilder = this.gomNhomRepository
+          .createQueryBuilder('gn')
+          .leftJoinAndSelect('gn.idLKKT', 'idLKKT')
+          .leftJoinAndSelect('gn.createdBy', 'createdBy')
+          .leftJoinAndSelect('gn.updatedBy', 'updatedBy')
+          .leftJoinAndSelect('gn.chiTietGomNhom', 'chiTietGomNhom')
+          .where((qb) => {
+            qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
+          })
+          .andWhere(query);
+
+        if (search != '') {
+          queryBuilder.andWhere(
+            'idLKKT.ten LIKE :search OR gn.maGN LIKE :search OR gn.stt LIKE :search OR gn.soTCBB LIKE :search OR gn.loaiNhom LIKE :search OR gn.tieuDe LIKE :search',
+            { search: `%${search}%` }
+          );
+        }
+
+        const [list, total] = await queryBuilder.orderBy(sortByTemp, sortType).skip(skip).take(limit).getManyAndCount();
+        result = { contents: list, total, page: Number(page) };
+        await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_GOM_NHOM_CACHE_TTL);
+      } catch (error) {
+        throw new InternalServerErrorException();
+      }
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
+  }
+
+  async findById(id: number): Promise<GomNhomEntity | any> {
+    const key = format(REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.gomNhomRepository
         .createQueryBuilder('gn')
         .leftJoinAndSelect('gn.idLKKT', 'idLKKT')
         .leftJoinAndSelect('gn.createdBy', 'createdBy')
@@ -33,43 +73,16 @@ export class GomNhomService {
         .where((qb) => {
           qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
         })
-        .andWhere(query);
-
-      if (search != '') {
-        queryBuilder.andWhere(
-          'idLKKT.ten LIKE :search OR gn.maGN LIKE :search OR gn.stt LIKE :search OR gn.soTCBB LIKE :search OR gn.loaiNhom LIKE :search OR gn.tieuDe LIKE :search',
-          { search: `%${search}%` }
-        );
+        .andWhere(`gn.id = ${id}`)
+        .andWhere(`gn.isDeleted = ${false}`)
+        .getOne();
+      if (!result) {
+        throw new NotFoundException(GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND);
       }
-
-      const [results, total] = await queryBuilder
-        .orderBy(sortByTemp, sortType)
-        .skip(skip)
-        .take(limit)
-        .getManyAndCount();
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_TTL);
     }
-  }
 
-  async findById(id: number): Promise<GomNhomEntity | any> {
-    const result = await this.gomNhomRepository
-      .createQueryBuilder('gn')
-      .leftJoinAndSelect('gn.idLKKT', 'idLKKT')
-      .leftJoinAndSelect('gn.createdBy', 'createdBy')
-      .leftJoinAndSelect('gn.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('gn.chiTietGomNhom', 'chiTietGomNhom')
-      .where((qb) => {
-        qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
-      })
-      .andWhere(`gn.id = ${id}`)
-      .andWhere(`gn.isDeleted = ${false}`)
-      .getOne();
-    if (!result) {
-      throw new NotFoundException(GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND);
-    }
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 

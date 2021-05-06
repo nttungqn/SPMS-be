@@ -1,6 +1,8 @@
 import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CHUANDAURA_NGANHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
+import { CHUANDAURA_NGANHDAOTAO_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { Repository } from 'typeorm/repository/Repository';
 import { CreateChuanDauRaNganhDaoTaoDto } from './dto/createChuanDauRaNDT.dto';
 import { ChuanDauRaNganhDaoTaoEntity } from './entity/chuanDauRaNganhDaoTao.entity';
@@ -8,37 +10,58 @@ const LTT = require('list-to-tree');
 
 @Injectable()
 export class ChuanDauRaNganhDaoTaoService {
-  @InjectRepository(ChuanDauRaNganhDaoTaoEntity)
-  private readonly chuanDauRaNDTRepository: Repository<ChuanDauRaNganhDaoTaoEntity>;
+  constructor(
+    @InjectRepository(ChuanDauRaNganhDaoTaoEntity)
+    private readonly chuanDauRaNDTRepository: Repository<ChuanDauRaNganhDaoTaoEntity>,
+    private cacheManager: RedisCacheService
+  ) {}
 
   async findAll(filter: any): Promise<any> {
-    const { limit = LIMIT, page = 0, ...rest } = filter;
-    const skip = Number(page) * Number(limit);
-    const query = {
-      isDeleted: false,
-      ...rest
-    };
-    const results = await this.chuanDauRaNDTRepository.find({
-      relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy'],
-      skip,
-      take: limit,
-      where: query
-    });
-    if (!results.length) {
-      throw new HttpException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.LIST_CDRNDT_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, ...rest } = filter;
+      const skip = Number(page) * Number(limit);
+      const query = {
+        isDeleted: false,
+        ...rest
+      };
+      const list = await this.chuanDauRaNDTRepository.find({
+        relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy'],
+        skip,
+        take: limit,
+        where: query
+      });
+      if (!list.length) {
+        throw new HttpException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
+      }
+      const total = await this.chuanDauRaNDTRepository.count({ ...query });
+      result = { contents: list, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CDRNDT_CACHE_TTL);
     }
-    const total = await this.chuanDauRaNDTRepository.count({ ...query });
-    return { contents: results, total, page: Number(page) };
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findById(id: number): Promise<any> {
-    const result = await this.chuanDauRaNDTRepository.findOne({
-      where: { id, isDeleted: false },
-      relations: ['nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
-    });
-    if (!result) {
-      throw new HttpException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.chuanDauRaNDTRepository.findOne({
+        where: { id, isDeleted: false },
+        relations: ['nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
+      });
+      if (!result) {
+        throw new HttpException(
+          CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_ID_NOT_FOUND,
+          HttpStatus.NOT_FOUND
+        );
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_TTL);
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 
@@ -102,25 +125,33 @@ export class ChuanDauRaNganhDaoTaoService {
     }
   }
 
-  async getAllList(id: number): Promise<any> {
-    try {
-      const results = await this.chuanDauRaNDTRepository.find({
-        relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
-      });
-      const tmp = results.map((x) => {
-        if (x.parent == null) x.parent = 0;
-        else x.parent = x.parent['id'];
-        return x;
-      });
-      const ltt = new LTT(tmp, {
-        key_id: 'id',
-        key_parent: 'parent'
-      });
-      const tree = ltt.GetTree();
-      return tree;
-    } catch (error) {
-      throw new InternalServerErrorException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_EMPTY);
+  async getAllList(idCTNDT: number): Promise<any> {
+    const key = format(REDIS_CACHE_VARS.LIST_CDRNDT_NDT_CACHE_KEY, idCTNDT.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      try {
+        const list = await this.chuanDauRaNDTRepository.find({
+          where: { isDeleted: false, nganhDaoTao: idCTNDT },
+          relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
+        });
+        const tmp = list.map((x) => {
+          if (x.parent == null) x.parent = 0;
+          else x.parent = x.parent['id'];
+          return x;
+        });
+        const ltt = new LTT(tmp, {
+          key_id: 'id',
+          key_parent: 'parent'
+        });
+        result = ltt.GetTree();
+        await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CDRNDT_NDT_CACHE_TTL);
+      } catch (error) {
+        throw new InternalServerErrorException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_EMPTY);
+      }
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async deleteRowIsDeleted(): Promise<any> {

@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
-import { HOATDONGDANHGIA_MESSAGE, LIMIT } from 'constant/constant';
+import { HOATDONGDANHGIA_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { BaseService } from 'guards/base-service.dto';
 import { LoaiDanhGiaService } from 'loai-danh-gia/loai-danh-gia.service';
 import { SyllabusService } from 'syllabus/syllabus.service';
@@ -16,6 +16,8 @@ import { CreateHoatDongDanhGiaDto } from './dto/create-hoat-dong-danh-gia.dto';
 import { FilterHoatDongDanhGia } from './dto/filter-hoat-dong-danh-gia.dto';
 import { UpdateHoatDongDanhGiaDto } from './dto/update-hoat-dong-danh-gia.dto';
 import { HoatDongDanhGiaEntity, KeyHDDG } from './entity/hoat-dong-danh-gia.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class HoatDongDanhGiaService extends BaseService {
@@ -24,7 +26,8 @@ export class HoatDongDanhGiaService extends BaseService {
     private hoatDongDanhGiaService: Repository<HoatDongDanhGiaEntity>,
     private syllabusService: SyllabusService,
     private loaiDanhGiaService: LoaiDanhGiaService,
-    private chuaDauRaMonHocService: ChuanDauRaMonHocService
+    private chuaDauRaMonHocService: ChuanDauRaMonHocService,
+    private cacheManager: RedisCacheService
   ) {
     super();
   }
@@ -71,50 +74,65 @@ export class HoatDongDanhGiaService extends BaseService {
   }
 
   async findAll(filter: FilterHoatDongDanhGia) {
-    const { page = 0, limit = LIMIT } = filter;
-    const skip = page * limit;
+    const key = format(REDIS_CACHE_VARS.LIST_HDDG_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { page = 0, limit = LIMIT } = filter;
+      const skip = page * limit;
 
-    let query = '';
-    const { idSyllabus, idLoaiDanhGia } = filter;
-    if (idSyllabus) {
-      await this.syllabusService.findOne(idSyllabus);
-      query = `ldg.idSyllabus=${idSyllabus}`;
+      let query = '';
+      const { idSyllabus, idLoaiDanhGia } = filter;
+      if (idSyllabus) {
+        await this.syllabusService.findOne(idSyllabus);
+        query = `ldg.idSyllabus=${idSyllabus}`;
+      }
+      if (idLoaiDanhGia) {
+        await this.loaiDanhGiaService.findOne(idLoaiDanhGia);
+        if (idSyllabus) query += ' And ';
+        query += `ldg.id=${idLoaiDanhGia}`;
+      }
+      const [list, total] = await this.hoatDongDanhGiaService
+        .createQueryBuilder('hddg')
+        .leftJoin('hddg.loaiDanhGia', 'ldg')
+        .where(query ? query : {})
+        .andWhere('hddg.isDeleted =:isDeleted', { isDeleted: false })
+        .andWhere('ldg.isDeleted =:isDeleted', { isDeleted: false })
+        .leftJoinAndSelect('hddg.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('hddg.createdBy', 'createdBy')
+        .leftJoinAndSelect('hddg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted =${false}`)
+        .leftJoinAndSelect('hddg.loaiDanhGia', 'loaiDanhGia', `loaiDanhGia.isDeleted =${false}`)
+        .skip(skip)
+        .take(limit)
+        .getManyAndCount();
+      result = { contents: list, total, page: page };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_HDDG_CACHE_TTL);
     }
-    if (idLoaiDanhGia) {
-      await this.loaiDanhGiaService.findOne(idLoaiDanhGia);
-      if (idSyllabus) query += ' And ';
-      query += `ldg.id=${idLoaiDanhGia}`;
-    }
-    const [results, total] = await this.hoatDongDanhGiaService
-      .createQueryBuilder('hddg')
-      .leftJoin('hddg.loaiDanhGia', 'ldg')
-      .where(query ? query : {})
-      .andWhere('hddg.isDeleted =:isDeleted', { isDeleted: false })
-      .andWhere('ldg.isDeleted =:isDeleted', { isDeleted: false })
-      .leftJoinAndSelect('hddg.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('hddg.createdBy', 'createdBy')
-      .leftJoinAndSelect('hddg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted =${false}`)
-      .leftJoinAndSelect('hddg.loaiDanhGia', 'loaiDanhGia', `loaiDanhGia.isDeleted =${false}`)
-      .skip(skip)
-      .take(limit)
-      .getManyAndCount();
-    return { contents: results, total, page: page };
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findOne(id: number) {
-    const found = await this.hoatDongDanhGiaService
-      .createQueryBuilder('hddg')
-      .leftJoinAndSelect('hddg.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('hddg.createdBy', 'createdBy')
-      .leftJoinAndSelect('hddg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted =${false}`)
-      .leftJoinAndSelect('hddg.loaiDanhGia', 'loaiDanhGia', `loaiDanhGia.isDeleted =${false}`)
-      .andWhere('hddg.id = :id', { id: id })
-      .andWhere('hddg.isDeleted =:isDeleted', { isDeleted: false })
-      .getOne();
-    if (!found) {
-      throw new NotFoundException(HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_ID_NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.hoatDongDanhGiaService
+        .createQueryBuilder('hddg')
+        .leftJoinAndSelect('hddg.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('hddg.createdBy', 'createdBy')
+        .leftJoinAndSelect('hddg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted =${false}`)
+        .leftJoinAndSelect('hddg.loaiDanhGia', 'loaiDanhGia', `loaiDanhGia.isDeleted =${false}`)
+        .andWhere('hddg.id = :id', { id: id })
+        .andWhere('hddg.isDeleted =:isDeleted', { isDeleted: false })
+        .getOne();
+      if (!result) {
+        throw new NotFoundException(HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_ID_NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_TTL);
     }
-    return found;
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async update(id: number, newData: UpdateHoatDongDanhGiaDto, idUser: number) {

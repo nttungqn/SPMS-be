@@ -1,44 +1,64 @@
 import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CTNGANHDAOTAO_MESSAGE, LIMIT } from 'constant/constant';
+import { CTNGANHDAOTAO_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { Repository } from 'typeorm';
 import { FilterCTNganhDaoTaoDto } from './dto/filterCTNganhDaoTao.dto';
 import { ChiTietNganhDaoTaoEntity } from './entity/chiTietNganhDaoTao.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 import { IChiTietNganhDaoTao } from './interfaces/chiTietNganhDaoTao.interface';
 
 @Injectable()
 export class ChiTietNganhDaoTaoService {
-  @InjectRepository(ChiTietNganhDaoTaoEntity)
-  private readonly chiTietNganhDTRepository: Repository<ChiTietNganhDaoTaoEntity>;
+  constructor(
+    @InjectRepository(ChiTietNganhDaoTaoEntity)
+    private readonly chiTietNganhDTRepository: Repository<ChiTietNganhDaoTaoEntity>,
+    private cacheManager: RedisCacheService
+  ) {}
 
   async findAll(filter: FilterCTNganhDaoTaoDto): Promise<any> {
-    const { limit = LIMIT, page = 0, ...rest } = filter;
-    const skip = Number(page) * Number(limit);
-    const query = {
-      isDeleted: false,
-      ...rest
-    };
-    const results = await this.chiTietNganhDTRepository.find({
-      relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.chuongTrinhDaoTao'],
-      skip,
-      take: limit,
-      where: query
-    });
-    if (!results.length) {
-      throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.LIST_CHI_TIET_NDT_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, ...rest } = filter;
+      const skip = Number(page) * Number(limit);
+      const query = {
+        isDeleted: false,
+        ...rest
+      };
+      const list = await this.chiTietNganhDTRepository.find({
+        relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.chuongTrinhDaoTao'],
+        skip,
+        take: limit,
+        where: query
+      });
+      if (!list.length) {
+        throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
+      }
+      const total = await this.chiTietNganhDTRepository.count({ ...query });
+      result = { contents: list, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_NDT_CACHE_TTL);
     }
-    const total = await this.chiTietNganhDTRepository.count({ ...query });
-    return { contents: results, total, page: Number(page) };
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findById(id: number): Promise<any> {
-    const result = await this.chiTietNganhDTRepository.findOne({
-      where: { id, isDeleted: false },
-      relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.chuongTrinhDaoTao']
-    });
-    if (!result) {
-      throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_NDT_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.chiTietNganhDTRepository.findOne({
+        where: { id, isDeleted: false },
+        relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.chuongTrinhDaoTao']
+      });
+      if (!result) {
+        throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHI_TIET_NDT_CACHE_TTL);
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 

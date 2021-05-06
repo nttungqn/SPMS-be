@@ -1,77 +1,98 @@
 import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FE_ROUTE } from 'config/config';
-import { CONFIRM_SIGNUP_PATH, LIMIT, ROLE_SINHVIEN, USER_MESSAGE } from 'constant/constant';
+import { CONFIRM_SIGNUP_PATH, LIMIT, REDIS_CACHE_VARS, ROLE_SINHVIEN, USER_MESSAGE } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
 import { sendMail } from 'utils/sendMail';
 import { UsersEntity } from './entity/user.entity';
 import { IUser } from './interfaces/users.interface';
 import { FilterUser } from './dto/filter-user.dto';
 import { Role } from 'guards/roles.enum';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(UsersEntity) private readonly usersRepository: Repository<UsersEntity>) {}
+  constructor(
+    @InjectRepository(UsersEntity) private readonly usersRepository: Repository<UsersEntity>,
+    private cacheManager: RedisCacheService
+  ) {}
 
   async findAll(filter: FilterUser) {
-    try {
-      const { page = 0, limit = LIMIT, search = '', sortBy = '', sortType = '', ...other } = filter;
-      if (other.isDeleted) other.isDeleted = String(other.isDeleted) === 'true';
-      if (other.isActive) other.isActive = String(other.isActive) === 'true';
-      const skip = Number(page) * Number(limit);
-      const querySearch = search
-        ? [
-            { firstName: Like(`%${search}%`), ...other },
-            { lastName: Like(`%${search}%`), ...other },
-            { email: Like(`%${search}%`), ...other },
-            { username: Like(`%${search}%`), ...other }
-          ]
-        : { ...other };
+    const key = format(REDIS_CACHE_VARS.LIST_USER_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      try {
+        const { page = 0, limit = LIMIT, search = '', sortBy = '', sortType = '', ...other } = filter;
+        if (other.isDeleted) other.isDeleted = String(other.isDeleted) === 'true';
+        if (other.isActive) other.isActive = String(other.isActive) === 'true';
+        const skip = Number(page) * Number(limit);
+        const querySearch = search
+          ? [
+              { firstName: Like(`%${search}%`), ...other },
+              { lastName: Like(`%${search}%`), ...other },
+              { email: Like(`%${search}%`), ...other },
+              { username: Like(`%${search}%`), ...other }
+            ]
+          : { ...other };
 
-      let sortQuery = {};
-      if (sortBy && sortType) {
-        switch (sortBy) {
-          case 'id':
-            sortQuery = { id: sortType };
-            break;
-          case 'firstName':
-            sortQuery = { firstName: sortType };
-            break;
-          case 'lastName':
-            sortQuery = { lastName: sortType };
-            break;
-          case 'email':
-            sortQuery = { email: sortType };
-            break;
-          case 'updatedAt':
-            sortQuery = { updatedAt: sortType };
-            break;
-          case 'createdAt':
-            sortQuery = { createdAt: sortType };
-            break;
-          case 'username':
-            sortQuery = { username: sortType };
-            break;
-          default:
-            break;
+        let sortQuery = {};
+        if (sortBy && sortType) {
+          switch (sortBy) {
+            case 'id':
+              sortQuery = { id: sortType };
+              break;
+            case 'firstName':
+              sortQuery = { firstName: sortType };
+              break;
+            case 'lastName':
+              sortQuery = { lastName: sortType };
+              break;
+            case 'email':
+              sortQuery = { email: sortType };
+              break;
+            case 'updatedAt':
+              sortQuery = { updatedAt: sortType };
+              break;
+            case 'createdAt':
+              sortQuery = { createdAt: sortType };
+              break;
+            case 'username':
+              sortQuery = { username: sortType };
+              break;
+            default:
+              break;
+          }
         }
+        const [list, total] = await this.usersRepository.findAndCount({
+          where: querySearch,
+          relations: ['role'],
+          order: sortQuery,
+          skip,
+          take: limit,
+          ...other
+        });
+        result = { contents: list, total, page: Number(page) };
+        await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_USER_CACHE_TTL);
+      } catch (error) {
+        return new InternalServerErrorException(USER_MESSAGE.INTERAL_SERVER_ERROR);
       }
-      const [results, total] = await this.usersRepository.findAndCount({
-        where: querySearch,
-        relations: ['role'],
-        order: sortQuery,
-        skip,
-        take: limit,
-        ...other
-      });
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      return new InternalServerErrorException(USER_MESSAGE.INTERAL_SERVER_ERROR);
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findOne(query): Promise<any> {
-    return await this.usersRepository.findOne({ ...query });
+    const key = format(REDIS_CACHE_VARS.DETAIL_USER_CACHE_KEY, JSON.stringify(query));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.usersRepository.findOne({ ...query });
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_USER_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async create(newData: IUser): Promise<any> {
@@ -93,14 +114,22 @@ export class UsersService {
     }
   }
   async getProfile(query): Promise<any> {
-    return await this.usersRepository
-      .createQueryBuilder('users')
-      .leftJoinAndSelect('users.role', 'roles')
-      .where(
-        'users.id = :id and users.email = :email and users.isDeleted = :isDeleted and users.isActive = :isActive',
-        { ...query, isDeleted: false, isActive: true }
-      )
-      .getOne();
+    const key = format(REDIS_CACHE_VARS.PROFILE_USER_CACHE_KEY, JSON.stringify(query));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.usersRepository
+        .createQueryBuilder('users')
+        .leftJoinAndSelect('users.role', 'roles')
+        .where(
+          'users.id = :id and users.email = :email and users.isDeleted = :isDeleted and users.isActive = :isActive',
+          { ...query, isDeleted: false, isActive: true }
+        )
+        .getOne();
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.PROFILE_USER_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async update(id: number, updateData): Promise<any> {

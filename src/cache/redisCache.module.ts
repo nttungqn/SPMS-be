@@ -1,18 +1,24 @@
 import { Module, CacheModule } from '@nestjs/common';
 import * as redisStore from 'cache-manager-redis-store';
-import { RedisCacheService } from './redisCache.service';
 import { REDIS_CONFIG } from 'config/config';
+import { RedisCacheService } from './redisCache.service';
 
 @Module({
   imports: [
     CacheModule.register({
       useFactory: {
         store: redisStore,
-        // url: 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:18872',
-        host: 'localhost',
-        port: 6379,
-        // password: REDIS_CONFIG.PASSWORD,
-        ttl: 600
+
+        // remote: https://redislabs.com/
+        url: REDIS_CONFIG.URL,
+        password: REDIS_CONFIG.PASSWORD,
+
+        // local: http://localhost:6379
+        // host: REDIS_CONFIG.HOST,
+        // port: REDIS_CONFIG.PORT,
+
+        ttl: REDIS_CONFIG.TTL,
+        max: REDIS_CONFIG.MAX
       }
     })
   ],

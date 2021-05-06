@@ -25,6 +25,14 @@ const FIREBASECONFIG = {
   measurementId: 'G-B0QRZVC2GM',
   databaseURL: 'https://spms-f664f.firebaseio.com'
 };
+const REDIS_CONFIG = {
+  HOST: 'localhost',
+  PORT: 6376,
+  URL: 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:18872',
+  PASSWORD: 'A7yzKrnkLM8vN3w6G1nzn5MozR9YIOsD',
+  TTL: 600,
+  MAX: 100
+};
 export {
   PORT,
   DB_HOSTNAME,
@@ -39,5 +47,6 @@ export {
   FE_ROUTE,
   PATH_STORE_IMAGE,
   DB_POOL_CONNECTION,
-  FIREBASECONFIG
+  FIREBASECONFIG,
+  REDIS_CONFIG
 };
