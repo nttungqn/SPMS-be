@@ -1,75 +1,80 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT, CHITIETGOMNHOM_MESSAGE } from 'constant/constant';
+import { RedisCacheService } from 'cache/redisCache.service';
+import { LIMIT, CHITIETGOMNHOM_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
+import { stringify } from 'querystring';
 import { Repository } from 'typeorm';
 import { CreateChiTietGomNhomDTO } from './dto/create-chi-tiet-gom-nhom.dto';
 import { FilterByNganhDaoTao } from './dto/filter-by-nganh-dao-tao.dto';
 import { UpdateChiTietGomNhomDTO } from './dto/update-chi-tiet-gom-nhom.dto';
 import { ChiTietGomNhomEntity } from './entity/chi-tiet-gom-nhom.entity';
+import * as format from 'string-format';
 
 @Injectable()
 export class ChiTietGomNhomService {
   constructor(
-    @InjectRepository(ChiTietGomNhomEntity) private chiTietGomNhomRepository: Repository<ChiTietGomNhomEntity>
+    @InjectRepository(ChiTietGomNhomEntity) private chiTietGomNhomRepository: Repository<ChiTietGomNhomEntity>,
+    private cacheManager: RedisCacheService
   ) {}
 
   async findAll(filter): Promise<ChiTietGomNhomEntity[] | any> {
-    // const [results, total] = await this.chiTietGomNhomRepository.findAndCount({
-    //   where: query,
-    //   skip,
-    //   take: Number(limit),
-    //   relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
-    // });
-    // return { contents: results, total, page: Number(page) };
+    const key = format(REDIS_CACHE_VARS.LIST_CHI_TIET_GOM_NHOM_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
+      const skip = Number(page) * Number(limit);
+      const query = {
+        isDeleted: false,
+        ...otherParam
+      };
 
-    const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
-    const skip = Number(page) * Number(limit);
-    const query = {
-      isDeleted: false,
-      ...otherParam
-    };
+      let sortByTemp = sortBy;
+      if (sortByTemp != 'gomNhom.tieuDe' && sortByTemp != 'monHoc.tenTiengViet' && sortByTemp != '')
+        sortByTemp = 'ctgn.' + sortByTemp;
 
-    let sortByTemp = sortBy;
-    if (sortByTemp != 'gomNhom.tieuDe' && sortByTemp != 'monHoc.tenTiengViet' && sortByTemp != '')
-      sortByTemp = 'ctgn.' + sortByTemp;
+      try {
+        const queryBuilder = this.chiTietGomNhomRepository
+          .createQueryBuilder('ctgn')
+          .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+          .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom')
+          .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
+          .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
+          .where(query);
 
-    try {
-      const queryBuilder = this.chiTietGomNhomRepository
-        .createQueryBuilder('ctgn')
-        .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
-        .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom')
-        .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
-        .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
-        .where(query);
+        if (search != '') {
+          queryBuilder.andWhere(
+            'gomNhom.tieuDe LIKE :search OR monHoc.tenTiengViet LIKE :search OR ctgn.ghiChu LIKE :search',
+            { search: `%${search}%` }
+          );
+        }
 
-      if (search != '') {
-        queryBuilder.andWhere(
-          'gomNhom.tieuDe LIKE :search OR monHoc.tenTiengViet LIKE :search OR ctgn.ghiChu LIKE :search',
-          { search: `%${search}%` }
-        );
+        const [list, total] = await queryBuilder.orderBy(sortByTemp, sortType).skip(skip).take(limit).getManyAndCount();
+        result = { contents: list, total, page: Number(page) };
+        await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_GOM_NHOM_CACHE_TTL);
+      } catch (error) {
+        throw new InternalServerErrorException();
       }
-
-      const [results, total] = await queryBuilder
-        .orderBy(sortByTemp, sortType)
-        .skip(skip)
-        .take(limit)
-        .getManyAndCount();
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findById(id: number): Promise<ChiTietGomNhomEntity | any> {
-    const result = await this.chiTietGomNhomRepository.findOne({
-      where: { id, isDeleted: false },
-      relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
-    });
-    if (!result) {
-      throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === undefined) {
+      result = await this.chiTietGomNhomRepository.findOne({
+        where: { id, isDeleted: false },
+        relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
+      });
+      if (!result) {
+        throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL);
     }
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 
@@ -148,51 +153,72 @@ export class ChiTietGomNhomService {
   }
 
   async getMonHocThayThe(idMonHoc: number): Promise<MonHocEntity[]> {
-    const result = await this.chiTietGomNhomRepository
-      .createQueryBuilder('ctgn')
-      .leftJoinAndSelect('ctgn.ctgnMonHoctruoc', 'ctgnMonHoctruoc')
-      .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
-      .where((qb) => {
-        qb.leftJoinAndSelect('monHoc.chiTietGomNhom', 'chiTietGomNhom', 'chiTietGomNhom.isDeleted = false')
-          .leftJoinAndSelect('ctgnMonHoctruoc.monHoc', 'monHocTr')
-          .where(`monHocTr.id = ${idMonHoc}`);
-      })
-      .getMany();
-    return result.map((e) => e.monHoc);
+    const key = format(REDIS_CACHE_VARS.LIST_CTGN_MHTT_CACHE_KEY, idMonHoc.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === undefined) {
+      result = await this.chiTietGomNhomRepository
+        .createQueryBuilder('ctgn')
+        .leftJoinAndSelect('ctgn.ctgnMonHoctruoc', 'ctgnMonHoctruoc')
+        .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+        .where((qb) => {
+          qb.leftJoinAndSelect('monHoc.chiTietGomNhom', 'chiTietGomNhom', 'chiTietGomNhom.isDeleted = false')
+            .leftJoinAndSelect('ctgnMonHoctruoc.monHoc', 'monHocTr')
+            .where(`monHocTr.id = ${idMonHoc}`);
+        })
+        .getMany();
+      result = result.map((e) => e.monHoc);
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CTGN_MHTT_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
   async getAllSubjects(khoa: number, idNganhDaoTao: number, filter: FilterByNganhDaoTao) {
-    const { limit = LIMIT, page = 0, tenMonHoc, maMonHoc } = filter;
-    const skip = Number(page) * Number(limit);
-    const [results, total] = await this.chiTietGomNhomRepository
-      .createQueryBuilder('ctgn')
-      .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
-      .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
-      .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom')
-      .where((qb) => {
-        qb.where((qb) => {
-          qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc')
-            .where((qb) => {
-              qb.innerJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc')
-                .where((qb) => {
-                  qb.innerJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh')
-                    .where(`chiTietNganh.khoa = ${khoa} and chiTietNganh.nganhDaoTao = ${idNganhDaoTao}`)
-                    .andWhere(`chiTietNganh.isDeleted = ${false}`);
-                })
-                .andWhere(`khoiKienThuc.isDeleted = ${false}`);
-            })
-            .andWhere(`gomNhom.isDeleted = ${false}`);
-        });
-        tenMonHoc
-          ? qb.andWhere(`monHoc.tenTiengViet LIKE '%${tenMonHoc}%' OR monHoc.tenTiengAnh LIKE '%${tenMonHoc}%'`)
-          : {};
-        maMonHoc ? qb.andWhere(`monHoc.ma LIKE '%${maMonHoc}%'`) : {};
-      })
-      .andWhere(`ctgn.isDeleted = ${false}`)
-      .take(limit)
-      .skip(skip)
-      .getManyAndCount();
-    return { contents: results, total, page: Number(page) };
+    const key = format(
+      REDIS_CACHE_VARS.LIST_CTGN_SJ_CACHE_KEY,
+      khoa.toString(),
+      idNganhDaoTao.toString(),
+      JSON.stringify(filter)
+    );
+    let result = await this.cacheManager.get(key);
+    if (typeof result === undefined) {
+      const { limit = LIMIT, page = 0, tenMonHoc, maMonHoc } = filter;
+      const skip = Number(page) * Number(limit);
+      const [list, total] = await this.chiTietGomNhomRepository
+        .createQueryBuilder('ctgn')
+        .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
+        .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+        .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom')
+        .where((qb) => {
+          qb.where((qb) => {
+            qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc')
+              .where((qb) => {
+                qb.innerJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc')
+                  .where((qb) => {
+                    qb.innerJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh')
+                      .where(`chiTietNganh.khoa = ${khoa} and chiTietNganh.nganhDaoTao = ${idNganhDaoTao}`)
+                      .andWhere(`chiTietNganh.isDeleted = ${false}`);
+                  })
+                  .andWhere(`khoiKienThuc.isDeleted = ${false}`);
+              })
+              .andWhere(`gomNhom.isDeleted = ${false}`);
+          });
+          tenMonHoc
+            ? qb.andWhere(`monHoc.tenTiengViet LIKE '%${tenMonHoc}%' OR monHoc.tenTiengAnh LIKE '%${tenMonHoc}%'`)
+            : {};
+          maMonHoc ? qb.andWhere(`monHoc.ma LIKE '%${maMonHoc}%'`) : {};
+        })
+        .andWhere(`ctgn.isDeleted = ${false}`)
+        .take(limit)
+        .skip(skip)
+        .getManyAndCount();
+      result = { contents: list, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CTGN_SJ_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async deleteMultipleRows(ids: string, updatedBy?: number): Promise<any> {
@@ -238,7 +264,6 @@ export class ChiTietGomNhomService {
     try {
       await this.chiTietGomNhomRepository.delete({ isDeleted: true });
     } catch (error) {
-      console.log(error);
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
     }
   }

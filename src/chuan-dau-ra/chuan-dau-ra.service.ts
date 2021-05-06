@@ -1,44 +1,65 @@
 import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CHUANDAURA_MESSAGE, LIMIT } from 'constant/constant';
+import { CHUANDAURA_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
 import { CreateChuanDauRaDto } from './dto/createChuanDauRa.dto';
 import { ChuanDauRaEntity } from './entity/chuanDauRa.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class ChuanDauRaService {
-  @InjectRepository(ChuanDauRaEntity) private readonly chuanDauRaRepository: Repository<ChuanDauRaEntity>;
+  constructor(
+    @InjectRepository(ChuanDauRaEntity) private readonly chuanDauRaRepository: Repository<ChuanDauRaEntity>,
+    private cacheManager: RedisCacheService
+  ) {}
 
   async findAll(filter: any): Promise<any> {
-    const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
-    const skip = Number(page) * Number(limit);
-    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
-    const query = {
-      isDeleted: false,
-      ...querySearch,
-      ...rest
-    };
-    const results = await this.chuanDauRaRepository.find({
-      relations: ['createdBy', 'updatedBy'],
-      skip,
-      take: limit,
-      where: query
-    });
-    if (!results.length) {
-      throw new HttpException(CHUANDAURA_MESSAGE.CHUANDAURA_EMPTY, HttpStatus.NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.LIST_CDR_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
+      const skip = Number(page) * Number(limit);
+      const querySearch = search ? { ten: Like(`%${search}%`) } : {};
+      const query = {
+        isDeleted: false,
+        ...querySearch,
+        ...rest
+      };
+      const list = await this.chuanDauRaRepository.find({
+        relations: ['createdBy', 'updatedBy'],
+        skip,
+        take: limit,
+        where: query
+      });
+      if (!list.length) {
+        throw new HttpException(CHUANDAURA_MESSAGE.CHUANDAURA_EMPTY, HttpStatus.NOT_FOUND);
+      }
+      const total = await this.chuanDauRaRepository.count({ ...query });
+      result = { contents: list, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CDR_CACHE_TTL);
     }
-    const total = await this.chuanDauRaRepository.count({ ...query });
-    return { contents: results, total, page: Number(page) };
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findById(id: number): Promise<any> {
-    const result = await this.chuanDauRaRepository.findOne({
-      where: { id, isDeleted: false },
-      relations: ['createdBy', 'updatedBy']
-    });
-    if (!result) {
-      throw new HttpException(CHUANDAURA_MESSAGE.CHUANDAURA_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_CDR_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.chuanDauRaRepository.findOne({
+        where: { id, isDeleted: false },
+        relations: ['createdBy', 'updatedBy']
+      });
+      if (!result) {
+        throw new HttpException(CHUANDAURA_MESSAGE.CHUANDAURA_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CDR_CACHE_TTL);
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 

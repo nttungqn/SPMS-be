@@ -29,8 +29,6 @@ export default async (data) => `
 <!DOCTYPE html>
 <html>
      <head>
-          <link rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
       <style>
           ul, ol, li{
                list-style: none;
@@ -77,7 +75,7 @@ export default async (data) => `
                 font-size: 26px;
                 text-transform: uppercase;
            }
-           .table-info{
+           .table-info-top{
                display: -webkit-box; 
                display: flex;
            }
@@ -146,8 +144,8 @@ export default async (data) => `
       </style>
      </head>
      <body>
-          <div class="wrapper">
-               <div class="container-fluid" style="font-family: sans-serif">
+          <div class=\"wrapper\">
+               <div class=\"container-fluid\" style=\"font-family: sans-serif\">
                     <div class="row top">
                          <div class="container">
                               <div class="row titleChuongTrinhDaoTao">
@@ -155,7 +153,7 @@ export default async (data) => `
                                    <h2>ngành ${data?.tenNganhDaoTao}</h2>
                               </div>
                               <div class="row">
-                                   <div class="table-info" style="width: 100%;">
+                                   <div class="table-info-top" style="width: 100%;">
                                         <div class="table-title">
                                              <p>${titles.TEN_CHUONG_TRINH}:</p>
                                              <p>${titles.TRINH_DO_DAI_HOC}:</p>

@@ -6,9 +6,10 @@ import { Syllabus } from './entity/syllabus.entity';
 import { NamHocModule } from 'nam-hoc/nam-hoc.module';
 import { HeDaotaoModule } from 'he-dao-tao/he-dao-tao.module';
 import { MonHocModule } from 'mon-hoc/mon-hoc.module';
+import { RedisCacheModule } from 'cache/redisCache.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Syllabus]), NamHocModule, HeDaotaoModule, MonHocModule],
+  imports: [TypeOrmModule.forFeature([Syllabus]), NamHocModule, HeDaotaoModule, MonHocModule, RedisCacheModule],
   controllers: [SyllabusController],
   providers: [SyllabusService],
   exports: [SyllabusService]

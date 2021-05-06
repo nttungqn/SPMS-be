@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RedisCacheModule } from 'cache/redisCache.module';
 import { ChuanDauRaMonHocModule } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.module';
 import { HoatDongDanhGiaModule } from 'hoat-dong-danh-gia/hoat-dong-danh-gia.module';
 import { HoatDongDayHocModule } from 'hoat-dong-day-hoc/hoat-dong-day-hoc.module';
@@ -16,7 +17,8 @@ import { ChuDeEntity } from './entity/chu-de.entity';
     LoaiKeHoachGiangDayModule,
     HoatDongDanhGiaModule,
     ChuanDauRaMonHocModule,
-    HoatDongDayHocModule
+    HoatDongDayHocModule,
+    RedisCacheModule
   ],
   controllers: [ChuDeController],
   providers: [ChuDeService],

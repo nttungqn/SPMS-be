@@ -8,36 +8,46 @@ import {
   NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT, LOAIKHOIKIENTHUC_MESSAGE } from 'constant/constant';
+import { LIMIT, LOAIKHOIKIENTHUC_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { OrderByCondition, QueryFailedError, Repository } from 'typeorm';
 import { CreateLoaiKhoiKienThucDto } from './dto/create-loai-khoi-kien-thuc.dto';
 import { FilterLoaiKhoiKienThuc } from './dto/filter-loai-khoi-kien-thuc.dto';
 import { LoaiKhoiKienThucEntity } from './entity/type-of-knowledge-block.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class LoaiKhoiKienThucService {
   constructor(
     @InjectRepository(LoaiKhoiKienThucEntity)
-    private typeOfKnowledgeBlockRepository: Repository<LoaiKhoiKienThucEntity>
+    private typeOfKnowledgeBlockRepository: Repository<LoaiKhoiKienThucEntity>,
+    private cacheManager: RedisCacheService
   ) {}
 
   async findAll(filter: FilterLoaiKhoiKienThuc) {
-    const { page = 0, limit = LIMIT, idKhoiKienThuc, createdAt } = filter;
-    const queryBy_KhoiKienThuc = idKhoiKienThuc ? { khoiKienThuc: idKhoiKienThuc } : {};
-    const queryOrder: OrderByCondition = createdAt ? { createdAt } : {};
-    const skip = page * limit;
-    const query = {
-      isDeleted: false,
-      ...queryBy_KhoiKienThuc
-    };
-    const [results, total] = await this.typeOfKnowledgeBlockRepository.findAndCount({
-      relations: ['khoiKienThuc', 'createdBy', 'updatedBy'],
-      where: query,
-      take: limit,
-      skip,
-      order: queryOrder
-    });
-    return { contents: results, total, page: page };
+    const key = format(REDIS_CACHE_VARS.LIST_LKKT_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { page = 0, limit = LIMIT, idKhoiKienThuc, createdAt } = filter;
+      const queryBy_KhoiKienThuc = idKhoiKienThuc ? { khoiKienThuc: idKhoiKienThuc } : {};
+      const queryOrder: OrderByCondition = createdAt ? { createdAt } : {};
+      const skip = page * limit;
+      const query = {
+        isDeleted: false,
+        ...queryBy_KhoiKienThuc
+      };
+      const [list, total] = await this.typeOfKnowledgeBlockRepository.findAndCount({
+        relations: ['khoiKienThuc', 'createdBy', 'updatedBy'],
+        where: query,
+        take: limit,
+        skip,
+        order: queryOrder
+      });
+      result = { contents: list, total, page: page };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_LKKT_CACHE_TTL);
+    }
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findOne(id: number) {

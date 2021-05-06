@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
-import { CHUDE_MESSAGE, LIMIT } from 'constant/constant';
+import { CHUDE_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { BaseService } from 'guards/base-service.dto';
 import { HoatDongDanhGiaService } from 'hoat-dong-danh-gia/hoat-dong-danh-gia.service';
 import { HoatDongDayHocService } from 'hoat-dong-day-hoc/hoat-dong-day-hoc.service';
@@ -13,6 +13,8 @@ import { CreateChuDeDto } from './dto/create-chu-de';
 import { FilterChuDe } from './dto/filter-chu-de';
 import { UpdateChuDeDTO } from './dto/update-chu-de';
 import { ChuDeEntity, KEY_CD } from './entity/chu-de.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class ChuDeService extends BaseService {
@@ -22,75 +24,91 @@ export class ChuDeService extends BaseService {
     private loaiKeHoachGiangDayService: LoaiKeHoachGiangDayService,
     private hoatDongDayHocService: HoatDongDayHocService,
     private hoatDongDanhGiaService: HoatDongDanhGiaService,
-    private chuanDauRaMonHocService: ChuanDauRaMonHocService
+    private chuanDauRaMonHocService: ChuanDauRaMonHocService,
+    private cacheManager: RedisCacheService
   ) {
     super();
   }
 
   async findAll(filter: FilterChuDe): Promise<ChuDeEntity[] | any> {
-    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, idLKHGD, idSyllabus } = filter;
-    const skip = Number(page) * Number(limit);
-    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
-    const [results, total] = await this.chuDeRepository
-      .createQueryBuilder('cd')
-      .leftJoinAndSelect('cd.createdBy', 'createdBy')
-      .leftJoinAndSelect('cd.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
-      .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
-      .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc', `hoatDongDayHoc.isDeleted = ${false}`)
-      .leftJoinAndSelect('cd.idSyllabus', 'syllabus')
-      .leftJoinAndSelect('cd.idLKHGD', 'lhkgd')
-      .where((qb) => {
-        qb.leftJoinAndSelect(
-          'hoatDongDanhGia.chuanDauRaMonHoc',
-          'hddgchuanDauRaMonHoc',
-          `hddgchuanDauRaMonHoc.isDeleted = ${false}`
-        )
-          .leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
-          .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
-          .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
-        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `cd.${sortBy}` : null, sortType);
-        idSyllabus ? qb.andWhere('syllabus.id = :idSyllabus', { idSyllabus }) : {};
-        idLKHGD ? qb.andWhere('lhkgd.id = :idLKHGD', { idLKHGD }) : {};
-        searchKey
-          ? qb.andWhere('cd.ten LIKE :search OR cd.ma LIKE :search or cd.tuan = :tuan', {
-              search: `%${searchKey}%`,
-              tuan: Number.isNaN(Number(searchKey)) ? -1 : searchKey
-            })
-          : {};
-      })
-      .skip(skip)
-      .take(limit)
-      .andWhere(`cd.isDeleted = ${false}`)
-      .getManyAndCount();
-    return { contents: results, total, page: Number(page) };
+    const key = format(REDIS_CACHE_VARS.LIST_CHU_DE_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, idLKHGD, idSyllabus } = filter;
+      const skip = Number(page) * Number(limit);
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+      const [list, total] = await this.chuDeRepository
+        .createQueryBuilder('cd')
+        .leftJoinAndSelect('cd.createdBy', 'createdBy')
+        .leftJoinAndSelect('cd.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
+        .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
+        .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc', `hoatDongDayHoc.isDeleted = ${false}`)
+        .leftJoinAndSelect('cd.idSyllabus', 'syllabus')
+        .leftJoinAndSelect('cd.idLKHGD', 'lhkgd')
+        .where((qb) => {
+          qb.leftJoinAndSelect(
+            'hoatDongDanhGia.chuanDauRaMonHoc',
+            'hddgchuanDauRaMonHoc',
+            `hddgchuanDauRaMonHoc.isDeleted = ${false}`
+          )
+            .leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+            .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+            .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
+          isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `cd.${sortBy}` : null, sortType);
+          idSyllabus ? qb.andWhere('syllabus.id = :idSyllabus', { idSyllabus }) : {};
+          idLKHGD ? qb.andWhere('lhkgd.id = :idLKHGD', { idLKHGD }) : {};
+          searchKey
+            ? qb.andWhere('cd.ten LIKE :search OR cd.ma LIKE :search or cd.tuan = :tuan', {
+                search: `%${searchKey}%`,
+                tuan: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+              })
+            : {};
+        })
+        .skip(skip)
+        .take(limit)
+        .andWhere(`cd.isDeleted = ${false}`)
+        .getManyAndCount();
+      result = { contents: list, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHU_DE_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findOne(id: number): Promise<ChuDeEntity> {
-    const query = await this.chuDeRepository
-      .createQueryBuilder('cd')
-      .leftJoinAndSelect('cd.createdBy', 'createdBy')
-      .leftJoinAndSelect('cd.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
-      .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
-      .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc', `hoatDongDayHoc.isDeleted = ${false}`)
-      .leftJoinAndSelect('cd.idSyllabus', 'syllabus')
-      .leftJoinAndSelect('cd.idLKHGD', 'lhkgd')
-      .where((qb) => {
-        qb.leftJoinAndSelect(
-          'hoatDongDanhGia.chuanDauRaMonHoc',
-          'hddgchuanDauRaMonHoc',
-          `hddgchuanDauRaMonHoc.isDeleted = ${false}`
-        )
-          .leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
-          .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
-          .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
-      })
-      .andWhere(`cd.isDeleted = ${false} and cd.id = ${id}`);
-    const result = await query.getOne();
-    if (!result) {
-      throw new NotFoundException(CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const query = await this.chuDeRepository
+        .createQueryBuilder('cd')
+        .leftJoinAndSelect('cd.createdBy', 'createdBy')
+        .leftJoinAndSelect('cd.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
+        .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
+        .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc', `hoatDongDayHoc.isDeleted = ${false}`)
+        .leftJoinAndSelect('cd.idSyllabus', 'syllabus')
+        .leftJoinAndSelect('cd.idLKHGD', 'lhkgd')
+        .where((qb) => {
+          qb.leftJoinAndSelect(
+            'hoatDongDanhGia.chuanDauRaMonHoc',
+            'hddgchuanDauRaMonHoc',
+            `hddgchuanDauRaMonHoc.isDeleted = ${false}`
+          )
+            .leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+            .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+            .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
+        })
+        .andWhere(`cd.isDeleted = ${false} and cd.id = ${id}`);
+      result = await query.getOne();
+      if (!result) {
+        throw new NotFoundException(CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 

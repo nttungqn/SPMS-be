@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
-import { LIMIT, LOAIDANHGIA_MESSAGE } from 'constant/constant';
+import { LIMIT, LOAIDANHGIA_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { BaseService } from 'guards/base-service.dto';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
@@ -10,6 +10,8 @@ import { CreateLoaiDanhGiaDto } from './dto/create-loai-danh-gia.dto';
 import { FilterLoaiDanhGia } from './dto/filter-loai-danh-gia.dto';
 import { UpdateLoaiDanhGiaDto } from './dto/update-loai-danh-gia.dto';
 import { KEY_LDG, LoaiDanhGiaEntity } from './entity/loai-danh-gia.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class LoaiDanhGiaService extends BaseService {
@@ -17,7 +19,8 @@ export class LoaiDanhGiaService extends BaseService {
     @InjectRepository(LoaiDanhGiaEntity)
     private loaiDanhGiaRepository: Repository<LoaiDanhGiaEntity>,
     private syllabusService: SyllabusService,
-    private chuanDauRaMonHocService: ChuanDauRaMonHocService
+    private chuanDauRaMonHocService: ChuanDauRaMonHocService,
+    private cacheManager: RedisCacheService
   ) {
     super();
   }
@@ -44,42 +47,14 @@ export class LoaiDanhGiaService extends BaseService {
   }
 
   async findAll(filter: FilterLoaiDanhGia) {
-    const { page = 0, limit = LIMIT, idSyllabus, sortBy, sortType, searchKey } = filter;
-    const skip = page * limit;
-    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
-    if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
-    const [results, total] = await this.loaiDanhGiaRepository
-      .createQueryBuilder('ldg')
-      .leftJoinAndSelect('ldg.syllabus', 'syllabus')
-      .leftJoinAndSelect('ldg.createdBy', 'createdBy')
-      .leftJoinAndSelect('ldg.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('ldg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
-      .leftJoinAndSelect('ldg.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
-      .where((qb) => {
-        qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
-          .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
-          .leftJoinAndSelect('syllabus.monHoc', 'monHoc')
-          .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
-        idSyllabus ? qb.andWhere('ldg.syllabus = :idSyllabus', { idSyllabus }) : {};
-        searchKey
-          ? qb.andWhere('ldg.ten LIKE :search OR ldg.ma LIKE :search OR ldg.tyle = :tyle', {
-              search: `%${searchKey}%`,
-              tyle: Number.isNaN(Number(searchKey)) ? -1 : searchKey
-            })
-          : {};
-        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `ldg.${sortBy}` : null, sortType);
-      })
-      .andWhere(`ldg.isDeleted = ${false}`)
-      .take(limit)
-      .skip(skip)
-      .getManyAndCount();
-    return { contents: results, total, page: Number(page) };
-  }
-
-  async findOne(id: number) {
-    let result: LoaiDanhGiaEntity;
-    try {
-      result = await this.loaiDanhGiaRepository
+    const key = format(REDIS_CACHE_VARS.LIST_LDG_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { page = 0, limit = LIMIT, idSyllabus, sortBy, sortType, searchKey } = filter;
+      const skip = page * limit;
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+      if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
+      const [results, total] = await this.loaiDanhGiaRepository
         .createQueryBuilder('ldg')
         .leftJoinAndSelect('ldg.syllabus', 'syllabus')
         .leftJoinAndSelect('ldg.createdBy', 'createdBy')
@@ -91,16 +66,60 @@ export class LoaiDanhGiaService extends BaseService {
             .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
             .leftJoinAndSelect('syllabus.monHoc', 'monHoc')
             .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
+          idSyllabus ? qb.andWhere('ldg.syllabus = :idSyllabus', { idSyllabus }) : {};
+          searchKey
+            ? qb.andWhere('ldg.ten LIKE :search OR ldg.ma LIKE :search OR ldg.tyle = :tyle', {
+                search: `%${searchKey}%`,
+                tyle: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+              })
+            : {};
+          isSortFieldInForeignKey
+            ? qb.orderBy(sortBy, sortType)
+            : qb.orderBy(sortBy ? `ldg.${sortBy}` : null, sortType);
         })
-        .where({
-          isDeleted: false,
-          id
-        })
-        .getOne();
-    } catch (error) {
-      throw new InternalServerErrorException();
+        .andWhere(`ldg.isDeleted = ${false}`)
+        .take(limit)
+        .skip(skip)
+        .getManyAndCount();
+      result = { contents: results, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_LDG_CACHE_TTL);
     }
-    if (!result) throw new NotFoundException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_ID_NOT_FOUND);
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
+  }
+
+  async findOne(id: number) {
+    const key = format(REDIS_CACHE_VARS.DETAIL_LDG_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      try {
+        result = await this.loaiDanhGiaRepository
+          .createQueryBuilder('ldg')
+          .leftJoinAndSelect('ldg.syllabus', 'syllabus')
+          .leftJoinAndSelect('ldg.createdBy', 'createdBy')
+          .leftJoinAndSelect('ldg.updatedBy', 'updatedBy')
+          .leftJoinAndSelect('ldg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
+          .leftJoinAndSelect('ldg.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
+          .where((qb) => {
+            qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+              .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+              .leftJoinAndSelect('syllabus.monHoc', 'monHoc')
+              .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
+          })
+          .where({
+            isDeleted: false,
+            id
+          })
+          .getOne();
+      } catch (error) {
+        throw new InternalServerErrorException();
+      }
+      if (!result) throw new NotFoundException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_ID_NOT_FOUND);
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LDG_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 

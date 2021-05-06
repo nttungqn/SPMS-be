@@ -5,9 +5,15 @@ import { ChiTietKeHoachEntity } from './entity/chi-tiet-ke-hoach.entity';
 import { KeHoachGiangDayModule } from 'ke-hoach-giang-day/ke-hoach-giang-day.module';
 import { ChiTietGomNhomModule } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RedisCacheModule } from 'cache/redisCache.module';
 
 @Module({
-  imports: [KeHoachGiangDayModule, ChiTietGomNhomModule, TypeOrmModule.forFeature([ChiTietKeHoachEntity])],
+  imports: [
+    RedisCacheModule,
+    KeHoachGiangDayModule,
+    ChiTietGomNhomModule,
+    TypeOrmModule.forFeature([ChiTietKeHoachEntity])
+  ],
   providers: [ChiTietKeHoachService],
   controllers: [ChiTietKeHoachController],
   exports: [ChiTietKeHoachService]

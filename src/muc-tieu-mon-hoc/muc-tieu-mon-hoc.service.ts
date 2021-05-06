@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaNganhDaoTaoService } from 'chuan-dau-ra-nganh-dao-tao/chuan-dau-ra-nganh-dao-tao.service';
-import { LIMIT, MUCTIEUMONHOC_MESSAGE } from 'constant/constant';
+import { LIMIT, MUCTIEUMONHOC_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { BaseService } from 'guards/base-service.dto';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
@@ -10,6 +10,8 @@ import { CreateMucTieuMonHocDto } from './dto/create-muc-tieu-mon-hoc.dto';
 import { FilterMucTieuMonHoc } from './dto/filter-muc-tieu-mon-hoc.dto';
 import { UpdateMucTieuMonHocDto } from './dto/update-muc-tieu-mon-hoc.dto';
 import { MucTieuMonHocEntity } from './entity/muc-tieu-mon-hoc.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class MucTieuMonHocService extends BaseService {
@@ -17,7 +19,8 @@ export class MucTieuMonHocService extends BaseService {
     @InjectRepository(MucTieuMonHocEntity)
     private mucTieuMonHocEntityRepository: Repository<MucTieuMonHocEntity>,
     private syllabusService: SyllabusService,
-    private chuanDauRaNganhDaoTaoService: ChuanDauRaNganhDaoTaoService
+    private chuanDauRaNganhDaoTaoService: ChuanDauRaNganhDaoTaoService,
+    private cacheManager: RedisCacheService
   ) {
     super();
   }
@@ -59,64 +62,78 @@ export class MucTieuMonHocService extends BaseService {
   }
 
   async findAll(filter: FilterMucTieuMonHoc) {
-    const { page = 0, limit = LIMIT, idSyllabus, sortBy, searchKey, sortType } = filter;
-    const skip = page * limit;
-    if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
-    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
-    try {
-      const [results, total] = await this.mucTieuMonHocEntityRepository
-        .createQueryBuilder('mtmh')
-        .leftJoinAndSelect('mtmh.createdBy', 'createdBy')
-        .leftJoinAndSelect('mtmh.updatedBy', 'updatedBy')
-        .leftJoinAndSelect('mtmh.syllabus', 'syllabus')
-        .leftJoinAndSelect('mtmh.chuanDauRaCDIO', 'chuanDauRaCDIO', `chuanDauRaCDIO.isDeleted = ${false}`)
-        .where((qb) => {
-          qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
-            .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
-            .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
-          idSyllabus ? qb.andWhere('mtmh.syllabus = :idSyllabus', { idSyllabus }) : {};
-          searchKey
-            ? qb.andWhere('mtmh.ma LIKE :search OR mtmh.mota LIKE :search', {
-                search: `%${searchKey}%`
-              })
-            : {};
-          isSortFieldInForeignKey
-            ? qb.orderBy(sortBy, sortType)
-            : qb.orderBy(sortBy ? `mtmh.${sortBy}` : null, sortType);
-        })
-        .andWhere('mtmh.isDeleted = false')
-        .skip(skip)
-        .take(limit)
-        .getManyAndCount();
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      throw new InternalServerErrorException();
+    const key = format(REDIS_CACHE_VARS.LIST_MTMH_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { page = 0, limit = LIMIT, idSyllabus, sortBy, searchKey, sortType } = filter;
+      const skip = page * limit;
+      if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+      try {
+        const [results, total] = await this.mucTieuMonHocEntityRepository
+          .createQueryBuilder('mtmh')
+          .leftJoinAndSelect('mtmh.createdBy', 'createdBy')
+          .leftJoinAndSelect('mtmh.updatedBy', 'updatedBy')
+          .leftJoinAndSelect('mtmh.syllabus', 'syllabus')
+          .leftJoinAndSelect('mtmh.chuanDauRaCDIO', 'chuanDauRaCDIO', `chuanDauRaCDIO.isDeleted = ${false}`)
+          .where((qb) => {
+            qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+              .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+              .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
+            idSyllabus ? qb.andWhere('mtmh.syllabus = :idSyllabus', { idSyllabus }) : {};
+            searchKey
+              ? qb.andWhere('mtmh.ma LIKE :search OR mtmh.mota LIKE :search', {
+                  search: `%${searchKey}%`
+                })
+              : {};
+            isSortFieldInForeignKey
+              ? qb.orderBy(sortBy, sortType)
+              : qb.orderBy(sortBy ? `mtmh.${sortBy}` : null, sortType);
+          })
+          .andWhere('mtmh.isDeleted = false')
+          .skip(skip)
+          .take(limit)
+          .getManyAndCount();
+        result = { contents: results, total, page: Number(page) };
+        await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_MTMH_CACHE_TTL);
+      } catch (error) {
+        throw new InternalServerErrorException();
+      }
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findOne(id: number) {
-    let result: any;
-    try {
-      result = await this.mucTieuMonHocEntityRepository
-        .createQueryBuilder('mtmh')
-        .leftJoinAndSelect('mtmh.createdBy', 'createdBy')
-        .leftJoinAndSelect('mtmh.updatedBy', 'updatedBy')
-        .leftJoinAndSelect('mtmh.syllabus', 'syllabus')
-        .leftJoinAndSelect('mtmh.chuanDauRaCDIO', 'chuanDauRaCDIO', `chuanDauRaCDIO.isDeleted = ${false}`)
-        .where((qb) => {
-          qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
-            .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
-            .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
-        })
-        .where({
-          isDeleted: false,
-          id
-        })
-        .getOne();
-    } catch (error) {
-      throw new InternalServerErrorException();
+    const key = format(REDIS_CACHE_VARS.DETAIL_MTMH_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      try {
+        result = await this.mucTieuMonHocEntityRepository
+          .createQueryBuilder('mtmh')
+          .leftJoinAndSelect('mtmh.createdBy', 'createdBy')
+          .leftJoinAndSelect('mtmh.updatedBy', 'updatedBy')
+          .leftJoinAndSelect('mtmh.syllabus', 'syllabus')
+          .leftJoinAndSelect('mtmh.chuanDauRaCDIO', 'chuanDauRaCDIO', `chuanDauRaCDIO.isDeleted = ${false}`)
+          .where((qb) => {
+            qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
+              .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
+              .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
+          })
+          .where({
+            isDeleted: false,
+            id
+          })
+          .getOne();
+      } catch (error) {
+        throw new InternalServerErrorException();
+      }
+      if (!result) throw new NotFoundException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_ID_NOT_FOUND);
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MTMH_CACHE_TTL);
     }
-    if (!result) throw new NotFoundException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_ID_NOT_FOUND);
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 
