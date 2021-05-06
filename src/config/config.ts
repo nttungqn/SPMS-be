@@ -31,7 +31,7 @@ const REDIS_CONFIG = {
   URL: 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:18872',
   PASSWORD: 'A7yzKrnkLM8vN3w6G1nzn5MozR9YIOsD',
   TTL: 600,
-  MAX: 100
+  MAX: 256
 };
 export {
   PORT,
