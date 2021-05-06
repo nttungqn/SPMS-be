@@ -145,7 +145,7 @@ export class ChuanDauRaNganhDaoTaoController {
   @ApiOperation({ summary: 'lấy thông tin chuẩn đầu ra ngành đào tạo' })
   @ApiOkResponse({ description: 'OK' })
   @ApiNotFoundResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_EMPTY })
-  @Get('/chuan-dau-ra-list/:idCTNDT')
+  @Get('/chuan-dau-ra-list/:id')
   async getAllList(@Req() req, @Param('id') idCTNDT: number): Promise<any> {
     return await this.chuanDauRaNganhDaoTaoService.getAllList(idCTNDT);
   }
