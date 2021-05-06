@@ -1,5 +1,6 @@
+import { postDataDto } from './dto/postCreatePdf';
 import { ExportsDto } from './dto/exports.dto';
-import { Controller, Get, Query, Req, UseGuards, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards, HttpStatus, Res, Post, Body } from '@nestjs/common';
 import { ExportsService } from './exports.service';
 import htmlTemlpate from 'utils/templateCTDT/template';
 import * as pdf from 'html-pdf';
@@ -29,6 +30,21 @@ export class ExportsController {
       const { data } = await this.exportsService.exportsFilePdf(filter);
       const result = await htmlTemlpate(data);
       return res.json({ data: result?.replace(/\n/g, '')?.replace(/\"/g, '"') });
+    } catch (error) {
+      console.log(`error`, error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'INTERNAL_SERVER_ERROR' });
+    }
+  }
+  @Post('/data')
+  async receiveDataExportPdf(@Req() req, @Body() body: postDataDto, @Res() res): Promise<any> {
+    try {
+      const result = await htmlTemlpate(body.data);
+      res.setHeader('Content-disposition', 'attachment; filename=pdf.pdf');
+      await pdf.create(await htmlTemlpate(result), options).toStream(function (err, stream) {
+        if (err) return console.log(err);
+        stream.pipe(res);
+        stream.on('end', () => res.end());
+      });
     } catch (error) {
       console.log(`error`, error);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'INTERNAL_SERVER_ERROR' });
