@@ -5,6 +5,7 @@ import { LIMIT, LOAIDANHGIA_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant'
 import { BaseService } from 'guards/base-service.dto';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { Not, Repository } from 'typeorm';
+import { UsersEntity } from 'users/entity/user.entity';
 import { CreateLoaiDanhGiaDto } from './dto/create-loai-danh-gia.dto';
 import { FilterLoaiDanhGia } from './dto/filter-loai-danh-gia.dto';
 import { UpdateLoaiDanhGiaDto } from './dto/update-loai-danh-gia.dto';
@@ -24,21 +25,20 @@ export class LoaiDanhGiaService extends BaseService {
     super();
   }
 
-  async create(newData: CreateLoaiDanhGiaDto, idUser: number) {
+  async create(newData: CreateLoaiDanhGiaDto, createdBy: UsersEntity) {
     const syllabus = await this.syllabusService.findOne(newData.idSyllabus);
-    this.isOwner(syllabus.createdBy, idUser);
-
+    this.checkPermission(syllabus.createdBy, createdBy);
+    const syllabusCreatedBy: any = syllabus.createdBy;
     if (await this.isExistV2(null, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
 
     const loaiDanhGia = await this.createEntity(new LoaiDanhGiaEntity(), newData, newData.idSyllabus);
-
     try {
       const result = await this.loaiDanhGiaRepository.save({
         ...loaiDanhGia,
         createdAt: new Date(),
-        createdBy: idUser,
+        createdBy: syllabusCreatedBy.id,
         updatedAt: new Date(),
-        updatedBy: idUser
+        updatedBy: createdBy.id
       });
       return this.findOne(result.id);
     } catch (error) {
@@ -50,15 +50,11 @@ export class LoaiDanhGiaService extends BaseService {
     const key = format(REDIS_CACHE_VARS.LIST_LDG_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { page = 0, limit = LIMIT, idSyllabus } = filter;
+      const { page = 0, limit = LIMIT, idSyllabus, sortBy, sortType, searchKey } = filter;
       const skip = page * limit;
-      const searchByIdSyllabus = idSyllabus ? { syllabus: idSyllabus } : {};
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
-      const query = {
-        isDeleted: false,
-        ...searchByIdSyllabus
-      };
-      const [list, total] = await this.loaiDanhGiaRepository
+      const [results, total] = await this.loaiDanhGiaRepository
         .createQueryBuilder('ldg')
         .leftJoinAndSelect('ldg.syllabus', 'syllabus')
         .leftJoinAndSelect('ldg.createdBy', 'createdBy')
@@ -70,13 +66,22 @@ export class LoaiDanhGiaService extends BaseService {
             .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
             .leftJoinAndSelect('syllabus.monHoc', 'monHoc')
             .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
+          idSyllabus ? qb.andWhere('ldg.syllabus = :idSyllabus', { idSyllabus }) : {};
+          searchKey
+            ? qb.andWhere('ldg.ten LIKE :search OR ldg.ma LIKE :search OR ldg.tyle = :tyle', {
+                search: `%${searchKey}%`,
+                tyle: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+              })
+            : {};
+          isSortFieldInForeignKey
+            ? qb.orderBy(sortBy, sortType)
+            : qb.orderBy(sortBy ? `ldg.${sortBy}` : null, sortType);
         })
-        .where(query)
         .andWhere(`ldg.isDeleted = ${false}`)
         .take(limit)
         .skip(skip)
         .getManyAndCount();
-      result = { contents: list, total, page: Number(page) };
+      result = { contents: results, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_LDG_CACHE_TTL);
     }
 
@@ -86,8 +91,7 @@ export class LoaiDanhGiaService extends BaseService {
 
   async findOne(id: number) {
     const key = format(REDIS_CACHE_VARS.DETAIL_LDG_CACHE_KEY, id.toString());
-    let result: LoaiDanhGiaEntity;
-    result = await this.cacheManager.get(key);
+    let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
       try {
         result = await this.loaiDanhGiaRepository
@@ -119,13 +123,13 @@ export class LoaiDanhGiaService extends BaseService {
     return result;
   }
 
-  async update(id: number, newData: UpdateLoaiDanhGiaDto, idUser: number) {
+  async update(id: number, newData: UpdateLoaiDanhGiaDto, updatedBy: UsersEntity) {
     const oldData = await this.findOne(id);
-    this.isOwner(oldData.createdBy, idUser);
+    this.checkPermission(oldData.createdBy, updatedBy);
     let { idSyllabus } = newData;
     if (idSyllabus) {
       const syllabus = await this.syllabusService.findOne(idSyllabus);
-      this.isOwner(syllabus.createdBy, idUser);
+      this.checkPermission(syllabus.createdBy, updatedBy);
     } else {
       const syllabus: any = oldData.syllabus;
       const { id } = syllabus;
@@ -139,7 +143,7 @@ export class LoaiDanhGiaService extends BaseService {
     try {
       const result = await this.loaiDanhGiaRepository.save({
         ...loaiDanhGia,
-        updatedBy: idUser,
+        updatedBy: updatedBy.id,
         updatedAt: new Date()
       });
       return this.findOne(result.id);
@@ -148,15 +152,18 @@ export class LoaiDanhGiaService extends BaseService {
     }
   }
 
-  async remove(id: number, idUser: number) {
-    const result = await this.loaiDanhGiaRepository.findOne(id, { where: { isDeleted: false } });
+  async remove(id: number, user: UsersEntity) {
+    const result = await this.loaiDanhGiaRepository.findOne(id, {
+      where: { isDeleted: false },
+      relations: ['createdBy']
+    });
     if (!result) throw new NotFoundException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_ID_NOT_FOUND);
-    this.isOwner(result.createdBy, idUser);
+    this.checkPermission(result.createdBy, user);
     try {
       return await this.loaiDanhGiaRepository.save({
         ...result,
         updatedAt: new Date(),
-        updatedBy: idUser,
+        updatedBy: user.id,
         isDeleted: true
       });
     } catch (error) {

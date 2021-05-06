@@ -7,7 +7,8 @@ import { HoatDongDanhGiaService } from 'hoat-dong-danh-gia/hoat-dong-danh-gia.se
 import { HoatDongDayHocService } from 'hoat-dong-day-hoc/hoat-dong-day-hoc.service';
 import { LoaiKeHoachGiangDayService } from 'loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.service';
 import { SyllabusService } from 'syllabus/syllabus.service';
-import { Like, Not, Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
+import { UsersEntity } from 'users/entity/user.entity';
 import { CreateChuDeDto } from './dto/create-chu-de';
 import { FilterChuDe } from './dto/filter-chu-de';
 import { UpdateChuDeDTO } from './dto/update-chu-de';
@@ -33,14 +34,9 @@ export class ChuDeService extends BaseService {
     const key = format(REDIS_CACHE_VARS.LIST_CHU_DE_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, idLKHGD, idSyllabus } = filter;
       const skip = Number(page) * Number(limit);
-      const querySearch = search ? { ten: Like(`%${search}%`) } : {};
-      const query = {
-        isDeleted: false,
-        ...querySearch,
-        ...otherParam
-      };
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const [list, total] = await this.chuDeRepository
         .createQueryBuilder('cd')
         .leftJoinAndSelect('cd.createdBy', 'createdBy')
@@ -59,12 +55,19 @@ export class ChuDeService extends BaseService {
             .leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
             .leftJoinAndSelect('syllabus.namHoc', 'namHoc')
             .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
+          isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `cd.${sortBy}` : null, sortType);
+          idSyllabus ? qb.andWhere('syllabus.id = :idSyllabus', { idSyllabus }) : {};
+          idLKHGD ? qb.andWhere('lhkgd.id = :idLKHGD', { idLKHGD }) : {};
+          searchKey
+            ? qb.andWhere('cd.ten LIKE :search OR cd.ma LIKE :search or cd.tuan = :tuan', {
+                search: `%${searchKey}%`,
+                tuan: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+              })
+            : {};
         })
-        .where(query)
         .skip(skip)
         .take(limit)
         .andWhere(`cd.isDeleted = ${false}`)
-        .orderBy('cd.tuan', 'ASC')
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHU_DE_CACHE_TTL);
@@ -109,10 +112,11 @@ export class ChuDeService extends BaseService {
     return result;
   }
 
-  async create(newData: CreateChuDeDto, idUser: number): Promise<any> {
+  async create(newData: CreateChuDeDto, createdBy: UsersEntity): Promise<any> {
     const syllabus = await this.syllabusService.findOne(newData.idSyllabus);
     await this.loaiKeHoachGiangDayService.findById(newData.idLKHGD);
-    this.isOwner(syllabus.createdBy, idUser);
+    this.checkPermission(syllabus.createdBy, createdBy);
+    const syllabusCreatedBy: any = syllabus.createdBy;
 
     if (await this.isExist(null, newData)) {
       throw new ConflictException(CHUDE_MESSAGE.CHUDE_EXIST);
@@ -122,8 +126,8 @@ export class ChuDeService extends BaseService {
     try {
       const saved = await this.chuDeRepository.save({
         ...chuDe,
-        createdBy: idUser,
-        updatedBy: idUser,
+        createdBy: syllabusCreatedBy.id,
+        updatedBy: createdBy.id,
         createdAt: new Date(),
         updatedAt: new Date()
       });
@@ -133,12 +137,13 @@ export class ChuDeService extends BaseService {
     }
   }
 
-  async update(id: number, newData: UpdateChuDeDTO, idUser: number): Promise<any> {
+  async update(id: number, newData: UpdateChuDeDTO, updatedBy: UsersEntity): Promise<any> {
     const oldData = await this.findOne(id);
-    this.isOwner(oldData.createdBy, idUser);
+    this.checkPermission(oldData.createdBy, updatedBy);
     let { idSyllabus } = newData;
     if (idSyllabus) {
-      await this.syllabusService.findOne(newData.idSyllabus);
+      const syllabys = await this.syllabusService.findOne(newData.idSyllabus);
+      this.checkPermission(syllabys.createdBy, updatedBy);
     } else {
       const syllabys: any = oldData.idSyllabus;
       const { id } = syllabys;
@@ -154,16 +159,16 @@ export class ChuDeService extends BaseService {
       return await this.chuDeRepository.save({
         ...chuDe,
         updatedAt: new Date(),
-        updatedBy: idUser
+        updatedBy: updatedBy.id
       });
     } catch (error) {
       throw new InternalServerErrorException(CHUDE_MESSAGE.UPDATE_CHUDE_FAILED);
     }
   }
 
-  async delete(id: number, updatedBy?: number): Promise<any> {
+  async delete(id: number, updatedBy?: UsersEntity): Promise<any> {
     const chude = await this.chuDeRepository.findOne({ id, isDeleted: false });
-    this.isOwner(chude.createdBy, updatedBy);
+    this.checkPermission(chude.createdBy, updatedBy);
     if (!chude) {
       throw new NotFoundException(CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND);
     }
@@ -172,7 +177,7 @@ export class ChuDeService extends BaseService {
         ...chude,
         isDeleted: true,
         updatedAt: new Date(),
-        updatedBy
+        updatedBy: updatedBy.id
       });
     } catch (error) {
       throw new InternalServerErrorException(CHUDE_MESSAGE.DELETE_CHUDE_FAILED);

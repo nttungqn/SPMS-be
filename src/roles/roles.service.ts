@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.dto';
 import { LIMIT, REDIS_CACHE_VARS, ROLES_MESSAGE } from 'constant/constant';
 import { Repository } from 'typeorm';
+import { FilterRoles } from './dto/filter-roles.dto';
 import { RolesEntity } from './entity/roles.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
@@ -28,19 +29,30 @@ export class RolesService {
     }
   }
 
-  async findAll(filter: BaseFilterDto) {
+  async findAll(filter: FilterRoles) {
     const key = format(REDIS_CACHE_VARS.LIST_ROLE_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { page = 0, limit = LIMIT, ...other } = filter;
+      const { page = 0, limit = LIMIT, searchKey, sortBy, sortType } = filter;
       const skip = page * limit;
-      const [list, total] = await this.rolesRepository.findAndCount({
-        skip,
-        take: limit,
-        where: { isDeleted: false },
-        ...other
-      });
-      result = { contents: list, total, page: Number(page) };
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+      const [results, total] = await this.rolesRepository
+        .createQueryBuilder('role')
+        .where((qb) => {
+          qb.leftJoinAndSelect('role.updatedBy', 'updatedBy').leftJoinAndSelect('role.createdBy', 'createdBy');
+          isSortFieldInForeignKey
+            ? qb.orderBy(sortBy, sortType)
+            : qb.orderBy(sortBy ? `role.${sortBy}` : null, sortType);
+        })
+        .andWhere('role.name LIKE :searchName OR role.value = :searchValue', {
+          searchName: `%${searchKey}%`,
+          searchValue: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+        })
+        .andWhere('role.isDeleted = true')
+        .skip(skip)
+        .take(limit)
+        .getManyAndCount();
+      result = { contents: results, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_ROLE_CACHE_TTL);
     }
 

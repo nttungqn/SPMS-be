@@ -155,4 +155,13 @@ export class LoaiKhoiKienThucService {
     });
     return results;
   }
+
+  async deleteRowIsDeleted(): Promise<any> {
+    try {
+      await this.typeOfKnowledgeBlockRepository.delete({ isDeleted: true });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.DELETE_LOAIKHOIKIENTHUC_FAILED);
+    }
+  }
 }

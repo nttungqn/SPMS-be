@@ -45,7 +45,7 @@ export class LoaiDanhGiaController {
   constructor(private readonly loaiDanhGiaService: LoaiDanhGiaService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới một Loai đánh giá' })
   @ApiCreatedResponse({ description: LOAIDANHGIA_MESSAGE.CREATE_LOAIDANHGIA_SUCCESSFULLY })
@@ -54,7 +54,7 @@ export class LoaiDanhGiaController {
   @ApiUnauthorizedResponse({ description: LOAIDANHGIA_MESSAGE.LOAIDANHGIA_NOT_AUTHORIZED })
   @Post()
   async create(@Body(ValidationPipe) createLoaiDanhGiaDto: CreateLoaiDanhGiaDto, @GetUser() user: UsersEntity) {
-    await this.loaiDanhGiaService.create(createLoaiDanhGiaDto, user.id);
+    await this.loaiDanhGiaService.create(createLoaiDanhGiaDto, user);
     return new HttpException(LOAIDANHGIA_MESSAGE.CREATE_LOAIDANHGIA_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
@@ -82,7 +82,7 @@ export class LoaiDanhGiaController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một Loại đánh giá' })
   @ApiUnauthorizedResponse({ description: LOAIDANHGIA_MESSAGE.LOAIDANHGIA_NOT_AUTHORIZED })
@@ -96,12 +96,12 @@ export class LoaiDanhGiaController {
     @Body(ValidationPipe) updateLoaiDanhGiaDto: UpdateLoaiDanhGiaDto,
     @GetUser() user: UsersEntity
   ) {
-    await this.loaiDanhGiaService.update(id, updateLoaiDanhGiaDto, user.id);
+    await this.loaiDanhGiaService.update(id, updateLoaiDanhGiaDto, user);
     return new HttpException(LOAIDANHGIA_MESSAGE.UPDATE_LOAIDANHGIA_SUCCESSFULLY, HttpStatus.OK);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
+  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một Loại đánh giá' })
   @ApiUnauthorizedResponse({ description: LOAIDANHGIA_MESSAGE.LOAIDANHGIA_NOT_AUTHORIZED })
@@ -109,9 +109,8 @@ export class LoaiDanhGiaController {
   @ApiOkResponse({ description: LOAIDANHGIA_MESSAGE.DELETE_LOAIDANHGIA_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: LOAIDANHGIA_MESSAGE.DELETE_LOAIDANHGIA_FAILED })
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
-    const user = req.user || {};
-    await this.loaiDanhGiaService.remove(id, user?.id);
+  async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: UsersEntity) {
+    await this.loaiDanhGiaService.remove(id, user);
     return new HttpException(LOAIDANHGIA_MESSAGE.DELETE_LOAIDANHGIA_SUCCESSFULLY, HttpStatus.OK);
   }
 }

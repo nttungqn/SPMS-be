@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException, ConflictEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { HOATDONGDAYHOC_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { Like, Repository } from 'typeorm';
+import { FilterHoatDongDayHoc } from './dto/filter-hoat-đong-day-hoc';
 import { HoatDongDayHocEntity } from './entity/hoat-dong-day-hoc.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
@@ -13,27 +14,32 @@ export class HoatDongDayHocService {
     private cacheManager: RedisCacheService
   ) {}
 
-  async findAll(filter): Promise<HoatDongDayHocEntity[] | any> {
+  async findAll(filter: FilterHoatDongDayHoc): Promise<HoatDongDayHocEntity[] | any> {
     const key = format(REDIS_CACHE_VARS.LIST_HDDH_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, search = '', ...otherParam } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
       const skip = Number(page) * Number(limit);
-      const querySearch = search ? { ten: Like(`%${search}%`) } : {};
-      const query = {
-        isDeleted: false,
-        ...querySearch,
-        ...otherParam
-      };
-
-      const list = await this.hoatDongDayHocRepository.find({
-        where: query,
-        skip,
-        take: Number(limit),
-        relations: ['createdBy', 'updatedBy']
-      });
-      const total = await this.hoatDongDayHocRepository.count({ ...query });
-      result = { contents: list, total, page: Number(page) };
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+      const [results, total] = await this.hoatDongDayHocRepository
+        .createQueryBuilder('hddh')
+        .leftJoinAndSelect('hddh.createdBy', 'createdBy')
+        .leftJoinAndSelect('hddh.updatedBy', 'updatedBy')
+        .where((qb) => {
+          searchKey
+            ? qb.andWhere('hddh.ma LIKE :search OR hddh.ten LIKE :search', {
+                search: `%${searchKey}%`
+              })
+            : {};
+          isSortFieldInForeignKey
+            ? qb.orderBy(sortBy, sortType)
+            : qb.orderBy(sortBy ? `hddh.${sortBy}` : null, sortType);
+        })
+        .skip(skip)
+        .take(limit)
+        .andWhere('hddh.isDeleted = false')
+        .getManyAndCount();
+      result = { contents: results, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_HDDH_CACHE_TTL);
     }
 

@@ -62,7 +62,7 @@ export class CtdtController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
+  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiCreatedResponse({ description: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_FAILED })
@@ -86,7 +86,7 @@ export class CtdtController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
+  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: NGANHDAOTAO_MESSAGE.UPDATE_NGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: NGANHDAOTAO_MESSAGE.UPDATE_NGANHDAOTAO_FAILED })

@@ -10,6 +10,7 @@ import { Syllabus } from './entity/syllabus.entity';
 import { BaseService } from 'guards/base-service.dto';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
+import { UsersEntity } from 'users/entity/user.entity';
 
 @Injectable()
 export class SyllabusService extends BaseService {
@@ -116,39 +117,52 @@ export class SyllabusService extends BaseService {
     return result;
   }
 
-  async update(id: number, updateSyllabus: Syllabus) {
-    const sylabus = await this.syllabusRepository.findOne(id, { where: { isDeleted: false } });
-    this.isOwner(sylabus.createdBy, updateSyllabus.updatedBy);
+  async update(id: number, updateSyllabus: Syllabus, updateBy: UsersEntity) {
+    const syllabus = await this.syllabusRepository.findOne(id, {
+      where: { isDeleted: false },
+      relations: ['createdBy']
+    });
+    this.checkPermission(syllabus.createdBy, updateBy);
     const { namHoc, heDaoTao, monHoc } = updateSyllabus;
     if (namHoc) {
       await this.shoolYearService.findById(namHoc);
-      sylabus.namHoc = namHoc;
+      syllabus.namHoc = namHoc;
     }
     if (heDaoTao) {
       await this.typeOfEduService.findById(heDaoTao);
-      sylabus.heDaoTao = heDaoTao;
+      syllabus.heDaoTao = heDaoTao;
     }
     if (monHoc) {
       await this.subjectService.findById(monHoc);
-      sylabus.monHoc = monHoc;
+      syllabus.monHoc = monHoc;
     }
 
-    if (await this.isExist(sylabus)) {
+    if (await this.isExist(syllabus)) {
       throw new ConflictException(SYLLABUS_MESSAGE.SYLLABUS_EXIST);
     }
     try {
-      await this.syllabusRepository.save({ ...sylabus, updateBy: updateSyllabus.updatedBy, updatedAt: new Date() });
+      await this.syllabusRepository.save({
+        ...syllabus,
+        ...updateSyllabus,
+        updateBy: updateBy.id,
+        updatedAt: new Date()
+      });
     } catch (error) {
       throw new InternalServerErrorException(SYLLABUS_MESSAGE.UPDATE_SYLLABUS_FAILED);
     }
-    return this.findOne(sylabus.id);
+    return this.findOne(syllabus.id);
   }
 
-  async remove(id: number, idUser: number) {
+  async remove(id: number, user: UsersEntity) {
     const found = await this.findOne(id);
-    this.isOwner(found.createdBy, idUser);
+    this.checkPermission(found.createdBy, user);
     try {
-      return await this.syllabusRepository.save({ ...found, updateBy: idUser, updatedAt: new Date(), isDeleted: true });
+      return await this.syllabusRepository.save({
+        ...found,
+        updateBy: user.id,
+        updatedAt: new Date(),
+        isDeleted: true
+      });
     } catch (error) {
       throw new InternalServerErrorException(SYLLABUS_MESSAGE.DELETE_SYLLABUS_FAILED);
     }
