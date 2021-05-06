@@ -1,46 +1,64 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LIMIT, NGANHDAOTAO_MESSAGE } from 'constant/constant';
+import { LIMIT, NGANHDAOTAO_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { Repository, Like } from 'typeorm';
 import { NganhDaoTaoEntity } from './entity/nganhDaoTao.entity';
 import { INganhDaoTao } from './interfaces/nganhDaoTao.interface';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class CtdtService {
   constructor(
-    @InjectRepository(NganhDaoTaoEntity) private readonly nganhDaoTaoRepository: Repository<NganhDaoTaoEntity>
+    @InjectRepository(NganhDaoTaoEntity) private readonly nganhDaoTaoRepository: Repository<NganhDaoTaoEntity>,
+    private cacheManager: RedisCacheService
   ) {}
 
   async findAll(filter: any): Promise<any> {
-    const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
-    const skip = Number(page) * Number(limit);
-    const querySearch = search ? { ten: Like(`%${search}%`) } : {};
-    const query = {
-      isDeleted: false,
-      ...querySearch,
-      ...rest
-    };
-    const results = await this.nganhDaoTaoRepository.find({
-      relations: ['chuongTrinhDaoTao', 'createdBy', 'updatedBy'],
-      skip,
-      take: limit,
-      where: query
-    });
-    if (!results.length) {
-      throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.LIST_NDT_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
+      const skip = Number(page) * Number(limit);
+      const querySearch = search ? { ten: Like(`%${search}%`) } : {};
+      const query = {
+        isDeleted: false,
+        ...querySearch,
+        ...rest
+      };
+      const list = await this.nganhDaoTaoRepository.find({
+        relations: ['chuongTrinhDaoTao', 'createdBy', 'updatedBy'],
+        skip,
+        take: limit,
+        where: query
+      });
+      if (!list.length) {
+        throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
+      }
+      const total = await this.nganhDaoTaoRepository.count({ ...query });
+      result = { contents: list, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_NDT_CACHE_TTL);
     }
-    const total = await this.nganhDaoTaoRepository.count({ ...query });
-    return { contents: results, total, page: Number(page) };
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findById(id: number): Promise<any> {
-    const result = await this.nganhDaoTaoRepository.findOne({
-      where: { id, isDeleted: false },
-      relations: ['chuongTrinhDaoTao', 'createdBy', 'updatedBy']
-    });
-    if (!result) {
-      throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_NDT_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.nganhDaoTaoRepository.findOne({
+        where: { id, isDeleted: false },
+        relations: ['chuongTrinhDaoTao', 'createdBy', 'updatedBy']
+      });
+      if (!result) {
+        throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_NDT_CACHE_TTL);
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 

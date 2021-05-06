@@ -6,45 +6,65 @@ import {
   BadRequestException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MONHOC_MESSAGE } from 'constant/constant';
+import { MONHOC_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { Like, Not, Repository } from 'typeorm';
 import { CreateMonHocDto } from './dto/create-mon-hoc.dto';
 import { MonHocEntity } from './entity/mon-hoc.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class MonHocService {
-  constructor(@InjectRepository(MonHocEntity) private monHocRepository: Repository<MonHocEntity>) {}
+  constructor(
+    @InjectRepository(MonHocEntity) private monHocRepository: Repository<MonHocEntity>,
+    private cacheManager: RedisCacheService
+  ) {}
 
   async findAll(filter): Promise<MonHocEntity[] | any> {
-    const { limit, page = 0, search = '', ...otherParam } = filter;
-    const skip = limit ? Number(page) * Number(limit) : null;
-    const querySearch = search ? { tenTiengViet: Like(`%${search}%`) } : {};
-    const query = {
-      isDeleted: false,
-      ...querySearch,
-      ...otherParam
-    };
-    const total = await this.monHocRepository.count({ ...query });
-    if (!limit && Number(page) > 0) {
-      return { contents: [], total, page: Number(page) };
+    const key = format(REDIS_CACHE_VARS.LIST_MON_HOC_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit, page = 0, search = '', ...otherParam } = filter;
+      const skip = limit ? Number(page) * Number(limit) : null;
+      const querySearch = search ? { tenTiengViet: Like(`%${search}%`) } : {};
+      const query = {
+        isDeleted: false,
+        ...querySearch,
+        ...otherParam
+      };
+      const total = await this.monHocRepository.count({ ...query });
+      if (!limit && Number(page) > 0) {
+        return { contents: [], total, page: Number(page) };
+      }
+      const list = await this.monHocRepository.find({
+        where: query,
+        skip,
+        take: Number(limit),
+        relations: ['createdBy', 'updatedBy']
+      });
+      result = { contents: list, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_MON_HOC_CACHE_TTL);
     }
-    const results = await this.monHocRepository.find({
-      where: query,
-      skip,
-      take: Number(limit),
-      relations: ['createdBy', 'updatedBy']
-    });
-    return { contents: results, total, page: Number(page) };
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findById(id: number): Promise<MonHocEntity | any> {
-    const result = await this.monHocRepository.findOne({
-      where: { id, isDeleted: false },
-      relations: ['createdBy', 'updatedBy']
-    });
-    if (!result) {
-      throw new NotFoundException(MONHOC_MESSAGE.MONHOC_ID_NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.monHocRepository.findOne({
+        where: { id, isDeleted: false },
+        relations: ['createdBy', 'updatedBy']
+      });
+      if (!result) {
+        throw new NotFoundException(MONHOC_MESSAGE.MONHOC_ID_NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_TTL);
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 
@@ -143,32 +163,39 @@ export class MonHocService {
     }
   }
   async getAllSubjectByNganhDaoTaoAndKhoaTuyen(idNganhDaoTao: number, khoaTuyen: number) {
-    const subjects = await this.monHocRepository
-      .createQueryBuilder('mh')
-      .leftJoinAndSelect('mh.chiTietGomNhom', 'chiTietGomNhom')
-      .where((qb) => {
-        qb.leftJoin('chiTietGomNhom.gomNhom', 'gomNhom')
-          .where((qb) => {
-            qb.leftJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc')
-              .where((qb) => {
-                qb.leftJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc')
-                  .where((qb) => {
-                    qb.leftJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh')
-                      .where(`chiTietNganh.khoa = ${khoaTuyen}`)
-                      .andWhere(`chiTietNganh.nganhDaoTao = ${idNganhDaoTao}`)
-                      .andWhere(`chiTietNganh.isDeleted = ${false}`);
-                  })
-                  .andWhere(`khoiKienThuc.isDeleted = ${false}`);
-              })
-              .andWhere(`loaiKhoiKienThuc.isDeleted = ${false}`);
-          })
-          .andWhere(`chiTietGomNhom.isDeleted = ${false}`);
-      })
-      .getMany();
-    if (subjects.length === 0) {
-      throw new BadRequestException(`KHOA_${khoaTuyen}_MONHOC_EMPTY`);
+    const key = format(REDIS_CACHE_VARS.LIST_MH_NDT_KT_CACHE_KEY, idNganhDaoTao.toString(), khoaTuyen.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.monHocRepository
+        .createQueryBuilder('mh')
+        .leftJoinAndSelect('mh.chiTietGomNhom', 'chiTietGomNhom')
+        .where((qb) => {
+          qb.leftJoin('chiTietGomNhom.gomNhom', 'gomNhom')
+            .where((qb) => {
+              qb.leftJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc')
+                .where((qb) => {
+                  qb.leftJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc')
+                    .where((qb) => {
+                      qb.leftJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh')
+                        .where(`chiTietNganh.khoa = ${khoaTuyen}`)
+                        .andWhere(`chiTietNganh.nganhDaoTao = ${idNganhDaoTao}`)
+                        .andWhere(`chiTietNganh.isDeleted = ${false}`);
+                    })
+                    .andWhere(`khoiKienThuc.isDeleted = ${false}`);
+                })
+                .andWhere(`loaiKhoiKienThuc.isDeleted = ${false}`);
+            })
+            .andWhere(`chiTietGomNhom.isDeleted = ${false}`);
+        })
+        .getMany();
+      if (result.length === 0) {
+        throw new BadRequestException(`KHOA_${khoaTuyen}_MONHOC_EMPTY`);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_MH_NDT_KT_CACHE_TTL);
     }
-    return subjects;
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
   async isExist(oldData: MonHocEntity, newData: CreateMonHocDto): Promise<boolean> {
     if (!newData.ma) return false;

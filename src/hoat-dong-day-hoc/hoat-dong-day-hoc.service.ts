@@ -1,47 +1,67 @@
 import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HOATDONGDAYHOC_MESSAGE, LIMIT } from 'constant/constant';
-import { Repository } from 'typeorm';
+import { HOATDONGDAYHOC_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
+import { Like, Repository } from 'typeorm';
 import { FilterHoatDongDayHoc } from './dto/filter-hoat-đong-day-hoc';
 import { HoatDongDayHocEntity } from './entity/hoat-dong-day-hoc.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class HoatDongDayHocService {
   constructor(
-    @InjectRepository(HoatDongDayHocEntity) private hoatDongDayHocRepository: Repository<HoatDongDayHocEntity>
+    @InjectRepository(HoatDongDayHocEntity) private hoatDongDayHocRepository: Repository<HoatDongDayHocEntity>,
+    private cacheManager: RedisCacheService
   ) {}
 
   async findAll(filter: FilterHoatDongDayHoc): Promise<HoatDongDayHocEntity[] | any> {
-    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
-    const skip = Number(page) * Number(limit);
-    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
-    const [results, total] = await this.hoatDongDayHocRepository
-      .createQueryBuilder('hddh')
-      .leftJoinAndSelect('hddh.createdBy', 'createdBy')
-      .leftJoinAndSelect('hddh.updatedBy', 'updatedBy')
-      .where((qb) => {
-        searchKey
-          ? qb.andWhere('hddh.ma LIKE :search OR hddh.ten LIKE :search', {
-              search: `%${searchKey}%`
-            })
-          : {};
-        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `hddh.${sortBy}` : null, sortType);
-      })
-      .skip(skip)
-      .take(limit)
-      .andWhere('hddh.isDeleted = false')
-      .getManyAndCount();
-    return { contents: results, total, page: Number(page) };
+    const key = format(REDIS_CACHE_VARS.LIST_HDDH_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
+      const skip = Number(page) * Number(limit);
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+      const [results, total] = await this.hoatDongDayHocRepository
+        .createQueryBuilder('hddh')
+        .leftJoinAndSelect('hddh.createdBy', 'createdBy')
+        .leftJoinAndSelect('hddh.updatedBy', 'updatedBy')
+        .where((qb) => {
+          searchKey
+            ? qb.andWhere('hddh.ma LIKE :search OR hddh.ten LIKE :search', {
+                search: `%${searchKey}%`
+              })
+            : {};
+          isSortFieldInForeignKey
+            ? qb.orderBy(sortBy, sortType)
+            : qb.orderBy(sortBy ? `hddh.${sortBy}` : null, sortType);
+        })
+        .skip(skip)
+        .take(limit)
+        .andWhere('hddh.isDeleted = false')
+        .getManyAndCount();
+      result = { contents: results, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_HDDH_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findOne(id: number): Promise<HoatDongDayHocEntity | any> {
-    const result = await this.hoatDongDayHocRepository.findOne({
-      where: { id, isDeleted: false },
-      relations: ['createdBy', 'updatedBy']
-    });
-    if (!result) {
-      throw new NotFoundException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_ID_NOT_FOUND);
+    const key = format(REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      result = await this.hoatDongDayHocRepository.findOne({
+        where: { id, isDeleted: false },
+        relations: ['createdBy', 'updatedBy']
+      });
+      if (!result) {
+        throw new NotFoundException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_ID_NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_TTL);
     }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
 

@@ -4,9 +4,10 @@ import { KhoiKienThucController } from './khoi-kien-thuc.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { KhoiKienThucEntity } from './entity/khoi-kien-thuc.entity';
 import { ChiTietNganhDaoTaoModule } from 'chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
+import { RedisCacheModule } from 'cache/redisCache.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([KhoiKienThucEntity]), ChiTietNganhDaoTaoModule],
+  imports: [TypeOrmModule.forFeature([KhoiKienThucEntity]), ChiTietNganhDaoTaoModule, RedisCacheModule],
   controllers: [KhoiKienThucController],
   providers: [KhoiKienThucService],
   exports: [KhoiKienThucService]

@@ -6,17 +6,20 @@ import {
   ServiceUnavailableException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HEDAOTAO_MESSAGE } from 'constant/constant';
+import { HEDAOTAO_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { Repository } from 'typeorm';
 import { CreateHeDaoTaoDto } from './dto/create-he-dao-tao.dto';
 import { UpdateHeDaoTaoDto } from './dto/update-he-dao-tao.dto';
 import { HeDaoTaoEntity } from './entity/type-of-education.entity';
+import { RedisCacheService } from 'cache/redisCache.service';
+import * as format from 'string-format';
 
 @Injectable()
 export class HeDaotaoService {
   constructor(
     @InjectRepository(HeDaoTaoEntity)
-    private typeOfEduRepository: Repository<HeDaoTaoEntity>
+    private typeOfEduRepository: Repository<HeDaoTaoEntity>,
+    private cacheManager: RedisCacheService
   ) {}
 
   async create(createTypeOfEducationDto: CreateHeDaoTaoDto) {
@@ -31,20 +34,35 @@ export class HeDaotaoService {
   }
 
   async findAll() {
-    return { contents: await this.typeOfEduRepository.find({ where: { isDeleted: false }, order: { ma: 'ASC' } }) };
+    const key = format(REDIS_CACHE_VARS.LIST_HE_DAO_TAO_CACHE_KEY);
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const list = await this.typeOfEduRepository.find({ where: { isDeleted: false }, order: { ma: 'ASC' } });
+      result = { contents: list };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_HE_DAO_TAO_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async findById(id: number): Promise<HeDaoTaoEntity> {
-    let found;
-    try {
-      found = await this.typeOfEduRepository.findOne(id, { where: { isDeleted: false } });
-    } catch (error) {
-      throw new ServiceUnavailableException();
+    const key = format(REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      try {
+        result = await this.typeOfEduRepository.findOne(id, { where: { isDeleted: false } });
+      } catch (error) {
+        throw new ServiceUnavailableException();
+      }
+      if (!result) {
+        throw new NotFoundException(HEDAOTAO_MESSAGE.HEDAOTAO_ID_NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_TTL);
     }
-    if (!found) {
-      throw new NotFoundException(HEDAOTAO_MESSAGE.HEDAOTAO_ID_NOT_FOUND);
-    }
-    return found;
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
   }
 
   async update(id: number, updateTypeOfEducationDto: UpdateHeDaoTaoDto) {
