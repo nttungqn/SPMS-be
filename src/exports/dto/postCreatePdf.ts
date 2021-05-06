@@ -5,4 +5,8 @@ export class postDataDto {
   @IsString()
   @ApiProperty({})
   readonly data: string;
+
+  @IsString()
+  @ApiProperty({})
+  readonly fileName: string;
 }

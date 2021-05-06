@@ -71,18 +71,20 @@ export class CtdtController {
   async create(@Req() req, @Body() newData: CreateNganhDaoTaoDto, @Res() res): Promise<any> {
     const user = req.user || {};
     try {
-      await this.nganhDaoTaoService.create({
+      const content = await this.nganhDaoTaoService.create({
         ...newData,
         createdBy: user?.id,
         updatedBy: user?.id
       });
+      return res
+        .status(HttpStatus.CREATED)
+        .json({ message: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_SUCCESSFULLY, content });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_FAILED,
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return res.status(HttpStatus.CREATED).json({ message: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_SUCCESSFULLY });
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

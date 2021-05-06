@@ -38,15 +38,13 @@ export class ExportsController {
   @Post('/data')
   async receiveDataExportPdf(@Req() req, @Body() body: postDataDto, @Res() res): Promise<any> {
     try {
-      const result = await htmlTemlpate(body.data);
-      res.setHeader('Content-disposition', 'attachment; filename=pdf.pdf');
-      await pdf.create(await htmlTemlpate(result), options).toStream(function (err, stream) {
+      res.setHeader('Content-disposition', `attachment; filename=${body.fileName || 'noname'}.pdf`);
+      await pdf.create(body.data, options).toStream(function (err, stream) {
         if (err) return console.log(err);
         stream.pipe(res);
         stream.on('end', () => res.end());
       });
     } catch (error) {
-      console.log(`error`, error);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'INTERNAL_SERVER_ERROR' });
     }
   }

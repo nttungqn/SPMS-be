@@ -45,7 +45,11 @@ export class CtdtService {
   }
 
   async create(newData: INganhDaoTao): Promise<any> {
-    const checkExistName = await this.nganhDaoTaoRepository.findOne({ ten: newData?.ten, isDeleted: false });
+    const checkExistName = await this.nganhDaoTaoRepository.findOne({
+      ten: newData?.ten,
+      chuongTrinhDaoTao: newData?.chuongTrinhDaoTao,
+      isDeleted: false
+    });
     if (checkExistName) {
       throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_NAME_EXIST, HttpStatus.CONFLICT);
     }
