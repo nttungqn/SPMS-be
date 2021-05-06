@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
+import { CLONE_MESSAGE } from 'constant/constant';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
 import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
@@ -40,34 +41,25 @@ export class CloneService {
         });
       })
       .andWhere('kkt.chiTietNganh = :idCTNDTClone', { idCTNDTClone })
+      .andWhere('kkt.isDeleted = false')
       .getMany();
 
     khoiKienThucListClone.forEach((kktE) => {
       kktE.chiTietNganh = idCTNDT;
-      delete kktE.id;
-      delete kktE.createdAt;
-      delete kktE.updatedAt;
+      removeProperties(kktE, 'createdAt', 'updatedAt', 'isDeleted');
       kktE.loaiKhoiKienThuc.forEach((lkktE) => {
         delete lkktE.id;
         lkktE.gomNhom.forEach((gnE) => {
-          delete gnE.id;
-          delete gnE.idLKKT;
-          delete gnE.loaiKhoiKienThuc;
-          delete gnE.createdAt;
-          delete gnE.updatedAt;
+          removeProperties(gnE, 'id', 'idLKKT', 'loaiKhoiKienThuc', 'createdAt', 'updatedAt', 'isDeleted');
           gnE.chiTietGomNhom.forEach((ctgnE) => {
-            delete ctgnE.id;
-            delete ctgnE.idGN;
-            delete ctgnE.ctgnMonHoctruoc;
-            delete ctgnE.gomNhom;
-            delete ctgnE.createdAt;
-            delete ctgnE.updatedAt;
+            removeProperties(ctgnE, 'id', 'idGN', 'ctgnMonHoctruoc', 'gomNhom', 'createdAt', 'updatedAt', 'isDeleted');
           });
         });
       });
     });
     return khoiKienThucListClone;
   }
+
   async createKhoiKienThucDetailClone(khoiKienThucList: KhoiKienThucEntity[], idCTNDTClone: number, idCTNDT: number) {
     const ctndt = await this.conection
       .getRepository(ChiTietNganhDaoTaoEntity)
@@ -75,98 +67,46 @@ export class CloneService {
       .leftJoinAndSelect('ctndt.khoiKienThucList', 'kkt')
       .where({ id: idCTNDT })
       .getOne();
-    ctndt.khoiKienThucList = khoiKienThucList;
     if (!ctndt) {
       throw new NotFoundException();
     }
-    await this.conection.getRepository(ChiTietNganhDaoTaoEntity).save(ctndt);
-  }
-  async khoiKienThucClone(idCTNDTClone: number, idCTNDT: number) {
-    const khoiKineThucRepository = this.conection.getRepository(KhoiKienThucEntity);
-    const khoiKienThucList = await khoiKineThucRepository.find({ where: { chiTietNganh: idCTNDT, isDeleted: false } });
-    if (khoiKienThucList.length != 0) {
-      return khoiKienThucList;
+    if (ctndt.khoiKienThucList.length > 0) {
+      throw new BadRequestException('KHOI_KIEN_THUC_EXISTED');
     }
-    const khoiKienThucCloneList = await khoiKineThucRepository.find({
-      where: { chiTietNganh: idCTNDTClone, isDeleted: false }
-    });
-    khoiKienThucCloneList.forEach((e) => {
-      e.chiTietNganh = idCTNDT;
-      delete e.id;
-    });
-    return khoiKienThucCloneList;
-  }
-
-  async updateKhoiKienThuc(khoikienThucList: KhoiKienThucEntity[], idCTNDT: number) {
-    const ctndt = await this.conection
-      .getRepository(ChiTietNganhDaoTaoEntity)
-      .createQueryBuilder('ctndt')
-      .leftJoinAndSelect('ctndt.khoiKienThucList', 'kkt')
-      .where({ id: idCTNDT })
-      .getOne();
-    ctndt.khoiKienThucList = khoikienThucList;
-    if (!ctndt) {
-      throw new NotFoundException();
-    }
-    await this.conection.getRepository(ChiTietNganhDaoTaoEntity).save(ctndt);
-  }
-  async LoaiKhoiKienThucDetailClone(idCTNDTClone: number, idCTNDT: number) {
-    const loaiKhoiKienThucList = await this.conection
-      .getRepository(LoaiKhoiKienThucEntity)
-      .createQueryBuilder('lkkt')
-      .leftJoinAndSelect('lkkt.gomNhom', 'gomNhom', `gomNhom.isDeleted = ${false}`)
-      .leftJoinAndSelect('lkkt.khoiKienThuc', 'khoiKienThuc', `khoiKienThuc.isDeleted = ${false}`)
-      .where((qb) => {
-        qb.leftJoinAndSelect('gomNhom.chiTietGomNhom', 'chiTietGomNhom')
-          .where((qb) => {
-            qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
-          })
-          .andWhere('khoiKienThuc.chiTietNganh = :idCTNDTClone', { idCTNDTClone });
-      })
-      .andWhere(`lkkt.isDeleted = ${false}`)
-      .getMany();
-    loaiKhoiKienThucList.forEach((lkkt) => {
-      delete lkkt.id;
-      lkkt.khoiKienThuc = null;
-      lkkt.gomNhom.forEach((gn) => {
-        delete gn.id;
-        delete gn.loaiKhoiKienThuc;
-        delete gn.idLKKT;
-        gn.chiTietGomNhom.forEach((ctgn) => {
-          delete ctgn.id;
-          delete ctgn.idGN;
-          delete ctgn.gomNhom;
+    khoiKienThucList.forEach((kktE) => {
+      kktE.chiTietNganh = Number(idCTNDT);
+      removeProperties(kktE, 'createdAt', 'updatedAt', 'isDeleted');
+      kktE.loaiKhoiKienThuc.forEach((lkktE) => {
+        removeProperties(lkktE, 'id', 'isDeleted');
+        lkktE.gomNhom.forEach((gnE) => {
+          removeProperties(gnE, 'id', 'idLKKT', 'loaiKhoiKienThuc', 'createdAt', 'updatedAt', 'isDeleted');
+          gnE.chiTietGomNhom.forEach((ctgnE) => {
+            removeProperties(
+              ctgnE,
+              'id',
+              'idGN',
+              'ctgnMonHoctruoc',
+              'gomNhom',
+              'createdAt',
+              'updatedAt',
+              'monHoc',
+              'isDeleted'
+            );
+            console.log(ctgnE);
+          });
+          gnE.chiTietGomNhom = gnE.chiTietGomNhom.filter((ctgnE) => ctgnE.idMH != null);
         });
+        lkktE.gomNhom = lkktE.gomNhom.filter((gnE) => gnE.chiTietGomNhom.length >= 0);
       });
     });
-    const khoiKienThuc = await this.conection
-      .getRepository(KhoiKienThucEntity)
-      .createQueryBuilder('kkt')
-      .where((qb) => {
-        qb.leftJoinAndSelect('kkt.loaiKhoiKienThuc', 'lkkt', 'lkkt.isDeleted = false');
-        qb.where((qb) => {
-          qb.leftJoinAndSelect('lkkt.gomNhom', 'gomNhom', `gomNhom.isDeleted = ${false}`).where((qb) => {
-            qb.leftJoinAndSelect('gomNhom.chiTietGomNhom', 'chiTietGomNhom').where((qb) => {
-              qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
-            });
-          });
-        });
-      })
-      .andWhere(`kkt.chiTietNganh = :idCTNDT`, { idCTNDT })
-      .andWhere(`kkt.isDeleted = ${false}`)
-      .getMany();
+    ctndt.khoiKienThucList = khoiKienThucList;
+    try {
+      await this.conection.getRepository(ChiTietNganhDaoTaoEntity).save(ctndt);
+    } catch (error) {
+      throw new InternalServerErrorException(CLONE_MESSAGE.CREATE_NOI_DUNG_FAILED);
+    }
+  }
 
-    return { KhoiKienThuc: khoiKienThuc, LoaiKhoiKienThucClone: loaiKhoiKienThucList };
-  }
-  async updateLoaiKhoiKienThucDetailClone(
-    loaiKhoiKienThucList: LoaiKhoiKienThucEntity[],
-    idCTNDTClone: number,
-    idCTNDT: number
-  ) {
-    const loaiKhoiKienThucReposi = await this.conection
-      .getRepository(LoaiKhoiKienThucEntity)
-      .save(loaiKhoiKienThucList);
-  }
   async KeHoachGiangDayClone(idCTNDTClone: number, idCTNDT: number) {
     const chiTietGomNhomReposi = this.conection.getRepository(ChiTietGomNhomEntity);
     const query = chiTietGomNhomReposi
@@ -182,7 +122,9 @@ export class CloneService {
       })
       .andWhere('ctgn.isDeleted = false');
     const ctgn = await query.getMany();
-
+    if (ctgn.length == 0) {
+      throw new BadRequestException('MON_HOC_EMPTY');
+    }
     const keHoachGiangDayReposi = this.conection.getRepository(KeHoachGiangDayEntity);
 
     const khgd = await keHoachGiangDayReposi
@@ -222,15 +164,14 @@ export class CloneService {
     }
 
     for (const khgdE of khgdCurent) {
+      removeProperties(khgdE, 'createdAt', 'updatedAt');
       if (deleteIdFlag) {
-        delete khgdE.id;
+        removeProperties(khgdE, 'createdAt', 'id');
         khgdE.nganhDaoTao = Number(idCTNDT);
       }
       for (const ctkhE of khgdE.chiTietKeHoach) {
         if (deleteIdFlag) {
-          delete ctkhE.id;
-          delete ctkhE.idKHGD;
-          delete ctkhE.idCTGN;
+          removeProperties(khgdE, 'idKHGD', 'idCTGN', 'id');
         }
         const length = ctgn.length;
         let index = 0;
@@ -245,17 +186,54 @@ export class CloneService {
           ctkhE.chiTietGomNhom = null;
         }
       }
+      khgdE.chiTietKeHoach = khgdE.chiTietKeHoach.filter((ctkhE) => ctkhE.chiTietGomNhom != null);
+      if (khgdE.chiTietKeHoach.length == 0) {
+        khgdE.chiTietKeHoach.push({ idCTGN: null, ghiChu: null });
+      }
     }
     return { khgd: khgdCurent, chiTietGomNhom: ctgn };
   }
 
   async createKeHoachGiangDayClone(
-    keHoachGiangDayEntity: KeHoachGiangDayEntity[],
+    keHoachGiangDayList: KeHoachGiangDayEntity[],
     idCTNDTClone: number,
     idCTNDT: number
   ) {
-    const keHoachGiangDayReposi = this.conection.getRepository(KeHoachGiangDayEntity);
-    keHoachGiangDayReposi.save(keHoachGiangDayEntity);
+    const ctndt = await this.conection
+      .getRepository(ChiTietNganhDaoTaoEntity)
+      .createQueryBuilder('ctndt')
+      .leftJoinAndSelect('ctndt.keHoachGiangDayList', 'khgd')
+      .where({ id: idCTNDT })
+      .getOne();
+    if (!ctndt) {
+      throw new NotFoundException();
+    }
+    if (ctndt.keHoachGiangDayList.length > 0) {
+      throw new BadRequestException('KE_HOACH_GIANG_DAY_EXISTED');
+    }
+    for (const khgdE of keHoachGiangDayList) {
+      khgdE.nganhDaoTao = Number(idCTNDT);
+      removeProperties(khgdE, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+      khgdE.chiTietKeHoach = khgdE.chiTietKeHoach.filter((ctkhE) => {
+        removeProperties(
+          ctkhE,
+          'idKHGD',
+          'id',
+          'chiTietKeHoach',
+          'createdAt',
+          'updatedAt',
+          'isDeleted',
+          'chiTietGomNhom'
+        );
+        return Number.isInteger(ctkhE.idCTGN);
+      });
+    }
+    try {
+      const keHoachGiangDayReposi = this.conection.getRepository(KeHoachGiangDayEntity);
+      keHoachGiangDayReposi.save(keHoachGiangDayList);
+    } catch (error) {
+      return new InternalServerErrorException(CLONE_MESSAGE.CREATE_KE_HOACH_GIANG_DAY_FAILED);
+    }
   }
 
   async deleteKhoiKienThuc(idKKT: number) {
@@ -266,3 +244,8 @@ export class CloneService {
     }
   }
 }
+const removeProperties = (object: any, ...keys: any[]) => {
+  keys.forEach((key) => {
+    delete object[key];
+  });
+};
