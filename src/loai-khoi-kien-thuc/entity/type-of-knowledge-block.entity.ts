@@ -15,11 +15,11 @@ export class LoaiKhoiKienThucEntity extends CreateLoaiKhoiKienThucDto {
 
   @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'createdBy' })
-  readonly createdBy?: number;
+  createdBy?: number;
 
   @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'updatedBy' })
-  readonly updatedBy?: number;
+  updatedBy?: number;
 
   @Column({ name: 'updatedAt' })
   readonly updatedAt?: Date;

@@ -4,7 +4,6 @@ import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietN
 import { CLONE_MESSAGE } from 'constant/constant';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
-import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
 import { Connection, getConnection } from 'typeorm';
 
 @Injectable()
@@ -60,7 +59,12 @@ export class CloneService {
     return khoiKienThucListClone;
   }
 
-  async createKhoiKienThucDetailClone(khoiKienThucList: KhoiKienThucEntity[], idCTNDTClone: number, idCTNDT: number) {
+  async createKhoiKienThucDetailClone(
+    khoiKienThucList: KhoiKienThucEntity[],
+    idCTNDTClone: number,
+    idCTNDT: number,
+    createdBy: number
+  ) {
     const ctndt = await this.conection
       .getRepository(ChiTietNganhDaoTaoEntity)
       .createQueryBuilder('ctndt')
@@ -75,12 +79,20 @@ export class CloneService {
     }
     khoiKienThucList.forEach((kktE) => {
       kktE.chiTietNganh = Number(idCTNDT);
-      removeProperties(kktE, 'createdAt', 'updatedAt', 'isDeleted');
+      kktE.createdBy = createdBy;
+      kktE.updatedBy = createdBy;
+      removeProperties(kktE, 'id', 'createdAt', 'updatedAt', 'isDeleted');
       kktE.loaiKhoiKienThuc.forEach((lkktE) => {
+        lkktE.createdBy = createdBy;
+        lkktE.updatedBy = createdBy;
         removeProperties(lkktE, 'id', 'isDeleted');
         lkktE.gomNhom.forEach((gnE) => {
+          gnE.createdBy = createdBy;
+          gnE.updatedBy = createdBy;
           removeProperties(gnE, 'id', 'idLKKT', 'loaiKhoiKienThuc', 'createdAt', 'updatedAt', 'isDeleted');
           gnE.chiTietGomNhom.forEach((ctgnE) => {
+            ctgnE.createdBy = createdBy;
+            ctgnE.updatedBy = createdBy;
             removeProperties(
               ctgnE,
               'id',
@@ -92,7 +104,6 @@ export class CloneService {
               'monHoc',
               'isDeleted'
             );
-            console.log(ctgnE);
           });
           gnE.chiTietGomNhom = gnE.chiTietGomNhom.filter((ctgnE) => ctgnE.idMH != null);
         });
@@ -123,7 +134,7 @@ export class CloneService {
       .andWhere('ctgn.isDeleted = false');
     const ctgn = await query.getMany();
     if (ctgn.length == 0) {
-      throw new BadRequestException('MON_HOC_EMPTY');
+      throw new BadRequestException(CLONE_MESSAGE.MON_HOC_EMPTY);
     }
     const keHoachGiangDayReposi = this.conection.getRepository(KeHoachGiangDayEntity);
 
@@ -164,14 +175,14 @@ export class CloneService {
     }
 
     for (const khgdE of khgdCurent) {
-      removeProperties(khgdE, 'createdAt', 'updatedAt');
+      removeProperties(khgdE, 'createdAt', 'updatedAt', 'isDeleted');
       if (deleteIdFlag) {
         removeProperties(khgdE, 'createdAt', 'id');
         khgdE.nganhDaoTao = Number(idCTNDT);
       }
       for (const ctkhE of khgdE.chiTietKeHoach) {
         if (deleteIdFlag) {
-          removeProperties(khgdE, 'idKHGD', 'idCTGN', 'id');
+          removeProperties(ctkhE, 'idKHGD', 'idCTGN', 'id', 'createdAt', 'updatedAt', 'isDeleted');
         }
         const length = ctgn.length;
         let index = 0;
@@ -197,7 +208,8 @@ export class CloneService {
   async createKeHoachGiangDayClone(
     keHoachGiangDayList: KeHoachGiangDayEntity[],
     idCTNDTClone: number,
-    idCTNDT: number
+    idCTNDT: number,
+    createdBy: number
   ) {
     const ctndt = await this.conection
       .getRepository(ChiTietNganhDaoTaoEntity)
@@ -209,12 +221,17 @@ export class CloneService {
       throw new NotFoundException();
     }
     if (ctndt.keHoachGiangDayList.length > 0) {
-      throw new BadRequestException('KE_HOACH_GIANG_DAY_EXISTED');
+      throw new BadRequestException(CLONE_MESSAGE.KE_HOACH_GIANG_DAY_EXISTED);
     }
     for (const khgdE of keHoachGiangDayList) {
       khgdE.nganhDaoTao = Number(idCTNDT);
+      khgdE.createdBy = createdBy;
+      khgdE.updatedBy = createdBy;
       removeProperties(khgdE, 'id', 'createdAt', 'updatedAt', 'isDeleted');
       khgdE.chiTietKeHoach = khgdE.chiTietKeHoach.filter((ctkhE) => {
+        ctkhE.createdBy = createdBy;
+        ctkhE.updatedBy = createdBy;
+        ctkhE.idCTGN = ctkhE.chiTietGomNhom.id;
         removeProperties(
           ctkhE,
           'idKHGD',
@@ -239,9 +256,7 @@ export class CloneService {
   async deleteKhoiKienThuc(idKKT: number) {
     try {
       const khoiKienThuc = await this.conection.getRepository(ChiTietGomNhomEntity).delete(idKKT);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 }
 const removeProperties = (object: any, ...keys: any[]) => {
