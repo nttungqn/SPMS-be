@@ -20,22 +20,37 @@ export class ChiTietNganhDaoTaoService {
     const key = format(REDIS_CACHE_VARS.LIST_CHI_TIET_NDT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, ...rest } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
       const skip = Number(page) * Number(limit);
-      const query = {
-        isDeleted: false,
-        ...rest
-      };
-      const list = await this.chiTietNganhDTRepository.find({
-        relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.chuongTrinhDaoTao'],
-        skip,
-        take: limit,
-        where: query
-      });
-      if (!list.length) {
-        throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
-      }
-      const total = await this.chiTietNganhDTRepository.count({ ...query });
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+      const searchField = ['id', 'khoa', 'coHoiNgheNghiep', 'mucTieuChung'];
+      const searchQuery = searchField
+        .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'ctndt.' + e + ' LIKE :search'))
+        .join(' OR ');
+      const [list, total] = await this.chiTietNganhDTRepository
+        .createQueryBuilder('ctndt')
+        .leftJoinAndSelect('ctndt.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false')
+        .leftJoinAndSelect('ctndt.createdBy', 'createdBy')
+        .leftJoinAndSelect('ctndt.updatedBy', 'updatedBy')
+        .where((qb) => {
+          qb.leftJoinAndSelect(
+            'nganhDaoTao.chuongTrinhDaoTao',
+            'chuongTrinhDaoTao',
+            'chuongTrinhDaoTao.isDeleted = false'
+          );
+          searchKey
+            ? qb.andWhere(searchQuery, {
+                search: `%${searchKey}%`
+              })
+            : {};
+          isSortFieldInForeignKey
+            ? qb.orderBy(sortBy, sortType)
+            : qb.orderBy(sortBy ? `ctndt.${sortBy}` : null, sortType);
+        })
+        .skip(skip)
+        .take(limit)
+        .andWhere('ctndt.isDeleted = false')
+        .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_NDT_CACHE_TTL);
     }

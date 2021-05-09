@@ -1,12 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.dto';
-import { IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsIn, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class FilterNganhDaoTaoDto extends BaseFilterDto {
-  @IsString()
-  @IsOptional()
-  @ApiProperty({ required: false, description: 'trường này dùng để search theo tên' })
-  readonly search: string;
   @IsOptional()
   @IsString()
   @ApiProperty({ required: false, description: 'mã ngành đào tạo' })
@@ -15,4 +11,17 @@ export class FilterNganhDaoTaoDto extends BaseFilterDto {
   @IsNumberString()
   @ApiProperty({ required: false, description: 'id của chương trình đào tạo' })
   readonly chuongTrinhDaoTao?: number;
+
+  @ApiProperty({ required: false, description: 'Search by id, maNganhDaoTao, ten' })
+  @IsOptional()
+  readonly searchKey?: string;
+
+  @ApiProperty({ required: false, description: 'Sort by: id, maNganhDaoTao, ten, createdAt, updatedAt' })
+  @IsOptional()
+  readonly sortBy?: string;
+
+  @ApiProperty({ required: false, description: 'ASC| DESC' })
+  @IsOptional()
+  @IsIn(['ASC', 'DESC'])
+  readonly sortType?: 'ASC' | 'DESC';
 }

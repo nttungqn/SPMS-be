@@ -37,15 +37,31 @@ export class KhoiKienThucService {
   }
 
   async findAll(filter: filterKnowledgeBlock) {
-    const { page = 0, limit = LIMIT, idChiTietNganhDaoTao } = filter;
-    const queryByChiTietNganhDaoTao = idChiTietNganhDaoTao ? { chiTietNganh: idChiTietNganhDaoTao } : {};
-    const skip = page * limit;
-    const [list, total] = await this.knowledgeBlockRepository.findAndCount({
-      relations: ['chiTietNganh', 'createdBy', 'updatedBy', 'chiTietNganh.nganhDaoTao'],
-      where: { isDeleted: false, ...queryByChiTietNganhDaoTao },
-      skip,
-      take: limit
-    });
+    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
+    const skip = Number(page) * Number(limit);
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+    const searchField = ['id', 'tongTinChi', 'ten', 'maKKT', 'tinChiTuChon', 'tinChiTuChonTuDo', 'tinChiBatBuoc'];
+    const searchQuery = searchField
+      .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'kkt.' + e + ' LIKE :search'))
+      .join(' OR ');
+    const [list, total] = await this.knowledgeBlockRepository
+      .createQueryBuilder('kkt')
+      .leftJoinAndSelect('kkt.chiTietNganh', 'chiTietNganh', 'chiTietNganh.isDeleted = false')
+      .leftJoinAndSelect('kkt.createdBy', 'createdBy')
+      .leftJoinAndSelect('kkt.updatedBy', 'updatedBy')
+      .where((qb) => {
+        qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao');
+        searchKey
+          ? qb.andWhere(searchQuery, {
+              search: `%${searchKey}%`
+            })
+          : {};
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `kkt.${sortBy}` : null, sortType);
+      })
+      .skip(skip)
+      .take(limit)
+      .andWhere('kkt.isDeleted = false')
+      .getManyAndCount();
     return { contents: list, total, page: Number(page) };
   }
 
@@ -53,7 +69,7 @@ export class KhoiKienThucService {
     const key = format(REDIS_CACHE_VARS.DETAIL_KKT_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const result = await this.knowledgeBlockRepository.findOne(id, {
+      result = await this.knowledgeBlockRepository.findOne(id, {
         relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
         where: { isDeleted: false }
       });

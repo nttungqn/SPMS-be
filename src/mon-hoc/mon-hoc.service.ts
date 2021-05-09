@@ -6,7 +6,7 @@ import {
   BadRequestException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MONHOC_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
+import { LIMIT, MONHOC_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { Like, Not, Repository } from 'typeorm';
 import { CreateMonHocDto } from './dto/create-mon-hoc.dto';
 import { MonHocEntity } from './entity/mon-hoc.entity';
@@ -24,24 +24,37 @@ export class MonHocService {
     const key = format(REDIS_CACHE_VARS.LIST_MON_HOC_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit, page = 0, search = '', ...otherParam } = filter;
-      const skip = limit ? Number(page) * Number(limit) : null;
-      const querySearch = search ? { tenTiengViet: Like(`%${search}%`) } : {};
-      const query = {
-        isDeleted: false,
-        ...querySearch,
-        ...otherParam
-      };
-      const total = await this.monHocRepository.count({ ...query });
-      if (!limit && Number(page) > 0) {
-        return { contents: [], total, page: Number(page) };
-      }
-      const list = await this.monHocRepository.find({
-        where: query,
-        skip,
-        take: Number(limit),
-        relations: ['createdBy', 'updatedBy']
-      });
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
+      const skip = Number(page) * Number(limit);
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+      const searchField = [
+        'id',
+        'ma',
+        'tenTiengViet',
+        'tenTiengAnh',
+        'soTietLyThuyet',
+        'soTietThucHanh',
+        'soTietTuHoc'
+      ];
+      const searchQuery = searchField
+        .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'mh.' + e + ' LIKE :search'))
+        .join(' OR ');
+      const [list, total] = await this.monHocRepository
+        .createQueryBuilder('mh')
+        .leftJoinAndSelect('mh.createdBy', 'createdBy')
+        .leftJoinAndSelect('mh.updatedBy', 'updatedBy')
+        .where((qb) => {
+          searchKey
+            ? qb.andWhere(searchQuery, {
+                search: `%${searchKey}%`
+              })
+            : {};
+          isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `mh.${sortBy}` : null, sortType);
+        })
+        .skip(skip)
+        .take(limit)
+        .andWhere('mh.isDeleted = false')
+        .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_MON_HOC_CACHE_TTL);
     }

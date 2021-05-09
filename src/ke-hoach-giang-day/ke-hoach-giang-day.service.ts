@@ -21,26 +21,41 @@ export class KeHoachGiangDayService {
     const key = format(REDIS_CACHE_VARS.LIST_KHGD_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, ...rest } = filter;
-      const skip = Number(page) * Number(limit);
-      const query = {
-        isDeleted: false,
-        ...rest
-      };
-      const list = await this.keHoachGiangDayRepository.find({
-        relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.nganhDaoTao'],
-        skip,
-        take: limit,
-        where: query
-      });
-      if (!list.length) {
-        throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_EMPTY, HttpStatus.NOT_FOUND);
+      try {
+        const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
+        const skip = Number(page) * Number(limit);
+        const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+        const searchField = ['id', 'tenHocKy', 'maKeHoach'];
+        const searchQuery = searchField
+          .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'kkt.' + e + ' LIKE :search'))
+          .join(' OR ');
+        const [list, total] = await this.keHoachGiangDayRepository
+          .createQueryBuilder('khgd')
+          .leftJoinAndSelect('khgd.CTNganhDaoTao', 'CTNganhDaoTao', 'CTNganhDaoTao.isDeleted = false')
+          .leftJoinAndSelect('khgd.createdBy', 'createdBy')
+          .leftJoinAndSelect('khgd.updatedBy', 'updatedBy')
+          .where((qb) => {
+            qb.leftJoinAndSelect('CTNganhDaoTao.nganhDaoTao', 'nganhDaoTao');
+            searchKey
+              ? qb.andWhere(searchQuery, {
+                  search: `%${searchKey}%`
+                })
+              : {};
+            isSortFieldInForeignKey
+              ? qb.orderBy(sortBy, sortType)
+              : qb.orderBy(sortBy ? `khgd.${sortBy}` : null, sortType);
+          })
+          .skip(skip)
+          .take(limit)
+          .andWhere('khgd.isDeleted = false')
+          .getManyAndCount();
+        result = { contents: list, total, page: Number(page) };
+        await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_KHGD_CACHE_TTL);
+      } catch (error) {
+        console.log(error);
+        throw new InternalServerErrorException();
       }
-      const total = await this.keHoachGiangDayRepository.count({ ...query });
-      result = { contents: list, total, page: Number(page) };
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_KHGD_CACHE_TTL);
     }
-
     if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
@@ -72,7 +87,7 @@ export class KeHoachGiangDayService {
       throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_MESSAGE_MAKEHOACH_CONFLIC, HttpStatus.CONFLICT);
     }
 
-    const record = await this.chiTietNganhDaoTaoService.findById(newData.nganhDaoTao);
+    const record = await this.chiTietNganhDaoTaoService.findById(newData.CTNganhDaoTao);
     if (!record) {
       throw new HttpException(KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED, HttpStatus.CONFLICT);
     }

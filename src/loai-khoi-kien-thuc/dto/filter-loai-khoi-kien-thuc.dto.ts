@@ -7,8 +7,19 @@ export class FilterLoaiKhoiKienThuc extends BaseFilterDto {
   @IsOptional()
   readonly idKhoiKienThuc?: number;
 
-  @ApiProperty({ required: false, description: 'Sắp xếp tăng dần,giảm dần (ASC | DESC) theo thời gian tạo' })
+  @ApiProperty({ required: false, description: 'Search by id, maLoaiKhoiKienThuc, ten, tongTinChi, noiDung' })
+  @IsOptional()
+  readonly searchKey?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Sort by: id, maLoaiKhoiKienThuc, ten, tongTinChi, noiDung, createdAt, updatedAt'
+  })
+  @IsOptional()
+  readonly sortBy?: string;
+
+  @ApiProperty({ required: false, description: 'ASC| DESC' })
   @IsOptional()
   @IsIn(['ASC', 'DESC'])
-  createdAt?: 'ASC' | 'DESC';
+  readonly sortType?: 'ASC' | 'DESC';
 }
