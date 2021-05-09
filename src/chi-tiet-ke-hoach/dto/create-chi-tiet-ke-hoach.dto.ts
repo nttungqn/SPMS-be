@@ -6,7 +6,7 @@ import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
 export class CreateChiTietKeHoachDto {
   @ApiProperty()
-  @ManyToOne(() => KeHoachGiangDayEntity, { onDelete: 'CASCADE' })
+  @ManyToOne(() => KeHoachGiangDayEntity, (khgd) => khgd.chiTietKeHoach, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_KeHoachGiangDay' })
   @Column({ name: 'ID_KeHoachGiangDay' })
   @IsNotEmpty()

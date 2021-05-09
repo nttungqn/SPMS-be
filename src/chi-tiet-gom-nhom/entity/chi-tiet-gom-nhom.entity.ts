@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { GomNhomEntity } from 'gom-nhom/entity/gom-nhom.entity';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
-import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, BaseEntity } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
 import { TABLE_NAME } from '../../constant/constant';
 
@@ -12,7 +12,7 @@ export class ChiTietGomNhomEntity {
   id?: number;
 
   @ApiProperty()
-  @ManyToOne(() => GomNhomEntity, { onDelete: 'CASCADE' })
+  @ManyToOne(() => GomNhomEntity, (monHoc) => monHoc.chiTietGomNhom, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_GomNhom' })
   @Column({ name: 'ID_GomNhom' })
   idGN?: number;

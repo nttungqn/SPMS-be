@@ -32,10 +32,21 @@ import { ChiTietNganhDaoTaoDto, ChiTietNganhDaoTaoResponseDto } from './interfac
 import { Roles } from 'guards/roles.decorator';
 import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
+import { FilterIsExistChiTietCTDT } from './dto/filter-exist-CTNganhDaoTao.dto';
 @ApiTags('chi-tiet-nganh-dao-tao')
 @Controller('chi-tiet-nganh-dao-tao')
 export class ChiTietNganhDaoTaoController {
   constructor(private readonly chiTietNganhDaoTao: ChiTietNganhDaoTaoService) {}
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @ApiBearerAuth('token')
+  @Get('/is-exist')
+  async isExist(@Query() filter: FilterIsExistChiTietCTDT) {
+    const found = await this.chiTietNganhDaoTao.isExist(filter);
+    if (found) return { isConflict: true };
+    return { isConflict: false };
+  }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
@@ -70,18 +81,20 @@ export class ChiTietNganhDaoTaoController {
   async create(@Req() req, @Body() newData: CreateCTNganhDaoTaoDto, @Res() res): Promise<any> {
     const user = req.user || {};
     try {
-      await this.chiTietNganhDaoTao.create({
+      const ctndt = await this.chiTietNganhDaoTao.create({
         ...newData,
         createdBy: user?.id,
         updatedBy: user?.id
       });
+      return res
+        .status(HttpStatus.CREATED)
+        .json({ message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY, data: ctndt });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_FAILED,
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return res.status(HttpStatus.CREATED).json({ message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY });
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

@@ -144,7 +144,7 @@ export class LoaiKhoiKienThucService {
     const { page = 0, limit = LIMIT, idKhoiKienThuc, createdAt, select = '' } = filter;
     const queryBy_KhoiKienThuc = idKhoiKienThuc ? { khoiKienThuc: idKhoiKienThuc } : {};
     const queryOrder: OrderByCondition = createdAt ? { createdAt } : {};
-    const query: LoaiKhoiKienThucEntity = {
+    const query = {
       isDeleted: false,
       ...queryBy_KhoiKienThuc
     };

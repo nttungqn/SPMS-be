@@ -36,6 +36,7 @@ import { UploadFileModule } from './upload-file/upload-file.module';
 import { ThongKeModule } from './thong-ke/thong-ke.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronService } from './cron/cron.service';
+import { CloneModule } from './clone/clone.module';
 import { RedisCacheModule } from 'cache/redisCache.module';
 
 @Module({
@@ -75,6 +76,7 @@ import { RedisCacheModule } from 'cache/redisCache.module';
     UploadFileModule,
     ThongKeModule,
     ScheduleModule.forRoot(),
+    CloneModule,
     RedisCacheModule
   ],
   controllers: [AppController],

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { isEnum, IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { LoaiKhoiKienThucEntity } from 'loai-khoi-kien-thuc/entity/type-of-knowledge-block.entity';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 

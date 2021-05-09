@@ -32,11 +32,24 @@ import { ChuongTrinhDaoTaoDto, ChuongTrinhDaoTaoResponseDto } from './interfaces
 import { Roles } from 'guards/roles.decorator';
 import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
+import { FilterIsExistCTDT } from './dto/filter-is-exist-chuong-trinh-dao-tao.dto';
 
 @ApiTags('chuong-trinh-dao-tao')
 @Controller('chuong-trinh-dao-tao')
 export class ChuongTrinhDaoTaoController {
   constructor(private readonly chuongTrinhDaoTaoService: ChuongTrinhDaoTaoService) {}
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
+  @ApiBearerAuth('token')
+  @Get('/is-exits')
+  async isExist(@Query() filter: FilterIsExistCTDT) {
+    const found = await this.chuongTrinhDaoTaoService.isExist(filter);
+    if (found) {
+      return { isConflict: true, content: found };
+    }
+    return { isConflict: false };
+  }
 
   @Get()
   @ApiOperation({ summary: 'lấy thông tin chương trình đào tạo' })
@@ -63,16 +76,16 @@ export class ChuongTrinhDaoTaoController {
   async create(@Req() req, @Res() res, @Body() newData: CreateChuongTrinhDaoTaoDto) {
     const user = req.user || {};
     try {
-      await this.chuongTrinhDaoTaoService.create({ ...newData, createdBy: user?.id, updatedBy: user?.id });
+      const data = await this.chuongTrinhDaoTaoService.create({ ...newData, createdBy: user?.id, updatedBy: user?.id });
+      return res
+        .status(HttpStatus.CREATED)
+        .json({ message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY, data: data });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED,
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return res
-      .status(HttpStatus.CREATED)
-      .json({ message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles([Role.GIAOVU, Role.QUANLY, Role.ADMIN])
