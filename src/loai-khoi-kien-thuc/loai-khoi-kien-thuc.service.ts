@@ -24,11 +24,11 @@ export class LoaiKhoiKienThucService {
     private cacheManager: RedisCacheService
   ) {}
 
-  async findAll(filter: FilterLoaiKhoiKienThuc) {
+  async findAll(filter: any) {
     const key = format(REDIS_CACHE_VARS.LIST_LKKT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const searchField = ['id', 'maLoaiKhoiKienThuc', 'ten', 'tongTinChi', 'noiDung'];
@@ -51,6 +51,7 @@ export class LoaiKhoiKienThucService {
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `lkkt.${sortBy}` : null, sortType);
         })
+        .andWhere({ isDeleted: false, ...otherParam })
         .skip(skip)
         .take(limit)
         .andWhere('lkkt.isDeleted = false')

@@ -6,7 +6,7 @@ export class filterKnowledgeBlock extends BaseFilterDto {
   @ApiProperty({ required: false })
   @IsNumberString()
   @IsOptional()
-  idChiTietNganhDaoTao: number;
+  chiTietNganh?: number;
 
   @ApiProperty({
     required: false,
