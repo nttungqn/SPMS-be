@@ -59,6 +59,7 @@ export class KhoiKienThucService {
       });
       if (!result) throw new NotFoundException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_ID_NOT_FOUND);
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_KKT_CACHE_TTL);
+      return result;
     }
 
     if (result && typeof result === 'string') result = JSON.parse(result);
