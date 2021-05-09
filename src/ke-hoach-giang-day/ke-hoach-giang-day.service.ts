@@ -66,7 +66,7 @@ export class KeHoachGiangDayService {
     if (typeof result === 'undefined') {
       result = await this.keHoachGiangDayRepository.findOne({
         where: { id, isDeleted: false },
-        relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.nganhDaoTao']
+        relations: ['CTNganhDaoTao' ,'CTNganhDaoTao.nganhDaoTao', 'createdBy', 'updatedBy']
       });
       if (!result) {
         throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
