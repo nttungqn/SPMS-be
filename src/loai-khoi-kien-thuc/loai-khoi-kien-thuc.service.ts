@@ -28,22 +28,34 @@ export class LoaiKhoiKienThucService {
     const key = format(REDIS_CACHE_VARS.LIST_LKKT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { page = 0, limit = LIMIT, idKhoiKienThuc, createdAt } = filter;
-      const queryBy_KhoiKienThuc = idKhoiKienThuc ? { khoiKienThuc: idKhoiKienThuc } : {};
-      const queryOrder: OrderByCondition = createdAt ? { createdAt } : {};
-      const skip = page * limit;
-      const query = {
-        isDeleted: false,
-        ...queryBy_KhoiKienThuc
-      };
-      const [list, total] = await this.typeOfKnowledgeBlockRepository.findAndCount({
-        relations: ['khoiKienThuc', 'createdBy', 'updatedBy'],
-        where: query,
-        take: limit,
-        skip,
-        order: queryOrder
-      });
-      result = { contents: list, total, page: page };
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
+      const skip = Number(page) * Number(limit);
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+      const searchField = ['id', 'maLoaiKhoiKienThuc', 'ten', 'tongTinChi', 'noiDung'];
+      const searchQuery = searchField
+        .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'lkkt.' + e + ' LIKE :search'))
+        .join(' OR ');
+      const [list, total] = await this.typeOfKnowledgeBlockRepository
+        .createQueryBuilder('lkkt')
+        .leftJoinAndSelect('lkkt.khoiKienThuc', 'khoiKienThuc', 'khoiKienThuc.isDeleted = false')
+        .leftJoinAndSelect('lkkt.gomNhom', 'gomNhom', 'gomNhom.isDeleted = false')
+        .leftJoinAndSelect('lkkt.createdBy', 'createdBy')
+        .leftJoinAndSelect('lkkt.updatedBy', 'updatedBy')
+        .where((qb) => {
+          searchKey
+            ? qb.andWhere(searchQuery, {
+                search: `%${searchKey}%`
+              })
+            : {};
+          isSortFieldInForeignKey
+            ? qb.orderBy(sortBy, sortType)
+            : qb.orderBy(sortBy ? `lkkt.${sortBy}` : null, sortType);
+        })
+        .skip(skip)
+        .take(limit)
+        .andWhere('lkkt.isDeleted = false')
+        .getManyAndCount();
+      result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_LKKT_CACHE_TTL);
     }
     if (result && typeof result === 'string') result = JSON.parse(result);

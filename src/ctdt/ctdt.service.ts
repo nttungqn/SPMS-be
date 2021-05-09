@@ -18,24 +18,32 @@ export class CtdtService {
     const key = format(REDIS_CACHE_VARS.LIST_NDT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
       const skip = Number(page) * Number(limit);
-      const querySearch = search ? { ten: Like(`%${search}%`) } : {};
-      const query = {
-        isDeleted: false,
-        ...querySearch,
-        ...rest
-      };
-      const list = await this.nganhDaoTaoRepository.find({
-        relations: ['chuongTrinhDaoTao', 'createdBy', 'updatedBy'],
-        skip,
-        take: limit,
-        where: query
-      });
-      if (!list.length) {
-        throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
-      }
-      const total = await this.nganhDaoTaoRepository.count({ ...query });
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+      const searchField = ['id', 'maNganhDaoTao', 'ten'];
+      const searchQuery = searchField
+        .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'ndt.' + e + ' LIKE :search'))
+        .join(' OR ');
+      const [list, total] = await this.nganhDaoTaoRepository
+        .createQueryBuilder('ndt')
+        .leftJoinAndSelect('ndt.chuongTrinhDaoTao', 'chuongTrinhDaoTao', 'chuongTrinhDaoTao.isDeleted = false')
+        .leftJoinAndSelect('ndt.createdBy', 'createdBy')
+        .leftJoinAndSelect('ndt.updatedBy', 'updatedBy')
+        .where((qb) => {
+          searchKey
+            ? qb.andWhere(searchQuery, {
+                search: `%${searchKey}%`
+              })
+            : {};
+          isSortFieldInForeignKey
+            ? qb.orderBy(sortBy, sortType)
+            : qb.orderBy(sortBy ? `ndt.${sortBy}` : null, sortType);
+        })
+        .skip(skip)
+        .take(limit)
+        .andWhere('ndt.isDeleted = false')
+        .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_NDT_CACHE_TTL);
     }

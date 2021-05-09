@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsOptional } from 'class-validator';
+import { IsIn, IsNumberString, IsOptional } from 'class-validator';
 
 export class BaseFilterDto {
   @ApiProperty({ required: false, default: 0 })
@@ -14,10 +14,6 @@ export class BaseFilterDto {
 }
 
 export class FilterMonHoc extends BaseFilterDto {
-  @ApiProperty({ required: false, description: ' this field search by Ten Tieng Viet' })
-  @IsOptional()
-  readonly search?: string;
-
   @ApiProperty({ required: false })
   @IsNumberString()
   @IsOptional()
@@ -32,4 +28,24 @@ export class FilterMonHoc extends BaseFilterDto {
   @IsNumberString()
   @IsOptional()
   readonly soTietTuHoc: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'Search by id, ma, tenTiengViet, tenTiengAnh, soTietLyThuyet, soTietThucHanh, soTietTuHoc'
+  })
+  @IsOptional()
+  readonly searchKey?: string;
+
+  @ApiProperty({
+    required: false,
+    description:
+      'Sort by: id, ma, tenTiengViet, tenTiengAnh, soTietLyThuyet, soTietThucHanh, soTietTuHoc, createdAt, updatedAt'
+  })
+  @IsOptional()
+  readonly sortBy?: string;
+
+  @ApiProperty({ required: false, description: 'ASC| DESC' })
+  @IsOptional()
+  @IsIn(['ASC', 'DESC'])
+  readonly sortType?: 'ASC' | 'DESC';
 }
