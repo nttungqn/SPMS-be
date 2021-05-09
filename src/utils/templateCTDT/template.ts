@@ -144,8 +144,8 @@ export default async (data) => `
       </style>
      </head>
      <body>
-          <div class=\"wrapper\">
-               <div class=\"container-fluid\" style=\"font-family: sans-serif\">
+          <div class="wrapper">
+               <div class="container-fluid" style="font-family: sans-serif">
                     <div class="row top">
                          <div class="container">
                               <div class="row titleChuongTrinhDaoTao">
