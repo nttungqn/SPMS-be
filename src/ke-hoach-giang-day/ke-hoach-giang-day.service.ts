@@ -27,7 +27,7 @@ export class KeHoachGiangDayService {
         const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
         const searchField = ['id', 'tenHocKy', 'maKeHoach'];
         const searchQuery = searchField
-          .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'kkt.' + e + ' LIKE :search'))
+          .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'khgd.' + e + ' LIKE :search'))
           .join(' OR ');
         const [list, total] = await this.keHoachGiangDayRepository
           .createQueryBuilder('khgd')
