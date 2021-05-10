@@ -1,10 +1,12 @@
 import { Injectable, Inject, CACHE_MANAGER } from '@nestjs/common';
-import { Cache } from 'cache-manager';
+import { Cache, Store } from 'cache-manager';
 import { REDIS_CONFIG } from 'config/config';
 
-@Injectable()
 export class RedisCacheService {
-  constructor(@Inject(CACHE_MANAGER) private readonly cache: Cache) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private readonly cache: Cache,
+    @Inject(CACHE_MANAGER) private readonly store: Store
+  ) {}
 
   async get(key): Promise<any> {
     return await this.cache.get(key);
@@ -20,5 +22,20 @@ export class RedisCacheService {
 
   async del(key) {
     await this.cache.del(key);
+  }
+
+  async keys() {
+    return await this.store.keys();
+  }
+
+  async delCacheList(commonKey: string[]) {
+    const allKey = await this.store.keys();
+    const map = [];
+    allKey.forEach((e, _) => {
+      commonKey.forEach((value, i) => {
+        if (e.includes(value)) map.push(e);
+      });
+    });
+    await this.store.del(map);
   }
 }

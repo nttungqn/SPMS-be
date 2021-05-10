@@ -85,8 +85,11 @@ export class ChuongTrinhDaoTaoService {
     }
     try {
       const newChuongTrinhDaoTao = await this.chuongTrinhDaoTaoRepository.create(newData);
-      const saved = await this.chuongTrinhDaoTaoRepository.save(newChuongTrinhDaoTao);
-      return saved;
+      const result = await this.chuongTrinhDaoTaoRepository.save(newChuongTrinhDaoTao);
+      const key = format(REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_KEY, result?.id.toString());
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_TTL);
+      await this.delCacheAfterChange();
+      return result;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -102,6 +105,9 @@ export class ChuongTrinhDaoTaoService {
         ...updatedData,
         updatedAt: new Date()
       });
+      const key = format(REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_KEY, id.toString());
+      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_TTL);
+      await this.delCacheAfterChange();
       return updated;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -119,6 +125,9 @@ export class ChuongTrinhDaoTaoService {
         updatedAt: new Date(),
         updatedBy
       });
+      const key = format(REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_KEY, id.toString());
+      await this.cacheManager.del(key);
+      await this.delCacheAfterChange();
       return deleted;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -135,5 +144,9 @@ export class ChuongTrinhDaoTaoService {
       console.log(error);
       throw new InternalServerErrorException(CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_FAILED);
     }
+  }
+
+  async delCacheAfterChange() {
+    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_CTDT_CACHE_COMMON_KEY]);
   }
 }
