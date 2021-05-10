@@ -175,6 +175,36 @@ export class MonHocService {
       return { message: MONHOC_MESSAGE.IMPORT_FAILED, isError: true, error };
     }
   }
+  async insertMonHocV2(data = [], user) {
+    if (!data?.length) {
+      throw new BadRequestException();
+    }
+    try {
+      const resultsArr = data?.map((e) => {
+        const ma = e[0] || '';
+        const tenTiengViet = e[1] || '';
+        const soTinChi = e[2] || 0;
+        const soTietLyThuyet = e[3] || 0;
+        const soTietThucHanh = e[4] || 0;
+        const soTietTuHoc = e[5] || 0;
+        const monHoc: MonHocEntity = {
+          ma,
+          tenTiengViet,
+          tenTiengAnh: null,
+          soTietLyThuyet,
+          soTietThucHanh,
+          soTietTuHoc,
+          soTinChi
+        };
+        return monHoc;
+      });
+      const results = await this.monHocRepository.save(resultsArr);
+      return { message: MONHOC_MESSAGE.IMPORT_SUCCESSFULLY, isError: false, contents: results };
+    } catch (error) {
+      return { message: MONHOC_MESSAGE.IMPORT_FAILED, isError: true, error };
+    }
+  }
+
   async getAllSubjectByNganhDaoTaoAndKhoaTuyen(idNganhDaoTao: number, khoaTuyen: number) {
     const key = format(REDIS_CACHE_VARS.LIST_MH_NDT_KT_CACHE_KEY, idNganhDaoTao.toString(), khoaTuyen.toString());
     let result = await this.cacheManager.get(key);
@@ -210,6 +240,7 @@ export class MonHocService {
     if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
+
   async isExist(oldData: MonHocEntity, newData: CreateMonHocDto): Promise<boolean> {
     if (!newData.ma) return false;
     const ma = newData.ma ? newData.ma : oldData.ma;

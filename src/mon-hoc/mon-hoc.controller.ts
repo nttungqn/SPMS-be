@@ -152,4 +152,27 @@ export class MonHocController {
       return res.status(HttpStatus.NOT_FOUND).json(results);
     }
   }
+  @Post('import-dataV2')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.QUANLY, Role.ADMIN])
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'import data từ file xlsx' })
+  @UseInterceptors(FileInterceptor('file', {}))
+  async importDataV2(@UploadedFile() file, @Req() req, @Res() res) {
+    const sheets = await nodexlsv.parse(file?.buffer);
+    if (sheets.length) {
+      const sheetFirst = sheets[0];
+      const { name = 'sheet0', data = [] } = sheetFirst;
+      const headers = data.shift() || [];
+      const isCheckError = await this.monHocService.checkFormatFile(this.headersFormat, headers);
+      if (isCheckError?.isError) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ isError: true, message: isCheckError?.message });
+      }
+      const results = await this.monHocService.insertMonHocV2(data, req?.user);
+      if (!results?.isError) {
+        return res.json(results);
+      }
+      return res.status(HttpStatus.NOT_FOUND).json(results);
+    }
+  }
 }
