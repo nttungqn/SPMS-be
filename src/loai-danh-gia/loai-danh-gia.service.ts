@@ -40,7 +40,10 @@ export class LoaiDanhGiaService extends BaseService {
         updatedAt: new Date(),
         updatedBy: createdBy.id
       });
-      return this.findOne(result.id);
+      const key = format(REDIS_CACHE_VARS.DETAIL_LDG_CACHE_KEY, result?.id.toString());
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LDG_CACHE_TTL);
+      await this.delCacheAfterChange();
+      return result;
     } catch (error) {
       throw new InternalServerErrorException(LOAIDANHGIA_MESSAGE.CREATE_LOAIDANHGIA_FAILED);
     }
@@ -146,26 +149,33 @@ export class LoaiDanhGiaService extends BaseService {
         updatedBy: updatedBy.id,
         updatedAt: new Date()
       });
-      return this.findOne(result.id);
+      const key = format(REDIS_CACHE_VARS.DETAIL_LDG_CACHE_KEY, id.toString());
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LDG_CACHE_TTL);
+      await this.delCacheAfterChange();
+      return result;
     } catch (error) {
       throw new InternalServerErrorException(LOAIDANHGIA_MESSAGE.UPDATE_LOAIDANHGIA_FAILED);
     }
   }
 
   async remove(id: number, user: UsersEntity) {
-    const result = await this.loaiDanhGiaRepository.findOne(id, {
+    const data = await this.loaiDanhGiaRepository.findOne(id, {
       where: { isDeleted: false },
       relations: ['createdBy']
     });
-    if (!result) throw new NotFoundException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_ID_NOT_FOUND);
-    this.checkPermission(result.createdBy, user);
+    if (!data) throw new NotFoundException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_ID_NOT_FOUND);
+    this.checkPermission(data.createdBy, user);
     try {
-      return await this.loaiDanhGiaRepository.save({
-        ...result,
+      const result = await this.loaiDanhGiaRepository.save({
+        ...data,
         updatedAt: new Date(),
         updatedBy: user.id,
         isDeleted: true
       });
+      const key = format(REDIS_CACHE_VARS.DETAIL_LDG_CACHE_KEY, id.toString());
+      await this.cacheManager.del(key);
+      await this.delCacheAfterChange();
+      return result;
     } catch (error) {
       throw new InternalServerErrorException(LOAIDANHGIA_MESSAGE.DELETE_LOAIDANHGIA_FAILED);
     }
@@ -243,5 +253,9 @@ export class LoaiDanhGiaService extends BaseService {
       console.log(error);
       throw new InternalServerErrorException(LOAIDANHGIA_MESSAGE.DELETE_LOAIDANHGIA_FAILED);
     }
+  }
+
+  async delCacheAfterChange() {
+    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_LDG_CACHE_COMMON_KEY]);
   }
 }
