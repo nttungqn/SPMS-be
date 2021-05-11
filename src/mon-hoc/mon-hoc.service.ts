@@ -12,6 +12,7 @@ import { CreateMonHocDto } from './dto/create-mon-hoc.dto';
 import { MonHocEntity } from './entity/mon-hoc.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
+import { UsersEntity } from 'users/entity/user.entity';
 
 @Injectable()
 export class MonHocService {
@@ -175,7 +176,7 @@ export class MonHocService {
       return { message: MONHOC_MESSAGE.IMPORT_FAILED, isError: true, error };
     }
   }
-  async insertMonHocV2(data = [], user) {
+  async insertMonHocV2(data = [], user: UsersEntity) {
     if (!data?.length) {
       throw new BadRequestException();
     }
@@ -190,10 +191,10 @@ export class MonHocService {
       const soTietTuHoc = e[5] || 0;
 
       const found = await this.monHocRepository.findOne({ where: { ma: ma, isDeleted: false } });
-      if (found) throw new ConflictException(MONHOC_MESSAGE.MONHOC_EXIST);
+      if (found) throw new ConflictException(`${MONHOC_MESSAGE.MONHOC_EXIST}_${ma}`);
       const isDuplicate = maArray.includes(ma);
       if (isDuplicate) {
-        throw new ConflictException(MONHOC_MESSAGE.MONHOC_DUPLICATE);
+        throw new BadRequestException(`${MONHOC_MESSAGE.MONHOC_DUPLICATE}_${ma}`);
       } else {
         maArray.push(ma);
       }
@@ -204,15 +205,18 @@ export class MonHocService {
         soTietLyThuyet,
         soTietThucHanh,
         soTietTuHoc,
-        soTinChi
+        soTinChi,
+        createdBy: user.id,
+        updatedBy: user.id
       };
       return monHoc;
     });
+    const arrMH = await Promise.all(resultsArr);
     try {
-      //const results = await this.monHocRepository.save(await Promise.all(resultsArr));
-      return [];
+      const results = await this.monHocRepository.save(arrMH);
+      return results;
     } catch (error) {
-      throw new InternalServerErrorException(MONHOC_MESSAGE.IMPORT_FAILED);
+      return new InternalServerErrorException(MONHOC_MESSAGE.IMPORT_FAILED);
     }
   }
 

@@ -15,7 +15,9 @@ import {
   Res,
   UploadedFile,
   UseInterceptors,
-  Type
+  Type,
+  BadRequestException,
+  HttpCode
 } from '@nestjs/common';
 import { MonHocService } from './mon-hoc.service';
 import { CreateMonHocDto } from './dto/create-mon-hoc.dto';
@@ -40,6 +42,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'guards/roles.decorator';
 import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
+import { GetUser } from 'auth/user.decorator';
+import { UsersEntity } from 'users/entity/user.entity';
 
 @ApiTags('mon-hoc')
 @Controller('mon-hoc')
@@ -158,7 +162,8 @@ export class MonHocController {
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'import data từ file xlsx' })
   @UseInterceptors(FileInterceptor('file', {}))
-  async importDataV2(@UploadedFile() file, @Req() req, @Res() res) {
+  @HttpCode(HttpStatus.OK)
+  async importDataV2(@UploadedFile() file, @GetUser() user: UsersEntity) {
     const sheets = await nodexlsv.parse(file?.buffer);
     if (sheets.length) {
       const sheetFirst = sheets[0];
@@ -166,18 +171,10 @@ export class MonHocController {
       const headers = data.shift() || [];
       const isCheckError = await this.monHocService.checkFormatFile(this.headersFormat, headers);
       if (isCheckError?.isError) {
-        return res.status(HttpStatus.BAD_REQUEST).json({ isError: true, message: isCheckError?.message });
+        throw new BadRequestException(isCheckError?.message);
       }
-      try {
-        const results = await this.monHocService.insertMonHocV2(data, req?.user);
-        return res
-          .status(HttpStatus.OK)
-          .json({ isError: false, message: MONHOC_MESSAGE.IMPORT_SUCCESSFULLY, contents: results });
-      } catch (error) {
-        console.log(error);
-        //return res.status(HttpStatus.NOT_FOUND).json(results);
-      }
-      //return res.status(HttpStatus.NOT_FOUND).json(results);
+      const results = await this.monHocService.insertMonHocV2(data, user);
+      return { message: MONHOC_MESSAGE.IMPORT_SUCCESSFULLY, statusCode: HttpStatus.OK, contents: results };
     }
   }
 }
