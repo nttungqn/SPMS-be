@@ -179,29 +179,40 @@ export class MonHocService {
     if (!data?.length) {
       throw new BadRequestException();
     }
+
+    const maArray = [];
+    const resultsArr = data?.map(async (e) => {
+      const ma = e[0] || '';
+      const tenTiengViet = e[1] || '';
+      const soTinChi = e[2] || 0;
+      const soTietLyThuyet = e[3] || 0;
+      const soTietThucHanh = e[4] || 0;
+      const soTietTuHoc = e[5] || 0;
+
+      const found = await this.monHocRepository.findOne({ where: { ma: ma, isDeleted: false } });
+      if (found) throw new ConflictException(MONHOC_MESSAGE.MONHOC_EXIST);
+      const isDuplicate = maArray.includes(ma);
+      if (isDuplicate) {
+        throw new ConflictException(MONHOC_MESSAGE.MONHOC_DUPLICATE);
+      } else {
+        maArray.push(ma);
+      }
+      const monHoc: MonHocEntity = {
+        ma,
+        tenTiengViet,
+        tenTiengAnh: null,
+        soTietLyThuyet,
+        soTietThucHanh,
+        soTietTuHoc,
+        soTinChi
+      };
+      return monHoc;
+    });
     try {
-      const resultsArr = data?.map((e) => {
-        const ma = e[0] || '';
-        const tenTiengViet = e[1] || '';
-        const soTinChi = e[2] || 0;
-        const soTietLyThuyet = e[3] || 0;
-        const soTietThucHanh = e[4] || 0;
-        const soTietTuHoc = e[5] || 0;
-        const monHoc: MonHocEntity = {
-          ma,
-          tenTiengViet,
-          tenTiengAnh: null,
-          soTietLyThuyet,
-          soTietThucHanh,
-          soTietTuHoc,
-          soTinChi
-        };
-        return monHoc;
-      });
-      const results = await this.monHocRepository.save(resultsArr);
-      return { message: MONHOC_MESSAGE.IMPORT_SUCCESSFULLY, isError: false, contents: results };
+      //const results = await this.monHocRepository.save(await Promise.all(resultsArr));
+      return [];
     } catch (error) {
-      return { message: MONHOC_MESSAGE.IMPORT_FAILED, isError: true, error };
+      throw new InternalServerErrorException(MONHOC_MESSAGE.IMPORT_FAILED);
     }
   }
 

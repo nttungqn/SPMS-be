@@ -168,11 +168,16 @@ export class MonHocController {
       if (isCheckError?.isError) {
         return res.status(HttpStatus.BAD_REQUEST).json({ isError: true, message: isCheckError?.message });
       }
-      const results = await this.monHocService.insertMonHocV2(data, req?.user);
-      if (!results?.isError) {
-        return res.json(results);
+      try {
+        const results = await this.monHocService.insertMonHocV2(data, req?.user);
+        return res
+          .status(HttpStatus.OK)
+          .json({ isError: false, message: MONHOC_MESSAGE.IMPORT_SUCCESSFULLY, contents: results });
+      } catch (error) {
+        console.log(error);
+        //return res.status(HttpStatus.NOT_FOUND).json(results);
       }
-      return res.status(HttpStatus.NOT_FOUND).json(results);
+      //return res.status(HttpStatus.NOT_FOUND).json(results);
     }
   }
 }
