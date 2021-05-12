@@ -13,6 +13,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'auth/user.decorator';
+import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
 import { CLONE_MESSAGE } from 'constant/constant';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
@@ -68,6 +69,17 @@ export class CloneController {
   @Get('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/chuan-dau-ra-nganh-dao-tao')
   async getChuanDauRaNganhDaoTaoDetail(@Param('idCTNDTClone') idCTNDTClone: number, @Param('idCTNDT') idCTNDT: number) {
     return await this.cloneService.chuanDauRaNganhDaoTaoClone(idCTNDTClone, idCTNDT);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @Post('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/chuan-dau-ra-nganh-dao-tao')
+  async createChuanDauRaNganhDaoTaoDetail(
+    @Body() chuanDauRaList: ChuanDauRaNganhDaoTaoEntity[],
+    @Param('idCTNDTClone') idCTNDTClone: number,
+    @Param('idCTNDT') idCTNDT: number
+  ) {
+    return await this.cloneService.createChuanDauRaNganhDaoTaoClone(chuanDauRaList, idCTNDTClone, idCTNDT);
   }
 
   @Delete('/chi-tiet-nganh-dao-tao/:idKKT')

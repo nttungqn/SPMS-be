@@ -268,13 +268,29 @@ export class CloneService {
           });
       })
       .where('cdr.parent is null and cdr.nganhDaoTao = :idCTNDTClone', { idCTNDTClone });
-    const results = await query.getMany();
-    return results;
+    const chuanDauRaListClone = await query.getMany();
+    chuanDauRaListClone.forEach((cdrlv1) => {
+      removeProperties(cdrlv1, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+      cdrlv1.childs.forEach((cdrlv2) => {
+        removeProperties(cdrlv2, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+        cdrlv2.childs.forEach((cdrlv3) => {
+          removeProperties(cdrlv3, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+        });
+      });
+    });
+    return chuanDauRaListClone;
   }
 
+  createChuanDauRaNganhDaoTaoClone(
+    chuanDauRaList: ChuanDauRaNganhDaoTaoEntity[],
+    idCTNDTClone: number,
+    idCTNDT: number
+  ) {
+    return [];
+  }
   async deleteKhoiKienThuc(idKKT: number) {
     try {
-      const khoiKienThuc = await this.conection.getRepository(ChiTietGomNhomEntity).delete(idKKT);
+      await this.conection.getRepository(ChiTietGomNhomEntity).delete(idKKT);
     } catch (error) {}
   }
 }
