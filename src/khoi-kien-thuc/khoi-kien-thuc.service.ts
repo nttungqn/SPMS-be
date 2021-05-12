@@ -36,8 +36,8 @@ export class KhoiKienThucService {
     }
   }
 
-  async findAll(filter) {
-    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
+  async findAll(filter: filterKnowledgeBlock) {
+    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
     const skip = Number(page) * Number(limit);
     const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
     const searchField = ['id', 'tongTinChi', 'ten', 'maKKT', 'tinChiTuChon', 'tinChiTuChonTuDo', 'tinChiBatBuoc'];
@@ -58,7 +58,6 @@ export class KhoiKienThucService {
           : {};
         isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `kkt.${sortBy}` : null, sortType);
       })
-      .andWhere({ ...otherParam, isDeleted: false })
       .skip(skip)
       .take(limit)
       .andWhere('kkt.isDeleted = false')
