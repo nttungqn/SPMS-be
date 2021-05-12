@@ -143,9 +143,6 @@ export class UsersService {
         ...updateData,
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_USER_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_USER_CACHE_TTL);
-      await this.delCacheAfterChange();
       return updated;
     } catch (error) {
       throw new InternalServerErrorException(USER_MESSAGE.UPDATE_USER_FAILED);
@@ -162,19 +159,15 @@ export class UsersService {
     return await query.getCount();
   }
   async remove(id: number, idUser: number) {
-    const data = await this.usersRepository.findOne(id, { where: { isDeleted: false } });
-    if (!data) throw new NotFoundException(USER_MESSAGE.USER_ID_NOT_FOUND);
+    const result = await this.usersRepository.findOne(id, { where: { isDeleted: false } });
+    if (!result) throw new NotFoundException(USER_MESSAGE.USER_ID_NOT_FOUND);
     try {
-      const result = await this.usersRepository.save({
-        ...data,
+      return await this.usersRepository.save({
+        ...result,
         updatedAt: new Date(),
         updatedBy: idUser,
         isDeleted: true
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_USER_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(USER_MESSAGE.DELETE_USER_FAILED);
     }
@@ -182,7 +175,6 @@ export class UsersService {
 
   async deleteAll() {
     try {
-      await this.delCacheAfterChange();
       return await this.usersRepository.createQueryBuilder('users').update().set({ isDeleted: true }).execute();
     } catch (error) {
       throw new InternalServerErrorException(USER_MESSAGE.DELETE_ALL_USER_FAILED);
@@ -191,7 +183,6 @@ export class UsersService {
 
   async deleteMutipleUsers(ids: Array<number>) {
     try {
-      await this.delCacheAfterChange();
       return await this.usersRepository
         .createQueryBuilder('users')
         .update()
@@ -209,9 +200,5 @@ export class UsersService {
       console.log(error);
       throw new InternalServerErrorException(USER_MESSAGE.DELETE_USER_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_USER_CACHE_COMMON_KEY]);
   }
 }

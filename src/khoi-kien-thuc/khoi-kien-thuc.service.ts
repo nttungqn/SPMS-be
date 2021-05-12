@@ -30,10 +30,7 @@ export class KhoiKienThucService {
         createdAt: new Date(),
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_KKT_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_KKT_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return this.findOne(result.id);
     } catch (error) {
       throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.CREATE_KHOIKIENTHUC_FAILED);
     }
@@ -99,30 +96,23 @@ export class KhoiKienThucService {
       if (type[key]) result.tongTinChi += type[key] - result[key];
     });
     try {
-      const updated = await this.knowledgeBlockRepository.save({ ...result, ...knowledgeBlock, updatedAt: new Date() });
-      const key = format(REDIS_CACHE_VARS.DETAIL_KKT_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_KKT_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return updated;
+      await this.knowledgeBlockRepository.save({ ...result, ...knowledgeBlock, updatedAt: new Date() });
+      return this.findOne(result.id);
     } catch (error) {
       throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.UPDATE_KHOIKIENTHUC_FAILED);
     }
   }
 
   async remove(idUser: number, id: number) {
-    const data = await this.knowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
-    if (!data) throw new NotFoundException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_ID_NOT_FOUND);
+    const result = await this.knowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
+    if (!result) throw new NotFoundException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_ID_NOT_FOUND);
     try {
-      const result = await this.knowledgeBlockRepository.save({
-        ...data,
+      return await this.knowledgeBlockRepository.save({
+        ...result,
         updatedAt: new Date(),
         updatedBy: idUser,
         isDeleted: true
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_KKT_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.DELETE_KHOIKIENTHUC_FAILED);
     }
@@ -135,9 +125,5 @@ export class KhoiKienThucService {
       console.log(error);
       throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.DELETE_KHOIKIENTHUC_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_KKT_CACHE_COMMON_KEY]);
   }
 }

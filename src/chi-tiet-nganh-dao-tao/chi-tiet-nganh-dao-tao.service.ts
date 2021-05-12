@@ -88,11 +88,8 @@ export class ChiTietNganhDaoTaoService {
     }
     try {
       const newCTNganhDaoTao = await this.chiTietNganhDTRepository.create(newData);
-      const result = await this.chiTietNganhDTRepository.save(newCTNganhDaoTao);
-      const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_NDT_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHI_TIET_NDT_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      const saved = await this.chiTietNganhDTRepository.save(newCTNganhDaoTao);
+      return saved;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -109,9 +106,6 @@ export class ChiTietNganhDaoTaoService {
         ...updatedData,
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_NDT_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_CHI_TIET_NDT_CACHE_TTL);
-      await this.delCacheAfterChange();
       return updated;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -130,9 +124,6 @@ export class ChiTietNganhDaoTaoService {
         updatedAt: new Date(),
         updatedBy
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_NDT_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
       return deleted;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -146,9 +137,5 @@ export class ChiTietNganhDaoTaoService {
       console.log(error);
       throw new InternalServerErrorException(CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_CHI_TIET_NDT_CACHE_COMMON_KEY]);
   }
 }
