@@ -22,7 +22,7 @@ export class KeHoachGiangDayService {
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
       try {
-        const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
+        const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
         const skip = Number(page) * Number(limit);
         const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
         const searchField = ['id', 'tenHocKy', 'maKeHoach'];
@@ -45,9 +45,9 @@ export class KeHoachGiangDayService {
               ? qb.orderBy(sortBy, sortType)
               : qb.orderBy(sortBy ? `khgd.${sortBy}` : null, sortType);
           })
-          .andWhere({ ...otherParam, isDeleted: false })
           .skip(skip)
           .take(limit)
+          .andWhere('khgd.isDeleted = false')
           .getManyAndCount();
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_KHGD_CACHE_TTL);

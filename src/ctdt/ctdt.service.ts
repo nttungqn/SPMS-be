@@ -18,7 +18,7 @@ export class CtdtService {
     const key = format(REDIS_CACHE_VARS.LIST_NDT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const searchField = ['id', 'maNganhDaoTao', 'ten'];
@@ -40,9 +40,9 @@ export class CtdtService {
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `ndt.${sortBy}` : null, sortType);
         })
-        .andWhere({ isDeleted: false, ...otherParam })
         .skip(skip)
         .take(limit)
+        .andWhere('ndt.isDeleted = false')
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_NDT_CACHE_TTL);

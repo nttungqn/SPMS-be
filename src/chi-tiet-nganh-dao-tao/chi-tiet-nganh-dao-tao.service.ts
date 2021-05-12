@@ -16,11 +16,11 @@ export class ChiTietNganhDaoTaoService {
     private cacheManager: RedisCacheService
   ) {}
 
-  async findAll(filter: any): Promise<any> {
+  async findAll(filter: FilterCTNganhDaoTaoDto): Promise<any> {
     const key = format(REDIS_CACHE_VARS.LIST_CHI_TIET_NDT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const searchField = ['id', 'khoa', 'coHoiNgheNghiep', 'mucTieuChung'];
@@ -47,9 +47,9 @@ export class ChiTietNganhDaoTaoService {
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `ctndt.${sortBy}` : null, sortType);
         })
-        .andWhere({ ...otherParam, isDeleted: false })
         .skip(skip)
         .take(limit)
+        .andWhere('ctndt.isDeleted = false')
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_NDT_CACHE_TTL);
