@@ -162,4 +162,20 @@ export class ChuanDauRaNganhDaoTaoService {
       throw new InternalServerErrorException(CHUANDAURA_NGANHDAOTAO_MESSAGE.DELETE_CHUANDAURA_NGANHDAOTAO_FAILED);
     }
   }
+  async getChuanDauRaAll(idCTNDT: number) {
+    const query = this.chuanDauRaNDTRepository
+      .createQueryBuilder('cdr')
+      .leftJoinAndSelect('cdr.chuanDauRa', 'cdrName')
+      .leftJoinAndSelect('cdr.childs', 'clv1')
+      .where((qb) => {
+        qb.leftJoinAndSelect('clv1.chuanDauRa', 'cdrNameLv1')
+          .leftJoinAndSelect('clv1.childs', 'clv2')
+          .where((qb) => {
+            qb.leftJoinAndSelect('clv2.chuanDauRa', 'cdrNameLv2');
+          });
+      })
+      .where('cdr.parent is null and cdr.nganhDaoTao = :idCTNDT', { idCTNDT });
+    const results = await query.getMany();
+    return results;
+  }
 }

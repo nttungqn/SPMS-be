@@ -149,4 +149,15 @@ export class ChuanDauRaNganhDaoTaoController {
   async getAllList(@Req() req, @Param('id') idCTNDT: number): Promise<any> {
     return await this.chuanDauRaNganhDaoTaoService.getAllList(idCTNDT);
   }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'lấy thông tin chuẩn đầu ra ngành đào tạo' })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiNotFoundResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_EMPTY })
+  @Get('/chuan-dau-ra-listV2/:id')
+  async getAllListV2(@Req() req, @Param('id') idCTNDT: number): Promise<any> {
+    return await this.chuanDauRaNganhDaoTaoService.getChuanDauRaAll(idCTNDT);
+  }
 }
