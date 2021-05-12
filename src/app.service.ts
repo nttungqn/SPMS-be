@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { RedisCacheService } from 'cache/redisCache.service';
 import { ChuongTrinhDaoTaoService } from 'chuong-trinh-dao-tao/chuong-trinh-dao-tao.service';
 import { CtdtService } from 'ctdt/ctdt.service';
 import { SyllabusService } from 'syllabus/syllabus.service';
@@ -9,8 +8,7 @@ export class AppService {
   constructor(
     private readonly syllabusService: SyllabusService,
     private readonly chuongTrinhDaoTaoService: ChuongTrinhDaoTaoService,
-    private readonly nganhDaoTaoService: CtdtService,
-    private readonly cacheService: RedisCacheService
+    private readonly nganhDaoTaoService: CtdtService
   ) {}
   getHello(): string {
     return 'Hello World!';
@@ -50,9 +48,5 @@ export class AppService {
       results.push(...nganhDaoTaoArr);
     }
     return results;
-  }
-
-  async getKeys() {
-    return await this.cacheService.keys();
   }
 }

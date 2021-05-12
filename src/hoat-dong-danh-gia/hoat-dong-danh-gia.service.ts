@@ -60,18 +60,14 @@ export class HoatDongDanhGiaService extends BaseService {
       }
     }
     try {
-      const saved = await this.hoatDongDanhGiaService.save({
+      const result = await this.hoatDongDanhGiaService.save({
         ...hoatDongDanhGia,
         createdAt: new Date(),
         createdBy: loaiDanhGiaCreatedBy.id,
         updatedAt: new Date(),
         updatedBy: createdBy.id
       });
-      const result = await this.findOne(saved.id);
-      const key = format(REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return this.findOne(result.id);
     } catch (error) {
       throw new InternalServerErrorException(HOATDONGDANHGIA_MESSAGE.CREATE_HOATDONGDANHGIA_FAILED);
     }
@@ -183,10 +179,7 @@ export class HoatDongDanhGiaService extends BaseService {
         updatedAt: new Date(),
         updatedBy: updateBy.id
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return this.findOne(result.id);
     } catch (error) {
       throw new InternalServerErrorException(HOATDONGDANHGIA_MESSAGE.UPDATE_HOATDONGDANHGIA_FAILED);
     }
@@ -196,16 +189,12 @@ export class HoatDongDanhGiaService extends BaseService {
     const found = await this.findOne(id);
     this.checkPermission(found.createdBy, user);
     try {
-      const result = await this.hoatDongDanhGiaService.save({
+      return await this.hoatDongDanhGiaService.save({
         ...found,
         updateBy: user.id,
         updatedAt: new Date(),
         isDeleted: true
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(HOATDONGDANHGIA_MESSAGE.DELETE_HOATDONGDANHGIA_FAILED);
     }
@@ -247,9 +236,5 @@ export class HoatDongDanhGiaService extends BaseService {
       console.log(error);
       throw new InternalServerErrorException(HOATDONGDANHGIA_MESSAGE.DELETE_HOATDONGDANHGIA_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_HDDG_CACHE_COMMON_KEY]);
   }
 }

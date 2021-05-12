@@ -27,18 +27,14 @@ export class HeDaotaoService {
       throw new ConflictException(HEDAOTAO_MESSAGE.HEDAOTAO_EXIST);
     }
     try {
-      const result = await this.typeOfEduRepository.save(createTypeOfEducationDto);
-      const key = format(REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return await this.typeOfEduRepository.save(createTypeOfEducationDto);
     } catch (error) {
       throw new ServiceUnavailableException(HEDAOTAO_MESSAGE.CREATE_HEDAOTAO_FAILED);
     }
   }
 
   async findAll() {
-    const key = REDIS_CACHE_VARS.LIST_HE_DAO_TAO_CACHE_KEY;
+    const key = format(REDIS_CACHE_VARS.LIST_HE_DAO_TAO_CACHE_KEY);
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
       const list = await this.typeOfEduRepository.find({ where: { isDeleted: false }, order: { ma: 'ASC' } });
@@ -73,11 +69,7 @@ export class HeDaotaoService {
     const found = await this.findById(id);
     await this.checkConflictException(id, updateTypeOfEducationDto);
     try {
-      const result = await this.typeOfEduRepository.save({ ...found, ...updateTypeOfEducationDto });
-      const key = format(REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return await this.typeOfEduRepository.save({ ...found, ...updateTypeOfEducationDto });
     } catch (error) {
       throw new ServiceUnavailableException(HEDAOTAO_MESSAGE.UPDATE_HEDAOTAO_FAILED);
     }
@@ -87,11 +79,7 @@ export class HeDaotaoService {
     const found = await this.findById(id);
     found.isDeleted = true;
     try {
-      const result = await this.typeOfEduRepository.save(found);
-      const key = format(REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
+      await this.typeOfEduRepository.save(found);
     } catch (error) {
       throw new ServiceUnavailableException(HEDAOTAO_MESSAGE.DELETE_HEDAOTAO_FAILED);
     }
@@ -124,9 +112,5 @@ export class HeDaotaoService {
       console.log(error);
       throw new InternalServerErrorException(HEDAOTAO_MESSAGE.DELETE_HEDAOTAO_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_HE_DAO_TAO_CACHE_KEY]);
   }
 }

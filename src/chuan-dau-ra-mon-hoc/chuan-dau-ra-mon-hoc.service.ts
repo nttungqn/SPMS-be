@@ -54,10 +54,7 @@ export class ChuanDauRaMonHocService extends BaseService {
         updatedAt: new Date(),
         updatedBy: createdBy.id
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return this.findOne(result.id);
     } catch (error) {
       throw new InternalServerErrorException(CHUANDAURAMONHOC_MESSAGE.CREATE_CHUANDAURAMONHOC_FAILED);
     }
@@ -147,10 +144,7 @@ export class ChuanDauRaMonHocService extends BaseService {
         updatedAt: new Date(),
         updatedBy: updatedBy.id
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return this.findOne(result.id);
     } catch (error) {
       throw new InternalServerErrorException(CHUANDAURAMONHOC_MESSAGE.UPDATE_CHUANDAURAMONHOC_FAILED);
     }
@@ -160,16 +154,12 @@ export class ChuanDauRaMonHocService extends BaseService {
     const found = await this.findOne(id);
     this.checkPermission(found.createdBy, user);
     try {
-      const result = await this.chuanDauRaMonHocService.save({
+      return await this.chuanDauRaMonHocService.save({
         ...found,
         updateBy: user.id,
         updatedAt: new Date(),
         isDeleted: true
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(CHUANDAURAMONHOC_MESSAGE.DELETE_CHUANDAURAMONHOC_FAILED);
     }
@@ -210,9 +200,5 @@ export class ChuanDauRaMonHocService extends BaseService {
       console.log(error);
       throw new InternalServerErrorException(CHUANDAURAMONHOC_MESSAGE.DELETE_CHUANDAURAMONHOC_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_CDRMH_CACHE_COMMON_KEY]);
   }
 }

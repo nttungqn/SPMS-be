@@ -26,18 +26,14 @@ export class NamHocService {
       throw new ConflictException(NAMHOC_MESSAGE.NAMHOC_EXIST);
     }
     try {
-      const result = await this.schoolYearRepository.save(createSchoolYearDto);
-      const key = format(REDIS_CACHE_VARS.DETAIL_NAM_HOC_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_NAM_HOC_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return await this.schoolYearRepository.save(createSchoolYearDto);
     } catch (error) {
       throw new ServiceUnavailableException(NAMHOC_MESSAGE.CREATE_NAMHOC_FAILED);
     }
   }
 
   async findAll() {
-    const key = REDIS_CACHE_VARS.LIST_NAM_HOC_CACHE_KEY;
+    const key = format(REDIS_CACHE_VARS.LIST_NAM_HOC_CACHE_KEY);
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
       const list = await this.schoolYearRepository.find({ where: { isDeleted: false }, order: { ma: 'ASC' } });
@@ -72,11 +68,7 @@ export class NamHocService {
     const found = await this.findById(id);
     await this.checkConflictException(id, updateSchoolYearDto);
     try {
-      const result = await this.schoolYearRepository.save({ ...found, ...updateSchoolYearDto });
-      const key = format(REDIS_CACHE_VARS.DETAIL_NAM_HOC_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_NAM_HOC_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return await this.schoolYearRepository.save({ ...found, ...updateSchoolYearDto });
     } catch (error) {
       throw new ServiceUnavailableException(NAMHOC_MESSAGE.UPDATE_NAMHOC_FAILED);
     }
@@ -86,11 +78,7 @@ export class NamHocService {
     const found = await this.findById(id);
     found.isDeleted = true;
     try {
-      const result = this.schoolYearRepository.save(found);
-      const key = format(REDIS_CACHE_VARS.DETAIL_NAM_HOC_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
+      await this.schoolYearRepository.save(found);
     } catch (error) {
       throw new ServiceUnavailableException(NAMHOC_MESSAGE.DELETE_NAMHOC_FAILED);
     }
@@ -124,9 +112,5 @@ export class NamHocService {
       console.log(error);
       throw new InternalServerErrorException(NAMHOC_MESSAGE.DELETE_NAMHOC_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_NAM_HOC_CACHE_KEY]);
   }
 }

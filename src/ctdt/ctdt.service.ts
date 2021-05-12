@@ -81,11 +81,8 @@ export class CtdtService {
     }
     try {
       const newNganhDaoTao = await this.nganhDaoTaoRepository.create(newData);
-      const result = await this.nganhDaoTaoRepository.save(newNganhDaoTao);
-      const key = format(REDIS_CACHE_VARS.DETAIL_NDT_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_NDT_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      const saved = await this.nganhDaoTaoRepository.save(newNganhDaoTao);
+      return saved;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -98,9 +95,6 @@ export class CtdtService {
     }
     try {
       const updated = await this.nganhDaoTaoRepository.save({ ...nganhDaoTao, ...updatedData, updatedAt: new Date() });
-      const key = format(REDIS_CACHE_VARS.DETAIL_NDT_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_NDT_CACHE_TTL);
-      await this.delCacheAfterChange();
       return updated;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -119,9 +113,6 @@ export class CtdtService {
         updatedAt: new Date(),
         updatedBy
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_NDT_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
       return deleted;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -129,9 +120,5 @@ export class CtdtService {
   }
   async getCount(): Promise<number> {
     return await this.nganhDaoTaoRepository.count({ isDeleted: false });
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_NDT_CACHE_COMMON_KEY]);
   }
 }
