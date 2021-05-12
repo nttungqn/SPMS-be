@@ -24,7 +24,7 @@ export class MonHocService {
     const key = format(REDIS_CACHE_VARS.LIST_MON_HOC_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const searchField = [
@@ -51,9 +51,9 @@ export class MonHocService {
             : {};
           isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `mh.${sortBy}` : null, sortType);
         })
+        .andWhere({ isDeleted: false, ...otherParam })
         .skip(skip)
         .take(limit)
-        .andWhere('mh.isDeleted = false')
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_MON_HOC_CACHE_TTL);
@@ -88,8 +88,11 @@ export class MonHocService {
     }
     try {
       const monhoc = await this.monHocRepository.create(newData);
-      const saved = await this.monHocRepository.save(monhoc);
-      return saved;
+      const result = await this.monHocRepository.save(monhoc);
+      const key = format(REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_KEY, result?.id.toString());
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_TTL);
+      await this.delCacheAfterChange();
+      return result;
     } catch (error) {
       throw new InternalServerErrorException(MONHOC_MESSAGE.CREATE_MONHOC_FAILED);
     }
@@ -106,11 +109,15 @@ export class MonHocService {
     }
 
     try {
-      return await this.monHocRepository.save({
+      const result = await this.monHocRepository.save({
         ...monhoc,
         ...updatedData,
         updatedAt: new Date()
       });
+      const key = format(REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_KEY, id.toString());
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_TTL);
+      await this.delCacheAfterChange();
+      return result;
     } catch (error) {
       throw new InternalServerErrorException(MONHOC_MESSAGE.UPDATE_MONHOC_FAILED);
     }
@@ -122,12 +129,16 @@ export class MonHocService {
       throw new NotFoundException(MONHOC_MESSAGE.MONHOC_ID_NOT_FOUND);
     }
     try {
-      return await this.monHocRepository.save({
+      const result = await this.monHocRepository.save({
         ...monhoc,
         isDeleted: true,
         updatedAt: new Date(),
         updatedBy
       });
+      const key = format(REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_KEY, id.toString());
+      await this.cacheManager.del(key);
+      await this.delCacheAfterChange();
+      return result;
     } catch (error) {
       throw new InternalServerErrorException(MONHOC_MESSAGE.DELETE_MONHOC_FAILED);
     }
@@ -231,5 +242,12 @@ export class MonHocService {
       console.log(error);
       throw new InternalServerErrorException(MONHOC_MESSAGE.DELETE_MONHOC_FAILED);
     }
+  }
+
+  async delCacheAfterChange() {
+    await this.cacheManager.delCacheList([
+      REDIS_CACHE_VARS.LIST_MON_HOC_CACHE_COMMON_KEY,
+      REDIS_CACHE_VARS.LIST_MH_NDT_KT_CACHE_COMMON_KEY
+    ]);
   }
 }
