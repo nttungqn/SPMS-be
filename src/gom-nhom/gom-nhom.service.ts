@@ -97,11 +97,8 @@ export class GomNhomService {
     }
     try {
       const gomNhom = await this.gomNhomRepository.create(newData);
-      const result = await this.gomNhomRepository.save(gomNhom);
-      const key = format(REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      const saved = await this.gomNhomRepository.save(gomNhom);
+      return saved;
     } catch (error) {
       throw new InternalServerErrorException(GOMNHOM_MESSAGE.CREATE_GOMNHOM_FAILED);
     }
@@ -120,15 +117,11 @@ export class GomNhomService {
     }
 
     try {
-      const result = await this.gomNhomRepository.save({
+      return await this.gomNhomRepository.save({
         ...gomNhom,
         ...updatedData,
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(GOMNHOM_MESSAGE.UPDATE_GOMNHOM_FAILED);
     }
@@ -140,16 +133,12 @@ export class GomNhomService {
       throw new NotFoundException(GOMNHOM_MESSAGE.GOMNHOM_ID_NOT_FOUND);
     }
     try {
-      const result = await this.gomNhomRepository.save({
+      return await this.gomNhomRepository.save({
         ...gomNhom,
         isDeleted: true,
         updatedAt: new Date(),
         updatedBy
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED);
     }
@@ -195,7 +184,6 @@ export class GomNhomService {
         .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
         .andWhere('id IN (:...ids)', { ids: list_id })
         .execute();
-      await this.delCacheAfterChange();
     } catch (error) {
       throw new InternalServerErrorException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED);
     }
@@ -209,7 +197,6 @@ export class GomNhomService {
         .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
         .where(`isDeleted = ${false}`)
         .execute();
-      await this.delCacheAfterChange();
     } catch (error) {
       throw new InternalServerErrorException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED);
     }
@@ -222,9 +209,5 @@ export class GomNhomService {
       console.log(error);
       throw new InternalServerErrorException(GOMNHOM_MESSAGE.DELETE_GOMNHOM_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_GOM_NHOM_CACHE_COMMON_KEY]);
   }
 }

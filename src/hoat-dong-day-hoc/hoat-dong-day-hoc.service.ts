@@ -73,9 +73,6 @@ export class HoatDongDayHocService {
     try {
       const hoatDongDayHoc = await this.hoatDongDayHocRepository.create(newData);
       const saved = await this.hoatDongDayHocRepository.save(hoatDongDayHoc);
-      const key = format(REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_KEY, saved?.id.toString());
-      await this.cacheManager.set(key, saved, REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_TTL);
-      await this.delCacheAfterChange();
       return saved;
     } catch (error) {
       throw new InternalServerErrorException(HOATDONGDAYHOC_MESSAGE.CREATE_HOATDONGDAYHOC_FAILED);
@@ -95,15 +92,11 @@ export class HoatDongDayHocService {
     }
 
     try {
-      const result = await this.hoatDongDayHocRepository.save({
+      return await this.hoatDongDayHocRepository.save({
         ...hoatDongDayHoc,
         ...updatedData,
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(HOATDONGDAYHOC_MESSAGE.UPDATE_HOATDONGDAYHOC_FAILED);
     }
@@ -115,16 +108,12 @@ export class HoatDongDayHocService {
       throw new NotFoundException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_ID_NOT_FOUND);
     }
     try {
-      const result = await this.hoatDongDayHocRepository.save({
+      return await this.hoatDongDayHocRepository.save({
         ...hoatDongDayHoc,
         isDeleted: true,
         updatedAt: new Date(),
         updatedBy
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(HOATDONGDAYHOC_MESSAGE.DELETE_HOATDONGDAYHOC_FAILED);
     }
@@ -140,9 +129,5 @@ export class HoatDongDayHocService {
       console.log(error);
       throw new InternalServerErrorException(HOATDONGDAYHOC_MESSAGE.DELETE_HOATDONGDAYHOC_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_HDDH_CACHE_COMMON_KEY]);
   }
 }
