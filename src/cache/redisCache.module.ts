@@ -13,10 +13,6 @@ import { RedisCacheService } from './redisCache.service';
         url: REDIS_CONFIG.URL,
         password: REDIS_CONFIG.PASSWORD,
 
-        // local: http://localhost:6379
-        // host: REDIS_CONFIG.HOST,
-        // port: REDIS_CONFIG.PORT,
-
         ttl: REDIS_CONFIG.TTL,
         max: REDIS_CONFIG.MAX
       }
