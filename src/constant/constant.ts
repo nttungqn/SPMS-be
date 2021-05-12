@@ -429,68 +429,82 @@ const ROLES_MESSAGE = {
 
 const REDIS_CACHE_VARS = {
   // chi tiet gom nhom
+  LIST_CHI_TIET_GOM_NHOM_CACHE_COMMON_KEY: 'spms:ctgn_list',
   LIST_CHI_TIET_GOM_NHOM_CACHE_KEY: 'spms:ctgn_list:{}',
   LIST_CHI_TIET_GOM_NHOM_CACHE_TTL: 600,
   DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY: 'spms:ctgn_detail:{}',
   DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL: 600,
+  LIST_CTGN_MHTT_CACHE_COMMON_KEY: 'spms:ctgn_mhtt_list',
   LIST_CTGN_MHTT_CACHE_KEY: 'spms:ctgn_mhtt_list:{}',
   LIST_CTGN_MHTT_CACHE_TTL: 600,
+  LIST_CTGN_SJ_CACHE_COMMON_KEY: 'spms:ctgn_sj_list',
   LIST_CTGN_SJ_CACHE_KEY: 'spms:ctgn_sj_list:{0}-{1}-{2}',
   LIST_CTGN_SJ_CACHE_TTL: 600,
 
   // chi tiet ke hoach
+  LIST_CHI_TIET_KE_HOACH_CACHE_COMMON_KEY: 'spms:ctkh_list',
   LIST_CHI_TIET_KE_HOACH_CACHE_KEY: 'spms:ctkh_list:{}',
   LIST_CHI_TIET_KE_HOACH_CACHE_TTL: 600,
   DETAIL_CHI_TIET_KE_HOACH_CACHE_KEY: 'spms:ctkh_detail:{}',
   DETAIL_CHI_TIET_KE_HOACH_CACHE_TTL: 600,
+  LIST_CTKH_SF_CACHE_COMMON_KEY: 'spms:ctkh_sf_list',
   LIST_CTKH_SF_CACHE_KEY: 'spms:ctkh_sf_list:{}',
   LIST_CTKH_SF_CACHE_TTL: 600,
 
   // chi tiet nganh dao tao
+  LIST_CHI_TIET_NDT_CACHE_COMMON_KEY: 'spms:ctkh_list',
   LIST_CHI_TIET_NDT_CACHE_KEY: 'spms:ctkh_list:{}',
   LIST_CHI_TIET_NDT_CACHE_TTL: 600,
   DETAIL_CHI_TIET_NDT_CACHE_KEY: 'spms:ctkh_detail:{}',
   DETAIL_CHI_TIET_NDT_CACHE_TTL: 600,
 
   // chu de
+  LIST_CHU_DE_CACHE_COMMON_KEY: 'spms:chude_list',
   LIST_CHU_DE_CACHE_KEY: 'spms:chude_list:{}',
   LIST_CHU_DE_CACHE_TTL: 600,
   DETAIL_CHU_DE_CACHE_KEY: 'spms:chude_detail:{}',
   DETAIL_CHU_DE_CACHE_TTL: 600,
 
   // chuan dau ra
+  LIST_CDR_CACHE_COMMON_KEY: 'spms:cdr_list',
   LIST_CDR_CACHE_KEY: 'spms:cdr_list:{}',
   LIST_CDR_CACHE_TTL: 1200,
   DETAIL_CDR_CACHE_KEY: 'spms:cdr_detail:{}',
   DETAIL_CDR_CACHE_TTL: 1200,
 
   // chuan dau ra mon hoc
+  LIST_CDRMH_CACHE_COMMON_KEY: 'spms:cdrmh_list',
   LIST_CDRMH_CACHE_KEY: 'spms:cdrmh_list:{}',
   LIST_CDRMH_CACHE_TTL: 1200,
   DETAIL_CDRMH_CACHE_KEY: 'spms:cdrmh_detail:{}',
   DETAIL_CDRMH_CACHE_TTL: 1200,
 
   // chuan dau ra nganh dao tao
+  LIST_CDRNDT_CACHE_COMMON_KEY: 'spms:cdrndt_list',
   LIST_CDRNDT_CACHE_KEY: 'spms:cdrndt_list:{}',
   LIST_CDRNDT_CACHE_TTL: 1200,
   DETAIL_CDRNDT_CACHE_KEY: 'spms:cdrndt_detail:{}',
   DETAIL_CDRNDT_CACHE_TTL: 1200,
+  LIST_CDRNDT_NDT_CACHE_COMMON_KEY: 'spms:cdrndt_ndt_list',
   LIST_CDRNDT_NDT_CACHE_KEY: 'spms:cdrndt_ndt_list:{}',
   LIST_CDRNDT_NDT_CACHE_TTL: 1200,
 
   // chuong trinh dao tao
+  LIST_CTDT_CACHE_COMMON_KEY: 'spms:ctdt_list',
   LIST_CTDT_CACHE_KEY: 'spms:ctdt_list:{}',
   LIST_CTDT_CACHE_TTL: 6000,
   DETAIL_CTDT_CACHE_KEY: 'spms:ctdt_detail:{}',
   DETAIL_CTDT_CACHE_TTL: 6000,
 
   // nganh dao tao
+  LIST_NDT_CACHE_COMMON_KEY: 'spms:ndt_list',
   LIST_NDT_CACHE_KEY: 'spms:ndt_list:{}',
   LIST_NDT_CACHE_TTL: 1200,
   DETAIL_NDT_CACHE_KEY: 'spms:ndt_detail:{}',
   DETAIL_NDT_CACHE_TTL: 1200,
 
   // gom nhom
+  LIST_GOM_NHOM_CACHE_COMMON_KEY: 'spms:gn_list',
   LIST_GOM_NHOM_CACHE_KEY: 'spms:gn_list:{}',
   LIST_GOM_NHOM_CACHE_TTL: 600,
   DETAIL_GOM_NHOM_CACHE_KEY: 'spms:gn_detail:{}',
@@ -503,64 +517,76 @@ const REDIS_CACHE_VARS = {
   DETAIL_HE_DAO_TAO_CACHE_TTL: 6000,
 
   // hoat dong danh gia
+  LIST_HDDG_CACHE_COMMON_KEY: 'spms:hddg_list',
   LIST_HDDG_CACHE_KEY: 'spms:hddg_list:{}',
   LIST_HDDG_CACHE_TTL: 600,
   DETAIL_HDDG_CACHE_KEY: 'spms:hddg_detail:{}',
   DETAIL_HDDG_CACHE_TTL: 600,
 
   // hoat dong day hoc
+  LIST_HDDH_CACHE_COMMON_KEY: 'spms:hddh_list',
   LIST_HDDH_CACHE_KEY: 'spms:hddh_list:{}',
   LIST_HDDH_CACHE_TTL: 600,
   DETAIL_HDDH_CACHE_KEY: 'spms:hddh_detail:{}',
   DETAIL_HDDH_CACHE_TTL: 600,
 
   // ke hoach giang day
+  LIST_KHGD_CACHE_COMMON_KEY: 'spms:khgd_list',
   LIST_KHGD_CACHE_KEY: 'spms:khgd_list:{}',
   LIST_KHGD_CACHE_TTL: 600,
   DETAIL_KHGD_CACHE_KEY: 'spms:khgd_detail:{}',
   DETAIL_KHGD_CACHE_TTL: 600,
 
   // khoi kien thuc
+  LIST_KKT_CACHE_COMMON_KEY: 'spms:kkt_list',
   LIST_KKT_CACHE_KEY: 'spms:kkt_list:{}',
   LIST_KKT_CACHE_TTL: 1200,
   DETAIL_KKT_CACHE_KEY: 'spms:kkt_detail:{}',
   DETAIL_KKT_CACHE_TTL: 1200,
 
   // loai danh gia
+  LIST_LDG_CACHE_COMMON_KEY: 'spms:ldg_list',
   LIST_LDG_CACHE_KEY: 'spms:ldg_list:{}',
   LIST_LDG_CACHE_TTL: 600,
   DETAIL_LDG_CACHE_KEY: 'spms:ldg_detail:{}',
   DETAIL_LDG_CACHE_TTL: 600,
 
   // loai ke hoach giang day
+  LIST_LKHGD_CACHE_COMMON_KEY: 'spms:lkhgd_list',
   LIST_LKHGD_CACHE_KEY: 'spms:lkhgd_list:{}',
   LIST_LKHGD_CACHE_TTL: 600,
   DETAIL_LKHGD_CACHE_KEY: 'spms:lkhgd_detail:{}',
   DETAIL_LKHGD_CACHE_TTL: 600,
 
   // loai khoi kien thuc
+  LIST_LKKT_CACHE_COMMON_KEY: 'spms:lkkt_list',
   LIST_LKKT_CACHE_KEY: 'spms:lkkt_list:{}',
   LIST_LKKT_CACHE_TTL: 600,
   DETAIL_LKKT_CACHE_KEY: 'spms:lkkt_detail:{}',
   DETAIL_LKKT_CACHE_TTL: 600,
 
   // mon hoc
+  LIST_MON_HOC_CACHE_COMMON_KEY: 'spms:monhoc_list',
   LIST_MON_HOC_CACHE_KEY: 'spms:monhoc_list:{}',
   LIST_MON_HOC_CACHE_TTL: 600,
   DETAIL_MON_HOC_CACHE_KEY: 'spms:monhoc_detail:{}',
   DETAIL_MON_HOC_CACHE_TTL: 600,
+  LIST_MH_NDT_KT_CACHE_COMMON_KEY: 'spms:mh_ndt_kt_list',
   LIST_MH_NDT_KT_CACHE_KEY: 'spms:mh_ndt_kt_list:{0}-{1}',
   LIST_MH_NDT_KT_CACHE_TTL: 600,
 
   // mon hoc tien quyet
+  LIST_MHTQ_CACHE_COMMON_KEY: 'spms:mhtq_list',
   LIST_MHTQ_CACHE_KEY: 'spms:mhtq_list:{}',
   LIST_MHTQ_CACHE_TTL: 600,
   DETAIL_MHTQ_CACHE_KEY: 'spms:mhtq_detail:{}',
   DETAIL_MHTQ_CACHE_TTL: 600,
+  LIST_MHTQ_MHT_CACHE_COMMON_KEY: 'spms:mhtq_mht_list',
   LIST_MHTQ_MHT_CACHE_KEY: 'spms:mhtq_mht_list:{0}-{1}',
   LIST_MHTQ_MHT_CACHE_TTL: 600,
 
   // muc tieu mon hoc
+  LIST_MTMH_CACHE_COMMON_KEY: 'spms:mtmh_list',
   LIST_MTMH_CACHE_KEY: 'spms:mtmh_list:{}',
   LIST_MTMH_CACHE_TTL: 3000,
   DETAIL_MTMH_CACHE_KEY: 'spms:mtmh_detail:{}',
@@ -573,30 +599,36 @@ const REDIS_CACHE_VARS = {
   DETAIL_NAM_HOC_CACHE_TTL: 6000,
 
   // role
-  LIST_ROLE_CACHE_KEY: 'spms:role_list',
+  LIST_ROLE_CACHE_COMMON_KEY: 'spms:role_list',
+  LIST_ROLE_CACHE_KEY: 'spms:role_list:{}',
   LIST_ROLE_CACHE_TTL: 6000,
   DETAIL_ROLE_CACHE_KEY: 'spms:role_detail:{}',
   DETAIL_ROLE_CACHE_TTL: 6000,
 
   // so khop
+  LIST_SO_KHOP_CACHE_COMMON_KEY: 'spms:so_khop_list',
   LIST_SO_KHOP_CACHE_KEY: 'spms:so_khop_list:{0}-{1}',
   LIST_SO_KHOP_CACHE_TTL: 6000,
 
   // syllabus
+  LIST_SYLLABUS_CACHE_COMMON_KEY: 'spms:syllabus_list',
   LIST_SYLLABUS_CACHE_KEY: 'spms:syllabus_list:{}',
   LIST_SYLLABUS_CACHE_TTL: 600,
   DETAIL_SYLLABUS_CACHE_KEY: 'spms:syllabus_detail:{}',
   DETAIL_SYLLABUS_CACHE_TTL: 600,
 
   // thong ke
+  THONG_KE_GV_CACHE_COMMON_KEY: 'spms:thong_ke_gv',
   THONG_KE_GV_CACHE_KEY: 'spms:thong_ke_gv:{}',
   THONG_KE_GV_CACHE_TTL: 600,
   THONG_KE_INTRO_CACHE_KEY: 'spms:thong_ke_intro',
   THONG_KE_INTRO_CACHE_TTL: 600,
+  THONG_KE_SLCDR_CACHE_COMMON_KEY: 'spms:thong_ke_slcdr',
   THONG_KE_SLCDR_CACHE_KEY: 'spms:thong_ke_slcdr:{}',
   THONG_KE_SLCDR_CACHE_TTL: 600,
 
   // user
+  LIST_USER_CACHE_COMMON_KEY: 'spms:user_list',
   LIST_USER_CACHE_KEY: 'spms:user_list:{}',
   LIST_USER_CACHE_TTL: 600,
   DETAIL_USER_CACHE_KEY: 'spms:user_detail:{}',

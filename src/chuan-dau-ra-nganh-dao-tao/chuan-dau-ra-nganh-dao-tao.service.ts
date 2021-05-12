@@ -77,8 +77,11 @@ export class ChuanDauRaNganhDaoTaoService {
     }
     try {
       const newChuanDauRaNDT = await this.chuanDauRaNDTRepository.create(newData);
-      const saved = await this.chuanDauRaNDTRepository.save(newChuanDauRaNDT);
-      return saved;
+      const result = await this.chuanDauRaNDTRepository.save(newChuanDauRaNDT);
+      const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, result?.id.toString());
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_TTL);
+      await this.delCacheAfterChange();
+      return result;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -98,6 +101,9 @@ export class ChuanDauRaNganhDaoTaoService {
         ...updatedData,
         updatedAt: new Date()
       });
+      const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, id.toString());
+      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_TTL);
+      await this.delCacheAfterChange();
       return updated;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -119,6 +125,9 @@ export class ChuanDauRaNganhDaoTaoService {
         updatedAt: new Date(),
         updatedBy
       });
+      const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, id.toString());
+      await this.cacheManager.del(key);
+      await this.delCacheAfterChange();
       return deleted;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -161,5 +170,13 @@ export class ChuanDauRaNganhDaoTaoService {
       console.log(error);
       throw new InternalServerErrorException(CHUANDAURA_NGANHDAOTAO_MESSAGE.DELETE_CHUANDAURA_NGANHDAOTAO_FAILED);
     }
+  }
+
+  async delCacheAfterChange() {
+    await this.cacheManager.delCacheList([
+      REDIS_CACHE_VARS.LIST_CDRNDT_CACHE_COMMON_KEY,
+      REDIS_CACHE_VARS.LIST_CTGN_MHTT_CACHE_COMMON_KEY,
+      REDIS_CACHE_VARS.LIST_CTGN_SJ_CACHE_COMMON_KEY
+    ]);
   }
 }

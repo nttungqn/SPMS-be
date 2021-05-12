@@ -23,6 +23,9 @@ export class RolesService {
         createdAt: new Date(),
         updatedAt: new Date()
       });
+      const key = format(REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_KEY, result?.id.toString());
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_TTL);
+      await this.delCacheAfterChange();
       return result;
     } catch (error) {
       throw new InternalServerErrorException(ROLES_MESSAGE.CREATE_ROLES_FAILED);
@@ -80,21 +83,29 @@ export class RolesService {
   async update(id: number, newData: RolesEntity) {
     const oldData = await this.rolesRepository.findOne(id, { where: { isDeleted: false } });
     try {
-      return await this.rolesRepository.save({ ...oldData, ...newData, updatedAt: new Date() });
+      const result = await this.rolesRepository.save({ ...oldData, ...newData, updatedAt: new Date() });
+      const key = format(REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_KEY, id.toString());
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_TTL);
+      await this.delCacheAfterChange();
+      return result;
     } catch (error) {
       throw new InternalServerErrorException(ROLES_MESSAGE.UPDATE_ROLES_FAILED);
     }
   }
 
   async remove(id: number) {
-    const result = await this.rolesRepository.findOne(id, { where: { isDeleted: false } });
-    if (!result) throw new NotFoundException(ROLES_MESSAGE.ROLES_ID_NOT_FOUND);
+    const data = await this.rolesRepository.findOne(id, { where: { isDeleted: false } });
+    if (!data) throw new NotFoundException(ROLES_MESSAGE.ROLES_ID_NOT_FOUND);
     try {
-      return await this.rolesRepository.save({
-        ...result,
+      const result = await this.rolesRepository.save({
+        ...data,
         updatedAt: new Date(),
         isDeleted: true
       });
+      const key = format(REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_KEY, id.toString());
+      await this.cacheManager.del(key);
+      await this.delCacheAfterChange();
+      return result;
     } catch (error) {
       throw new InternalServerErrorException(ROLES_MESSAGE.DELETE_ROLES_FAILED);
     }
@@ -107,5 +118,9 @@ export class RolesService {
       console.log(error);
       throw new InternalServerErrorException(ROLES_MESSAGE.DELETE_ROLES_FAILED);
     }
+  }
+
+  async delCacheAfterChange() {
+    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_ROLE_CACHE_COMMON_KEY]);
   }
 }
