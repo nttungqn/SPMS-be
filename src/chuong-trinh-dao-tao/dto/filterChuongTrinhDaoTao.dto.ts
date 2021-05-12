@@ -14,27 +14,15 @@ export class BaseFilterDto {
 }
 
 export class FilterChuongTrinhDaoTao extends BaseFilterDto {
+  @ApiProperty({ required: false, description: 'trường này dùng để search theo tên' })
+  @IsOptional()
+  readonly search?: string;
   @ApiProperty({ required: false, description: 'mã chương trình đào tạo' })
   @IsOptional()
   readonly maCTDT?: string;
 
-  @ApiProperty({
-    required: false,
-    description: 'Search by id, maCTDT, loaiHinh, trinhDo, dieuKienTotNghiep, ten, tongTinChi, doiTuong, quiTrinhDaoTao'
-  })
-  @IsOptional()
-  readonly searchKey?: string;
-
-  @ApiProperty({
-    required: false,
-    description:
-      'Sort by: id, maCTDT, loaiHinh, trinhDo, dieuKienTotNghiep, ten, tongTinChi, doiTuong, quiTrinhDaoTao, createdAt, updatedAt'
-  })
-  @IsOptional()
-  readonly sortBy?: string;
-
-  @ApiProperty({ required: false, description: 'ASC| DESC' })
+  @ApiProperty({ required: false, description: 'sort theo ASC hay DESC' })
   @IsOptional()
   @IsIn(['ASC', 'DESC'])
-  readonly sortType?: 'ASC' | 'DESC';
+  updatedAt: 'ASC' | 'DESC';
 }

@@ -17,41 +17,25 @@ export class ChuongTrinhDaoTaoService {
     const key = format(REDIS_CACHE_VARS.LIST_CTDT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
+      const { limit = LIMIT, page = 0, search = '', updatedAt, ...rest } = filter;
       const skip = Number(page) * Number(limit);
-      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
-      const searchField = [
-        'id',
-        'maCTDT',
-        'loaiHinh',
-        'trinhDo',
-        'dieuKienTotNghiep',
-        'ten',
-        'tongTinChi',
-        'doiTuong',
-        'quiTrinhDaoTao'
-      ];
-      const searchQuery = searchField
-        .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'ctdt.' + e + ' LIKE :search'))
-        .join(' OR ');
-      const [list, total] = await this.chuongTrinhDaoTaoRepository
-        .createQueryBuilder('ctdt')
-        .leftJoinAndSelect('ctdt.createdBy', 'createdBy')
-        .leftJoinAndSelect('ctdt.updatedBy', 'updatedBy')
-        .where((qb) => {
-          searchKey
-            ? qb.andWhere(searchQuery, {
-                search: `%${searchKey}%`
-              })
-            : {};
-          isSortFieldInForeignKey
-            ? qb.orderBy(sortBy, sortType)
-            : qb.orderBy(sortBy ? `ctdt.${sortBy}` : null, sortType);
-        })
-        .skip(skip)
-        .take(limit)
-        .andWhere('ctdt.isDeleted = false')
-        .getManyAndCount();
+      const querySearch = search ? { ten: Like(`%${search}%`) } : {};
+      const orderByUpdateAt = updatedAt ? { updatedAt: updatedAt } : {};
+      const query = {
+        isDeleted: false,
+        ...querySearch,
+        ...rest
+      };
+      const list = await this.chuongTrinhDaoTaoRepository.find({
+        where: query,
+        skip,
+        take: Number(limit),
+        order: { ...orderByUpdateAt }
+      });
+      if (!list.length) {
+        throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
+      }
+      const total = await this.chuongTrinhDaoTaoRepository.count(query);
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CTDT_CACHE_TTL);
     }
