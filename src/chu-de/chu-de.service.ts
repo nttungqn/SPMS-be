@@ -167,7 +167,7 @@ export class ChuDeService extends BaseService {
   }
 
   async delete(id: number, updatedBy?: UsersEntity): Promise<any> {
-    const chude = await this.chuDeRepository.findOne({ id, isDeleted: false });
+    const chude = await this.chuDeRepository.findOne({ where: { id, isDeleted: false }, relations: ['createdBy'] });
     this.checkPermission(chude.createdBy, updatedBy);
     if (!chude) {
       throw new NotFoundException(CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND);
