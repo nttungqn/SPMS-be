@@ -55,10 +55,7 @@ export class MucTieuMonHocService extends BaseService {
         updatedAt: new Date(),
         updatedBy: createdBy.id
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_MTMH_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MTMH_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return this.findOne(result.id);
     } catch (error) {
       throw new InternalServerErrorException(MUCTIEUMONHOC_MESSAGE.CREATE_MUCTIEUMONHOC_FAILED);
     }
@@ -167,33 +164,26 @@ export class MucTieuMonHocService extends BaseService {
         updatedAt: new Date(),
         updatedBy: updatedBy.id
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_MTMH_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MTMH_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return this.findOne(result.id);
     } catch (error) {
       throw new InternalServerErrorException(MUCTIEUMONHOC_MESSAGE.UPDATE_MUCTIEUMONHOC_FAILED);
     }
   }
 
   async remove(id: number, user: UsersEntity) {
-    const data = await this.mucTieuMonHocEntityRepository.findOne(id, {
+    const result = await this.mucTieuMonHocEntityRepository.findOne(id, {
       where: { isDeleted: false },
       relations: ['createdBy']
     });
-    if (!data) throw new NotFoundException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_ID_NOT_FOUND);
-    this.checkPermission(data.createdBy, user);
+    if (!result) throw new NotFoundException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_ID_NOT_FOUND);
+    this.checkPermission(result.createdBy, user);
     try {
-      const result = await this.mucTieuMonHocEntityRepository.save({
-        ...data,
+      return await this.mucTieuMonHocEntityRepository.save({
+        ...result,
         updatedAt: new Date(),
         updatedBy: user.id,
         isDeleted: true
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_MTMH_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(MUCTIEUMONHOC_MESSAGE.DELETE_MUCTIEUMONHOC_FAILED);
     }
@@ -234,9 +224,5 @@ export class MucTieuMonHocService extends BaseService {
       console.log(error);
       throw new InternalServerErrorException(MUCTIEUMONHOC_MESSAGE.DELETE_MUCTIEUMONHOC_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_MTMH_CACHE_COMMON_KEY]);
   }
 }

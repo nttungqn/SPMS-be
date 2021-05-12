@@ -30,10 +30,7 @@ export class MonHocTienQuyetService {
     try {
       const newRow = await this.prerequisiteSubjectRepository.create(createPrerequisiteSubjectDto);
       const result = await this.prerequisiteSubjectRepository.save(newRow);
-      const key = format(REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return await this.findById(result.id);
     } catch (error) {
       if (error instanceof QueryFailedError) {
         throw new BadRequestException();
@@ -125,11 +122,8 @@ export class MonHocTienQuyetService {
     try {
       newPrere.updatedAt = new Date();
       newPrere.updatedBy = updatePrerequisiteSubjectDto.updatedBy;
-      const result = await this.prerequisiteSubjectRepository.save(newPrere);
-      const key = format(REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      await this.prerequisiteSubjectRepository.save(newPrere);
+      return this.findById(id);
     } catch (error) {
       throw new InternalServerErrorException(MONHOCTIENQUYET_MESSAGE.UPDATE_MONHOCTIENQUYET_FAILED);
     }
@@ -142,11 +136,7 @@ export class MonHocTienQuyetService {
     found.updatedAt = new Date();
     found.isDeleted = true;
     try {
-      const result = await this.prerequisiteSubjectRepository.save(found);
-      const key = format(REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
+      return await this.prerequisiteSubjectRepository.save(found);
     } catch (error) {
       throw new InternalServerErrorException(MONHOCTIENQUYET_MESSAGE.DELETE_MONHOCTIENQUYET_FAILED);
     }
@@ -172,12 +162,5 @@ export class MonHocTienQuyetService {
       console.log(error);
       throw new InternalServerErrorException(MONHOCTIENQUYET_MESSAGE.DELETE_MONHOCTIENQUYET_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([
-      REDIS_CACHE_VARS.LIST_MHTQ_CACHE_COMMON_KEY,
-      REDIS_CACHE_VARS.LIST_MH_NDT_KT_CACHE_COMMON_KEY
-    ]);
   }
 }

@@ -124,17 +124,14 @@ export class ChuDeService extends BaseService {
     const chuDe = await this.createEntity(new ChuDeEntity(), newData, newData.idSyllabus);
 
     try {
-      const result = await this.chuDeRepository.save({
+      const saved = await this.chuDeRepository.save({
         ...chuDe,
         createdBy: syllabusCreatedBy.id,
         updatedBy: createdBy.id,
         createdAt: new Date(),
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      return saved;
     } catch (error) {
       throw new InternalServerErrorException(CHUDE_MESSAGE.CREATE_CHUDE_FAILED);
     }
@@ -159,15 +156,11 @@ export class ChuDeService extends BaseService {
     }
     const chuDe = await this.createEntity(oldData, newData, idSyllabus);
     try {
-      const result = await this.chuDeRepository.save({
+      return await this.chuDeRepository.save({
         ...chuDe,
         updatedAt: new Date(),
         updatedBy: updatedBy.id
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(CHUDE_MESSAGE.UPDATE_CHUDE_FAILED);
     }
@@ -180,16 +173,12 @@ export class ChuDeService extends BaseService {
       throw new NotFoundException(CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND);
     }
     try {
-      const result = await this.chuDeRepository.save({
+      return await this.chuDeRepository.save({
         ...chude,
         isDeleted: true,
         updatedAt: new Date(),
         updatedBy: updatedBy.id
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(CHUDE_MESSAGE.DELETE_CHUDE_FAILED);
     }
@@ -269,10 +258,6 @@ export class ChuDeService extends BaseService {
       console.log(error);
       throw new InternalServerErrorException(CHUDE_MESSAGE.DELETE_CHUDE_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_CHU_DE_CACHE_COMMON_KEY]);
   }
 }
 const keyService = {

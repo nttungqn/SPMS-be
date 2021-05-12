@@ -35,11 +35,8 @@ export class SyllabusService extends BaseService {
     await this.subjectService.findById(createSyllabus.monHoc);
 
     try {
-      const result = await this.syllabusRepository.save(createSyllabus);
-      const key = format(REDIS_CACHE_VARS.DETAIL_SYLLABUS_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_SYLLABUS_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      const syllabus = await this.syllabusRepository.save(createSyllabus);
+      return syllabus;
     } catch (error) {
       throw new InternalServerErrorException(SYLLABUS_MESSAGE.CREATE_SYLLABUS_FAILED);
     }
@@ -144,35 +141,28 @@ export class SyllabusService extends BaseService {
       throw new ConflictException(SYLLABUS_MESSAGE.SYLLABUS_EXIST);
     }
     try {
-      const result = await this.syllabusRepository.save({
+      await this.syllabusRepository.save({
         ...syllabus,
         ...updateSyllabus,
         updateBy: updateBy.id,
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_SYLLABUS_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_SYLLABUS_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(SYLLABUS_MESSAGE.UPDATE_SYLLABUS_FAILED);
     }
+    return this.findOne(syllabus.id);
   }
 
   async remove(id: number, user: UsersEntity) {
     const found = await this.findOne(id);
     this.checkPermission(found.createdBy, user);
     try {
-      const result = await this.syllabusRepository.save({
+      return await this.syllabusRepository.save({
         ...found,
         updateBy: user.id,
         updatedAt: new Date(),
         isDeleted: true
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_SYLLABUS_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(SYLLABUS_MESSAGE.DELETE_SYLLABUS_FAILED);
     }
@@ -229,9 +219,5 @@ export class SyllabusService extends BaseService {
       console.log(error);
       throw new InternalServerErrorException(SYLLABUS_MESSAGE.DELETE_SYLLABUS_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_SYLLABUS_CACHE_COMMON_KEY]);
   }
 }

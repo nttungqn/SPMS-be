@@ -66,7 +66,7 @@ export class KeHoachGiangDayService {
     if (typeof result === 'undefined') {
       result = await this.keHoachGiangDayRepository.findOne({
         where: { id, isDeleted: false },
-        relations: ['CTNganhDaoTao', 'CTNganhDaoTao.nganhDaoTao', 'createdBy', 'updatedBy']
+        relations: ['CTNganhDaoTao' ,'CTNganhDaoTao.nganhDaoTao', 'createdBy', 'updatedBy']
       });
       if (!result) {
         throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -93,11 +93,8 @@ export class KeHoachGiangDayService {
     }
     try {
       const newKeHoachGiangDay = await this.keHoachGiangDayRepository.create(newData);
-      const result = await this.keHoachGiangDayRepository.save(newKeHoachGiangDay);
-      const key = format(REDIS_CACHE_VARS.DETAIL_KHGD_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_KHGD_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      const saved = await this.keHoachGiangDayRepository.save(newKeHoachGiangDay);
+      return saved;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -114,9 +111,6 @@ export class KeHoachGiangDayService {
         ...updatedData,
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_KHGD_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_KHGD_CACHE_TTL);
-      await this.delCacheAfterChange();
       return updated;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -135,9 +129,6 @@ export class KeHoachGiangDayService {
         updatedAt: new Date(),
         updatedBy
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_KHGD_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
       return deleted;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -151,9 +142,5 @@ export class KeHoachGiangDayService {
       console.log(error);
       throw new InternalServerErrorException(KEHOACHGIANGDAY_MESSAGE.DELETE_KEHOACHGIANGDAY_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_KHGD_CACHE_COMMON_KEY]);
   }
 }
