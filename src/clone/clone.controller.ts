@@ -63,6 +63,13 @@ export class CloneController {
     return { message: CLONE_MESSAGE.CREATE_NOI_DUNG_SUCCESSFULLY };
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @Get('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/chuan-dau-ra-nganh-dao-tao')
+  async getChuanDauRaNganhDaoTaoDetail(@Param('idCTNDTClone') idCTNDTClone: number, @Param('idCTNDT') idCTNDT: number) {
+    return await this.cloneService.chuanDauRaNganhDaoTaoClone(idCTNDTClone, idCTNDT);
+  }
+
   @Delete('/chi-tiet-nganh-dao-tao/:idKKT')
   async khoiKienThuc(@Param('idKKT') idKKT: number) {
     return await this.cloneService.deleteKhoiKienThuc(idKKT);

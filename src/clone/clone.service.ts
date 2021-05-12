@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
+import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
 import { CLONE_MESSAGE } from 'constant/constant';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
@@ -251,6 +252,24 @@ export class CloneService {
     } catch (error) {
       return new InternalServerErrorException(CLONE_MESSAGE.CREATE_KE_HOACH_GIANG_DAY_FAILED);
     }
+  }
+
+  async chuanDauRaNganhDaoTaoClone(idCTNDTClone: number, idCTNDT: number) {
+    const query = this.conection
+      .getRepository(ChuanDauRaNganhDaoTaoEntity)
+      .createQueryBuilder('cdr')
+      .leftJoinAndSelect('cdr.chuanDauRa', 'cdrName')
+      .leftJoinAndSelect('cdr.childs', 'clv1')
+      .where((qb) => {
+        qb.leftJoinAndSelect('clv1.chuanDauRa', 'cdrNameLv1')
+          .leftJoinAndSelect('clv1.childs', 'clv2')
+          .where((qb) => {
+            qb.leftJoinAndSelect('clv2.chuanDauRa', 'cdrNameLv2');
+          });
+      })
+      .where('cdr.parent is null and cdr.nganhDaoTao = :idCTNDTClone', { idCTNDTClone });
+    const results = await query.getMany();
+    return results;
   }
 
   async deleteKhoiKienThuc(idKKT: number) {
