@@ -22,7 +22,7 @@ export class ChuanDauRaNganhDaoTaoEntity {
   @JoinColumn({ name: 'parentId' })
   parent: number;
 
-  @OneToMany(() => ChuanDauRaNganhDaoTaoEntity, (cdr) => cdr.parent)
+  @OneToMany(() => ChuanDauRaNganhDaoTaoEntity, (cdr) => cdr.parent, { cascade: ['insert'] })
   @JoinColumn({ name: 'id' })
   childs?: ChuanDauRaNganhDaoTaoEntity[];
 

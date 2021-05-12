@@ -77,9 +77,11 @@ export class CloneController {
   async createChuanDauRaNganhDaoTaoDetail(
     @Body() chuanDauRaList: ChuanDauRaNganhDaoTaoEntity[],
     @Param('idCTNDTClone') idCTNDTClone: number,
-    @Param('idCTNDT') idCTNDT: number
+    @Param('idCTNDT') idCTNDT: number,
+    @GetUser() user: UsersEntity
   ) {
-    return await this.cloneService.createChuanDauRaNganhDaoTaoClone(chuanDauRaList, idCTNDTClone, idCTNDT);
+    await this.cloneService.createChuanDauRaNganhDaoTaoClone(chuanDauRaList, idCTNDTClone, idCTNDT, user);
+    return { message: CLONE_MESSAGE.CREATE_CHUAN_DAU_RA_SUCCESSFULLY };
   }
 
   @Delete('/chi-tiet-nganh-dao-tao/:idKKT')

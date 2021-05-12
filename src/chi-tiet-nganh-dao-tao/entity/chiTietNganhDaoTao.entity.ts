@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
 import { IsInt, IsString } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
 import { NganhDaoTaoEntity } from 'ctdt/entity/nganhDaoTao.entity';
@@ -55,12 +56,19 @@ export class ChiTietNganhDaoTaoEntity extends BaseEntity {
     persistence: false,
     cascade: true
   })
-  khoiKienThucList: KhoiKienThucEntity[];
+  khoiKienThucList?: KhoiKienThucEntity[];
 
   @OneToMany(() => KeHoachGiangDayEntity, (khgd) => khgd.nganhDaoTao, {
     onDelete: 'CASCADE',
     persistence: false,
     cascade: true
   })
-  keHoachGiangDayList: KeHoachGiangDayEntity[];
+  keHoachGiangDayList?: KeHoachGiangDayEntity[];
+
+  @OneToMany(() => ChuanDauRaNganhDaoTaoEntity, (cdr) => cdr.nganhDaoTao, {
+    onDelete: 'CASCADE',
+    persistence: false,
+    cascade: true
+  })
+  chuanDaura?: ChuanDauRaNganhDaoTaoEntity[];
 }

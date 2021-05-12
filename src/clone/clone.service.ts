@@ -2,10 +2,11 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
 import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
-import { CLONE_MESSAGE } from 'constant/constant';
+import { CLONE_MESSAGE, NGANHDAOTAO_MESSAGE } from 'constant/constant';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
 import { Connection, getConnection } from 'typeorm';
+import { UsersEntity } from 'users/entity/user.entity';
 
 @Injectable()
 export class CloneService {
@@ -255,6 +256,23 @@ export class CloneService {
   }
 
   async chuanDauRaNganhDaoTaoClone(idCTNDTClone: number, idCTNDT: number) {
+    const chuanDauRaList = await this.conection
+      .getRepository(ChuanDauRaNganhDaoTaoEntity)
+      .createQueryBuilder('cdr')
+      .leftJoinAndSelect('cdr.chuanDauRa', 'cdrName')
+      .leftJoinAndSelect('cdr.childs', 'clv1')
+      .where((qb) => {
+        qb.leftJoinAndSelect('clv1.chuanDauRa', 'cdrNameLv1')
+          .leftJoinAndSelect('clv1.childs', 'clv2')
+          .where((qb) => {
+            qb.leftJoinAndSelect('clv2.chuanDauRa', 'cdrNameLv2');
+          });
+      })
+      .where('cdr.parent is null and cdr.nganhDaoTao = :idCTNDT', { idCTNDT })
+      .getMany();
+    if (chuanDauRaList.length > 0) {
+      return chuanDauRaList;
+    }
     const query = this.conection
       .getRepository(ChuanDauRaNganhDaoTaoEntity)
       .createQueryBuilder('cdr')
@@ -269,6 +287,7 @@ export class CloneService {
       })
       .where('cdr.parent is null and cdr.nganhDaoTao = :idCTNDTClone', { idCTNDTClone });
     const chuanDauRaListClone = await query.getMany();
+
     chuanDauRaListClone.forEach((cdrlv1) => {
       removeProperties(cdrlv1, 'id', 'createdAt', 'updatedAt', 'isDeleted');
       cdrlv1.childs.forEach((cdrlv2) => {
@@ -281,12 +300,49 @@ export class CloneService {
     return chuanDauRaListClone;
   }
 
-  createChuanDauRaNganhDaoTaoClone(
+  async createChuanDauRaNganhDaoTaoClone(
     chuanDauRaList: ChuanDauRaNganhDaoTaoEntity[],
     idCTNDTClone: number,
-    idCTNDT: number
+    idCTNDT: number,
+    user: UsersEntity
   ) {
-    return [];
+    const ctndt = await this.conection
+      .getRepository(ChiTietNganhDaoTaoEntity)
+      .createQueryBuilder('ctndt')
+      .leftJoinAndSelect('ctndt.chuanDaura', 'cdr')
+      .where({ id: idCTNDT })
+      .getOne();
+    if (!ctndt) {
+      throw new NotFoundException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND);
+    }
+    if (ctndt.chuanDaura.length > 0) {
+      throw new BadRequestException(CLONE_MESSAGE.CHUAN_DAU_RA_EXITSTED);
+    }
+    chuanDauRaList.forEach((cdrlv1) => {
+      cdrlv1.nganhDaoTao = idCTNDT;
+      cdrlv1.createdBy = user.id;
+      cdrlv1.updatedBy = user.id;
+      removeProperties(cdrlv1, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+      removeProperties(cdrlv1.chuanDauRa, 'ten', 'mucDo', 'createdAt', 'updatedAt', 'isDeleted');
+      cdrlv1.childs.forEach((cdrlv2) => {
+        removeProperties(cdrlv2, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+        removeProperties(cdrlv2.chuanDauRa, 'ten', 'mucDo', 'createdAt', 'updatedAt', 'isDeleted');
+        cdrlv2.createdBy = user.id;
+        cdrlv2.updatedBy = user.id;
+        cdrlv2.childs.forEach((cdrlv3) => {
+          cdrlv3.createdBy = user.id;
+          cdrlv3.updatedBy = user.id;
+          removeProperties(cdrlv3, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+          removeProperties(cdrlv3.chuanDauRa, 'ten', 'mucDo', 'createdAt', 'updatedAt', 'isDeleted');
+        });
+      });
+    });
+    ctndt.chuanDaura = chuanDauRaList;
+    try {
+      const result = this.conection.getRepository(ChiTietNganhDaoTaoEntity).save(ctndt);
+    } catch (error) {
+      return new InternalServerErrorException(CLONE_MESSAGE.CREATE_KE_HOACH_GIANG_DAY_FAILED);
+    }
   }
   async deleteKhoiKienThuc(idKKT: number) {
     try {
