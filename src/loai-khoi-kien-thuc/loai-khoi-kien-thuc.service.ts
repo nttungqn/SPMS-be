@@ -24,11 +24,11 @@ export class LoaiKhoiKienThucService {
     private cacheManager: RedisCacheService
   ) {}
 
-  async findAll(filter: any) {
+  async findAll(filter: FilterLoaiKhoiKienThuc) {
     const key = format(REDIS_CACHE_VARS.LIST_LKKT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const searchField = ['id', 'maLoaiKhoiKienThuc', 'ten', 'tongTinChi', 'noiDung'];
@@ -51,7 +51,6 @@ export class LoaiKhoiKienThucService {
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `lkkt.${sortBy}` : null, sortType);
         })
-        .andWhere({ isDeleted: false, ...otherParam })
         .skip(skip)
         .take(limit)
         .andWhere('lkkt.isDeleted = false')
@@ -103,22 +102,19 @@ export class LoaiKhoiKienThucService {
     if (await this.isExist(typeOfKnowledgeBlock)) {
       throw new ConflictException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_EXIST);
     }
-    let result: LoaiKhoiKienThucEntity;
+    let saveResult: LoaiKhoiKienThucEntity;
     try {
       const createResult = this.typeOfKnowledgeBlockRepository.create({
         ...typeOfKnowledgeBlock,
         createdAt: new Date(),
         updatedAt: new Date()
       });
-      result = await this.typeOfKnowledgeBlockRepository.save(createResult);
-      const key = format(REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      saveResult = await this.typeOfKnowledgeBlockRepository.save(createResult);
     } catch (error) {
       if (error instanceof QueryFailedError) throw new BadRequestException();
       throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.CREATE_LOAIKHOIKIENTHUC_FAILED);
     }
+    return await this.typeOfKnowledgeBlockRepository.findOne(saveResult.id);
   }
 
   async update(id: number, typeOfKnowledgeBlock: LoaiKhoiKienThucEntity) {
@@ -128,15 +124,11 @@ export class LoaiKhoiKienThucService {
       throw new ConflictException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_EXIST);
     }
     try {
-      const result = await this.typeOfKnowledgeBlockRepository.save({
+      return await this.typeOfKnowledgeBlockRepository.save({
         ...results,
         ...typeOfKnowledgeBlock,
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return results;
     } catch (error) {
       if (error instanceof QueryFailedError) throw new BadRequestException();
       throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.UPDATE_LOAIKHOIKIENTHUC_FAILED);
@@ -147,16 +139,12 @@ export class LoaiKhoiKienThucService {
     const results = await this.typeOfKnowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
     if (!results) throw new HttpException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
     try {
-      const result = await this.typeOfKnowledgeBlockRepository.save({
+      return await this.typeOfKnowledgeBlockRepository.save({
         ...results,
         isDeleted: true,
         updatedBy,
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.DELETE_LOAIKHOIKIENTHUC_FAILED);
     }
@@ -187,9 +175,5 @@ export class LoaiKhoiKienThucService {
       console.log(error);
       throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.DELETE_LOAIKHOIKIENTHUC_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_LKKT_CACHE_COMMON_KEY]);
   }
 }

@@ -30,9 +30,6 @@ export class ChiTietKeHoachService {
         createdAt: new Date(),
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_KE_HOACH_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHI_TIET_KE_HOACH_CACHE_TTL);
-      await this.deleteKeysAfterChange();
       return result;
     } catch (error) {
       throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.CREATE_CHITIETKEHOACH_FAILED);
@@ -127,11 +124,7 @@ export class ChiTietKeHoachService {
     if (newData.idKHGD) await this.keHoachGiangDayService.findById(newData.idKHGD);
     if (newData.idCTGN) await this.chiTietGomNhomService.findById(newData.idCTGN);
     try {
-      const result = await this.chiTietKeHoachRepository.save({ ...oldData, ...newData, updatedAt: new Date() });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_KE_HOACH_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHI_TIET_KE_HOACH_CACHE_TTL);
-      await this.deleteKeysAfterChange();
-      return result;
+      return await this.chiTietKeHoachRepository.save({ ...oldData, ...newData, updatedAt: new Date() });
     } catch (error) {
       throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.UPDATE_CHITIETKEHOACH_FAILED);
     }
@@ -141,9 +134,6 @@ export class ChiTietKeHoachService {
     const result = await this.chiTietKeHoachRepository.findOne(id, { where: { isDeleted: false } });
     if (!result) throw new NotFoundException();
     try {
-      await this.deleteKeysAfterChange();
-      const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_KE_HOACH_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
       return await this.chiTietKeHoachRepository.save({
         ...result,
         updatedAt: new Date(),
@@ -195,7 +185,6 @@ export class ChiTietKeHoachService {
         .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
         .andWhere('id IN (:...ids)', { ids: list_id })
         .execute();
-      await this.deleteKeysAfterChange();
     } catch (error) {
       throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED);
     }
@@ -209,7 +198,6 @@ export class ChiTietKeHoachService {
         .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
         .where(`isDeleted = ${false}`)
         .execute();
-      await this.deleteKeysAfterChange();
     } catch (error) {
       throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED);
     }
@@ -222,12 +210,5 @@ export class ChiTietKeHoachService {
       console.log(error);
       throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.DELETE_CHITIETKEHOACH_FAILED);
     }
-  }
-
-  async deleteKeysAfterChange() {
-    await this.cacheManager.delCacheList([
-      REDIS_CACHE_VARS.LIST_CHI_TIET_KE_HOACH_CACHE_COMMON_KEY,
-      REDIS_CACHE_VARS.LIST_CTKH_SF_CACHE_COMMON_KEY
-    ]);
   }
 }

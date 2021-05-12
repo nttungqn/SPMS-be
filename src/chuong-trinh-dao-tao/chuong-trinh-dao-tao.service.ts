@@ -17,41 +17,25 @@ export class ChuongTrinhDaoTaoService {
     const key = format(REDIS_CACHE_VARS.LIST_CTDT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
+      const { limit = LIMIT, page = 0, search = '', updatedAt, ...rest } = filter;
       const skip = Number(page) * Number(limit);
-      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
-      const searchField = [
-        'id',
-        'maCTDT',
-        'loaiHinh',
-        'trinhDo',
-        'dieuKienTotNghiep',
-        'ten',
-        'tongTinChi',
-        'doiTuong',
-        'quiTrinhDaoTao'
-      ];
-      const searchQuery = searchField
-        .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'ctdt.' + e + ' LIKE :search'))
-        .join(' OR ');
-      const [list, total] = await this.chuongTrinhDaoTaoRepository
-        .createQueryBuilder('ctdt')
-        .leftJoinAndSelect('ctdt.createdBy', 'createdBy')
-        .leftJoinAndSelect('ctdt.updatedBy', 'updatedBy')
-        .where((qb) => {
-          searchKey
-            ? qb.andWhere(searchQuery, {
-                search: `%${searchKey}%`
-              })
-            : {};
-          isSortFieldInForeignKey
-            ? qb.orderBy(sortBy, sortType)
-            : qb.orderBy(sortBy ? `ctdt.${sortBy}` : null, sortType);
-        })
-        .andWhere({ ...otherParam, isDeleted: false })
-        .skip(skip)
-        .take(limit)
-        .getManyAndCount();
+      const querySearch = search ? { ten: Like(`%${search}%`) } : {};
+      const orderByUpdateAt = updatedAt ? { updatedAt: updatedAt } : {};
+      const query = {
+        isDeleted: false,
+        ...querySearch,
+        ...rest
+      };
+      const list = await this.chuongTrinhDaoTaoRepository.find({
+        where: query,
+        skip,
+        take: Number(limit),
+        order: { ...orderByUpdateAt }
+      });
+      if (!list.length) {
+        throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
+      }
+      const total = await this.chuongTrinhDaoTaoRepository.count(query);
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CTDT_CACHE_TTL);
     }
@@ -85,11 +69,8 @@ export class ChuongTrinhDaoTaoService {
     }
     try {
       const newChuongTrinhDaoTao = await this.chuongTrinhDaoTaoRepository.create(newData);
-      const result = await this.chuongTrinhDaoTaoRepository.save(newChuongTrinhDaoTao);
-      const key = format(REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      const saved = await this.chuongTrinhDaoTaoRepository.save(newChuongTrinhDaoTao);
+      return saved;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -105,9 +86,6 @@ export class ChuongTrinhDaoTaoService {
         ...updatedData,
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_TTL);
-      await this.delCacheAfterChange();
       return updated;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -125,9 +103,6 @@ export class ChuongTrinhDaoTaoService {
         updatedAt: new Date(),
         updatedBy
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
       return deleted;
     } catch (error) {
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -144,9 +119,5 @@ export class ChuongTrinhDaoTaoService {
       console.log(error);
       throw new InternalServerErrorException(CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_CTDT_CACHE_COMMON_KEY]);
   }
 }

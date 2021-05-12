@@ -70,11 +70,8 @@ export class LoaiKeHoachGiangDayService {
     }
     try {
       const loaiKeHoachGiangDay = await this.loaiKeHoachGiangDayEntity.create(newData);
-      const result = await this.loaiKeHoachGiangDayEntity.save(loaiKeHoachGiangDay);
-      const key = format(REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
+      const saved = await this.loaiKeHoachGiangDayEntity.save(loaiKeHoachGiangDay);
+      return saved;
     } catch (error) {
       throw new InternalServerErrorException(LOAIKEHOACHGIANGDAY_MESSAGE.CREATE_LOAIKEHOACHGIANGDAY_FAILED);
     }
@@ -93,15 +90,11 @@ export class LoaiKeHoachGiangDayService {
     }
 
     try {
-      const result = await this.loaiKeHoachGiangDayEntity.save({
+      return await this.loaiKeHoachGiangDayEntity.save({
         ...loaiKeHoachGiangDay,
         ...updatedData,
         updatedAt: new Date()
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_TTL);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(LOAIKEHOACHGIANGDAY_MESSAGE.UPDATE_LOAIKEHOACHGIANGDAY_FAILED);
     }
@@ -113,16 +106,12 @@ export class LoaiKeHoachGiangDayService {
       throw new NotFoundException(LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_ID_NOT_FOUND);
     }
     try {
-      const result = await this.loaiKeHoachGiangDayEntity.save({
+      return await this.loaiKeHoachGiangDayEntity.save({
         ...loaiKeHoachGiangDay,
         isDeleted: true,
         updatedAt: new Date(),
         updatedBy
       });
-      const key = format(REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_KEY, id.toString());
-      await this.cacheManager.del(key);
-      await this.delCacheAfterChange();
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(LOAIKEHOACHGIANGDAY_MESSAGE.DELETE_LOAIKEHOACHGIANGDAY_FAILED);
     }
@@ -135,9 +124,5 @@ export class LoaiKeHoachGiangDayService {
       console.log(error);
       throw new InternalServerErrorException(LOAIKEHOACHGIANGDAY_MESSAGE.DELETE_LOAIKEHOACHGIANGDAY_FAILED);
     }
-  }
-
-  async delCacheAfterChange() {
-    await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_KHGD_CACHE_COMMON_KEY]);
   }
 }
