@@ -53,6 +53,7 @@ export class ChiTietGomNhomService {
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_GOM_NHOM_CACHE_TTL);
       } catch (error) {
+        console.log(error);
         throw new InternalServerErrorException();
       }
     }
@@ -64,7 +65,7 @@ export class ChiTietGomNhomService {
   async findById(id: number): Promise<ChiTietGomNhomEntity | any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === undefined) {
+    if (typeof result === 'undefined') {
       result = await this.chiTietGomNhomRepository.findOne({
         where: { id, isDeleted: false },
         relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
@@ -99,9 +100,13 @@ export class ChiTietGomNhomService {
     }
     try {
       const ctGomNhom = await this.chiTietGomNhomRepository.create(chiTietGomNhom);
-      const saved = await this.chiTietGomNhomRepository.save(ctGomNhom);
-      return saved;
+      const result = await this.chiTietGomNhomRepository.save(ctGomNhom);
+      const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, result?.id.toString());
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL);
+      await this.deleteKeysAfterChange();
+      return result;
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.CREATE_CHITIETGOMNHOM_FAILED);
     }
   }
@@ -129,7 +134,11 @@ export class ChiTietGomNhomService {
       chiTietGomNhom.ctgnMonHoctruoc = ctgnMonHoctruoc;
     }
     try {
-      return await this.chiTietGomNhomRepository.save(chiTietGomNhom);
+      const result = await this.chiTietGomNhomRepository.save(chiTietGomNhom);
+      const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL);
+      await this.deleteKeysAfterChange();
+      return result;
     } catch (error) {
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.UPDATE_CHITIETGOMNHOM_FAILED);
     }
@@ -141,6 +150,9 @@ export class ChiTietGomNhomService {
       throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);
     }
     try {
+      await this.deleteKeysAfterChange();
+      const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());
+      await this.cacheManager.del(key);
       return await this.chiTietGomNhomRepository.save({
         ...ctGomNhom,
         isDeleted: true,
@@ -155,7 +167,7 @@ export class ChiTietGomNhomService {
   async getMonHocThayThe(idMonHoc: number): Promise<MonHocEntity[]> {
     const key = format(REDIS_CACHE_VARS.LIST_CTGN_MHTT_CACHE_KEY, idMonHoc.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === undefined) {
+    if (typeof result === 'undefined') {
       result = await this.chiTietGomNhomRepository
         .createQueryBuilder('ctgn')
         .leftJoinAndSelect('ctgn.ctgnMonHoctruoc', 'ctgnMonHoctruoc')
@@ -181,7 +193,7 @@ export class ChiTietGomNhomService {
       JSON.stringify(filter)
     );
     let result = await this.cacheManager.get(key);
-    if (typeof result === undefined) {
+    if (typeof result === 'undefined') {
       const { limit = LIMIT, page = 0, tenMonHoc, maMonHoc } = filter;
       const skip = Number(page) * Number(limit);
       const [list, total] = await this.chiTietGomNhomRepository
@@ -242,6 +254,7 @@ export class ChiTietGomNhomService {
         .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
         .andWhere('id IN (:...ids)', { ids: list_id })
         .execute();
+      await this.deleteKeysAfterChange();
     } catch (error) {
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
     }
@@ -255,6 +268,7 @@ export class ChiTietGomNhomService {
         .set({ isDeleted: true, updatedAt: new Date(), updatedBy })
         .where(`isDeleted = ${false}`)
         .execute();
+      await this.deleteKeysAfterChange();
     } catch (error) {
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
     }
@@ -266,5 +280,13 @@ export class ChiTietGomNhomService {
     } catch (error) {
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
     }
+  }
+
+  async deleteKeysAfterChange() {
+    await this.cacheManager.delCacheList([
+      REDIS_CACHE_VARS.LIST_CHI_TIET_GOM_NHOM_CACHE_COMMON_KEY,
+      REDIS_CACHE_VARS.LIST_CTGN_MHTT_CACHE_COMMON_KEY,
+      REDIS_CACHE_VARS.LIST_CTGN_SJ_CACHE_COMMON_KEY
+    ]);
   }
 }
