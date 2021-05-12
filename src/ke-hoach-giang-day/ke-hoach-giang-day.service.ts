@@ -31,11 +31,11 @@ export class KeHoachGiangDayService {
           .join(' OR ');
         const [list, total] = await this.keHoachGiangDayRepository
           .createQueryBuilder('khgd')
-          .leftJoinAndSelect('khgd.CTNganhDaoTao', 'CTNganhDaoTao', 'CTNganhDaoTao.isDeleted = false')
+          .leftJoinAndSelect('khgd.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false')
           .leftJoinAndSelect('khgd.createdBy', 'createdBy')
           .leftJoinAndSelect('khgd.updatedBy', 'updatedBy')
           .where((qb) => {
-            qb.leftJoinAndSelect('CTNganhDaoTao.nganhDaoTao', 'nganhDaoTao');
+            qb.leftJoinAndSelect('nganhDaoTao.nganhDaoTao', 'nganhDaoTao');
             searchKey
               ? qb.andWhere(searchQuery, {
                   search: `%${searchKey}%`
@@ -66,7 +66,7 @@ export class KeHoachGiangDayService {
     if (typeof result === 'undefined') {
       result = await this.keHoachGiangDayRepository.findOne({
         where: { id, isDeleted: false },
-        relations: ['CTNganhDaoTao', 'CTNganhDaoTao.nganhDaoTao', 'createdBy', 'updatedBy']
+        relations: ['nganhDaoTao', 'nganhDaoTao.nganhDaoTao', 'createdBy', 'updatedBy']
       });
       if (!result) {
         throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -87,7 +87,7 @@ export class KeHoachGiangDayService {
       throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_MESSAGE_MAKEHOACH_CONFLIC, HttpStatus.CONFLICT);
     }
 
-    const record = await this.chiTietNganhDaoTaoService.findById(newData.CTNganhDaoTao);
+    const record = await this.chiTietNganhDaoTaoService.findById(newData.nganhDaoTao);
     if (!record) {
       throw new HttpException(KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED, HttpStatus.CONFLICT);
     }

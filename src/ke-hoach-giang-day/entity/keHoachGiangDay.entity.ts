@@ -30,7 +30,7 @@ export class KeHoachGiangDayEntity {
   @Column({ name: 'ID_ChiTietNganhDaoTao' })
   @ManyToOne(() => ChiTietNganhDaoTaoEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_ChiTietNganhDaoTao' })
-  CTNganhDaoTao: number;
+  nganhDaoTao: number;
 
   @Column()
   createdAt: Date;
