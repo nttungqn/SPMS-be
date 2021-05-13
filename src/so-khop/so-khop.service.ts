@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ChiTietGomNhomService } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.service';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { MonHocService } from 'mon-hoc/mon-hoc.service';
@@ -6,7 +6,7 @@ import { FilterSoKhopNganhDaoTao } from './dto/filter-so-khop.dto';
 import { RowSoKhopNganhDaoTao } from './dto/row-so-khop.dto';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
-import { REDIS_CACHE_VARS } from 'constant/constant';
+import { REDIS_CACHE_VARS, SOKHOP_MESSAGE } from 'constant/constant';
 import { UsersEntity } from 'users/entity/user.entity';
 import { UpdateSoKhopRequestBody } from './body/update-so-kho-request-body';
 import { Connection, getConnection } from 'typeorm';
@@ -108,8 +108,44 @@ export class SoKhopService {
     if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
-  updateSoKhopMonHoc(idNganh: number, body: UpdateSoKhopRequestBody, user: UsersEntity) {
+  async updateSoKhopMonHoc(idNganh: number, body: UpdateSoKhopRequestBody, user: UsersEntity) {
     const { khoaTuyenNam1, khoaTuyenNam2 } = body;
-    const chiTietGomNhom = this.chiTietGomNhomService.getChiTietGomNhomByKhoaAndNganh(idNganh, khoaTuyenNam1, 1);
+    const ctmhArr = [];
+    const ctmhTrcArr = [];
+    body.contents.forEach((e) => {
+      if (!ctmhArr.includes(e.idChiTietGomNhom)) {
+        ctmhArr.push(e.idChiTietGomNhom);
+      }
+      if (!ctmhTrcArr.includes(e.idChiTietMonHocTrc)) {
+        ctmhTrcArr.push(e.idChiTietMonHocTrc);
+      }
+    });
+    const [chiTietGomNhom, totals] = await this.chiTietGomNhomService.getChiTietGomNhomByKhoaAndNganh(
+      idNganh,
+      khoaTuyenNam2,
+      ctmhArr
+    );
+    if (ctmhArr.length != totals) {
+      throw new BadRequestException(`${SOKHOP_MESSAGE.CHITIETGOMNHOM_NOT_IN}_${khoaTuyenNam2}`);
+    }
+    const [chiTietGomNhomTrc, totalsTrc] = await this.chiTietGomNhomService.getChiTietGomNhomByKhoaAndNganh(
+      idNganh,
+      khoaTuyenNam1,
+      ctmhTrcArr
+    );
+    if (ctmhTrcArr.length != totalsTrc) {
+      throw new BadRequestException(`${SOKHOP_MESSAGE.CHITIETGOMNHOM_MONHOCTRUOC_NOT_IN}_${khoaTuyenNam2}`);
+    }
+    chiTietGomNhom.forEach((ctgnE) => {
+      const row = body.contents.find((e) => e.idChiTietGomNhom == ctgnE.id);
+      ctgnE.ctgnMonHoctruoc = chiTietGomNhomTrc.find((e) => e.id == row.idChiTietMonHocTrc);
+      ctgnE.updatedBy = user.id;
+      ctgnE.updatedAt = new Date();
+    });
+    try {
+      await this.chiTietGomNhomService.updateMonHocTruoc(chiTietGomNhom);
+    } catch (error) {
+      throw new InternalServerErrorException(SOKHOP_MESSAGE.UPDATE_MONHOCTRUOC_FAILED);
+    }
   }
 }

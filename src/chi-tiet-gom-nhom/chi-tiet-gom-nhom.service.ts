@@ -281,8 +281,33 @@ export class ChiTietGomNhomService {
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
     }
   }
-  getChiTietGomNhomByKhoaAndNganh(idNganh: number, khoaTuyenNam1: number, arg2: number) {
-    throw new Error('Method not implemented.');
+  async getChiTietGomNhomByKhoaAndNganh(idNganh: number, khoa: number, ctgnArr: string[]) {
+    return await this.chiTietGomNhomRepository
+      .createQueryBuilder('ctgn')
+      .leftJoin('ctgn.gomNhom', 'gomNhom', 'gomNhom.isDeleted = false')
+      .where((qb) => {
+        qb.where((qb) => {
+          qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc', 'loaiKhoiKienThuc.isDeleted = false').where(
+            (qb) => {
+              qb.innerJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc', 'khoiKienThuc.isDeleted = false').where(
+                (qb) => {
+                  qb.innerJoin(
+                    'khoiKienThuc.chiTietNganh',
+                    'chiTietNganh',
+                    'chiTietNganh.isDeleted = false'
+                  ).where('chiTietNganh.khoa = :khoa and chiTietNganh.nganhDaoTao = :idNganh', { khoa, idNganh });
+                }
+              );
+            }
+          );
+        });
+      })
+      .andWhere('ctgn.id IN (:...ctgnArr)', { ctgnArr })
+      .getManyAndCount();
+  }
+
+  async updateMonHocTruoc(chiTietGomNhom: ChiTietGomNhomEntity[]) {
+    await this.chiTietGomNhomRepository.save(chiTietGomNhom);
   }
 
   async deleteKeysAfterChange() {
