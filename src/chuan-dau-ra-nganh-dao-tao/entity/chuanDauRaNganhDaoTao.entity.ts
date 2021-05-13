@@ -24,7 +24,7 @@ export class ChuanDauRaNganhDaoTaoEntity {
 
   @OneToMany(() => ChuanDauRaNganhDaoTaoEntity, (cdr) => cdr.parent, { cascade: ['insert'] })
   @JoinColumn({ name: 'id' })
-  childs?: ChuanDauRaNganhDaoTaoEntity[];
+  children?: ChuanDauRaNganhDaoTaoEntity[];
 
   @ApiProperty()
   @IsInt()

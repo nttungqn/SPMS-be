@@ -166,10 +166,10 @@ export class ChuanDauRaNganhDaoTaoService {
     const query = this.chuanDauRaNDTRepository
       .createQueryBuilder('cdr')
       .leftJoinAndSelect('cdr.chuanDauRa', 'cdrName')
-      .leftJoinAndSelect('cdr.childs', 'clv1')
+      .leftJoinAndSelect('cdr.children', 'clv1')
       .where((qb) => {
         qb.leftJoinAndSelect('clv1.chuanDauRa', 'cdrNameLv1')
-          .leftJoinAndSelect('clv1.childs', 'clv2')
+          .leftJoinAndSelect('clv1.children', 'clv2')
           .where((qb) => {
             qb.leftJoinAndSelect('clv2.chuanDauRa', 'cdrNameLv2');
           });

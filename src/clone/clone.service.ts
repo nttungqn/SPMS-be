@@ -260,10 +260,10 @@ export class CloneService {
       .getRepository(ChuanDauRaNganhDaoTaoEntity)
       .createQueryBuilder('cdr')
       .leftJoinAndSelect('cdr.chuanDauRa', 'cdrName')
-      .leftJoinAndSelect('cdr.childs', 'clv1')
+      .leftJoinAndSelect('cdr.children', 'clv1')
       .where((qb) => {
         qb.leftJoinAndSelect('clv1.chuanDauRa', 'cdrNameLv1')
-          .leftJoinAndSelect('clv1.childs', 'clv2')
+          .leftJoinAndSelect('clv1.children', 'clv2')
           .where((qb) => {
             qb.leftJoinAndSelect('clv2.chuanDauRa', 'cdrNameLv2');
           });
@@ -277,10 +277,10 @@ export class CloneService {
       .getRepository(ChuanDauRaNganhDaoTaoEntity)
       .createQueryBuilder('cdr')
       .leftJoinAndSelect('cdr.chuanDauRa', 'cdrName')
-      .leftJoinAndSelect('cdr.childs', 'clv1')
+      .leftJoinAndSelect('cdr.children', 'clv1')
       .where((qb) => {
         qb.leftJoinAndSelect('clv1.chuanDauRa', 'cdrNameLv1')
-          .leftJoinAndSelect('clv1.childs', 'clv2')
+          .leftJoinAndSelect('clv1.children', 'clv2')
           .where((qb) => {
             qb.leftJoinAndSelect('clv2.chuanDauRa', 'cdrNameLv2');
           });
@@ -290,9 +290,9 @@ export class CloneService {
 
     chuanDauRaListClone.forEach((cdrlv1) => {
       removeProperties(cdrlv1, 'id', 'createdAt', 'updatedAt', 'isDeleted');
-      cdrlv1.childs.forEach((cdrlv2) => {
+      cdrlv1.children.forEach((cdrlv2) => {
         removeProperties(cdrlv2, 'id', 'createdAt', 'updatedAt', 'isDeleted');
-        cdrlv2.childs.forEach((cdrlv3) => {
+        cdrlv2.children.forEach((cdrlv3) => {
           removeProperties(cdrlv3, 'id', 'createdAt', 'updatedAt', 'isDeleted');
         });
       });
@@ -324,12 +324,12 @@ export class CloneService {
       cdrlv1.updatedBy = user.id;
       removeProperties(cdrlv1, 'id', 'createdAt', 'updatedAt', 'isDeleted');
       removeProperties(cdrlv1.chuanDauRa, 'ten', 'mucDo', 'createdAt', 'updatedAt', 'isDeleted');
-      cdrlv1.childs.forEach((cdrlv2) => {
+      cdrlv1.children.forEach((cdrlv2) => {
         removeProperties(cdrlv2, 'id', 'createdAt', 'updatedAt', 'isDeleted');
         removeProperties(cdrlv2.chuanDauRa, 'ten', 'mucDo', 'createdAt', 'updatedAt', 'isDeleted');
         cdrlv2.createdBy = user.id;
         cdrlv2.updatedBy = user.id;
-        cdrlv2.childs.forEach((cdrlv3) => {
+        cdrlv2.children.forEach((cdrlv3) => {
           cdrlv3.createdBy = user.id;
           cdrlv3.updatedBy = user.id;
           removeProperties(cdrlv3, 'id', 'createdAt', 'updatedAt', 'isDeleted');
