@@ -281,6 +281,9 @@ export class ChiTietGomNhomService {
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
     }
   }
+  getChiTietGomNhomByKhoaAndNganh(idNganh: number, khoaTuyenNam1: number, arg2: number) {
+    throw new Error('Method not implemented.');
+  }
 
   async deleteKeysAfterChange() {
     await this.cacheManager.delCacheList([

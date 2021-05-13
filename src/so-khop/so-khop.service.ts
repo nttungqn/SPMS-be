@@ -7,6 +7,9 @@ import { RowSoKhopNganhDaoTao } from './dto/row-so-khop.dto';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
 import { REDIS_CACHE_VARS } from 'constant/constant';
+import { UsersEntity } from 'users/entity/user.entity';
+import { UpdateSoKhopRequestBody } from './body/update-so-kho-request-body';
+import { Connection, getConnection } from 'typeorm';
 
 @Injectable()
 export class SoKhopService {
@@ -104,5 +107,9 @@ export class SoKhopService {
 
     if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
+  }
+  updateSoKhopMonHoc(idNganh: number, body: UpdateSoKhopRequestBody, user: UsersEntity) {
+    const { khoaTuyenNam1, khoaTuyenNam2 } = body;
+    const chiTietGomNhom = this.chiTietGomNhomService.getChiTietGomNhomByKhoaAndNganh(idNganh, khoaTuyenNam1, 1);
   }
 }
