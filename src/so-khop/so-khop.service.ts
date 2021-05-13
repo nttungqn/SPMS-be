@@ -9,7 +9,6 @@ import * as format from 'string-format';
 import { REDIS_CACHE_VARS, SOKHOP_MESSAGE } from 'constant/constant';
 import { UsersEntity } from 'users/entity/user.entity';
 import { UpdateSoKhopRequestBody } from './body/update-so-kho-request-body';
-import { Connection, getConnection } from 'typeorm';
 
 @Injectable()
 export class SoKhopService {
