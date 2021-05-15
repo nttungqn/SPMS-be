@@ -448,6 +448,8 @@ const REDIS_CACHE_VARS = {
   LIST_CTGN_MHTT_CACHE_TTL: 600,
   LIST_CTGN_SJ_CACHE_KEY: 'spms:ctgn_sj_list:{0}-{1}-{2}',
   LIST_CTGN_SJ_CACHE_TTL: 600,
+  LIST_CTGN_SJ_CTNDT_CACHE_KEY: 'spms:ctgn_sj_ctndt_list:{0}-{1}',
+  LIST_CTGN_SJ_CTNDT_CACHE_TTL: 600,
 
   // chi tiet ke hoach
   LIST_CHI_TIET_KE_HOACH_CACHE_KEY: 'spms:ctkh_list:{}',

@@ -10,6 +10,7 @@ import { FilterByNganhDaoTao } from './dto/filter-by-nganh-dao-tao.dto';
 import { UpdateChiTietGomNhomDTO } from './dto/update-chi-tiet-gom-nhom.dto';
 import { ChiTietGomNhomEntity } from './entity/chi-tiet-gom-nhom.entity';
 import * as format from 'string-format';
+import { FilterByChiTietNganhDaoTao } from './dto/filter-by-chi-tiet-nganh-dao-tao.dto';
 
 @Injectable()
 export class ChiTietGomNhomService {
@@ -44,7 +45,7 @@ export class ChiTietGomNhomService {
 
         if (search != '') {
           queryBuilder.andWhere(
-            'gomNhom.tieuDe LIKE :search OR monHoc.tenTiengViet LIKE :search OR ctgn.ghiChu LIKE :search',
+            '(gomNhom.tieuDe LIKE :search OR monHoc.tenTiengViet LIKE :search OR ctgn.ghiChu LIKE :search)',
             { search: `%${search}%` }
           );
         }
@@ -55,6 +56,55 @@ export class ChiTietGomNhomService {
       } catch (error) {
         throw new InternalServerErrorException();
       }
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
+  }
+
+  async getAllSubjectsByChiTietNDT(idCTNDT: number, filter: FilterByChiTietNganhDaoTao) {
+    const key = format(REDIS_CACHE_VARS.LIST_CTGN_SJ_CTNDT_CACHE_KEY, idCTNDT.toString(), JSON.stringify(filter));
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined') {
+      const { limit = LIMIT, page = 0, searchKey = '' } = filter;
+      const skip = Number(page) * Number(limit);
+      const query = this.chiTietGomNhomRepository
+        .createQueryBuilder('ctgn')
+        .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+        .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom', `gomNhom.isDeleted = ${false}`)
+        .where((qb) => {
+          qb.where((qb) => {
+            qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc', 'loaiKhoiKienThuc.isDeleted = false').where(
+              (qb) => {
+                qb.innerJoin(
+                  'loaiKhoiKienThuc.khoiKienThuc',
+                  'khoiKienThuc',
+                  `khoiKienThuc.isDeleted = ${false}`
+                ).where((qb) => {
+                  qb.innerJoin(
+                    'khoiKienThuc.chiTietNganh',
+                    'chiTietNganh',
+                    'chiTietNganh.isDeleted = false and chiTietNganh.id = :idCTNDT',
+                    { idCTNDT }
+                  );
+                });
+              }
+            );
+          });
+          searchKey
+            ? qb.andWhere(
+                `(monHoc.tenTiengViet LIKE :search OR monHoc.tenTiengAnh LIKE :search OR monHoc.ma LIKE :search)`,
+                { search: `%${searchKey}%` }
+              )
+            : {};
+        })
+        .andWhere('ctgn.isDeleted = false')
+        .take(limit)
+        .skip(skip);
+      const [list, total] = await query.getManyAndCount();
+
+      result = { contents: list, total, page: Number(page) };
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CTGN_SJ_CTNDT_CACHE_TTL);
     }
 
     if (result && typeof result === 'string') result = JSON.parse(result);
