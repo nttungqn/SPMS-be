@@ -21,24 +21,39 @@ export class KeHoachGiangDayService {
     const key = format(REDIS_CACHE_VARS.LIST_KHGD_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined') {
-      const { limit = LIMIT, page = 0, ...rest } = filter;
-      const skip = Number(page) * Number(limit);
-      const query = {
-        isDeleted: false,
-        ...rest
-      };
-      const list = await this.keHoachGiangDayRepository.find({
-        relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.nganhDaoTao'],
-        skip,
-        take: limit,
-        where: query
-      });
-      if (!list.length) {
-        throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_EMPTY, HttpStatus.NOT_FOUND);
+      try {
+        const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
+        const skip = Number(page) * Number(limit);
+        const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+        const searchField = ['id', 'tenHocKy', 'maKeHoach'];
+        const searchQuery = searchField
+          .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'khgd.' + e + ' LIKE :search'))
+          .join(' OR ');
+        const [list, total] = await this.keHoachGiangDayRepository
+          .createQueryBuilder('khgd')
+          .leftJoinAndSelect('khgd.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false')
+          .leftJoinAndSelect('khgd.createdBy', 'createdBy')
+          .leftJoinAndSelect('khgd.updatedBy', 'updatedBy')
+          .where((qb) => {
+            qb.leftJoinAndSelect('nganhDaoTao.nganhDaoTao', 'nganhDaoTao');
+            searchKey
+              ? qb.andWhere(searchQuery, {
+                  search: `%${searchKey}%`
+                })
+              : {};
+            isSortFieldInForeignKey
+              ? qb.orderBy(sortBy, sortType)
+              : qb.orderBy(sortBy ? `khgd.${sortBy}` : null, sortType);
+          })
+          .andWhere({ ...otherParam, isDeleted: false })
+          .skip(skip)
+          .take(limit)
+          .getManyAndCount();
+        result = { contents: list, total, page: Number(page) };
+        await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_KHGD_CACHE_TTL);
+      } catch (error) {
+        throw new InternalServerErrorException();
       }
-      const total = await this.keHoachGiangDayRepository.count({ ...query });
-      result = { contents: list, total, page: Number(page) };
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_KHGD_CACHE_TTL);
     }
 
     if (result && typeof result === 'string') result = JSON.parse(result);
@@ -51,7 +66,7 @@ export class KeHoachGiangDayService {
     if (typeof result === 'undefined') {
       result = await this.keHoachGiangDayRepository.findOne({
         where: { id, isDeleted: false },
-        relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.nganhDaoTao']
+        relations: ['nganhDaoTao', 'nganhDaoTao.nganhDaoTao', 'createdBy', 'updatedBy']
       });
       if (!result) {
         throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
