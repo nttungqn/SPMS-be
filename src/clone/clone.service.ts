@@ -334,7 +334,7 @@ export class CloneService {
         cdrlv1.updatedBy = user.id;
         cdrlv1.ma = `${indexLv1}`;
         let indexLv2 = 0;
-        cdrlv1.children.forEach((cdrlv2) => {
+        cdrlv1.children?.forEach((cdrlv2) => {
           indexLv2++;
           keptProperties(cdrlv2, 'ma', 'chuanDauRa', 'children');
           keptProperties(cdrlv2.chuanDauRa, 'id');
@@ -343,7 +343,7 @@ export class CloneService {
           cdrlv2.updatedBy = user.id;
           cdrlv2.ma = `${indexLv1}.${indexLv2}`;
           let indexLv3 = 0;
-          cdrlv2.children.forEach((cdrlv3) => {
+          cdrlv2.children?.forEach((cdrlv3) => {
             indexLv3++;
             keptProperties(cdrlv3, 'ma', 'chuanDauRa'); //Chỉ áp dụng 3 cấp
             keptProperties(cdrlv3.chuanDauRa, 'id');
