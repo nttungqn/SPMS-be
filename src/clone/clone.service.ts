@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
 import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
@@ -44,7 +50,6 @@ export class CloneService {
       .andWhere('kkt.chiTietNganh = :idCTNDTClone', { idCTNDTClone })
       .andWhere('kkt.isDeleted = false')
       .getMany();
-
     khoiKienThucListClone.forEach((kktE) => {
       kktE.chiTietNganh = idCTNDT;
       removeProperties(kktE, 'createdAt', 'updatedAt', 'isDeleted');
@@ -289,11 +294,11 @@ export class CloneService {
     const chuanDauRaListClone = await query.getMany();
 
     chuanDauRaListClone.forEach((cdrlv1) => {
-      removeProperties(cdrlv1, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+      keptProperties(cdrlv1, 'ma', 'chuanDauRa', 'children');
       cdrlv1.children.forEach((cdrlv2) => {
-        removeProperties(cdrlv2, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+        keptProperties(cdrlv2, 'ma', 'chuanDauRa', 'children');
         cdrlv2.children.forEach((cdrlv3) => {
-          removeProperties(cdrlv3, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+          keptProperties(cdrlv3, 'ma', 'chuanDauRa');
         });
       });
     });
@@ -318,28 +323,43 @@ export class CloneService {
     if (ctndt.chuanDaura.length > 0) {
       throw new BadRequestException(CLONE_MESSAGE.CHUAN_DAU_RA_EXITSTED);
     }
-    chuanDauRaList.forEach((cdrlv1) => {
-      cdrlv1.nganhDaoTao = idCTNDT;
-      cdrlv1.createdBy = user.id;
-      cdrlv1.updatedBy = user.id;
-      removeProperties(cdrlv1, 'id', 'createdAt', 'updatedAt', 'isDeleted');
-      removeProperties(cdrlv1.chuanDauRa, 'ten', 'mucDo', 'createdAt', 'updatedAt', 'isDeleted');
-      cdrlv1.children.forEach((cdrlv2) => {
-        removeProperties(cdrlv2, 'id', 'createdAt', 'updatedAt', 'isDeleted');
-        removeProperties(cdrlv2.chuanDauRa, 'ten', 'mucDo', 'createdAt', 'updatedAt', 'isDeleted');
-        cdrlv2.createdBy = user.id;
-        cdrlv2.updatedBy = user.id;
-        cdrlv2.children.forEach((cdrlv3) => {
-          cdrlv3.createdBy = user.id;
-          cdrlv3.updatedBy = user.id;
-          removeProperties(cdrlv3, 'id', 'createdAt', 'updatedAt', 'isDeleted');
-          removeProperties(cdrlv3.chuanDauRa, 'ten', 'mucDo', 'createdAt', 'updatedAt', 'isDeleted');
+    try {
+      let indexLv1 = 0;
+      chuanDauRaList.forEach((cdrlv1) => {
+        indexLv1++;
+        keptProperties(cdrlv1, 'ma', 'chuanDauRa', 'children');
+        keptProperties(cdrlv1.chuanDauRa, 'id');
+        cdrlv1.nganhDaoTao = idCTNDT;
+        cdrlv1.createdBy = user.id;
+        cdrlv1.updatedBy = user.id;
+        cdrlv1.ma = `${indexLv1}`;
+        let indexLv2 = 0;
+        cdrlv1.children.forEach((cdrlv2) => {
+          indexLv2++;
+          keptProperties(cdrlv2, 'ma', 'chuanDauRa', 'children');
+          keptProperties(cdrlv2.chuanDauRa, 'id');
+          cdrlv2.nganhDaoTao = idCTNDT;
+          cdrlv2.createdBy = user.id;
+          cdrlv2.updatedBy = user.id;
+          cdrlv2.ma = `${indexLv1}.${indexLv2}`;
+          let indexLv3 = 0;
+          cdrlv2.children.forEach((cdrlv3) => {
+            indexLv3++;
+            keptProperties(cdrlv3, 'ma', 'chuanDauRa'); //Chỉ áp dụng 3 cấp
+            keptProperties(cdrlv3.chuanDauRa, 'id');
+            cdrlv3.nganhDaoTao = idCTNDT;
+            cdrlv3.createdBy = user.id;
+            cdrlv3.updatedBy = user.id;
+            cdrlv3.ma = `${indexLv1}.${indexLv2}.${indexLv3}`;
+          });
         });
       });
-    });
+    } catch (error) {
+      throw new BadRequestException();
+    }
     ctndt.chuanDaura = chuanDauRaList;
     try {
-      const result = this.conection.getRepository(ChiTietNganhDaoTaoEntity).save(ctndt);
+      await this.conection.getRepository(ChiTietNganhDaoTaoEntity).save(ctndt);
     } catch (error) {
       return new InternalServerErrorException(CLONE_MESSAGE.CREATE_KE_HOACH_GIANG_DAY_FAILED);
     }
@@ -353,5 +373,12 @@ export class CloneService {
 const removeProperties = (object: any, ...keys: any[]) => {
   keys.forEach((key) => {
     delete object[key];
+  });
+};
+const keptProperties = (obj: any, ...keys: any[]) => {
+  Object.keys(obj).forEach((k) => {
+    if (!keys.includes(k)) {
+      delete obj[k];
+    }
   });
 };
