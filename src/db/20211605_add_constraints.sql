@@ -1,3 +1,5 @@
+use `qHtJYlp09Y`;
+SET SQL_SAFE_UPDATES = 0;
 # Chuan dau ra mon hoc ------------------------------------------------------------
 DROP TRIGGER IF EXISTS trigger_insert_chuan_dau_ra_mon_hoc;
 delimiter $$ CREATE TRIGGER trigger_insert_chuan_dau_ra_mon_hoc before
@@ -10,13 +12,13 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_cdrmh_before_insert_or_update;
 delimiter $$ create procedure procedure_check_cdrmh_before_insert_or_update(in newIDMTMH int, in newMa varchar(200)) begin if (
-    select exists (
-            select *
-            from ChuanDauRaMonHoc as cdrmh
-            where cdrmh.idMTMH = newIDMTMH
-                and cdrmh.ma = newMa
-                and cdrmh.isDeleted = false
-        )
+        select exists (
+                        select *
+                        from ChuanDauRaMonHoc as cdrmh
+                        where cdrmh.idMTMH = newIDMTMH
+                                and cdrmh.ma = newMa
+                                and cdrmh.isDeleted = false
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of values "IdMTMH, ma" is exist.';
 end if;
@@ -33,13 +35,13 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_mtmh_before_insert_or_update;
 delimiter $$ create procedure procedure_check_mtmh_before_insert_or_update(in newIDSyllabus int, in newMa varchar(200)) begin if (
-    select exists (
-            select *
-            from MucTieuMonHoc as mtmh
-            where mtmh.idSyllabus = newIDSyllabus
-                and mtmh.ma = newMa
-                and mtmh.isDeleted = false
-        )
+        select exists (
+                        select *
+                        from MucTieuMonHoc as mtmh
+                        where mtmh.idSyllabus = newIDSyllabus
+                                and mtmh.ma = newMa
+                                and mtmh.isDeleted = false
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of values "IdSyllabus, ma" is exist.';
 end if;
@@ -56,13 +58,13 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_ldg_before_insert_or_update;
 delimiter $$ create procedure procedure_check_ldg_before_insert_or_update(in newIDSyllabus int, in newMa varchar(200)) begin if (
-    select exists (
-            select *
-            from LoaiDanhGia as ldg
-            where ldg.idSyllabus = newIDSyllabus
-                and ldg.ma = newMa
-                and ldg.isDeleted = false
-        )
+        select exists (
+                        select *
+                        from LoaiDanhGia as ldg
+                        where ldg.idSyllabus = newIDSyllabus
+                                and ldg.ma = newMa
+                                and ldg.isDeleted = false
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of values "IdSyllabus, ma" is exist.';
 end if;
@@ -79,13 +81,13 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_hddg_before_insert_or_update;
 delimiter $$ create procedure procedure_check_hddg_before_insert_or_update(in newIDLDG int, in newMa varchar(200)) begin if (
-    select exists (
-            select *
-            from HoatDongDanhGia as hddg
-            where hddg.idLDG = newIDLDG
-                and hddg.ma = newMa
-                and hddg.isDeleted = false
-        )
+        select exists (
+                        select *
+                        from HoatDongDanhGia as hddg
+                        where hddg.idLDG = newIDLDG
+                                and hddg.ma = newMa
+                                and hddg.isDeleted = false
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of values "IdLDG, ma" is exists.';
 end if;
@@ -102,18 +104,18 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_cd_before_insert_or_update;
 delimiter $$ create procedure procedure_check_cd_before_insert_or_update(
-    in newIDSyllabus int,
-    in newIDLKHGD int,
-    in newMa varchar(200)
+        in newIDSyllabus int,
+        in newIDLKHGD int,
+        in newMa varchar(200)
 ) begin if (
-    select exists (
-            select *
-            from ChuDe as cd
-            where cd.idSyllabus = newIDSyllabus
-                and cd.ma = newMa
-                and cd.isDeleted = false
-                and cd.idLKHGD = newIDLKHGD
-        )
+        select exists (
+                        select *
+                        from ChuDe as cd
+                        where cd.idSyllabus = newIDSyllabus
+                                and cd.ma = newMa
+                                and cd.isDeleted = false
+                                and cd.idLKHGD = newIDLKHGD
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of values "IdSyllabus, idLKHGD, ma" is exists.';
 end if;
@@ -130,12 +132,12 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_ctdt_before_insert_or_update;
 delimiter $$ create procedure procedure_check_ctdt_before_insert_or_update(in newMa varchar(200)) begin if (
-    select exists (
-            select *
-            from ChuongTrinhDaoTao as ctdt
-            where ctdt.MaCTDT = newMa
-                and ctdt.isDeleted = false
-        )
+        select exists (
+                        select *
+                        from ChuongTrinhDaoTao as ctdt
+                        where ctdt.MaCTDT = newMa
+                                and ctdt.isDeleted = false
+                )
 ) then signal sqlstate '45000'
 set message_text = 'MaCTDT is exists.';
 end if;
@@ -152,13 +154,13 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_ndt_before_insert_or_update;
 delimiter $$ create procedure procedure_check_ndt_before_insert_or_update(in newMa varchar(200), in newCTDTId int) begin if (
-    select exists (
-            select *
-            from NganhDaoTao as ndt
-            where ndt.MaNganhDaoTao = newMa
-                and ndt.isDeleted = false
-                and ndt.ctdtId = newCTDTId
-        )
+        select exists (
+                        select *
+                        from NganhDaoTao as ndt
+                        where ndt.MaNganhDaoTao = newMa
+                                and ndt.isDeleted = false
+                                and ndt.ctdtId = newCTDTId
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of value "MaNganhDaoTao, ctdtId" is exists.';
 end if;
@@ -175,13 +177,13 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_kkt_before_insert_or_update;
 delimiter $$ create procedure procedure_check_kkt_before_insert_or_update(in newMa varchar(200), in newIDCTNDT int) begin if (
-    select exists (
-            select *
-            from KhoiKienThuc as alias
-            where alias.MaKTT = newMa
-                and alias.isDeleted = false
-                and alias.ID_ChiTietNganhDaoTao = newIDCTNDT
-        )
+        select exists (
+                        select *
+                        from KhoiKienThuc as alias
+                        where alias.MaKTT = newMa
+                                and alias.isDeleted = false
+                                and alias.ID_ChiTietNganhDaoTao = newIDCTNDT
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of value "MaKKT, ID_ChiTietNganhDaoTao" is exists.';
 end if;
@@ -198,13 +200,13 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_khgd_before_insert_or_update;
 delimiter $$ create procedure procedure_check_khgd_before_insert_or_update(in newMa varchar(200), in newIDCTNDT int) begin if (
-    select exists (
-            select *
-            from KeHoachGiangDay as alias
-            where alias.MaKTT = newMa
-                and alias.isDeleted = false
-                and alias.ID_ChiTietNganhDaoTao = newIDCTNDT
-        )
+        select exists (
+                        select *
+                        from KeHoachGiangDay as alias
+                        where alias.MaKTT = newMa
+                                and alias.isDeleted = false
+                                and alias.ID_ChiTietNganhDaoTao = newIDCTNDT
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of value "MaKeHoach, ID_ChiTietNganhDaoTao" is exists.';
 end if;
@@ -221,13 +223,13 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_lkkt_before_insert_or_update;
 delimiter $$ create procedure procedure_check_lkkt_before_insert_or_update(in newMa varchar(200), in newIDKKT int) begin if (
-    select exists (
-            select *
-            from LoaiKhoiKienThuc as alias
-            where alias.Ma_LoaiKhoiKT = newMa
-                and alias.isDeleted = false
-                and alias.ID_KhoiKienThuc = newIDKKT
-        )
+        select exists (
+                        select *
+                        from LoaiKhoiKienThuc as alias
+                        where alias.Ma_LoaiKhoiKT = newMa
+                                and alias.isDeleted = false
+                                and alias.ID_KhoiKienThuc = newIDKKT
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of value "Ma_LoaiKhoiKT, ID_KhoiKienThuc" is exists.';
 end if;
@@ -244,13 +246,13 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_gn_before_insert_or_update;
 delimiter $$ create procedure procedure_check_gn_before_insert_or_update(in newMa varchar(200), in newIDLKKT int) begin if (
-    select exists (
-            select *
-            from GomNhom as alias
-            where alias.Ma_GomNhom = newMa
-                and alias.isDeleted = false
-                and alias.ID_LoaiKhoiKienThuc = newIDLKKT
-        )
+        select exists (
+                        select *
+                        from GomNhom as alias
+                        where alias.Ma_GomNhom = newMa
+                                and alias.isDeleted = false
+                                and alias.ID_LoaiKhoiKienThuc = newIDLKKT
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of value "Ma_GomNhom, ID_LoaiKhoiKienThuc" is exists.';
 end if;
@@ -267,12 +269,12 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_mh_before_insert_or_update;
 delimiter $$ create procedure procedure_check_mh_before_insert_or_update(in newMa varchar(200)) begin if (
-    select exists (
-            select *
-            from MonHoc as alias
-            where alias.ma = newMa
-                and alias.isDeleted = false
-        )
+        select exists (
+                        select *
+                        from MonHoc as alias
+                        where alias.ma = newMa
+                                and alias.isDeleted = false
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of value "ma" is exists.';
 end if;
@@ -289,12 +291,12 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_nh_before_insert_or_update;
 delimiter $$ create procedure procedure_check_nh_before_insert_or_update(in newMa varchar(200)) begin if (
-    select exists (
-            select *
-            from NamHoc as alias
-            where alias.ma = newMa
-                and alias.isDeleted = false
-        )
+        select exists (
+                        select *
+                        from NamHoc as alias
+                        where alias.ma = newMa
+                                and alias.isDeleted = false
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of value "ma" is exists.';
 end if;
@@ -311,12 +313,12 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_hdt_before_insert_or_update;
 delimiter $$ create procedure procedure_check_hdt_before_insert_or_update(in newMa varchar(200)) begin if (
-    select exists (
-            select *
-            from HeDaoTao as alias
-            where alias.ma = newMa
-                and alias.isDeleted = false
-        )
+        select exists (
+                        select *
+                        from HeDaoTao as alias
+                        where alias.ma = newMa
+                                and alias.isDeleted = false
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of value "ma" is exists.';
 end if;
@@ -333,12 +335,12 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_hddh_before_insert_or_update;
 delimiter $$ create procedure procedure_check_hddh_before_insert_or_update(in newMa varchar(200)) begin if (
-    select exists (
-            select *
-            from HoatDongDayHoc as alias
-            where alias.ma = newMa
-                and alias.isDeleted = false
-        )
+        select exists (
+                        select *
+                        from HoatDongDayHoc as alias
+                        where alias.ma = newMa
+                                and alias.isDeleted = false
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of value "ma" is exists.';
 end if;
@@ -355,12 +357,12 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_lkhgd_before_insert_or_update;
 delimiter $$ create procedure procedure_check_lkhgd_before_insert_or_update(in newMa varchar(200)) begin if (
-    select exists (
-            select *
-            from LoaiKeHoachGiangDay as alias
-            where alias.ma = newMa
-                and alias.isDeleted = false
-        )
+        select exists (
+                        select *
+                        from LoaiKeHoachGiangDay as alias
+                        where alias.ma = newMa
+                                and alias.isDeleted = false
+                )
 ) then signal sqlstate '45000'
 set message_text = 'Set of value "ma" is exists.';
 end if;
@@ -377,26 +379,26 @@ end if;
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_ctkh_before_insert_or_update;
 delimiter $$ create procedure procedure_check_ctkh_before_insert_or_update(in newIDKHGD int, in newIDCTGN int) begin if (
-    select not exists (
-            select *
-            from ChiTietGomNhom alias
-            where alias.isDeleted = false
-                and alias.ID = newIDCTGN
-                and alias.ID in (
-                    select ctgn.ID
-                    from KeHoachGiangDay khgd
-                        left join KhoiKienThuc kkt on kkt.ID_ChiTietNganhDaoTao = khgd.ID_ChiTietNganhDaoTao
-                        left join LoaiKhoiKienThuc lkkt on lkkt.ID_KhoiKienThuc = kkt.ID
-                        left join GomNhom gn on gn.ID_LoaiKhoiKienThuc = lkkt.ID
-                        left join ChiTietGomNhom ctgn on ctgn.ID_GomNhom = gn.ID
-                    where khgd.ID = newIDKHGD
-                        and khgd.isDeleted = false
-                        and kkt.isDeleted = false
-                        and lkkt.isDeleted = false
-                        and gn.isDeleted = false
-                        and ctgn.isDeleted = false
+        select not exists (
+                        select *
+                        from ChiTietGomNhom alias
+                        where alias.isDeleted = false
+                                and alias.ID = newIDCTGN
+                                and alias.ID in (
+                                        select ctgn.ID
+                                        from KeHoachGiangDay khgd
+                                                left join KhoiKienThuc kkt on kkt.ID_ChiTietNganhDaoTao = khgd.ID_ChiTietNganhDaoTao
+                                                left join LoaiKhoiKienThuc lkkt on lkkt.ID_KhoiKienThuc = kkt.ID
+                                                left join GomNhom gn on gn.ID_LoaiKhoiKienThuc = lkkt.ID
+                                                left join ChiTietGomNhom ctgn on ctgn.ID_GomNhom = gn.ID
+                                        where khgd.ID = newIDKHGD
+                                                and khgd.isDeleted = false
+                                                and kkt.isDeleted = false
+                                                and lkkt.isDeleted = false
+                                                and gn.isDeleted = false
+                                                and ctgn.isDeleted = false
+                                )
                 )
-        )
 ) then signal sqlstate '45000'
 set message_text = 'ID_ChiTietGomNhom must belong to ChiTietGomNhom with the same ID_ChiTetNganhDaoTao';
 end if;
@@ -412,22 +414,22 @@ update on ChuDe_HoatDongDanhGia for each row begin call procedure_check_cd_hddg_
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_cd_hddg_before_insert_or_update;
 delimiter $$ create procedure procedure_check_cd_hddg_before_insert_or_update(in newIdChuDe int, in newIdHDDG int) begin if (
-    select not exists (
-            select *
-            from HoatDongDanhGia alias
-            where alias.isDeleted = false
-                and alias.id = newIdHDDG
-                and alias.id in (
-                    select hddg.id
-                    from ChuDe cd
-                        left join LoaiDanhGia ldg on ldg.idSyllabus = cd.idSyllabus
-                        left join HoatDongDanhGia hddg on hddg.idLDG = ldg.id
-                    where cd.id = newIdChuDe
-                        and hddg.isDeleted = false
-                        and ldg.isDeleted = false
-                        and cd.isDeleted = false
+        select not exists (
+                        select *
+                        from HoatDongDanhGia alias
+                        where alias.isDeleted = false
+                                and alias.id = newIdHDDG
+                                and alias.id in (
+                                        select hddg.id
+                                        from ChuDe cd
+                                                left join LoaiDanhGia ldg on ldg.idSyllabus = cd.idSyllabus
+                                                left join HoatDongDanhGia hddg on hddg.idLDG = ldg.id
+                                        where cd.id = newIdChuDe
+                                                and hddg.isDeleted = false
+                                                and ldg.isDeleted = false
+                                                and cd.isDeleted = false
+                                )
                 )
-        )
 ) then signal sqlstate '45000'
 set message_text = 'idHoatDongDanhGia must belong to HoatDongDanhGia with the same idSyllabus';
 end if;
@@ -443,22 +445,22 @@ update on ChuDe_ChuanDauRaMonHoc for each row begin call procedure_check_cd_cdrm
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_cd_cdrmh_before_insert_or_update;
 delimiter $$ create procedure procedure_check_cd_cdrmh_before_insert_or_update(in newIdChuDe int, in newIdCDRMH int) begin if (
-    select not exists (
-            select *
-            from ChuanDauRaMonHoc alias
-            where alias.isDeleted = false
-                and alias.ID = newIdCDRMH
-                and alias.ID in (
-                    select cdrmh.id
-                    from ChuDe cd
-                        left join MucTieuMonHoc mtmh on mtmh.idSyllabus = cd.idSyllabus
-                        left join ChuanDauRaMonHoc cdrmh on cdrmh.idMTMH = mtmh.id
-                    where cd.id = newIdChuDe
-                        and cd.isDeleted = false
-                        and mtmh.isDeleted = false
-                        and cdrmh.isDeleted = false
+        select not exists (
+                        select *
+                        from ChuanDauRaMonHoc alias
+                        where alias.isDeleted = false
+                                and alias.ID = newIdCDRMH
+                                and alias.ID in (
+                                        select cdrmh.id
+                                        from ChuDe cd
+                                                left join MucTieuMonHoc mtmh on mtmh.idSyllabus = cd.idSyllabus
+                                                left join ChuanDauRaMonHoc cdrmh on cdrmh.idMTMH = mtmh.id
+                                        where cd.id = newIdChuDe
+                                                and cd.isDeleted = false
+                                                and mtmh.isDeleted = false
+                                                and cdrmh.isDeleted = false
+                                )
                 )
-        )
 ) then signal sqlstate '45000'
 set message_text = 'idChuanDauRaMonHoc must belong to ChuanDauRaMonHoc with the same idSyllabus';
 end if;
@@ -474,24 +476,24 @@ update on HoatDongDanhGia_ChuanDauRaMonHoc for each row begin call procedure_che
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_hddg_cdrmh_before_insert_or_update;
 delimiter $$ create procedure procedure_check_hddg_cdrmh_before_insert_or_update(in newIdHDDG int, in newIdCDRMH int) begin if (
-    select not exists (
-            select *
-            from ChuanDauRaMonHoc alias
-            where alias.isDeleted = false
-                and alias.id = newIdCDRMH
-                and alias.id in (
-                    select cdrmh.id
-                    from HoatDongDanhGia hddg
-                        left join LoaiDanhGia ldg on ldg.id = hddg.idLDG
-                        left join MucTieuMonHoc mtmh on mtmh.idSyllabus = ldg.idSyllabus
-                        left join ChuanDauRaMonHoc cdrmh on cdrmh.idMTMH = mtmh.id
-                    where hddg.id = newIdHDDG
-                        and hddg.isDeleted = false
-                        and ldg.isDeleted = false
-                        and mtmh.isDeleted = false
-                        and cdrmh.isDeleted = false
+        select not exists (
+                        select *
+                        from ChuanDauRaMonHoc alias
+                        where alias.isDeleted = false
+                                and alias.id = newIdCDRMH
+                                and alias.id in (
+                                        select cdrmh.id
+                                        from HoatDongDanhGia hddg
+                                                left join LoaiDanhGia ldg on ldg.id = hddg.idLDG
+                                                left join MucTieuMonHoc mtmh on mtmh.idSyllabus = ldg.idSyllabus
+                                                left join ChuanDauRaMonHoc cdrmh on cdrmh.idMTMH = mtmh.id
+                                        where hddg.id = newIdHDDG
+                                                and hddg.isDeleted = false
+                                                and ldg.isDeleted = false
+                                                and mtmh.isDeleted = false
+                                                and cdrmh.isDeleted = false
+                                )
                 )
-        )
 ) then signal sqlstate '45000'
 set message_text = 'idCDRMH must belong to ChuanDauRaMonHoc with the same ID_ChiTetNganhDaoTao';
 end if;
@@ -507,22 +509,22 @@ update on LoaiDanhGia_ChuanDauRaMonHoc for each row begin call procedure_check_l
 end $$ delimiter;
 DROP procedure IF EXISTS procedure_check_ldg_cdrmh_before_insert_or_update;
 delimiter $$ create procedure procedure_check_ldg_cdrmh_before_insert_or_update(in newIdLDG int, in newIdCDRMH int) begin if (
-    select not exists (
-            select *
-            from ChuanDauRaMonHoc alias
-            where alias.isDeleted = false
-                and alias.id = newIdCDRMH
-                and alias.id in (
-                    select cdrmh.id
-                    from LoaiDanhGia ldg
-                        left join MucTieuMonHoc mtmh on mtmh.idSyllabus = ldg.idSyllabus
-                        left join ChuanDauRaMonHoc cdrmh on cdrmh.idMTMH = mtmh.id
-                    where ldg.id = newIdLDG
-                        and ldg.isDeleted = false
-                        and mtmh.isDeleted = false
-                        and cdrmh.isDeleted = false
+        select not exists (
+                        select *
+                        from ChuanDauRaMonHoc alias
+                        where alias.isDeleted = false
+                                and alias.id = newIdCDRMH
+                                and alias.id in (
+                                        select cdrmh.id
+                                        from LoaiDanhGia ldg
+                                                left join MucTieuMonHoc mtmh on mtmh.idSyllabus = ldg.idSyllabus
+                                                left join ChuanDauRaMonHoc cdrmh on cdrmh.idMTMH = mtmh.id
+                                        where ldg.id = newIdLDG
+                                                and ldg.isDeleted = false
+                                                and mtmh.isDeleted = false
+                                                and cdrmh.isDeleted = false
+                                )
                 )
-        )
 ) then signal sqlstate '45000'
 set message_text = 'idChuanDauRaMonHoc must belong to ChuanDauRaMonHoc with the same ID_ChiTetNganhDaoTao';
 end if;
