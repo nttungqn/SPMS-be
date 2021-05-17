@@ -35,7 +35,7 @@ export class RolesService {
   async findAll(filter: FilterRoles) {
     const key = format(REDIS_CACHE_VARS.LIST_ROLE_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { page = 0, limit = LIMIT, searchKey, sortBy, sortType } = filter;
       const skip = page * limit;
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
@@ -66,7 +66,7 @@ export class RolesService {
   async findOne(id: number) {
     const key = format(REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.rolesRepository.findOne(id, {
         where: { isDeleted: false }
       });

@@ -23,7 +23,7 @@ export class MonHocService {
   async findAll(filter): Promise<MonHocEntity[] | any> {
     const key = format(REDIS_CACHE_VARS.LIST_MON_HOC_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
@@ -66,7 +66,7 @@ export class MonHocService {
   async findById(id: number): Promise<MonHocEntity | any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.monHocRepository.findOne({
         where: { id, isDeleted: false },
         relations: ['createdBy', 'updatedBy']
@@ -189,7 +189,7 @@ export class MonHocService {
   async getAllSubjectByNganhDaoTaoAndKhoaTuyen(idNganhDaoTao: number, khoaTuyen: number) {
     const key = format(REDIS_CACHE_VARS.LIST_MH_NDT_KT_CACHE_KEY, idNganhDaoTao.toString(), khoaTuyen.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.monHocRepository
         .createQueryBuilder('mh')
         .leftJoinAndSelect('mh.chiTietGomNhom', 'chiTietGomNhom')

@@ -20,7 +20,7 @@ export class KeHoachGiangDayService {
   async findAll(filter: any): Promise<any> {
     const key = format(REDIS_CACHE_VARS.LIST_KHGD_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       try {
         const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
         const skip = Number(page) * Number(limit);
@@ -63,7 +63,7 @@ export class KeHoachGiangDayService {
   async findById(id: number): Promise<any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_KHGD_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.keHoachGiangDayRepository.findOne({
         where: { id, isDeleted: false },
         relations: ['nganhDaoTao', 'nganhDaoTao.nganhDaoTao', 'createdBy', 'updatedBy']

@@ -40,7 +40,7 @@ export class HeDaotaoService {
   async findAll() {
     const key = REDIS_CACHE_VARS.LIST_HE_DAO_TAO_CACHE_KEY;
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const list = await this.typeOfEduRepository.find({ where: { isDeleted: false }, order: { ma: 'ASC' } });
       result = { contents: list };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_HE_DAO_TAO_CACHE_TTL);
@@ -53,7 +53,7 @@ export class HeDaotaoService {
   async findById(id: number): Promise<HeDaoTaoEntity> {
     const key = format(REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       try {
         result = await this.typeOfEduRepository.findOne(id, { where: { isDeleted: false } });
       } catch (error) {

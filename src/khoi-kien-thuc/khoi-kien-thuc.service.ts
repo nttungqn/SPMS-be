@@ -72,7 +72,7 @@ export class KhoiKienThucService {
   async findOne(id: number) {
     const key = format(REDIS_CACHE_VARS.DETAIL_KKT_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.knowledgeBlockRepository.findOne(id, {
         relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
         where: { isDeleted: false }

@@ -27,7 +27,7 @@ export class ThongKeService {
   async thongKeGiaoVien(idGiaoVien: number): Promise<ThongKeGiaoVien> {
     const key = format(REDIS_CACHE_VARS.THONG_KE_GV_CACHE_KEY, idGiaoVien.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const thongKeGiaoVien = new ThongKeGiaoVien();
       thongKeGiaoVien.totalSyllabus = await this.syllabusService.getCountSyllabus(idGiaoVien);
       result = thongKeGiaoVien;
@@ -40,7 +40,7 @@ export class ThongKeService {
   async intro(): Promise<IntroPageInfo> {
     const key = REDIS_CACHE_VARS.THONG_KE_INTRO_CACHE_KEY;
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const introPageInfo = new IntroPageInfo();
 
       introPageInfo.toTalSyllabus = await this.syllabusService.getCountSyllabus();
@@ -59,7 +59,7 @@ export class ThongKeService {
   async thongKeSoLuongChuanDauRaTrongSyllabus(idSyllabus: number) {
     const key = format(REDIS_CACHE_VARS.THONG_KE_SLCDR_CACHE_KEY, idSyllabus.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const isDeleted = false;
       const con: Connection = getConnection();
       await this.syllabusService.findOne(idSyllabus);

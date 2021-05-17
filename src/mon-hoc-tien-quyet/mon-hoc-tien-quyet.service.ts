@@ -45,7 +45,7 @@ export class MonHocTienQuyetService {
   async findAll(filter: FilterMonHocKienQuyet) {
     const key = format(REDIS_CACHE_VARS.LIST_MHTQ_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { page = 0, limit = LIMIT } = filter;
       const skip = page * limit;
       const query = {
@@ -67,7 +67,7 @@ export class MonHocTienQuyetService {
   async findById(id: number) {
     const key = format(REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.prerequisiteSubjectRepository.findOne(id, {
         relations: ['monHocTruoc', 'monHoc', 'createdBy', 'updatedBy'],
         where: { isDeleted: false }
@@ -83,7 +83,7 @@ export class MonHocTienQuyetService {
   async findAllPrereSuject(id: number, filter: FilterMonHocKienQuyet) {
     const key = format(REDIS_CACHE_VARS.LIST_MHTQ_MHT_CACHE_KEY, id.toString(), JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { page = 0, limit = LIMIT, type } = filter;
       const skip = page * limit;
       const queryByType = type ? { condition: Number(type) } : {};

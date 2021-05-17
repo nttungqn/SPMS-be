@@ -21,7 +21,7 @@ export class ChiTietGomNhomService {
   async findAll(filter): Promise<ChiTietGomNhomEntity[] | any> {
     const key = format(REDIS_CACHE_VARS.LIST_CHI_TIET_GOM_NHOM_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
       const skip = Number(page) * Number(limit);
       const query = {
@@ -65,7 +65,7 @@ export class ChiTietGomNhomService {
   async findById(id: number): Promise<ChiTietGomNhomEntity | any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.chiTietGomNhomRepository.findOne({
         where: { id, isDeleted: false },
         relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
@@ -167,7 +167,7 @@ export class ChiTietGomNhomService {
   async getMonHocThayThe(idMonHoc: number): Promise<MonHocEntity[]> {
     const key = format(REDIS_CACHE_VARS.LIST_CTGN_MHTT_CACHE_KEY, idMonHoc.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.chiTietGomNhomRepository
         .createQueryBuilder('ctgn')
         .leftJoinAndSelect('ctgn.ctgnMonHoctruoc', 'ctgnMonHoctruoc')
@@ -193,7 +193,7 @@ export class ChiTietGomNhomService {
       JSON.stringify(filter)
     );
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { limit = LIMIT, page = 0, tenMonHoc, maMonHoc } = filter;
       const skip = Number(page) * Number(limit);
       const [list, total] = await this.chiTietGomNhomRepository
