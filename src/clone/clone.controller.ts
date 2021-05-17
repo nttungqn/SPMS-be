@@ -11,7 +11,7 @@ import {
   ValidationPipe
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'auth/user.decorator';
 import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
 import { CLONE_MESSAGE } from 'constant/constant';
@@ -20,6 +20,7 @@ import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity'
 import { UsersEntity } from 'users/entity/user.entity';
 import { CloneService } from './clone.service';
 
+@ApiTags('clone')
 @Controller('clone')
 export class CloneController {
   constructor(private readonly cloneService: CloneService) {}
