@@ -9,17 +9,17 @@ export class LoaiKhoiKienThucEntity extends CreateLoaiKhoiKienThucDto {
   @PrimaryGeneratedColumn({ name: 'ID' })
   id?: number;
 
-  @OneToMany(() => GomNhomEntity, (gomNhom) => gomNhom.loaiKhoiKienThuc)
+  @OneToMany(() => GomNhomEntity, (gomNhom) => gomNhom.loaiKhoiKienThuc, { onDelete: 'CASCADE', cascade: ['insert'] })
   @JoinColumn({ name: 'ID' })
   gomNhom?: GomNhomEntity[];
 
   @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'createdBy' })
-  readonly createdBy?: number;
+  createdBy?: number;
 
   @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'updatedBy' })
-  readonly updatedBy?: number;
+  updatedBy?: number;
 
   @Column({ name: 'updatedAt' })
   readonly updatedAt?: Date;

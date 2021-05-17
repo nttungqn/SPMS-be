@@ -37,6 +37,7 @@ import { DeleteMultipleRows } from 'gom-nhom/dto/filter-gom-nhom';
 import { Roles } from 'guards/roles.decorator';
 import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
+import { FilterByChiTietNganhDaoTao } from './dto/filter-by-chi-tiet-nganh-dao-tao.dto';
 
 @ApiTags('chi-tiet-gom-nhom')
 @Controller('chi-tiet-gom-nhom')
@@ -52,6 +53,17 @@ export class ChiTietGomNhomController {
     @Query() filter: FilterByNganhDaoTao
   ) {
     return await this.chiTietGomNhomService.getAllSubjects(khoa, idNganhDaoTao, filter);
+  }
+
+  @ApiBearerAuth('token')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
+  @Get('/chi-tiet-nganh-dao-tao/:idCTNDT')
+  async getAllSubjectByChiTietNDT(
+    @Param('idCTNDT', ParseIntPipe) idCTNDT: number,
+    @Query() filter: FilterByChiTietNganhDaoTao
+  ) {
+    return await this.chiTietGomNhomService.getAllSubjectsByChiTietNDT(idCTNDT, filter);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
