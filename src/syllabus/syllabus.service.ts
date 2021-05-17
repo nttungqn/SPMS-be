@@ -48,7 +48,7 @@ export class SyllabusService extends BaseService {
   async findAll(filter: GetSyllabusFilterDto): Promise<Syllabus[] | any> {
     const key = format(REDIS_CACHE_VARS.LIST_SYLLABUS_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { key, page = 0, limit = LIMIT, updatedAt, createdBy, idHeDaotao, idMonHoc, idNamHoc } = filter;
       const skip = page * limit;
       const queryOrder: OrderByCondition = updatedAt ? { 'sy.updatedAt': updatedAt } : {};
@@ -93,7 +93,7 @@ export class SyllabusService extends BaseService {
   async findOne(id: number): Promise<Syllabus> {
     const key = format(REDIS_CACHE_VARS.DETAIL_SYLLABUS_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const query = await this.syllabusRepository
         .createQueryBuilder('sy')
         .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')

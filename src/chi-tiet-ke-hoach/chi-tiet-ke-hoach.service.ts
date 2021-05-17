@@ -42,7 +42,7 @@ export class ChiTietKeHoachService {
   async findAll(filter: FilterChiTietKeHoach) {
     const key = format(REDIS_CACHE_VARS.LIST_CHI_TIET_KE_HOACH_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
       const skip = Number(page) * Number(limit);
       const query = {
@@ -95,7 +95,7 @@ export class ChiTietKeHoachService {
   async findOne(id: number) {
     const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_KE_HOACH_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.chiTietKeHoachRepository
         .createQueryBuilder('ctkhgd')
         .leftJoinAndSelect('ctkhgd.createdBy', 'createdBy')
@@ -157,7 +157,7 @@ export class ChiTietKeHoachService {
   async findAllWithSelectField(filter) {
     const key = format(REDIS_CACHE_VARS.LIST_CTKH_SF_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { page = 0, limit = LIMIT, select = '', ...other } = filter;
       const query = {
         isDeleted: false,

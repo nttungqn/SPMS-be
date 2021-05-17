@@ -17,7 +17,7 @@ export class HoatDongDayHocService {
   async findAll(filter: FilterHoatDongDayHoc): Promise<HoatDongDayHocEntity[] | any> {
     const key = format(REDIS_CACHE_VARS.LIST_HDDH_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
@@ -50,7 +50,7 @@ export class HoatDongDayHocService {
   async findOne(id: number): Promise<HoatDongDayHocEntity | any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.hoatDongDayHocRepository.findOne({
         where: { id, isDeleted: false },
         relations: ['createdBy', 'updatedBy']

@@ -16,7 +16,7 @@ export class ChuongTrinhDaoTaoService {
   async findAll(filter): Promise<ChuongTrinhDaoTaoEntity[] | any> {
     const key = format(REDIS_CACHE_VARS.LIST_CTDT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
@@ -62,7 +62,7 @@ export class ChuongTrinhDaoTaoService {
   async findById(id: number): Promise<ChuongTrinhDaoTaoEntity | any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.chuongTrinhDaoTaoRepository.findOne({ id, isDeleted: false });
       if (!result) {
         throw new HttpException(CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);

@@ -18,7 +18,7 @@ export class GomNhomService {
   async findAll(filter): Promise<GomNhomEntity[] | any> {
     const key = format(REDIS_CACHE_VARS.LIST_GOM_NHOM_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { limit = LIMIT, page = 0, search = '', sortBy = '', sortType = 'ASC', ...otherParam } = filter;
       const skip = Number(page) * Number(limit);
       const query = {
@@ -63,7 +63,7 @@ export class GomNhomService {
   async findById(id: number): Promise<GomNhomEntity | any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.gomNhomRepository
         .createQueryBuilder('gn')
         .leftJoinAndSelect('gn.idLKKT', 'idLKKT')

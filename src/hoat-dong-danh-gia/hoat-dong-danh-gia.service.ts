@@ -80,7 +80,7 @@ export class HoatDongDanhGiaService extends BaseService {
   async findAll(filter: FilterHoatDongDanhGia) {
     const key = format(REDIS_CACHE_VARS.LIST_HDDG_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { page = 0, limit = LIMIT, sortBy, sortType, searchKey, idLoaiDanhGia, idSyllabus } = filter;
       const skip = page * limit;
       console.log(Number.isNaN(Number(searchKey)) ? -1 : Number(searchKey));
@@ -120,7 +120,7 @@ export class HoatDongDanhGiaService extends BaseService {
   async findOne(id: number) {
     const key = format(REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.hoatDongDanhGiaService
         .createQueryBuilder('hddg')
         .leftJoinAndSelect('hddg.updatedBy', 'updatedBy')
