@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
 import { ChuanDauRaEntity } from 'chuan-dau-ra/entity/chuanDauRa.entity';
-import { isInt, IsInt, IsString } from 'class-validator';
+import { isInt, IsInt, IsOptional, IsString } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
@@ -18,6 +18,7 @@ export class ChuanDauRaNganhDaoTaoEntity {
 
   @ApiProperty()
   @IsInt()
+  @IsOptional()
   @OneToOne(() => ChuanDauRaNganhDaoTaoEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'parentId' })
   parent: number;
