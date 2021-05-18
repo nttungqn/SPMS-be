@@ -200,7 +200,7 @@ export class SyllabusService extends BaseService {
     return found ? true : false;
   }
   async search(filter) {
-    const { search: key, limit = LIMIT } = filter;
+    const { searchKey: key, limit = LIMIT } = filter;
     const isDeleted = false;
     const queryByCondition = `sy.isDeleted = ${isDeleted}`;
     const query = this.syllabusRepository
