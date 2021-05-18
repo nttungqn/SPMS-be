@@ -1,4 +1,5 @@
 import { TABLE_NAME } from 'constant/constant';
+import { RolesEntity } from 'roles/entity/roles.entity';
 import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
 
 @Entity({ name: TABLE_NAME.PERMISSION })
@@ -11,7 +12,6 @@ export class PermissionEntity {
   path: string;
   @Column({ name: 'method' })
   method: string;
-
   @Column({ name: 'actived' })
   actived: boolean;
 }

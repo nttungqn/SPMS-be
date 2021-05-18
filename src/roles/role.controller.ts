@@ -40,6 +40,14 @@ import { FilterRoles } from './dto/filter-roles.dto';
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy danh sách permission của role' })
+  @Get('permission/:roleId')
+  findAllPermission(@Param('roleId', ParseIntPipe) roleId: number) {
+    return this.rolesService.getAllPermissions(roleId);
+  }
+
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
