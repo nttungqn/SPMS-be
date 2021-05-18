@@ -30,7 +30,9 @@ const TABLE_NAME = {
   CHUDE_HOATDONGDANHGIA: 'ChuDe_HoatDongDanhGia',
   CHUDE_CHUANDAURAMONHOC: 'ChuDe_ChuanDauRaMonHoc',
   CHUDE_HOATDONGDAYHOC: 'ChuDe_HoatDongDayHoc',
-  MONHOCTRUOC: 'MonHocTruocV2'
+  MONHOCTRUOC: 'MonHocTruocV2',
+  PERMISSION: 'permission',
+  ROLE_PERMISSION: 'role_permission'
 };
 const EXPIREDIN = 3600;
 const SALT = 12;

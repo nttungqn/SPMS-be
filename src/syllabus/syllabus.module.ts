@@ -7,9 +7,17 @@ import { NamHocModule } from 'nam-hoc/nam-hoc.module';
 import { HeDaotaoModule } from 'he-dao-tao/he-dao-tao.module';
 import { MonHocModule } from 'mon-hoc/mon-hoc.module';
 import { RedisCacheModule } from 'cache/redisCache.module';
+import { RolesModule } from 'roles/roles.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Syllabus]), NamHocModule, HeDaotaoModule, MonHocModule, RedisCacheModule],
+  imports: [
+    TypeOrmModule.forFeature([Syllabus]),
+    NamHocModule,
+    HeDaotaoModule,
+    MonHocModule,
+    RedisCacheModule,
+    RolesModule
+  ],
   controllers: [SyllabusController],
   providers: [SyllabusService],
   exports: [SyllabusService]

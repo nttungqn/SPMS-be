@@ -6,10 +6,11 @@ import { ChuongTrinhDaoTaoModule } from 'chuong-trinh-dao-tao/chuong-trinh-dao-t
 import { CtdtModule } from 'ctdt/ctdt.module';
 import { UsersModule } from 'users/users.module';
 import { RedisCacheModule } from 'cache/redisCache.module';
+import { RolesModule } from 'roles/roles.module';
 
 @Module({
   controllers: [ThongKeController],
   providers: [ThongKeService],
-  imports: [SyllabusModule, ChuongTrinhDaoTaoModule, CtdtModule, UsersModule, RedisCacheModule]
+  imports: [SyllabusModule, ChuongTrinhDaoTaoModule, CtdtModule, UsersModule, RedisCacheModule, RolesModule]
 })
 export class ThongKeModule {}

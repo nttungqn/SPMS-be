@@ -1,13 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CreateRolesDto } from './../dto/create-roles.dto';
 import { TABLE_NAME } from './../../constant/constant';
+import { PermissionEntity } from 'permission/entity/permission.entity';
 
 @Entity({ name: TABLE_NAME.ROLES })
 export class RolesEntity extends CreateRolesDto {
   @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
+
+  @ManyToMany(() => PermissionEntity, { cascade: true })
+  @JoinTable({
+    name: TABLE_NAME.ROLE_PERMISSION,
+    joinColumn: { name: 'idRole', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'idPermission', referencedColumnName: 'id' }
+  })
+  permissions?: PermissionEntity[];
 
   @ApiProperty()
   @Column({ name: 'updatedAt' })

@@ -7,6 +7,7 @@ import { LoaiDanhGiaModule } from 'loai-danh-gia/loai-danh-gia.module';
 import { SyllabusModule } from 'syllabus/syllabus.module';
 import { ChuanDauRaMonHocModule } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.module';
 import { RedisCacheModule } from 'cache/redisCache.module';
+import { RolesModule } from 'roles/roles.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { RedisCacheModule } from 'cache/redisCache.module';
     LoaiDanhGiaModule,
     SyllabusModule,
     ChuanDauRaMonHocModule,
-    RedisCacheModule
+    RedisCacheModule,
+    RolesModule
   ],
   controllers: [HoatDongDanhGiaController],
   providers: [HoatDongDanhGiaService],

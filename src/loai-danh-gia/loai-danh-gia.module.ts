@@ -6,9 +6,16 @@ import { LoaiDanhGiaEntity } from './entity/loai-danh-gia.entity';
 import { SyllabusModule } from 'syllabus/syllabus.module';
 import { ChuanDauRaMonHocModule } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.module';
 import { RedisCacheModule } from 'cache/redisCache.module';
+import { RolesModule } from 'roles/roles.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LoaiDanhGiaEntity]), SyllabusModule, ChuanDauRaMonHocModule, RedisCacheModule],
+  imports: [
+    TypeOrmModule.forFeature([LoaiDanhGiaEntity]),
+    SyllabusModule,
+    ChuanDauRaMonHocModule,
+    RedisCacheModule,
+    RolesModule
+  ],
   controllers: [LoaiDanhGiaController],
   providers: [LoaiDanhGiaService],
   exports: [LoaiDanhGiaService]

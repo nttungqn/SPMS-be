@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.dto';
 import { LIMIT, REDIS_CACHE_VARS, ROLES_MESSAGE } from 'constant/constant';
@@ -123,5 +123,14 @@ export class RolesService {
 
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_ROLE_CACHE_COMMON_KEY]);
+  }
+  async getAllPermissions(idRole: number): Promise<RolesEntity> {
+    const found = await this.rolesRepository
+      .createQueryBuilder('role')
+      .leftJoinAndSelect('role.permissions', 'per', 'per.actived = true ')
+      .where({ id: idRole, isDeleted: false })
+      .getOne();
+    if (!found) throw new ForbiddenException(ROLES_MESSAGE.NO_PERMISTION);
+    return found;
   }
 }
