@@ -46,8 +46,8 @@ export class SyllabusService extends BaseService {
   }
 
   async findAll(filter: GetSyllabusFilterDto): Promise<Syllabus[] | any> {
-    const key = format(REDIS_CACHE_VARS.LIST_SYLLABUS_CACHE_KEY, JSON.stringify(filter));
-    let result = await this.cacheManager.get(key);
+    const keyRedis = format(REDIS_CACHE_VARS.LIST_SYLLABUS_CACHE_KEY, JSON.stringify(filter));
+    let result = await this.cacheManager.get(keyRedis);
     if (typeof result === 'undefined' || result === null) {
       const { key, page = 0, limit = LIMIT, updatedAt, createdBy, idHeDaotao, idMonHoc, idNamHoc } = filter;
       const skip = page * limit;
@@ -83,7 +83,7 @@ export class SyllabusService extends BaseService {
         .orderBy({ ...queryOrder });
       const [list, total] = await query.getManyAndCount();
       result = { contents: list, total, page: Number(page) };
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_SYLLABUS_CACHE_TTL);
+      await this.cacheManager.set(keyRedis, result, REDIS_CACHE_VARS.LIST_SYLLABUS_CACHE_TTL);
     }
 
     if (result && typeof result === 'string') result = JSON.parse(result);
