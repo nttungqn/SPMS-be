@@ -42,16 +42,17 @@ export class RolesService {
       const [results, total] = await this.rolesRepository
         .createQueryBuilder('role')
         .where((qb) => {
-          qb.leftJoinAndSelect('role.updatedBy', 'updatedBy').leftJoinAndSelect('role.createdBy', 'createdBy');
           isSortFieldInForeignKey
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `role.${sortBy}` : null, sortType);
+          searchKey
+            ? qb.andWhere('role.name LIKE :searchName OR role.value = :searchValue', {
+                searchName: `%${searchKey}%`,
+                searchValue: Number.isNaN(Number(searchKey)) ? -1 : searchKey
+              })
+            : {};
         })
-        .andWhere('role.name LIKE :searchName OR role.value = :searchValue', {
-          searchName: `%${searchKey}%`,
-          searchValue: Number.isNaN(Number(searchKey)) ? -1 : searchKey
-        })
-        .andWhere('role.isDeleted = true')
+        .andWhere('role.isDeleted = false')
         .skip(skip)
         .take(limit)
         .getManyAndCount();
