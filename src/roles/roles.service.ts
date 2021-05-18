@@ -7,6 +7,7 @@ import { FilterRoles } from './dto/filter-roles.dto';
 import { RolesEntity } from './entity/roles.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
+import { FilterNotPermission } from './dto/filter-not-permission.dto';
 
 @Injectable()
 export class RolesService {

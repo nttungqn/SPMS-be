@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { FilterPermision } from './dto/filter-permission.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -17,6 +17,12 @@ export class PermissionController {
   @ApiOperation({ summary: 'Lấy danh sách các quyển' })
   findAll(@Query() filter: FilterPermision) {
     return this.permissionService.findAll(filter);
+  }
+
+  @ApiOperation({ summary: 'Lấy danh sách not-permission của role' })
+  @Get('not-permission/:roleId')
+  findNotAllPermission(@Param('roleId', ParseIntPipe) roleId: number, @Query() filter: FilterPermision) {
+    return this.permissionService.getNotAllPermissions(roleId, filter);
   }
 
   // @Get(':id')
