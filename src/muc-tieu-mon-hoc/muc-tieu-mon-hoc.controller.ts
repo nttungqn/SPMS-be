@@ -93,7 +93,7 @@ export class MucTieuMonHocController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateMucTieuMonHocDto: UpdateMucTieuMonHocDto,
-    user: UsersEntity
+    @GetUser() user: UsersEntity
   ) {
     await this.mucTieuMonHocService.update(id, updateMucTieuMonHocDto, user);
     return new HttpException(MUCTIEUMONHOC_MESSAGE.UPDATE_MUCTIEUMONHOC_SUCCESSFULLY, HttpStatus.OK);
@@ -108,7 +108,7 @@ export class MucTieuMonHocController {
   @ApiNotFoundResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_ID_NOT_FOUND })
   @ApiOkResponse({ description: MUCTIEUMONHOC_MESSAGE.DELETE_MUCTIEUMONHOC_SUCCESSFULLY })
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number, user: UsersEntity) {
+  async remove(@Param('id', ParseIntPipe) id: number, @GetUser() user: UsersEntity) {
     await this.mucTieuMonHocService.remove(id, user);
     return new HttpException(MUCTIEUMONHOC_MESSAGE.DELETE_MUCTIEUMONHOC_SUCCESSFULLY, HttpStatus.OK);
   }
