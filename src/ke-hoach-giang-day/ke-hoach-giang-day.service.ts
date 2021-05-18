@@ -31,11 +31,11 @@ export class KeHoachGiangDayService {
           .join(' OR ');
         const [list, total] = await this.keHoachGiangDayRepository
           .createQueryBuilder('khgd')
-          .leftJoinAndSelect('khgd.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false')
+          .leftJoinAndSelect('khgd.nganhDaoTao', 'ndt', 'ndt.isDeleted = false')
           .leftJoinAndSelect('khgd.createdBy', 'createdBy')
           .leftJoinAndSelect('khgd.updatedBy', 'updatedBy')
           .where((qb) => {
-            qb.leftJoinAndSelect('nganhDaoTao.nganhDaoTao', 'nganhDaoTao');
+            qb.leftJoinAndSelect('ndt.nganhDaoTao', 'nganhDaoTao');
             searchKey
               ? qb.andWhere(searchQuery, {
                   search: `%${searchKey}%`
@@ -52,7 +52,6 @@ export class KeHoachGiangDayService {
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_KHGD_CACHE_TTL);
       } catch (error) {
-        console.log(error);
         throw new InternalServerErrorException();
       }
     }
