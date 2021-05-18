@@ -130,7 +130,7 @@ export class RolesService {
       .leftJoinAndSelect('role.permissions', 'per', 'per.actived = true ')
       .where({ id: idRole, isDeleted: false })
       .getOne();
-    if (!found) throw new ForbiddenException(ROLES_MESSAGE.NO_PERMISTION);
+    if (!found) throw new NotFoundException(ROLES_MESSAGE.ROLES_ID_NOT_FOUND);
     return found;
   }
 }
