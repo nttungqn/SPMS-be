@@ -6,6 +6,7 @@ import { ChuongTrinhDaoTaoEntity } from './entity/chuongTrinhDaoTao.entity';
 import { IChuongTrinhDaoTao } from './interfaces/chuongTrinhDaoTao.interface';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
+import { FilterIsExistCTDT } from './dto/filter-is-exist-chuong-trinh-dao-tao.dto';
 
 @Injectable()
 export class ChuongTrinhDaoTaoService {
@@ -148,5 +149,33 @@ export class ChuongTrinhDaoTaoService {
 
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_CTDT_CACHE_COMMON_KEY]);
+  }
+  async isExist(filter: FilterIsExistCTDT) {
+    try {
+      const { ten = '', maCTDT = '' } = filter;
+      if (ten || maCTDT) {
+        const foundTen = ten
+          ? await this.chuongTrinhDaoTaoRepository.findOne({
+              where: [{ ten: ten, isDeleted: false }]
+            })
+          : null;
+        const foundMa = maCTDT
+          ? await this.chuongTrinhDaoTaoRepository.findOne({
+              where: [{ maCTDT: maCTDT, isDeleted: false }]
+            })
+          : null;
+        let result = '';
+        if (foundTen) {
+          result += '_TEN';
+        }
+        if (foundMa) {
+          result += '_MA';
+        }
+        return result ? 'CONFLICT' + result : null;
+      }
+      return null;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 }
