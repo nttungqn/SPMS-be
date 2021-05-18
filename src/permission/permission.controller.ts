@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { PermissionService } from './permission.service';
-import { CreatePermissionDto } from './dto/create-permission.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { FilterPermision } from './dto/filter-permission.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('permission')
 @Controller('permission')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
@@ -13,8 +14,9 @@ export class PermissionController {
   // }
 
   @Get()
-  findAll() {
-    return this.permissionService.findAll();
+  @ApiOperation({ summary: 'Lấy danh sách các quyển' })
+  findAll(@Query() filter: FilterPermision) {
+    return this.permissionService.findAll(filter);
   }
 
   // @Get(':id')
