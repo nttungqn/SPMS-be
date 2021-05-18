@@ -37,4 +37,9 @@ export class FilterChuongTrinhDaoTao extends BaseFilterDto {
   @IsOptional()
   @IsIn(['ASC', 'DESC'])
   readonly sortType?: 'ASC' | 'DESC';
+
+  @ApiProperty({ required: false, description: 'ASC| DESC' })
+  @IsOptional()
+  @IsIn(['ASC', 'DESC'])
+  readonly updatedAt?: 'ASC' | 'DESC';
 }
