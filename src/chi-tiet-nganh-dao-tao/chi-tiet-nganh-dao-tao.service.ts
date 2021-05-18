@@ -1,4 +1,11 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CTNGANHDAOTAO_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { Repository } from 'typeorm';
@@ -7,6 +14,7 @@ import { ChiTietNganhDaoTaoEntity } from './entity/chiTietNganhDaoTao.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
 import { IChiTietNganhDaoTao } from './interfaces/chiTietNganhDaoTao.interface';
+import { FilterIsExistChiTietCTDT } from './dto/filter-exist-CTNganhDaoTao.dto';
 
 @Injectable()
 export class ChiTietNganhDaoTaoService {
@@ -15,6 +23,19 @@ export class ChiTietNganhDaoTaoService {
     private readonly chiTietNganhDTRepository: Repository<ChiTietNganhDaoTaoEntity>,
     private cacheManager: RedisCacheService
   ) {}
+
+  async isExist(filter: FilterIsExistChiTietCTDT) {
+    const { khoa, idNganhDaoTao } = filter;
+    if (isNaN(Number(khoa))) {
+      throw new BadRequestException('KHOA_IS_NUMBER');
+    }
+    const checkExistData = await this.chiTietNganhDTRepository.findOne({
+      khoa: Number(khoa),
+      nganhDaoTao: idNganhDaoTao,
+      isDeleted: false
+    });
+    return checkExistData ? checkExistData : null;
+  }
 
   async findAll(filter: any): Promise<any> {
     const key = format(REDIS_CACHE_VARS.LIST_CHI_TIET_NDT_CACHE_KEY, JSON.stringify(filter));
