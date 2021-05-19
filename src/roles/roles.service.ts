@@ -1,4 +1,11 @@
-import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.dto';
 import { LIMIT, REDIS_CACHE_VARS, ROLES_MESSAGE } from 'constant/constant';
@@ -7,23 +14,24 @@ import { FilterRoles } from './dto/filter-roles.dto';
 import { RolesEntity } from './entity/roles.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
-import { FilterNotPermission } from './dto/filter-not-permission.dto';
+import { CreateRolesDto } from './dto/create-roles.dto';
+import { PermissionService } from 'permission/permission.service';
 
 @Injectable()
 export class RolesService {
   constructor(
     @InjectRepository(RolesEntity)
     private rolesRepository: Repository<RolesEntity>,
-    private cacheManager: RedisCacheService
+    private cacheManager: RedisCacheService,
+    private permissionService: PermissionService
   ) {}
 
-  async create(newData: RolesEntity) {
+  async create(newData: CreateRolesDto) {
+    const { name, value, permissionIds } = newData;
+    const data: RolesEntity = { name, value, createdAt: new Date(), updatedAt: new Date() };
+    data.permissions = await this.permissionService.getPermissionByArrId(permissionIds);
     try {
-      const result = await this.rolesRepository.save({
-        ...newData,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
+      const result = await this.rolesRepository.save(data);
       const key = format(REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_KEY, result?.id.toString());
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_TTL);
       await this.delCacheAfterChange();
@@ -47,7 +55,7 @@ export class RolesService {
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `role.${sortBy}` : null, sortType);
           searchKey
-            ? qb.andWhere('role.name LIKE :searchName OR role.value = :searchValue', {
+            ? qb.andWhere('(role.name LIKE :searchName OR role.value = :searchValue)', {
                 searchName: `%${searchKey}%`,
                 searchValue: Number.isNaN(Number(searchKey)) ? -1 : searchKey
               })

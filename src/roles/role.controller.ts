@@ -34,7 +34,6 @@ import { Roles } from 'guards/roles.decorator';
 import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { FilterRoles } from './dto/filter-roles.dto';
-import { FilterNotPermission } from './dto/filter-not-permission.dto';
 
 @ApiTags('roles')
 @Controller('roles')

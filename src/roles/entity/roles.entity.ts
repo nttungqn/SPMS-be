@@ -5,10 +5,18 @@ import { TABLE_NAME } from './../../constant/constant';
 import { PermissionEntity } from 'permission/entity/permission.entity';
 
 @Entity({ name: TABLE_NAME.ROLES })
-export class RolesEntity extends CreateRolesDto {
+export class RolesEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn({ name: 'id' })
   id?: number;
+
+  @ApiProperty()
+  @Column({ name: 'name' })
+  name?: string;
+
+  @ApiProperty()
+  @Column({ name: 'value', default: 0 })
+  value?: number;
 
   @ManyToMany(() => PermissionEntity, { cascade: true })
   @JoinTable({

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT } from 'constant/constant';
 import { RolesService } from 'roles/roles.service';
@@ -11,6 +11,7 @@ export class PermissionService {
   constructor(
     @InjectRepository(PermissionEntity)
     private perrmissionRepository: Repository<PermissionEntity>,
+    @Inject(forwardRef(() => RolesService))
     private roleService: RolesService
   ) {}
 
@@ -59,6 +60,17 @@ export class PermissionService {
       return { contents: results, total, page: Number(page) };
     } catch (error) {
       return new InternalServerErrorException();
+    }
+  }
+  async getPermissionByArrId(permissionArr: string[]) {
+    try {
+      const [results, total] = await this.perrmissionRepository
+        .createQueryBuilder('prm')
+        .andWhere('prm.id in (:...permissionArr)', { permissionArr })
+        .getManyAndCount();
+      return results;
+    } catch (error) {
+      throw new InternalServerErrorException();
     }
   }
 }
