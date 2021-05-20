@@ -19,7 +19,7 @@ export class ChuongTrinhDaoTaoService {
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
       const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, updatedAt, ...otherParam } = filter;
-      const finalSortType = updatedAt ? updatedAt : sortType ? sortType : null;
+      const finalSortType = updatedAt ? updatedAt : sortType ? sortType : 'ASC';
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const searchField = [
