@@ -79,5 +79,5 @@ jobs:
         PORT: ${{ secrets.SSH_PORT }}
         script: |
           cd /opt/nestjs-app
-          echo IMAGE=${{ secrets.DOCKER_HUB_USERNAME }}/user-service:${{ steps.vars.outputs.tag }} > .env
+          echo IMAGE=${{ secrets.DOCKER_HUB_USERNAME }}/user-service:${{ steps.vars.outputs.tag }}
           docker-compose up -d
