@@ -1,6 +1,16 @@
 version: "3.8"
 
 services:
+  nextjs:
+    ports:
+      - 5000:5000
+    build:
+      context: packages/landingpage
+      dockerfile: Dockerfile
+    volumes:
+      - ./packages/landingpage:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/.next
   mysql:
     image: mysql:8.0.22
     restart: on-failure
