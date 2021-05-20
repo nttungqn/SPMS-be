@@ -30,6 +30,9 @@ export default async (data) => `
 <html>
      <head>
       <style>
+          html {
+               zoom: 0.55;
+          }
           ul, ol, li{
                list-style: none;
           }

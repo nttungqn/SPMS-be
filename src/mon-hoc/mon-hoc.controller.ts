@@ -51,11 +51,11 @@ export class MonHocController {
     'SỐ TC',
     'LT',
     'TH',
-    'BT',
-    'LOẠI HP',
-    'KHỐI KIẾN THỨC',
-    'LOẠI KIẾN THỨC',
-    'NGÀNH/CHUYÊN NGÀNH'
+    'BT'
+    // 'LOẠI HP',
+    // 'KHỐI KIẾN THỨC',
+    // 'LOẠI KIẾN THỨC',
+    // 'NGÀNH/CHUYÊN NGÀNH'
   ];
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
