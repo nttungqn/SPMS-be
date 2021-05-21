@@ -1,74 +1,64 @@
-import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT } from 'constant/constant';
-import { RolesService } from 'roles/roles.service';
-import { createQueryBuilder, Repository } from 'typeorm';
-import { FilterPermision } from './dto/filter-permission.dto';
+import { ResourcesService } from 'resources/resources.service';
+import { Repository } from 'typeorm';
 import { PermissionEntity } from './entity/permission.entity';
 
 @Injectable()
 export class PermissionService {
   constructor(
     @InjectRepository(PermissionEntity)
-    private perrmissionRepository: Repository<PermissionEntity>,
-    @Inject(forwardRef(() => RolesService))
-    private roleService: RolesService
+    private permissionRepository: Repository<PermissionEntity>
   ) {}
 
-  async findAll(filter: FilterPermision) {
-    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
-    const skip = page * limit;
+  async savePermissons(permissions: PermissionEntity[], idRole: number) {
+    const resourceArr = [];
+    const methodArr = ['get', 'post', 'put', 'delete'];
+    permissions.forEach((e) => {
+      if (!resourceArr.includes(e.resource)) {
+        resourceArr.push(e.resource);
+      }
+      if (!methodArr.includes(e.method)) {
+        throw new BadRequestException();
+      }
+      e.idRole = Number(idRole);
+    });
+    //await this.resourceService.isEixstResource(resourceArr)
     try {
-      const [results, total] = await this.perrmissionRepository
-        .createQueryBuilder('prm')
-        .where((qb) => {
-          searchKey
-            ? qb.andWhere('(prm.name LIKE :search OR prm.path LIKE :search OR prm.method LIKE :search)', {
-                search: `%${searchKey}%`
-              })
-            : {};
-        })
-        .take(limit)
-        .skip(skip)
-        .orderBy(sortBy ? `prm.${sortBy}` : null, sortType)
-        .getManyAndCount();
-      return { contents: results, total, page: Number(page) };
+      await this.permissionRepository.save(permissions);
     } catch (error) {
-      return new InternalServerErrorException();
+      throw new InternalServerErrorException();
     }
   }
-  async getNotAllPermissions(roleId: number, filter: FilterPermision) {
-    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
-    const skip = page * limit;
-    const rolesPermission = await this.roleService.getAllPermissions(roleId);
-    const permissionArr = rolesPermission.permissions?.map((e) => e.id);
-    try {
-      const [results, total] = await this.perrmissionRepository
-        .createQueryBuilder('prm')
-        .where((qb) => {
-          searchKey
-            ? qb.andWhere('(prm.name LIKE :search OR prm.path LIKE :search OR prm.method LIKE :search)', {
-                search: `%${searchKey}%`
-              })
-            : {};
-        })
-        .andWhere('prm.id not in (:...permissionArr)', { permissionArr })
-        .take(limit)
-        .skip(skip)
-        .orderBy(sortBy ? `prm.${sortBy}` : null, sortType)
-        .getManyAndCount();
-      return { contents: results, total, page: Number(page) };
-    } catch (error) {
-      return new InternalServerErrorException();
-    }
-  }
+
   async getPermissionByArrId(permissionArr: string[]) {
     try {
-      const [results, total] = await this.perrmissionRepository
+      const [results, total] = await this.permissionRepository
         .createQueryBuilder('prm')
         .andWhere('prm.id in (:...permissionArr)', { permissionArr })
         .getManyAndCount();
       return results;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+  async updatePermission(permissions: PermissionEntity[], idRole: number) {
+    permissions.forEach((e) => (e.idRole = idRole));
+    try {
+      for (const per of permissions) {
+        per.idRole = idRole;
+        const old = await this.permissionRepository.findOne({
+          idRole: idRole,
+          resource: per.resource,
+          method: per.method
+        });
+        if (old) {
+          await this.permissionRepository.update(old, per);
+        } else {
+          await this.permissionRepository.save(per);
+        }
+      }
     } catch (error) {
       throw new InternalServerErrorException();
     }

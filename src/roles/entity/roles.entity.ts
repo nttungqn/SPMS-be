@@ -18,14 +18,6 @@ export class RolesEntity {
   @Column({ name: 'value', default: 0 })
   value?: number;
 
-  @ManyToMany(() => PermissionEntity, { cascade: true })
-  @JoinTable({
-    name: TABLE_NAME.ROLE_PERMISSION,
-    joinColumn: { name: 'idRole', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'idPermission', referencedColumnName: 'id' }
-  })
-  permissions?: PermissionEntity[];
-
   @ApiProperty()
   @Column({ name: 'updatedAt' })
   updatedAt?: Date;

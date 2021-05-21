@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   forwardRef,
   Inject,
@@ -16,6 +17,7 @@ import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
 import { CreateRolesDto } from './dto/create-roles.dto';
 import { PermissionService } from 'permission/permission.service';
+import { UpdateRolesDto } from './dto/update-roles.dto';
 
 @Injectable()
 export class RolesService {
@@ -23,20 +25,26 @@ export class RolesService {
     @InjectRepository(RolesEntity)
     private rolesRepository: Repository<RolesEntity>,
     private cacheManager: RedisCacheService,
-    private permissionService: PermissionService
+    @Inject(forwardRef(() => PermissionService))
+    private permisionService: PermissionService
   ) {}
 
   async create(newData: CreateRolesDto) {
-    const { name, value, permissionIds } = newData;
+    const { name, value, permissions } = newData;
     const data: RolesEntity = { name, value, createdAt: new Date(), updatedAt: new Date() };
-    data.permissions = await this.permissionService.getPermissionByArrId(permissionIds);
+    let result: RolesEntity;
     try {
-      const result = await this.rolesRepository.save(data);
+      result = await this.rolesRepository.save(data);
+      await this.permisionService.savePermissons(permissions, result.id);
       const key = format(REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_KEY, result?.id.toString());
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
+      if (result?.id) {
+        await this.rolesRepository.delete({ id: result.id });
+        throw new BadRequestException(ROLES_MESSAGE.RESOURCE_NOT_FOUND);
+      }
       throw new InternalServerErrorException(ROLES_MESSAGE.CREATE_ROLES_FAILED);
     }
   }
@@ -90,10 +98,12 @@ export class RolesService {
     return result;
   }
 
-  async update(id: number, newData: RolesEntity) {
+  async update(id: number, newData: UpdateRolesDto) {
     const oldData = await this.rolesRepository.findOne(id, { where: { isDeleted: false } });
+    const { permissions, ...updateRole } = newData;
     try {
-      const result = await this.rolesRepository.save({ ...oldData, ...newData, updatedAt: new Date() });
+      const result = await this.rolesRepository.save({ ...oldData, ...updateRole, updatedAt: new Date() });
+      await this.permisionService.updatePermission(permissions, result.id);
       const key = format(REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_KEY, id.toString());
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_TTL);
       await this.delCacheAfterChange();
@@ -133,13 +143,13 @@ export class RolesService {
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_ROLE_CACHE_COMMON_KEY]);
   }
-  async getAllPermissions(idRole: number): Promise<RolesEntity> {
-    const found = await this.rolesRepository
-      .createQueryBuilder('role')
-      .leftJoinAndSelect('role.permissions', 'per', 'per.actived = true ')
-      .where({ id: idRole, isDeleted: false })
-      .getOne();
-    if (!found) throw new NotFoundException(ROLES_MESSAGE.ROLES_ID_NOT_FOUND);
-    return found;
-  }
+  // async getAllPermissions(idRole: number): Promise<RolesEntity> {
+  //   const found = await this.rolesRepository
+  //     .createQueryBuilder('role')
+  //     .leftJoinAndSelect('role.permissions', 'per', 'per.actived = true ')
+  //     .where({ id: idRole, isDeleted: false })
+  //     .getOne();
+  //   if (!found) throw new NotFoundException(ROLES_MESSAGE.ROLES_ID_NOT_FOUND);
+  //   return found;
+  // }
 }

@@ -39,6 +39,7 @@ import { CronService } from './cron/cron.service';
 import { RedisCacheModule } from 'cache/redisCache.module';
 import { CloneModule } from './clone/clone.module';
 import { PermissionModule } from './permission/permission.module';
+import { ResourcesModule } from './resources/resources.module';
 
 @Module({
   imports: [
@@ -79,7 +80,8 @@ import { PermissionModule } from './permission/permission.module';
     ScheduleModule.forRoot(),
     RedisCacheModule,
     CloneModule,
-    PermissionModule
+    PermissionModule,
+    ResourcesModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService, CronService]

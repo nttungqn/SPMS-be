@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
-import { Column, JoinColumn, ManyToOne } from 'typeorm';
+import { IsNumberString, IsOptional, IsString } from 'class-validator';
+import { PermissionEntity } from 'permission/entity/permission.entity';
+import { Column } from 'typeorm';
 
 export class CreateRolesDto {
   @ApiProperty()
@@ -14,8 +15,7 @@ export class CreateRolesDto {
   @IsNumberString()
   value?: number;
 
-  @ApiProperty()
-  @IsString({ each: true })
+  @ApiProperty({ type: [PermissionEntity] })
   @IsOptional()
-  permissionIds?: string[];
+  permissions?: PermissionEntity[];
 }
