@@ -6,7 +6,7 @@ import { KeHoachGiangDayModule } from 'ke-hoach-giang-day/ke-hoach-giang-day.mod
 import { ChiTietGomNhomModule } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisCacheModule } from 'cache/redisCache.module';
-import { RolesModule } from 'roles/roles.module';
+import { PermissionModule } from 'permission/permission.module';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { RolesModule } from 'roles/roles.module';
     KeHoachGiangDayModule,
     ChiTietGomNhomModule,
     TypeOrmModule.forFeature([ChiTietKeHoachEntity]),
-    RolesModule
+    PermissionModule
   ],
   providers: [ChiTietKeHoachService],
   controllers: [ChiTietKeHoachController],

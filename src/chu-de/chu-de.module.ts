@@ -5,7 +5,7 @@ import { ChuanDauRaMonHocModule } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-ho
 import { HoatDongDanhGiaModule } from 'hoat-dong-danh-gia/hoat-dong-danh-gia.module';
 import { HoatDongDayHocModule } from 'hoat-dong-day-hoc/hoat-dong-day-hoc.module';
 import { LoaiKeHoachGiangDayModule } from 'loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.module';
-import { RolesModule } from 'roles/roles.module';
+import { PermissionModule } from 'permission/permission.module';
 import { SyllabusModule } from 'syllabus/syllabus.module';
 import { ChuDeController } from './chu-de.controller';
 import { ChuDeService } from './chu-de.service';
@@ -20,7 +20,7 @@ import { ChuDeEntity } from './entity/chu-de.entity';
     ChuanDauRaMonHocModule,
     HoatDongDayHocModule,
     RedisCacheModule,
-    RolesModule
+    PermissionModule
   ],
   controllers: [ChuDeController],
   providers: [ChuDeService],

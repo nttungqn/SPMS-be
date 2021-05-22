@@ -4,10 +4,10 @@ import { MonHocTienQuyetController } from './mon-hoc-tien-quyet.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MonHocTienQuyetEntity } from './entity/mon-hoc-tien-quyet.entity';
 import { RedisCacheModule } from 'cache/redisCache.module';
-import { RolesModule } from 'roles/roles.module';
+import { PermissionModule } from 'permission/permission.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MonHocTienQuyetEntity]), RedisCacheModule, RolesModule],
+  imports: [TypeOrmModule.forFeature([MonHocTienQuyetEntity]), RedisCacheModule, PermissionModule],
   controllers: [MonHocTienQuyetController],
   providers: [MonHocTienQuyetService],
   exports: [MonHocTienQuyetService]

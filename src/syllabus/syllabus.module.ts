@@ -7,7 +7,7 @@ import { NamHocModule } from 'nam-hoc/nam-hoc.module';
 import { HeDaotaoModule } from 'he-dao-tao/he-dao-tao.module';
 import { MonHocModule } from 'mon-hoc/mon-hoc.module';
 import { RedisCacheModule } from 'cache/redisCache.module';
-import { RolesModule } from 'roles/roles.module';
+import { PermissionModule } from 'permission/permission.module';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { RolesModule } from 'roles/roles.module';
     HeDaotaoModule,
     MonHocModule,
     RedisCacheModule,
-    RolesModule
+    PermissionModule
   ],
   controllers: [SyllabusController],
   providers: [SyllabusService],

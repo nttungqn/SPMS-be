@@ -45,7 +45,6 @@ export class ChiTietGomNhomController {
   constructor(private readonly chiTietGomNhomService: ChiTietGomNhomService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @Get('/nganh-dao-tao/:idNganhDaotao/khoa-tuyen/:khoa')
   async getAllSubject(
     @Param('idNganhDaotao', ParseIntPipe) idNganhDaoTao: number,
@@ -57,7 +56,6 @@ export class ChiTietGomNhomController {
 
   @ApiBearerAuth('token')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @Get('/chi-tiet-nganh-dao-tao/:idCTNDT')
   async getAllSubjectByChiTietNDT(
     @Param('idCTNDT', ParseIntPipe) idCTNDT: number,
@@ -67,7 +65,6 @@ export class ChiTietGomNhomController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách chi tiết gom nhom' })
   @ApiUnauthorizedResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_NOT_AUTHORIZED })
@@ -78,7 +75,6 @@ export class ChiTietGomNhomController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy chi tiết gom nhóm' })
   @ApiNotFoundResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND })
@@ -90,7 +86,6 @@ export class ChiTietGomNhomController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo chi tiết gom nhóm' })
   @ApiUnauthorizedResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_NOT_AUTHORIZED })
@@ -103,7 +98,6 @@ export class ChiTietGomNhomController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật chi tiết gom nhóm' })
   @ApiNotFoundResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND })
@@ -121,7 +115,6 @@ export class ChiTietGomNhomController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa chi tiết gom nhóm' })
   @ApiNotFoundResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND })
@@ -136,7 +129,6 @@ export class ChiTietGomNhomController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một số gom nhóm' })
   @ApiNotFoundResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND })
@@ -151,7 +143,6 @@ export class ChiTietGomNhomController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa tất cả gom nhóm' })
   @ApiUnauthorizedResponse({ description: CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_NOT_AUTHORIZED })

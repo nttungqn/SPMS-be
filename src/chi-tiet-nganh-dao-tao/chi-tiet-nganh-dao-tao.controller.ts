@@ -39,7 +39,6 @@ export class ChiTietNganhDaoTaoController {
   constructor(private readonly chiTietNganhDaoTao: ChiTietNganhDaoTaoService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @Get('/is-exist')
   async isExist(@Query() filter: FilterIsExistChiTietCTDT) {
@@ -49,7 +48,6 @@ export class ChiTietNganhDaoTaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin của chi tiết ngành đào tạo' })
   @ApiOkResponse({ description: 'OK', type: ChiTietNganhDaoTaoResponseDto })
@@ -60,7 +58,6 @@ export class ChiTietNganhDaoTaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin của chi tiết ngành đào tạo theo id' })
   @ApiOkResponse({ description: 'OK', type: ChiTietNganhDaoTaoDto })
@@ -72,7 +69,6 @@ export class ChiTietNganhDaoTaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiCreatedResponse({ description: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_FAILED })
@@ -96,7 +92,6 @@ export class ChiTietNganhDaoTaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: CTNGANHDAOTAO_MESSAGE.UPDATE_CTNGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CTNGANHDAOTAO_MESSAGE.UPDATE_CTNGANHDAOTAO_FAILED })
@@ -122,7 +117,6 @@ export class ChiTietNganhDaoTaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_FAILED })

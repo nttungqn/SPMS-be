@@ -40,16 +40,7 @@ import { FilterRoles } from './dto/filter-roles.dto';
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('token')
-  // @ApiOperation({ summary: 'Lấy danh sách permission của role' })
-  // @Get('permission/:roleId')
-  // findAllPermission(@Param('roleId', ParseIntPipe) roleId: number) {
-  //   return this.rolesService.getAllPermissions(roleId);
-  // }
-
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách roles' })
   @ApiUnauthorizedResponse({ description: ROLES_MESSAGE.ROLES_NOT_AUTHORIZED })
@@ -60,7 +51,6 @@ export class RolesController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy chi tiết kế hoạch' })
   @ApiUnauthorizedResponse({ description: ROLES_MESSAGE.ROLES_NOT_AUTHORIZED })
@@ -71,7 +61,6 @@ export class RolesController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Thêm một roles' })
   @ApiUnauthorizedResponse({ description: ROLES_MESSAGE.ROLES_NOT_AUTHORIZED })
@@ -83,7 +72,6 @@ export class RolesController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật một chi tiết kế hoạch roles' })
   @ApiUnauthorizedResponse({ description: ROLES_MESSAGE.ROLES_NOT_AUTHORIZED })
@@ -98,7 +86,6 @@ export class RolesController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một roles' })
   @ApiUnauthorizedResponse({ description: ROLES_MESSAGE.ROLES_NOT_AUTHORIZED })

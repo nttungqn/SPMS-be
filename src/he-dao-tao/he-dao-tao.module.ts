@@ -4,10 +4,10 @@ import { HeDaotaoController } from './he-dao-tao.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HeDaoTaoEntity } from './entity/type-of-education.entity';
 import { RedisCacheModule } from 'cache/redisCache.module';
-import { RolesModule } from 'roles/roles.module';
+import { PermissionModule } from 'permission/permission.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HeDaoTaoEntity]), RedisCacheModule, RolesModule],
+  imports: [TypeOrmModule.forFeature([HeDaoTaoEntity]), RedisCacheModule, PermissionModule],
   controllers: [HeDaotaoController],
   providers: [HeDaotaoService],
   exports: [HeDaotaoService]

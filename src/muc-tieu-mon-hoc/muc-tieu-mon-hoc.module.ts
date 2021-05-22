@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MucTieuMonHocEntity } from './entity/muc-tieu-mon-hoc.entity';
 import { ChuanDauRaNganhDaoTaoModule } from 'chuan-dau-ra-nganh-dao-tao/chuan-dau-ra-nganh-dao-tao.module';
 import { RedisCacheModule } from 'cache/redisCache.module';
-import { RolesModule } from 'roles/roles.module';
+import { PermissionModule } from 'permission/permission.module';
 
 @Module({
   controllers: [MucTieuMonHocController],
@@ -16,7 +16,7 @@ import { RolesModule } from 'roles/roles.module';
     ChuanDauRaNganhDaoTaoModule,
     TypeOrmModule.forFeature([MucTieuMonHocEntity]),
     RedisCacheModule,
-    RolesModule
+    PermissionModule
   ],
   exports: [MucTieuMonHocService]
 })

@@ -41,7 +41,6 @@ export class HeDaotaoController {
   constructor(private readonly typeOfEducationService: HeDaotaoService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới một hệ đào tạo' })
   @ApiCreatedResponse({ description: HEDAOTAO_MESSAGE.CREATE_HEDAOTAO_SUCCESSFULLY })
@@ -55,7 +54,6 @@ export class HeDaotaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các hệ đào tạo' })
   @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
@@ -66,7 +64,6 @@ export class HeDaotaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin một hệ đào tạo' })
   @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
@@ -78,7 +75,6 @@ export class HeDaotaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một hệ đào tạo' })
   @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
@@ -93,7 +89,6 @@ export class HeDaotaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một hệ đào tạo' })
   @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })

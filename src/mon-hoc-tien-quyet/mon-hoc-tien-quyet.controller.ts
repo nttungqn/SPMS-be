@@ -44,7 +44,6 @@ export class MonHocTienQuyetController {
   constructor(private readonly prerequisiteSubjectService: MonHocTienQuyetService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới Môn học tiên quyết' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })
@@ -65,7 +64,6 @@ export class MonHocTienQuyetController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các  Môn học tiên quyết' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })
@@ -76,7 +74,6 @@ export class MonHocTienQuyetController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các môn học tiên quyết của một môn học' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })
@@ -90,7 +87,6 @@ export class MonHocTienQuyetController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin một Môn học tiên quyết' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })
@@ -102,7 +98,6 @@ export class MonHocTienQuyetController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật một Môn học tiên quyết' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })
@@ -126,7 +121,6 @@ export class MonHocTienQuyetController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một Môn học tiên quyết' })
   @ApiUnauthorizedResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_NOT_AUTHORIZED })

@@ -44,7 +44,6 @@ export class MucTieuMonHocController {
   constructor(private readonly mucTieuMonHocService: MucTieuMonHocService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các  Mục tiêu môn học' })
   @ApiUnauthorizedResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_NOT_AUTHORIZED })
@@ -55,7 +54,6 @@ export class MucTieuMonHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin một Mục tiêu môn học' })
   @ApiUnauthorizedResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_NOT_AUTHORIZED })
@@ -67,7 +65,6 @@ export class MucTieuMonHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới Mục tiêu môn học' })
   @ApiUnauthorizedResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_NOT_AUTHORIZED })
@@ -81,7 +78,6 @@ export class MucTieuMonHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin Mục tiêu môn học' })
   @ApiUnauthorizedResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_NOT_AUTHORIZED })
@@ -100,7 +96,6 @@ export class MucTieuMonHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một Mục tiêu môn học' })
   @ApiUnauthorizedResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_NOT_AUTHORIZED })

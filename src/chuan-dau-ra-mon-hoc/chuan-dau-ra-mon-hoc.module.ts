@@ -6,7 +6,7 @@ import { ChuanDauRaMonHocEntity } from './entity/chuan-dau-ra-mon-hoc.entity';
 import { MucTieuMonHocModule } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.module';
 import { SyllabusModule } from 'syllabus/syllabus.module';
 import { RedisCacheModule } from 'cache/redisCache.module';
-import { RolesModule } from 'roles/roles.module';
+import { PermissionModule } from 'permission/permission.module';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { RolesModule } from 'roles/roles.module';
     MucTieuMonHocModule,
     SyllabusModule,
     RedisCacheModule,
-    RolesModule
+    PermissionModule
   ],
   controllers: [ChuanDauRaMonHocController],
   providers: [ChuanDauRaMonHocService],

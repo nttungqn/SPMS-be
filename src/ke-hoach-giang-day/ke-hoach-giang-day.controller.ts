@@ -39,7 +39,6 @@ export class KeHoachGiangDayController {
   constructor(private readonly keHoachGiangDayService: KeHoachGiangDayService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin kế hoạch giảng dạy' })
   @ApiOkResponse({ description: 'OK', type: KeHoachGiangDayResponseDto })
@@ -50,7 +49,6 @@ export class KeHoachGiangDayController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin chi tiết của 1 kế hoạch giảng dạy' })
   @ApiOkResponse({ description: 'OK', type: KeHoachGiangDayDto })
@@ -62,7 +60,6 @@ export class KeHoachGiangDayController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiCreatedResponse({ description: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED })
@@ -88,7 +85,6 @@ export class KeHoachGiangDayController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @Put(':id')
   @ApiOkResponse({ description: KEHOACHGIANGDAY_MESSAGE.UPDATE_KEHOACHGIANGDAY_SUCCESSFULLY })
@@ -114,7 +110,6 @@ export class KeHoachGiangDayController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @Delete(':id')
   @ApiOkResponse({ description: KEHOACHGIANGDAY_MESSAGE.DELETE_KEHOACHGIANGDAY_SUCCESSFULLY })

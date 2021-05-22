@@ -1,4 +1,11 @@
-import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT } from 'constant/constant';
 import { ResourcesService } from 'resources/resources.service';
@@ -31,7 +38,11 @@ export class PermissionService {
       throw new InternalServerErrorException();
     }
   }
-
+  async findOne(idRole: number, resource: string, method: string): Promise<PermissionEntity> {
+    const found = await this.permissionRepository.findOne({ where: { idRole, resource, method } });
+    if (!found) throw new NotFoundException();
+    return found;
+  }
   async getPermissionByArrId(permissionArr: string[]) {
     try {
       const [results, total] = await this.permissionRepository

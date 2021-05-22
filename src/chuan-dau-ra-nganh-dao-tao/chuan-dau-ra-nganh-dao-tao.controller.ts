@@ -40,7 +40,6 @@ export class ChuanDauRaNganhDaoTaoController {
   constructor(private readonly chuanDauRaNganhDaoTaoService: ChuanDauRaNganhDaoTaoService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin chuẩn đầu ra ngành đào tạo' })
   @ApiOkResponse({ description: 'OK', type: ChuanDauRaNDTResponseDto })
@@ -51,7 +50,6 @@ export class ChuanDauRaNganhDaoTaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @Get(':id')
   @ApiOperation({ summary: 'lấy thông tin chi tiết của 1 chuẩn đầu ra ngành đào tạo' })
@@ -63,7 +61,6 @@ export class ChuanDauRaNganhDaoTaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @Post()
   @ApiCreatedResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.CREATE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY })
@@ -89,7 +86,6 @@ export class ChuanDauRaNganhDaoTaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @Put(':id')
   @ApiOkResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.UPDATE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY })
@@ -117,7 +113,6 @@ export class ChuanDauRaNganhDaoTaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @Delete(':id')
   @ApiOkResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.DELETE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY })
@@ -140,7 +135,6 @@ export class ChuanDauRaNganhDaoTaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin chuẩn đầu ra ngành đào tạo' })
   @ApiOkResponse({ description: 'OK' })

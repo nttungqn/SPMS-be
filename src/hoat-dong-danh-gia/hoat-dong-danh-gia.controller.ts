@@ -42,7 +42,6 @@ export class HoatDongDanhGiaController {
   constructor(private readonly hoatDongDanhGiaService: HoatDongDanhGiaService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới hoạt động đánh giá' })
   @ApiUnauthorizedResponse({ description: HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_NOT_AUTHORIZED })
@@ -56,7 +55,6 @@ export class HoatDongDanhGiaController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các hoạt động đánh giá' })
   @ApiUnauthorizedResponse({ description: HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_NOT_AUTHORIZED })
@@ -67,7 +65,6 @@ export class HoatDongDanhGiaController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy một hoạt động đánh giá' })
   @ApiUnauthorizedResponse({ description: HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_NOT_AUTHORIZED })
@@ -79,7 +76,6 @@ export class HoatDongDanhGiaController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin hoạt động đánh giá' })
   @ApiUnauthorizedResponse({ description: HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_NOT_AUTHORIZED })
@@ -98,7 +94,6 @@ export class HoatDongDanhGiaController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một hoạt động đánh giá' })
   @ApiUnauthorizedResponse({ description: HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_NOT_AUTHORIZED })

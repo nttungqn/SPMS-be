@@ -40,7 +40,6 @@ export class ChuongTrinhDaoTaoController {
   constructor(private readonly chuongTrinhDaoTaoService: ChuongTrinhDaoTaoService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @Get('/is-exits')
   async isExist(@Query() filter: FilterIsExistCTDT) {
@@ -67,7 +66,6 @@ export class ChuongTrinhDaoTaoController {
     return await this.chuongTrinhDaoTaoService.findById(Number(id));
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVU, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiCreatedResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED })
@@ -88,7 +86,6 @@ export class ChuongTrinhDaoTaoController {
       .json({ message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVU, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_FAILED })
@@ -108,7 +105,6 @@ export class ChuongTrinhDaoTaoController {
     return res.status(HttpStatus.OK).json({ message: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVU, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_FAILED })

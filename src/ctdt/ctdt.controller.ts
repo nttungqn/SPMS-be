@@ -39,7 +39,6 @@ export class CtdtController {
   constructor(private readonly nganhDaoTaoService: CtdtService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin ngành đào tạo' })
   @ApiOkResponse({ description: 'OK', type: NganhDaoTaoResponseDto })
@@ -50,7 +49,6 @@ export class CtdtController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin chi tiết của 1 ngành đào tạo' })
   @ApiOkResponse({ description: 'OK', type: NganhDaoTaoDto })
@@ -62,7 +60,6 @@ export class CtdtController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiCreatedResponse({ description: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_FAILED })
@@ -88,7 +85,6 @@ export class CtdtController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: NGANHDAOTAO_MESSAGE.UPDATE_NGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: NGANHDAOTAO_MESSAGE.UPDATE_NGANHDAOTAO_FAILED })
@@ -109,7 +105,6 @@ export class CtdtController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: NGANHDAOTAO_MESSAGE.DELETE_NGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: NGANHDAOTAO_MESSAGE.DELETE_NGANHDAOTAO_FAILED })

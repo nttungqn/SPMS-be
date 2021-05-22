@@ -40,7 +40,6 @@ export class ChuDeController {
   constructor(private readonly chuDeService: ChuDeService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách chi tiết chủ đề' })
   @ApiUnauthorizedResponse({ description: CHUDE_MESSAGE.CHUDE_NOT_AUTHORIZED })
@@ -51,7 +50,6 @@ export class ChuDeController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy chi tiết chủ đề' })
   @ApiNotFoundResponse({ description: CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND })
@@ -63,7 +61,6 @@ export class ChuDeController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo chi tiết chủ đề' })
   @ApiUnauthorizedResponse({ description: CHUDE_MESSAGE.CHUDE_NOT_AUTHORIZED })
@@ -76,7 +73,6 @@ export class ChuDeController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật chủ đề' })
   @ApiUnauthorizedResponse({ description: CHUDE_MESSAGE.CHUDE_NOT_AUTHORIZED })
@@ -93,7 +89,6 @@ export class ChuDeController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa chủ đề' })
   @ApiUnauthorizedResponse({ description: CHUDE_MESSAGE.CHUDE_NOT_AUTHORIZED })

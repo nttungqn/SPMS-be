@@ -17,7 +17,6 @@ export class ThongKeController {
   constructor(private readonly thongKeService: ThongKeService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Thống kê thông tin giao vien' })
   @ApiOkResponse({ description: 'OK', type: ThongKeGiaoVien })
@@ -27,7 +26,6 @@ export class ThongKeController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin trang giới thiệu' })
   @ApiOkResponse({ description: 'OK', type: IntroPageInfo })
@@ -37,7 +35,6 @@ export class ThongKeController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin số lượng chuẩn đầu ra của syllabus' })
   @ApiOkResponse({ description: 'OK', type: ThongKeSyllabusChuanDauRa })

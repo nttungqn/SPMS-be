@@ -1,38 +1,33 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException, forwardRef, Inject } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { RolesService } from 'roles/roles.service';
-import { ROLES_KEY } from './roles.decorator';
-import { Role } from './roles.enum';
+import { ROLES_MESSAGE } from 'constant/constant';
+import { PermissionEntity } from 'permission/entity/permission.entity';
+import { PermissionService } from 'permission/permission.service';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(
-    private reflector: Reflector // @Inject(forwardRef(() => RolesService)) // private roleService: RolesService
+    @Inject(forwardRef(() => PermissionService))
+    private permissionService: PermissionService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass()
-    ]);
-    if (requiredRoles === undefined) {
-      return true;
-    }
     const { user, route } = context.switchToHttp().getRequest();
-    //const role = await this.roleService.getAllPermissions(user.role.id);
-    // if (!roleAccept(role.permissions, route)) {
-    //   throw new ForbiddenException(ROLES_MESSAGE.NO_PERMISTION);
-    // }
+    const resource = (route.path + '').split('/')[1].toLocaleUpperCase();
+    const methodArr = ['get', 'post', 'put', 'delete'];
+    let permission: PermissionEntity;
+    try {
+      for (const mt of methodArr) {
+        if (route.methods[mt] == true) {
+          permission = await this.permissionService.findOne(user.role.id, resource, mt);
+          break;
+        }
+      }
+    } catch (error) {
+      throw new ForbiddenException(ROLES_MESSAGE.NO_PERMISTION);
+    }
+    if (permission.isEnable === false) {
+      throw new ForbiddenException(ROLES_MESSAGE.NO_PERMISTION);
+    }
     return true;
   }
 }
-// function roleAccept(permissions: PermissionEntity[], route: any): boolean {
-//   for (const per of permissions) {
-//     if (
-//       per.path.toLocaleLowerCase() === route.path.toLocaleLowerCase() &&
-//       route.methods[per.method.toLocaleLowerCase()]
-//     )
-//       return true;
-//   }
-//   return false;
-// }

@@ -43,7 +43,6 @@ export class LoaiKhoiKienThucController {
   constructor(private readonly typeOfKnowledgeBlockService: LoaiKhoiKienThucService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các loại khối kiến thức' })
   @ApiUnauthorizedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_NOT_AUTHORIZED })
@@ -54,7 +53,6 @@ export class LoaiKhoiKienThucController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin một loại khối kiến thức' })
   @ApiUnauthorizedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_NOT_AUTHORIZED })
@@ -66,7 +64,6 @@ export class LoaiKhoiKienThucController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới một loại khối kiến thức' })
   @ApiCreatedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.CREATE_LOAIKHOIKIENTHUC_SUCCESSFULLY })
@@ -85,7 +82,6 @@ export class LoaiKhoiKienThucController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một loại khối kiến thức' })
   @ApiUnauthorizedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_NOT_AUTHORIZED })
@@ -105,7 +101,6 @@ export class LoaiKhoiKienThucController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một loại khối kiến thức' })
   @ApiUnauthorizedResponse({ description: LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_NOT_AUTHORIZED })

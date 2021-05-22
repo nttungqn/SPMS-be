@@ -14,7 +14,6 @@ export class SoKhopController {
   constructor(private readonly soKhopService: SoKhopService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin so khớp môn học của 1 ngành đào tạo trong 2 năm' })
   @ApiOkResponse({ description: 'OK', type: [RowSoKhopNganhDaoTao] })

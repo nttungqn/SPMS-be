@@ -7,7 +7,7 @@ import { LoaiDanhGiaModule } from 'loai-danh-gia/loai-danh-gia.module';
 import { SyllabusModule } from 'syllabus/syllabus.module';
 import { ChuanDauRaMonHocModule } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.module';
 import { RedisCacheModule } from 'cache/redisCache.module';
-import { RolesModule } from 'roles/roles.module';
+import { PermissionModule } from 'permission/permission.module';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { RolesModule } from 'roles/roles.module';
     SyllabusModule,
     ChuanDauRaMonHocModule,
     RedisCacheModule,
-    RolesModule
+    PermissionModule
   ],
   controllers: [HoatDongDanhGiaController],
   providers: [HoatDongDanhGiaService],
