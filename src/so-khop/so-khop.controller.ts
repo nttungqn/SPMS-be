@@ -4,8 +4,6 @@ import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swa
 import { FilterSoKhopNganhDaoTao } from './dto/filter-so-khop.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RowSoKhopNganhDaoTao } from './dto/row-so-khop.dto';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('so-khop')

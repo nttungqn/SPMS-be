@@ -29,8 +29,6 @@ import { KeHoachGiangDayService } from './ke-hoach-giang-day.service';
 import * as lodash from 'lodash';
 import { KEHOACHGIANGDAY_MESSAGE } from 'constant/constant';
 import { KeHoachGiangDayDto, KeHoachGiangDayResponseDto } from './interfaces/keHoachGiangDay.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('ke-hoach-giang-day')

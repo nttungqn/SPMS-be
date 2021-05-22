@@ -29,8 +29,6 @@ import { CreateNganhDaoTaoDto } from './dto/createNganhDaoTao.dto';
 import { FilterNganhDaoTaoDto } from './dto/filterNganhDaoTao.dto';
 import * as lodash from 'lodash';
 import { NganhDaoTaoDto, NganhDaoTaoResponseDto } from './entity/nganhDaoTao.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('nganh-dao-tao')

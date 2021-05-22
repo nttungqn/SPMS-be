@@ -26,12 +26,9 @@ import { RolesService } from './roles.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ROLES_MESSAGE } from './../constant/constant';
 import { FindAllRolesDtoResponse } from './dto/roles.dto.response';
-import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.dto';
 import { RolesEntity } from './entity/roles.entity';
 import { CreateRolesDto } from './dto/create-roles.dto';
 import { UpdateRolesDto } from './dto/update-roles.dto';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { FilterRoles } from './dto/filter-roles.dto';
 

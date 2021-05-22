@@ -32,8 +32,6 @@ import { FilterMucTieuMonHoc } from './dto/filter-muc-tieu-mon-hoc.dto';
 import { MUCTIEUMONHOC_MESSAGE } from 'constant/constant';
 import { FindAllMucTieuMonHocResponse } from './Responses/find-all-muc-tieu-mon-hoc.response';
 import { MucTieuMonHocResponse } from './Responses/muc-tieu-mon-hoc.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { GetUser } from 'auth/user.decorator';
 import { UsersEntity } from 'users/entity/user.entity';

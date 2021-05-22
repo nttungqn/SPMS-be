@@ -6,8 +6,6 @@ import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swa
 import { AuthGuard } from '@nestjs/passport';
 import { ThongKeGiaoVien } from './dto/thong-ke-giao-vien.dto';
 import { IntroPageInfo } from './dto/intro-page.dto';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { ThongKeSyllabusChuanDauRa } from './responses/thong-ke-syllabus-chuan-dau-ra.response';
 

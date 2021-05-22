@@ -30,8 +30,6 @@ import { FilterChuanDauRaNganhDaoTaoDto } from './dto/filterChuanDauRaNDT.dto';
 import * as lodash from 'lodash';
 import { CHUANDAURA_NGANHDAOTAO_MESSAGE } from 'constant/constant';
 import { ChuanDauRaNDTDto, ChuanDauRaNDTResponseDto } from './interfaces/chuanDauRaNDT.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('chuan-dau-ra-nganh-dao-tao')

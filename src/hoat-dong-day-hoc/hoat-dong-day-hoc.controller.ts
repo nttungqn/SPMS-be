@@ -28,8 +28,6 @@ import { CreateHoatDongDayHocDTO } from './dto/create-hoat-dong-day-hoc';
 import { FilterHoatDongDayHoc } from './dto/filter-hoat-đong-day-hoc';
 import { HOATDONGDAYHOC_MESSAGE } from 'constant/constant';
 import { HoatDongDayHocEntity } from './entity/hoat-dong-day-hoc.entity';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('hoat-dong-day-hoc')

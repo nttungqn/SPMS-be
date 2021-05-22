@@ -35,8 +35,6 @@ import { GetSyllabusFilterDto } from './dto/filter-syllabus.dto';
 import { SYLLABUS_MESSAGE } from 'constant/constant';
 import { FindAllSyllabusResponse } from './Responses/find-all-syllabus.response';
 import { SyllabusResponse } from './Responses/syllbus.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { GetUser } from 'auth/user.decorator';
 import { UsersEntity } from 'users/entity/user.entity';

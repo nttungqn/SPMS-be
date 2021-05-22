@@ -29,8 +29,6 @@ import { FilterChuongTrinhDaoTao } from './dto/filterChuongTrinhDaoTao.dto';
 import { IdDto } from './dto/Id.dto';
 import * as lodash from 'lodash';
 import { ChuongTrinhDaoTaoDto, ChuongTrinhDaoTaoResponseDto } from './interfaces/chuongTrinhTaoDao.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { FilterIsExistCTDT } from './dto/filter-is-exist-chuong-trinh-dao-tao.dto';
 

@@ -32,8 +32,6 @@ import { HOATDONGDANHGIA_MESSAGE } from 'constant/constant';
 import { AuthGuard } from '@nestjs/passport';
 import { HoatDongDanhGiaResponse } from './response/hoat-dong-danh-gia.response';
 import { FilterHoatDongDanhGiaResponse } from './response/filter-hoat-dong-danh-gia.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('hoat-dong-danh-gia')

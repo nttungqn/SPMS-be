@@ -31,8 +31,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { HEDAOTAO_MESSAGE } from 'constant/constant';
 import { FindAllHeDaoTaoResponse } from './Responses/find-all-he-dao-tao.response';
 import { HeDaoTaoResponse } from './Responses/he-dao-tao.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('he-dao-tao')

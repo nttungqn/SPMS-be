@@ -34,8 +34,6 @@ import { FilterMonHocKienQuyet } from './dto/filter-mon-hoc-tien-quyet.dto';
 import { MONHOCTIENQUYET_MESSAGE } from 'constant/constant';
 import { FindAllMonHocTienQuyetResponse } from './Responses/find-all-mon-hoc-tien-quyet.response';
 import { MonHocTienQuyetResponse } from './Responses/mon-hoc-tien-quyet.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('mon-hoc-tien-quyet')

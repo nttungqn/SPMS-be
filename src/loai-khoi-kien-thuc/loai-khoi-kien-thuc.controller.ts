@@ -33,8 +33,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { LOAIKHOIKIENTHUC_MESSAGE } from 'constant/constant';
 import { FindAllLoaiKhoiKienThuc } from './Responses/find-all-loai-khoi-kien-thuc.response';
 import { LoaiKhoiKienThucDetailResponse } from './Responses/loai-khoi-kien-thuc.detail.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('loai-khoi-kien-thuc')

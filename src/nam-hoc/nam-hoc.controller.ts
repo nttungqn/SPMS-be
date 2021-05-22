@@ -31,8 +31,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { NAMHOC_MESSAGE } from 'constant/constant';
 import { FindAllNamHocResponse } from './Responses/find-all-nam-hoc.response';
 import { NamHocResponse } from './Responses/nam-hoc.respones';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('nam-hoc')

@@ -30,8 +30,6 @@ import { FilterUser } from './dto/filter-user.dto';
 import { UsersEntity } from './entity/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteMutipleUsersDto } from './dto/delete-multiple-users.dto';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('users')

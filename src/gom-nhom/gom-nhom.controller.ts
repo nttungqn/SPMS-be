@@ -28,8 +28,6 @@ import { DeleteMultipleRows, FilterGomNhom } from './dto/filter-gom-nhom';
 import { GOMNHOM_MESSAGE } from 'constant/constant';
 import { FindAllGomNhomDtoResponse } from './dto/gom-nhom-response';
 import { GomNhomEntity } from './entity/gom-nhom.entity';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('gom-nhom')

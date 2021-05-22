@@ -30,8 +30,6 @@ import { ChuDeEntity } from './entity/chu-de.entity';
 import { GetUser } from 'auth/user.decorator';
 import { UsersEntity } from 'users/entity/user.entity';
 import { UpdateChuDeDTO } from './dto/update-chu-de';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('chu-de')

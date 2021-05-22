@@ -35,8 +35,6 @@ import { FindAllLoaiDanhGiaResponse } from './responses/find-all-loai-danh-gia.r
 import { LoaiDanhGiaResponse } from './responses/loai-danh-gia.response';
 import { GetUser } from 'auth/user.decorator';
 import { UsersEntity } from 'users/entity/user.entity';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('loai-danh-gia')
