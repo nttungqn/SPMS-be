@@ -10,10 +10,10 @@ export class CreateRolesDto {
   name?: string;
 
   @ApiProperty()
-  @Column({ name: 'value', default: 0 })
+  @Column({ name: 'value'})
   @IsOptional()
-  @IsNumberString()
-  value?: number;
+  @IsString()
+  value?: string;
 
   @ApiProperty({ type: [PermissionEntity] })
   @IsOptional()

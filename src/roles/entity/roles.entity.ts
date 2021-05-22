@@ -15,8 +15,8 @@ export class RolesEntity {
   name?: string;
 
   @ApiProperty()
-  @Column({ name: 'value', default: 0 })
-  value?: number;
+  @Column({ name: 'value' })
+  value?: string;
 
   @ApiProperty()
   @Column({ name: 'updatedAt' })

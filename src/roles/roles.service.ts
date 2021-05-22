@@ -35,7 +35,9 @@ export class RolesService {
     let result: RolesEntity;
     try {
       result = await this.rolesRepository.save(data);
-      await this.permisionService.savePermissons(permissions, result.id);
+      if(permissions){
+        await this.permisionService.savePermissons(permissions, result.id);
+      }
       const key = format(REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_KEY, result?.id.toString());
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_TTL);
       await this.delCacheAfterChange();
@@ -103,12 +105,15 @@ export class RolesService {
     const { permissions, ...updateRole } = newData;
     try {
       const result = await this.rolesRepository.save({ ...oldData, ...updateRole, updatedAt: new Date() });
-      await this.permisionService.updatePermission(permissions, result.id);
+      if(permissions){
+        await this.permisionService.updatePermission(permissions, result.id);
+      }
       const key = format(REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_KEY, id.toString());
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
+      console.log(`error`, error)
       throw new InternalServerErrorException(ROLES_MESSAGE.UPDATE_ROLES_FAILED);
     }
   }
