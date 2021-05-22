@@ -12,8 +12,8 @@ export class CreateRolesDto {
   @ApiProperty()
   @Column({ name: 'value', default: 0 })
   @IsOptional()
-  @IsNumberString()
-  value?: number;
+  @IsString()
+  value?: string;
 
   @ApiProperty({ type: [PermissionEntity] })
   @IsOptional()

@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { CreateRolesDto } from './../dto/create-roles.dto';
 import { TABLE_NAME } from './../../constant/constant';
-import { PermissionEntity } from 'permission/entity/permission.entity';
 
 @Entity({ name: TABLE_NAME.ROLES })
 export class RolesEntity {
@@ -16,7 +14,7 @@ export class RolesEntity {
 
   @ApiProperty()
   @Column({ name: 'value', default: 0 })
-  value?: number;
+  value?: string;
 
   @ApiProperty()
   @Column({ name: 'updatedAt' })
