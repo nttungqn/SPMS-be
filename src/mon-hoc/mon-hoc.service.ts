@@ -160,7 +160,7 @@ export class MonHocService {
 
   async insertMonHoc(data = [], user): Promise<any> {
     if (!data?.length) {
-      throw new BadRequestException();
+      throw new BadRequestException({ message: 'data empty!' });
     }
     const extractSubjectCode = data.map((item) => item[0] || '');
     const isDuplicate = await this.getListSubjectDuplicate(extractSubjectCode);
