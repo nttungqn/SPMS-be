@@ -13,7 +13,7 @@ export class RolesEntity {
   name?: string;
 
   @ApiProperty()
-  @Column({ name: 'value', default: 0 })
+  @Column({ name: 'value' })
   value?: string;
 
   @ApiProperty()

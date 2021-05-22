@@ -15,7 +15,8 @@ import {
   Res,
   UploadedFile,
   UseInterceptors,
-  Type
+  Type,
+  Response
 } from '@nestjs/common';
 import { MonHocService } from './mon-hoc.service';
 import { CreateMonHocDto } from './dto/create-mon-hoc.dto';
@@ -38,6 +39,7 @@ import * as nodexlsv from 'node-xlsx';
 import * as fs from 'fs';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RolesGuard } from 'guards/roles.guard';
+import { join } from 'path';
 
 @ApiTags('mon-hoc')
 @Controller('mon-hoc')
@@ -49,12 +51,19 @@ export class MonHocController {
     'SỐ TC',
     'LT',
     'TH',
-    'BT',
-    'LOẠI HP',
-    'KHỐI KIẾN THỨC',
-    'LOẠI KIẾN THỨC',
-    'NGÀNH/CHUYÊN NGÀNH'
+    'BT'
+    // 'LOẠI HP',
+    // 'KHỐI KIẾN THỨC',
+    // 'LOẠI KIẾN THỨC',
+    // 'NGÀNH/CHUYÊN NGÀNH'
   ];
+
+  @Get('template-import')
+  @ApiOperation({ summary: 'import data từ file xlsx' })
+  async sendFileTemplateImportSubject(@Req() req, @Res() res) {
+    res.setHeader('Content-disposition', 'attachment; filename=template.xlsx');
+    return res.sendFile('template-import-subjects.xlsx', { root: 'src/assets/templates' });
+  }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')

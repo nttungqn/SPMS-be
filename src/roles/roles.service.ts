@@ -116,6 +116,7 @@ export class RolesService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
+      console.log(`error`, error);
       throw new InternalServerErrorException(ROLES_MESSAGE.UPDATE_ROLES_FAILED);
     }
   }
