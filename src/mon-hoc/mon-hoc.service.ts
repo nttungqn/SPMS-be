@@ -7,17 +7,18 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, MONHOC_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
-import { Like, Not, Repository } from 'typeorm';
+import { In, Like, Not, Repository } from 'typeorm';
 import { CreateMonHocDto } from './dto/create-mon-hoc.dto';
 import { MonHocEntity } from './entity/mon-hoc.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
-
+import { Connection, getConnection, createConnection } from 'typeorm';
 @Injectable()
 export class MonHocService {
   constructor(
     @InjectRepository(MonHocEntity) private monHocRepository: Repository<MonHocEntity>,
-    private cacheManager: RedisCacheService
+    private cacheManager: RedisCacheService,
+    private connection: Connection
   ) {}
 
   async findAll(filter): Promise<MonHocEntity[] | any> {
@@ -156,19 +157,29 @@ export class MonHocService {
     }
     return { isError: false };
   }
-  async insertMonHoc(data = [], user) {
+
+  async insertMonHoc(data = [], user): Promise<any> {
     if (!data?.length) {
-      throw new BadRequestException();
+      throw new BadRequestException({ message: 'data empty!' });
     }
+    const extractSubjectCode = data.map((item) => item[0] || '');
+    const isDuplicate = await this.getListSubjectDuplicate(extractSubjectCode);
+    if (isDuplicate.length) {
+      return { message: 'DUPLICATE_LIST', isError: true, list: isDuplicate };
+    }
+    const connection = getConnection();
+    const queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
       const resultsArr = data?.map(async (e) => {
-        const ma = e[0] || '';
-        const tenTiengViet = e[1] || '';
+        const ma = e[0] || null;
+        const tenTiengViet = e[1] || null;
         const soTinChi = e[2] || 0;
         const soTietLyThuyet = e[3] || 0;
         const soTietThucHanh = e[4] || 0;
         const soTietTuHoc = e[5] || 0;
-        await this.create({
+        const newMonHoc = await queryRunner.manager.getRepository(MonHocEntity).create({
           ma,
           tenTiengViet,
           soTinChi,
@@ -179,11 +190,20 @@ export class MonHocService {
           createdBy: user?.id,
           updatedBy: user?.id
         });
+        const result = await queryRunner.manager.getRepository(MonHocEntity).save(newMonHoc);
+        console.log('🚀 ~ file: mon-hoc.service.ts ~ line 189 ~ MonHocService ~ resultsArr ~ result', result);
       });
       await Promise.all(resultsArr);
+      console.log('transaction successfully.');
+      await queryRunner.commitTransaction();
       return { message: MONHOC_MESSAGE.IMPORT_SUCCESSFULLY, isError: false };
     } catch (error) {
-      return { message: MONHOC_MESSAGE.IMPORT_FAILED, isError: true, error };
+      console.log(error);
+      await queryRunner.rollbackTransaction();
+      console.log('ERROR, transaction ended');
+      return { message: MONHOC_MESSAGE.IMPORT_FAILED, isError: true, error: error?.sqlMessage };
+    } finally {
+      await queryRunner.release();
     }
   }
   async getAllSubjectByNganhDaoTaoAndKhoaTuyen(idNganhDaoTao: number, khoaTuyen: number) {
@@ -249,5 +269,15 @@ export class MonHocService {
       REDIS_CACHE_VARS.LIST_MON_HOC_CACHE_COMMON_KEY,
       REDIS_CACHE_VARS.LIST_MH_NDT_KT_CACHE_COMMON_KEY
     ]);
+  }
+
+  async getListSubjectDuplicate(listSubjectCode) {
+    const list = await this.monHocRepository.find({
+      where: {
+        ma: In(listSubjectCode)
+      },
+      select: ['ma']
+    });
+    return list;
   }
 }
