@@ -31,7 +31,7 @@ export class RolesService {
 
   async create(newData: CreateRolesDto) {
     const { name, value, permissions } = newData;
-    const data: RolesEntity = { name, value, createdAt: new Date(), updatedAt: new Date() };
+    const data: RolesEntity = { name: name.toLocaleUpperCase(), value, createdAt: new Date(), updatedAt: new Date() };
     let result: RolesEntity;
     try {
       result = await this.rolesRepository.save(data);
@@ -102,6 +102,9 @@ export class RolesService {
 
   async update(id: number, newData: UpdateRolesDto) {
     const oldData = await this.rolesRepository.findOne(id, { where: { isDeleted: false } });
+    if (newData.name) {
+      newData.name = newData.name.toUpperCase();
+    }
     const { permissions, ...updateRole } = newData;
     try {
       const result = await this.rolesRepository.save({ ...oldData, ...updateRole, updatedAt: new Date() });
