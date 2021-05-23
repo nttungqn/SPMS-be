@@ -69,7 +69,7 @@ jobs:
         KEY: ${{ secrets.SSH_KEY }}
         PORT: ${{ secrets.SSH_PORT }}
         script: |
-          cd /opt/nestjs-app-test
+          cd /opt/nestjs-app
           docker tag ${{ env.IMAGE_TESTING }} temp
           docker rmi ${{ env.IMAGE_TESTING }}
           docker pull ${{ env.IMAGE_TESTING }}
