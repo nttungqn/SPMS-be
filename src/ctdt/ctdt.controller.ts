@@ -36,8 +36,8 @@ import { RolesGuard } from 'guards/roles.guard';
 export class CtdtController {
   constructor(private readonly nganhDaoTaoService: CtdtService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @ApiBearerAuth('token')
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin ngành đào tạo' })
   @ApiOkResponse({ description: 'OK', type: NganhDaoTaoResponseDto })
   @ApiNotFoundResponse({ description: NGANHDAOTAO_MESSAGE.NGANHDAOTAO_EMPTY })
@@ -46,8 +46,8 @@ export class CtdtController {
     return await this.nganhDaoTaoService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @ApiBearerAuth('token')
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin chi tiết của 1 ngành đào tạo' })
   @ApiOkResponse({ description: 'OK', type: NganhDaoTaoDto })
   @ApiNotFoundResponse({ description: NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND })

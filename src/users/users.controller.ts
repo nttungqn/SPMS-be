@@ -11,7 +11,8 @@ import {
   HttpException,
   HttpStatus,
   ParseIntPipe,
-  NotFoundException
+  NotFoundException,
+  Post
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -31,6 +32,9 @@ import { UsersEntity } from './entity/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteMutipleUsersDto } from './dto/delete-multiple-users.dto';
 import { RolesGuard } from 'guards/roles.guard';
+import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
+import { AUTH_MESSAGE, EXPIREDIN, SALT, TTL_RESET_PASSWORD } from 'constant/constant';
 
 @ApiTags('users')
 @Controller('users')
@@ -111,5 +115,16 @@ export class UsersController {
   deleteMutipleUsers(@Body() data: DeleteMutipleUsersDto) {
     const ids = data.ids;
     return this.usersService.deleteMutipleUsers(ids);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy danh sách các user' })
+  @ApiUnauthorizedResponse({ description: USER_MESSAGE.USER_NOT_AUTHORIZED })
+  @ApiOkResponse({ type: FindAllUserDtoResponse })
+  @Post()
+  async createUser(@Body() body: CreateUserDto) {
+    const hashPwd = await bcrypt.hash(body.password, SALT);
+    return this.usersService.createUserNotConfirm({...body, password: hashPwd});
   }
 }

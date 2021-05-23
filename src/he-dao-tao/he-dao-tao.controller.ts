@@ -38,6 +38,27 @@ import { RolesGuard } from 'guards/roles.guard';
 export class HeDaotaoController {
   constructor(private readonly typeOfEducationService: HeDaotaoService) {}
 
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy danh sách các hệ đào tạo' })
+  @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
+  @ApiOkResponse({ type: FindAllHeDaoTaoResponse })
+  @Get()
+  findAll() {
+    return this.typeOfEducationService.findAll();
+  }
+
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy thông tin một hệ đào tạo' })
+  @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
+  @ApiNotFoundResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_ID_NOT_FOUND })
+  @ApiOkResponse({ type: HeDaoTaoResponse })
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.typeOfEducationService.findById(id);
+  }
+
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới một hệ đào tạo' })
@@ -49,27 +70,6 @@ export class HeDaotaoController {
   @UsePipes(ValidationPipe)
   create(@Body() createTypeOfEducationDto: CreateHeDaoTaoDto) {
     return this.typeOfEducationService.create(createTypeOfEducationDto);
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @ApiBearerAuth('token')
-  @ApiOperation({ summary: 'Lấy danh sách các hệ đào tạo' })
-  @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
-  @ApiOkResponse({ type: FindAllHeDaoTaoResponse })
-  @Get()
-  findAll() {
-    return this.typeOfEducationService.findAll();
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @ApiBearerAuth('token')
-  @ApiOperation({ summary: 'Lấy thông tin một hệ đào tạo' })
-  @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
-  @ApiNotFoundResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_ID_NOT_FOUND })
-  @ApiOkResponse({ type: HeDaoTaoResponse })
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.typeOfEducationService.findById(id);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

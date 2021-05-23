@@ -38,6 +38,27 @@ import { RolesGuard } from 'guards/roles.guard';
 export class NamHocController {
   constructor(private readonly schoolYearService: NamHocService) {}
 
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy danh sách các năm học' })
+  @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
+  @ApiOkResponse({ type: FindAllNamHocResponse })
+  @Get()
+  findAll() {
+    return this.schoolYearService.findAll();
+  }
+
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy thông tin một năm học' })
+  @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
+  @ApiNotFoundResponse({ description: NAMHOC_MESSAGE.NAMHOC_ID_NOT_FOUND })
+  @ApiOkResponse({ type: NamHocResponse })
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.schoolYearService.findById(id);
+  }
+
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới một năm học' })
@@ -50,27 +71,6 @@ export class NamHocController {
   async create(@Body() createSchoolYearDto: CreateNamHocDto) {
     await this.schoolYearService.create(createSchoolYearDto);
     return new HttpException(NAMHOC_MESSAGE.CREATE_NAMHOC_SUCCESSFULLY, HttpStatus.CREATED);
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @ApiBearerAuth('token')
-  @ApiOperation({ summary: 'Lấy danh sách các năm học' })
-  @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
-  @ApiOkResponse({ type: FindAllNamHocResponse })
-  @Get()
-  findAll() {
-    return this.schoolYearService.findAll();
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @ApiBearerAuth('token')
-  @ApiOperation({ summary: 'Lấy thông tin một năm học' })
-  @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
-  @ApiNotFoundResponse({ description: NAMHOC_MESSAGE.NAMHOC_ID_NOT_FOUND })
-  @ApiOkResponse({ type: NamHocResponse })
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.schoolYearService.findById(id);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
