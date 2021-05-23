@@ -1,16 +1,19 @@
 version: "3.8"
 
 services:
-  nextjs:
+  main:
+    container_name: main
+    image: ${IMAGE}
+    command: npm run start:dev
     ports:
       - 5000:5000
-    build:
-      context: packages/landingpage
-      dockerfile: Dockerfile
-    volumes:
-      - ./packages/landingpage:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/.next
+    env_file:
+      - .env
+    networks:
+      - spms-network
+    depends_on:
+      - redis
+      - mysql
   mysql:
     image: mysql:8.0.22
     restart: on-failure
