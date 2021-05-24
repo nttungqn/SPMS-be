@@ -239,4 +239,12 @@ export class MucTieuMonHocService extends BaseService {
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_MTMH_CACHE_COMMON_KEY]);
   }
+
+  async addList(data: Array<MucTieuMonHocEntity>, user: UsersEntity) {
+    data.forEach((value) => {
+      value.createdBy = user.id;
+      value.updatedBy = user.id;
+    });
+    return await this.mucTieuMonHocEntityRepository.save(data);
+  }
 }
