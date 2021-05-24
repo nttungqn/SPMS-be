@@ -38,16 +38,9 @@ import { FilterIsExistChiTietCTDT } from './dto/filter-exist-CTNganhDaoTao.dto';
 export class ChiTietNganhDaoTaoController {
   constructor(private readonly chiTietNganhDaoTao: ChiTietNganhDaoTaoService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @ApiBearerAuth('token')
-  @Get('/is-exist')
-  async isExist(@Query() filter: FilterIsExistChiTietCTDT) {
-    const found = await this.chiTietNganhDaoTao.isExist(filter);
-    if (found) return { isConflict: true };
-    return { isConflict: false };
-  }
+  
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin của chi tiết ngành đào tạo' })
   @ApiOkResponse({ description: 'OK', type: ChiTietNganhDaoTaoResponseDto })
@@ -57,7 +50,7 @@ export class ChiTietNganhDaoTaoController {
     return await this.chiTietNganhDaoTao.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin của chi tiết ngành đào tạo theo id' })
   @ApiOkResponse({ description: 'OK', type: ChiTietNganhDaoTaoDto })
@@ -134,5 +127,14 @@ export class ChiTietNganhDaoTaoController {
       });
     }
     return res.status(HttpStatus.OK).json({ message: CTNGANHDAOTAO_MESSAGE.DELETE_CTNGANHDAOTAO_SUCCESSFULLY });
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth('token')
+  @Get('/is-exist')
+  async isExist(@Query() filter: FilterIsExistChiTietCTDT) {
+    const found = await this.chiTietNganhDaoTao.isExist(filter);
+    if (found) return { isConflict: true };
+    return { isConflict: false };
   }
 }
