@@ -274,6 +274,14 @@ export class ChuDeService extends BaseService {
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_CHU_DE_CACHE_COMMON_KEY]);
   }
+
+  async addList(data: Array<CreateChuDeDto>, user: UsersEntity) {
+    const newData = [];
+    data.forEach((value, index) => {
+      newData[index] = { ...value, createdBy: user?.id, updatedBy: user?.id };
+    });
+    return await this.chuDeRepository.save(newData);
+  }
 }
 const keyService = {
   chuanDauRaMonHoc: 1,
