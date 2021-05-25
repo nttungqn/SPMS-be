@@ -258,4 +258,12 @@ export class LoaiDanhGiaService extends BaseService {
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_LDG_CACHE_COMMON_KEY]);
   }
+
+  async addList(data: Array<CreateLoaiDanhGiaDto>, user: UsersEntity) {
+    const newData = [];
+    data.forEach((value, index) => {
+      newData[index] = { ...value, createBy: user.id, updateBy: user.id };
+    });
+    return await this.loaiDanhGiaRepository.save(newData);
+  }
 }

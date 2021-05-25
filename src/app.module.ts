@@ -40,6 +40,7 @@ import { RedisCacheModule } from 'cache/redisCache.module';
 import { CloneModule } from './clone/clone.module';
 import { PermissionModule } from './permission/permission.module';
 import { ResourcesModule } from './resources/resources.module';
+import { GenerateSyllabusModule } from 'generate-syllabus/generate-syllabus.module';
 
 @Module({
   imports: [
@@ -81,7 +82,8 @@ import { ResourcesModule } from './resources/resources.module';
     RedisCacheModule,
     CloneModule,
     PermissionModule,
-    ResourcesModule
+    ResourcesModule,
+    GenerateSyllabusModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService, CronService]

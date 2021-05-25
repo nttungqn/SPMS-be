@@ -215,4 +215,12 @@ export class ChuanDauRaMonHocService extends BaseService {
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_CDRMH_CACHE_COMMON_KEY]);
   }
+
+  async addList(data: Array<ChuanDauRaMonHocEntity>, user: UsersEntity) {
+    data.forEach((value) => {
+      value.createdBy = user.id;
+      value.updatedBy = user.id;
+    });
+    return await this.chuanDauRaMonHocService.save(data);
+  }
 }

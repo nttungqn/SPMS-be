@@ -252,4 +252,12 @@ export class HoatDongDanhGiaService extends BaseService {
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_HDDG_CACHE_COMMON_KEY]);
   }
+
+  async addList(data: Array<CreateHoatDongDanhGiaDto>, user: UsersEntity) {
+    const newData = [];
+    data.forEach((value, index) => {
+      newData[index] = { ...value, createdBy: user?.id, updatedBy: user?.id };
+    });
+    return await this.hoatDongDanhGiaService.save(newData);
+  }
 }
