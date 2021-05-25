@@ -14,7 +14,7 @@ export class RolesGuard implements CanActivate {
     const { user, route, method } = context.switchToHttp().getRequest();
     const resource = (route.path + '').split('/')[1].toLocaleUpperCase();
     try {
-      let permission = await this.permissionService.findOne(user.role.id, resource, String(method).toLowerCase());
+      const permission = await this.permissionService.findOne(user.role.id, resource, String(method).toLowerCase());
       if (permission.isEnable === false) {
         throw new ForbiddenException(ROLES_MESSAGE.NO_PERMISTION); // deny
       }

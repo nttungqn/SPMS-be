@@ -125,6 +125,6 @@ export class UsersController {
   @Post()
   async createUser(@Body() body: CreateUserDto) {
     const hashPwd = await bcrypt.hash(body.password, SALT);
-    return this.usersService.createUserNotConfirm({...body, password: hashPwd});
+    return this.usersService.createUserNotConfirm({ ...body, password: hashPwd });
   }
 }

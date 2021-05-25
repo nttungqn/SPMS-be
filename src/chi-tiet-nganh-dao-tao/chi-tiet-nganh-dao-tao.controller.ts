@@ -38,8 +38,6 @@ import { FilterIsExistChiTietCTDT } from './dto/filter-exist-CTNganhDaoTao.dto';
 export class ChiTietNganhDaoTaoController {
   constructor(private readonly chiTietNganhDaoTao: ChiTietNganhDaoTaoService) {}
 
-  
-
   // @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'lấy thông tin của chi tiết ngành đào tạo' })
