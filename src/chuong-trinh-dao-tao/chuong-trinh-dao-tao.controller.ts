@@ -29,8 +29,6 @@ import { FilterChuongTrinhDaoTao } from './dto/filterChuongTrinhDaoTao.dto';
 import { IdDto } from './dto/Id.dto';
 import * as lodash from 'lodash';
 import { ChuongTrinhDaoTaoDto, ChuongTrinhDaoTaoResponseDto } from './interfaces/chuongTrinhTaoDao.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { FilterIsExistCTDT } from './dto/filter-is-exist-chuong-trinh-dao-tao.dto';
 
@@ -38,18 +36,6 @@ import { FilterIsExistCTDT } from './dto/filter-is-exist-chuong-trinh-dao-tao.dt
 @Controller('chuong-trinh-dao-tao')
 export class ChuongTrinhDaoTaoController {
   constructor(private readonly chuongTrinhDaoTaoService: ChuongTrinhDaoTaoService) {}
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
-  @ApiBearerAuth('token')
-  @Get('/is-exits')
-  async isExist(@Query() filter: FilterIsExistCTDT) {
-    const found = await this.chuongTrinhDaoTaoService.isExist(filter);
-    if (found) {
-      return { isConflict: true, content: found };
-    }
-    return { isConflict: false };
-  }
 
   @Get()
   @ApiOperation({ summary: 'lấy thông tin chương trình đào tạo' })
@@ -67,7 +53,6 @@ export class ChuongTrinhDaoTaoController {
     return await this.chuongTrinhDaoTaoService.findById(Number(id));
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVU, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiCreatedResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED })
@@ -88,7 +73,6 @@ export class ChuongTrinhDaoTaoController {
       .json({ message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVU, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_FAILED })
@@ -108,7 +92,6 @@ export class ChuongTrinhDaoTaoController {
     return res.status(HttpStatus.OK).json({ message: CHUONGTRINHDAOTAO_MESSAGE.UPDATE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVU, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_FAILED })
@@ -126,5 +109,15 @@ export class ChuongTrinhDaoTaoController {
       });
     }
     return res.status(HttpStatus.OK).json({ message: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
+  }
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth('token')
+  @Get('/is-exits')
+  async isExist(@Query() filter: FilterIsExistCTDT) {
+    const found = await this.chuongTrinhDaoTaoService.isExist(filter);
+    if (found) {
+      return { isConflict: true, content: found };
+    }
+    return { isConflict: false };
   }
 }

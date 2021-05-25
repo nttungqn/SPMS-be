@@ -15,6 +15,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'auth/user.decorator';
 import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
 import { CLONE_MESSAGE } from 'constant/constant';
+import { RolesGuard } from 'guards/roles.guard';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
 import { UsersEntity } from 'users/entity/user.entity';
@@ -25,14 +26,14 @@ import { CloneService } from './clone.service';
 export class CloneController {
   constructor(private readonly cloneService: CloneService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @Get('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/ke-hoach-giang-day')
   async getKeHoachGiangDay(@Param('idCTNDTClone') idCTNDTClone: number, @Param('idCTNDT') idCTNDT: number) {
     return await this.cloneService.KeHoachGiangDayClone(idCTNDTClone, idCTNDT);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @Post('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/ke-hoach-giang-day')
   async createKeHoachGiangDayClone(
@@ -45,12 +46,14 @@ export class CloneController {
     return { message: CLONE_MESSAGE.CREATE_KE_HOACH_GIANG_DAY_SUCCESSFULLY };
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth('token')
   @Get('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/khoi-kien-thuc-chi-tiet')
   async getKhoiKienThucDetail(@Param('idCTNDTClone') idCTNDTClone: number, @Param('idCTNDT') idCTNDT: number) {
     return await this.cloneService.khoiKienThucDetailClone(idCTNDTClone, idCTNDT);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @Post('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/khoi-kien-thuc-chi-tiet')
   @HttpCode(HttpStatus.CREATED)
@@ -64,14 +67,14 @@ export class CloneController {
     return { message: CLONE_MESSAGE.CREATE_NOI_DUNG_SUCCESSFULLY };
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @Get('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/chuan-dau-ra-nganh-dao-tao')
   async getChuanDauRaNganhDaoTaoDetail(@Param('idCTNDTClone') idCTNDTClone: number, @Param('idCTNDT') idCTNDT: number) {
     return await this.cloneService.chuanDauRaNganhDaoTaoClone(idCTNDTClone, idCTNDT);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @Post('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/chuan-dau-ra-nganh-dao-tao')
   async createChuanDauRaNganhDaoTaoDetail(
@@ -82,10 +85,5 @@ export class CloneController {
   ) {
     await this.cloneService.createChuanDauRaNganhDaoTaoClone(chuanDauRaList, idCTNDTClone, idCTNDT, user);
     return { message: CLONE_MESSAGE.CREATE_CHUAN_DAU_RA_SUCCESSFULLY };
-  }
-
-  @Delete('/chi-tiet-nganh-dao-tao/:idKKT')
-  async khoiKienThuc(@Param('idKKT') idKKT: number) {
-    return await this.cloneService.deleteKhoiKienThuc(idKKT);
   }
 }

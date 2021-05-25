@@ -12,6 +12,7 @@ import { LoaiDanhGiaModule } from 'loai-danh-gia/loai-danh-gia.module';
 import { HoatDongDayHocModule } from 'hoat-dong-day-hoc/hoat-dong-day-hoc.module';
 import { ChuDeModule } from 'chu-de/chu-de.module';
 import { HoatDongDanhGiaModule } from 'hoat-dong-danh-gia/hoat-dong-danh-gia.module';
+import { PermissionModule } from 'permission/permission.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { HoatDongDanhGiaModule } from 'hoat-dong-danh-gia/hoat-dong-danh-gia.mod
     HoatDongDayHocModule,
     ChuDeModule,
     HoatDongDanhGiaModule,
-    HoatDongDayHocModule
+    HoatDongDayHocModule,
+    PermissionModule
   ],
   providers: [GenerateSyllabusService],
   controllers: [GenerateSyllabusController],

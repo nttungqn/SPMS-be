@@ -214,4 +214,19 @@ export class UsersService {
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_USER_CACHE_COMMON_KEY]);
   }
+
+  async createUserNotConfirm(newData) {
+    const userEmail = await this.usersRepository.findOne({ email: newData?.email, isDeleted: false });
+    if (userEmail) {
+      return { message: 'EMAIL_EXISTS' };
+    }
+    const userUsername = await this.usersRepository.findOne({ username: newData?.username, isDeleted: false });
+    if (userUsername) {
+      return { message: 'USERNAME_EXISTS' };
+    }
+
+    const newUser = await this.usersRepository.create({ ...newData });
+    const user = await this.usersRepository.save(newUser);
+    return user;
+  }
 }

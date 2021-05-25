@@ -35,8 +35,6 @@ import { GetSyllabusFilterDto } from './dto/filter-syllabus.dto';
 import { SYLLABUS_MESSAGE } from 'constant/constant';
 import { FindAllSyllabusResponse } from './Responses/find-all-syllabus.response';
 import { SyllabusResponse } from './Responses/syllbus.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { GetUser } from 'auth/user.decorator';
 import { UsersEntity } from 'users/entity/user.entity';
@@ -47,7 +45,6 @@ export class SyllabusController {
   constructor(private readonly syllabusService: SyllabusService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới một Syllabus' })
   @ApiCreatedResponse({ description: SYLLABUS_MESSAGE.CREATE_SYLLABUS_SUCCESSFULLY })
@@ -69,7 +66,6 @@ export class SyllabusController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách syllabus của giáo vien' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -80,7 +76,6 @@ export class SyllabusController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -91,7 +86,6 @@ export class SyllabusController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin một Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -103,7 +97,6 @@ export class SyllabusController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
@@ -121,7 +114,6 @@ export class SyllabusController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })

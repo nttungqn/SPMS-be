@@ -33,13 +33,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { KHOIKIENTHUC_MESSAGE } from 'constant/constant';
 import { KhoiKienThucResponse } from './Responses/khoi-kien-thuc.response';
 import { FindAllKhoiKienThuc } from './Responses/find-all-khoi-kien-thuc.response';
+import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('khoi-kien-thuc')
 @Controller('khoi-kien-thuc')
 export class KhoiKienThucController {
   constructor(private readonly khoiKienThucService: KhoiKienThucService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các khối kiến thức' })
   @ApiUnauthorizedResponse({ description: KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_NOT_AUTHORIZED })
@@ -49,7 +50,7 @@ export class KhoiKienThucController {
     return this.khoiKienThucService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin một khối kiến thức' })
   @ApiUnauthorizedResponse({ description: KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_NOT_AUTHORIZED })
@@ -60,7 +61,7 @@ export class KhoiKienThucController {
     return this.khoiKienThucService.findOne(id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới một khối kiến thức' })
   @ApiCreatedResponse({ description: KHOIKIENTHUC_MESSAGE.CREATE_KHOIKIENTHUC_SUCCESSFULLY })
@@ -74,7 +75,7 @@ export class KhoiKienThucController {
     return new HttpException(KHOIKIENTHUC_MESSAGE.CREATE_KHOIKIENTHUC_SUCCESSFULLY, HttpStatus.CREATED);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một khối kiến thức' })
   @ApiUnauthorizedResponse({ description: KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_NOT_AUTHORIZED })
@@ -93,7 +94,7 @@ export class KhoiKienThucController {
     return new HttpException(KHOIKIENTHUC_MESSAGE.UPDATE_KHOIKIENTHUC_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một khối kiến thức' })
   @ApiUnauthorizedResponse({ description: KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_NOT_AUTHORIZED })
