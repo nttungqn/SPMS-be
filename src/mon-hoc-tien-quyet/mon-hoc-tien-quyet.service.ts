@@ -81,7 +81,7 @@ export class MonHocTienQuyetService {
   }
 
   async findAllPrereSuject(id: number, filter: FilterMonHocKienQuyet) {
-    const key = format(REDIS_CACHE_VARS.LIST_MHTQ_MHT_CACHE_KEY, id.toString(), JSON.stringify(filter));
+    const key = format(REDIS_CACHE_VARS.LIST_MHTQ_MHT_CACHE_KEY, id?.toString(), JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
       const { page = 0, limit = LIMIT, type } = filter;
