@@ -37,6 +37,17 @@ import { FilterIsExistCTDT } from './dto/filter-is-exist-chuong-trinh-dao-tao.dt
 export class ChuongTrinhDaoTaoController {
   constructor(private readonly chuongTrinhDaoTaoService: ChuongTrinhDaoTaoService) {}
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth('token')
+  @Get('/is-exits')
+  async isExist(@Query() filter: FilterIsExistCTDT) {
+    const found = await this.chuongTrinhDaoTaoService.isExist(filter);
+    if (found) {
+      return { isConflict: true, content: found };
+    }
+    return { isConflict: false };
+  }
+
   @Get()
   @ApiOperation({ summary: 'lấy thông tin chương trình đào tạo' })
   @ApiOkResponse({ description: 'OK', type: ChuongTrinhDaoTaoResponseDto })
@@ -109,15 +120,5 @@ export class ChuongTrinhDaoTaoController {
       });
     }
     return res.status(HttpStatus.OK).json({ message: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
-  }
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @ApiBearerAuth('token')
-  @Get('/is-exits')
-  async isExist(@Query() filter: FilterIsExistCTDT) {
-    const found = await this.chuongTrinhDaoTaoService.isExist(filter);
-    if (found) {
-      return { isConflict: true, content: found };
-    }
-    return { isConflict: false };
   }
 }
