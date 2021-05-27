@@ -19,12 +19,40 @@ import { RolesGuard } from 'guards/roles.guard';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
 import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
 import { UsersEntity } from 'users/entity/user.entity';
+import { CreateCTDTBody } from './body/create-ctdt-body.dto';
 import { CloneService } from './clone.service';
 
 @ApiTags('clone')
 @Controller('clone')
 export class CloneController {
   constructor(private readonly cloneService: CloneService) {}
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth('token')
+  @Get('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone')
+  async getChiTietNganhDaoTao(@Param('idCTNDTClone') idCTNDTClone: number, @Param('idCTNDT') idCTNDT: number) {
+    return await this.cloneService.ChiTietNganhDaoTaoClone(idCTNDTClone, idCTNDT);
+  }
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth('token')
+  @Post('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone')
+  @HttpCode(HttpStatus.CREATED)
+  async createChiTietNganhDaoTao(
+    @Body() data: CreateCTDTBody,
+    @Param('idCTNDTClone') idCTNDTClone: number,
+    @Param('idCTNDT') idCTNDT: number,
+    @GetUser() user: UsersEntity
+  ) {
+    await this.cloneService.CreateChiTietNganhDaoTao(
+      data.chuanDauRa,
+      data.khoiKienThuc,
+      data.keHoachGiangDay,
+      idCTNDTClone,
+      idCTNDT,
+      user
+    );
+    return { message: CLONE_MESSAGE.CREATE_CHUONG_TRINH_DAO_TAO_SUCCESSFULLY };
+  }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
@@ -58,7 +86,7 @@ export class CloneController {
   @Post('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone/khoi-kien-thuc-chi-tiet')
   @HttpCode(HttpStatus.CREATED)
   async createKhoiKienThucDetail(
-    @Body(ValidationPipe) khoiKienThucList: KhoiKienThucEntity[],
+    @Body() khoiKienThucList: KhoiKienThucEntity[],
     @Param('idCTNDTClone') idCTNDTClone: number,
     @Param('idCTNDT') idCTNDT: number,
     @GetUser() user: UsersEntity
