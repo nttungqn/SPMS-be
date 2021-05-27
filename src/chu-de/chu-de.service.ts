@@ -278,7 +278,14 @@ export class ChuDeService extends BaseService {
   async addList(data: Array<CreateChuDeDto>, user: UsersEntity) {
     const newData = [];
     data.forEach((value, index) => {
-      newData[index] = { ...value, createdBy: user?.id, updatedBy: user?.id };
+      newData[index] = {
+        ...value,
+        createdBy: user?.id,
+        updatedBy: user?.id,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      delete newData[index]['id'];
     });
     return await this.chuDeRepository.save(newData);
   }

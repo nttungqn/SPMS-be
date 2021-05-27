@@ -7,6 +7,7 @@ import { LoaiDanhGiaService } from 'loai-danh-gia/loai-danh-gia.service';
 import { MucTieuMonHocService } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.service';
 import { Syllabus } from 'syllabus/entity/syllabus.entity';
 import { SyllabusService } from 'syllabus/syllabus.service';
+import { UsersEntity } from 'users/entity/user.entity';
 import { SyllabusDto } from './dto/syllabus.dto';
 
 @Injectable()
@@ -20,7 +21,7 @@ export class GenerateSyllabusService {
     private hoatDongDayHocService: HoatDongDayHocService,
     private chuDeService: ChuDeService
   ) {}
-  async put(data: SyllabusDto, syllabusId, user): Promise<any> {
+  async put(data: SyllabusDto, syllabusId: number, user: UsersEntity): Promise<any> {
     try {
       // 1
       const syllabusObjUpdate = new Syllabus();
@@ -54,6 +55,7 @@ export class GenerateSyllabusService {
             if (value == sOS.id.toString()) etCopy.chuanDauRaMonHoc[j] = subjectOutputStandards[i].id.toString();
           });
         });
+        etCopy.idSyllabus = +syllabusId;
         return etCopy;
       });
 
@@ -76,6 +78,7 @@ export class GenerateSyllabusService {
             if (value == sOS.id.toString()) tTPTCopy.chuanDauRaMonHoc[j] = subjectOutputStandards[i].id.toString();
           });
         });
+        tTPTCopy.idSyllabus = +syllabusId;
         return tTPTCopy;
       });
 
@@ -87,6 +90,7 @@ export class GenerateSyllabusService {
             if (value == sOS.id.toString()) tTPTCopy.chuanDauRaMonHoc[j] = subjectOutputStandards[i].id.toString();
           });
         });
+        tTPTCopy.idSyllabus = +syllabusId;
         return tTPTCopy;
       });
 

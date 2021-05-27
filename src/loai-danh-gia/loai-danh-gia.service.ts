@@ -262,7 +262,15 @@ export class LoaiDanhGiaService extends BaseService {
   async addList(data: Array<CreateLoaiDanhGiaDto>, user: UsersEntity) {
     const newData = [];
     data.forEach((value, index) => {
-      newData[index] = { ...value, createBy: user.id, updateBy: user.id };
+      newData[index] = {
+        ...value,
+        createBy: user.id,
+        updateBy: user.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        syllabus: value.idSyllabus
+      };
+      delete newData[index]['id'];
     });
     return await this.loaiDanhGiaRepository.save(newData);
   }
