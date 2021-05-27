@@ -461,13 +461,19 @@ export class CloneService {
     const queryRunner = this.conection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    const ctndtRepository = queryRunner.manager.getRepository(ChiTietNganhDaoTaoEntity);
+    const ctndt = await ctndtRepository
+      .createQueryBuilder('ctndt')
+      .leftJoinAndSelect('ctndt.keHoachGiangDayList', 'khgd')
+      .leftJoinAndSelect('ctndt.chuanDaura', 'chuanDaura')
+      .leftJoinAndSelect('ctndt.khoiKienThucList', 'khoiKienThucList')
+      .where({ id: idCTNDT })
+      .getOne();
+    if (ctndt.chuanDaura.length > 0 || ctndt.keHoachGiangDayList.length > 0 || ctndt.khoiKienThucList.length > 0) {
+      queryRunner.release();
+      throw new BadRequestException(CLONE_MESSAGE.CONTENT_EXISTED);
+    }
     try {
-      const ctndtRepository = queryRunner.manager.getRepository(ChiTietNganhDaoTaoEntity);
-      const ctndt = await ctndtRepository
-        .createQueryBuilder('ctndt')
-        .leftJoinAndSelect('ctndt.keHoachGiangDayList', 'khgd')
-        .where({ id: idCTNDT })
-        .getOne();
       // Xử lý chuẩn đầu ra
       let indexLv1 = 0;
       chuanDauRaList.forEach((cdrlv1) => {
@@ -562,12 +568,17 @@ export class CloneService {
           ctkhE.createdBy = user.id;
           ctkhE.updatedBy = user.id;
           const length = ctgnArr.length;
-          for (let index = 0; index < length; index++) {
+          let index = 0;
+          for (; index < length; index++) {
             if (ctgnArr[index].idMH === ctkhE.chiTietGomNhom.monHoc.id) {
               ctkhE.idCTGN = ctgnArr[index].id;
               ctgnArr.splice(index, 1);
               break;
             }
+          }
+          if (index === length) {
+            // id môn học trong kế hoạch giảng dạy không nàm trong nội dung
+            throw new BadRequestException();
           }
           removeProperties(
             ctkhE,
@@ -588,7 +599,10 @@ export class CloneService {
       await queryRunner.commitTransaction();
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new BadRequestException();
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException(CLONE_MESSAGE.MON_HOC_NOT_EXIST_IN_KHOI_KIEN_THUC);
+      }
+      throw new InternalServerErrorException();
     } finally {
       await queryRunner.release();
     }
