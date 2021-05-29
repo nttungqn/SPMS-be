@@ -11,7 +11,8 @@ import {
   ValidationPipe,
   UseGuards,
   HttpException,
-  HttpStatus
+  HttpStatus,
+  HttpCode
 } from '@nestjs/common';
 import { NamHocService } from './nam-hoc.service';
 import { CreateNamHocDto } from './dto/create-nam-hoc.dto';
@@ -67,10 +68,16 @@ export class NamHocController {
   @ApiConflictResponse({ description: NAMHOC_MESSAGE.NAMHOC_EXIST })
   @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @UsePipes(ValidationPipe)
   async create(@Body() createSchoolYearDto: CreateNamHocDto) {
-    await this.schoolYearService.create(createSchoolYearDto);
-    return new HttpException(NAMHOC_MESSAGE.CREATE_NAMHOC_SUCCESSFULLY, HttpStatus.CREATED);
+    const result = await this.schoolYearService.create(createSchoolYearDto);
+    return {
+      response: NAMHOC_MESSAGE.CREATE_NAMHOC_SUCCESSFULLY,
+      message: NAMHOC_MESSAGE.CREATE_NAMHOC_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
