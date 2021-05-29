@@ -20,7 +20,7 @@ export class KeHoachGiangDayService {
   async findAll(filter: any): Promise<any> {
     const key = format(REDIS_CACHE_VARS.LIST_KHGD_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       try {
         const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
         const skip = Number(page) * Number(limit);
@@ -31,11 +31,11 @@ export class KeHoachGiangDayService {
           .join(' OR ');
         const [list, total] = await this.keHoachGiangDayRepository
           .createQueryBuilder('khgd')
-          .leftJoinAndSelect('khgd.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false')
+          .leftJoinAndSelect('khgd.nganhDaoTao', 'ndt', 'ndt.isDeleted = false')
           .leftJoinAndSelect('khgd.createdBy', 'createdBy')
           .leftJoinAndSelect('khgd.updatedBy', 'updatedBy')
           .where((qb) => {
-            qb.leftJoinAndSelect('nganhDaoTao.nganhDaoTao', 'nganhDaoTao');
+            qb.leftJoinAndSelect('ndt.nganhDaoTao', 'nganhDaoTao');
             searchKey
               ? qb.andWhere(searchQuery, {
                   search: `%${searchKey}%`
@@ -52,7 +52,6 @@ export class KeHoachGiangDayService {
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_KHGD_CACHE_TTL);
       } catch (error) {
-        console.log(error);
         throw new InternalServerErrorException();
       }
     }
@@ -63,7 +62,7 @@ export class KeHoachGiangDayService {
   async findById(id: number): Promise<any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_KHGD_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.keHoachGiangDayRepository.findOne({
         where: { id, isDeleted: false },
         relations: ['nganhDaoTao', 'nganhDaoTao.nganhDaoTao', 'createdBy', 'updatedBy']

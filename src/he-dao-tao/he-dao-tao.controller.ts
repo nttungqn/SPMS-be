@@ -31,8 +31,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { HEDAOTAO_MESSAGE } from 'constant/constant';
 import { FindAllHeDaoTaoResponse } from './Responses/find-all-he-dao-tao.response';
 import { HeDaoTaoResponse } from './Responses/he-dao-tao.response';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('he-dao-tao')
@@ -40,8 +38,28 @@ import { RolesGuard } from 'guards/roles.guard';
 export class HeDaotaoController {
   constructor(private readonly typeOfEducationService: HeDaotaoService) {}
 
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy danh sách các hệ đào tạo' })
+  @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
+  @ApiOkResponse({ type: FindAllHeDaoTaoResponse })
+  @Get()
+  findAll() {
+    return this.typeOfEducationService.findAll();
+  }
+
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy thông tin một hệ đào tạo' })
+  @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
+  @ApiNotFoundResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_ID_NOT_FOUND })
+  @ApiOkResponse({ type: HeDaoTaoResponse })
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.typeOfEducationService.findById(id);
+  }
+
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới một hệ đào tạo' })
   @ApiCreatedResponse({ description: HEDAOTAO_MESSAGE.CREATE_HEDAOTAO_SUCCESSFULLY })
@@ -55,30 +73,6 @@ export class HeDaotaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.ADMIN])
-  @ApiBearerAuth('token')
-  @ApiOperation({ summary: 'Lấy danh sách các hệ đào tạo' })
-  @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
-  @ApiOkResponse({ type: FindAllHeDaoTaoResponse })
-  @Get()
-  findAll() {
-    return this.typeOfEducationService.findAll();
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
-  @ApiBearerAuth('token')
-  @ApiOperation({ summary: 'Lấy thông tin một hệ đào tạo' })
-  @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
-  @ApiNotFoundResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_ID_NOT_FOUND })
-  @ApiOkResponse({ type: HeDaoTaoResponse })
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.typeOfEducationService.findById(id);
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một hệ đào tạo' })
   @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })
@@ -93,7 +87,6 @@ export class HeDaotaoController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một hệ đào tạo' })
   @ApiUnauthorizedResponse({ description: HEDAOTAO_MESSAGE.HEDAOTAO_NOT_AUTHORIZED })

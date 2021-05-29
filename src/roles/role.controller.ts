@@ -26,12 +26,9 @@ import { RolesService } from './roles.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ROLES_MESSAGE } from './../constant/constant';
 import { FindAllRolesDtoResponse } from './dto/roles.dto.response';
-import { BaseFilterDto } from 'chuong-trinh-dao-tao/dto/filterChuongTrinhDaoTao.dto';
 import { RolesEntity } from './entity/roles.entity';
 import { CreateRolesDto } from './dto/create-roles.dto';
 import { UpdateRolesDto } from './dto/update-roles.dto';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { FilterRoles } from './dto/filter-roles.dto';
 
@@ -41,7 +38,6 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách roles' })
   @ApiUnauthorizedResponse({ description: ROLES_MESSAGE.ROLES_NOT_AUTHORIZED })
@@ -52,7 +48,6 @@ export class RolesController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy chi tiết kế hoạch' })
   @ApiUnauthorizedResponse({ description: ROLES_MESSAGE.ROLES_NOT_AUTHORIZED })
@@ -63,7 +58,6 @@ export class RolesController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Thêm một roles' })
   @ApiUnauthorizedResponse({ description: ROLES_MESSAGE.ROLES_NOT_AUTHORIZED })
@@ -75,7 +69,6 @@ export class RolesController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật một chi tiết kế hoạch roles' })
   @ApiUnauthorizedResponse({ description: ROLES_MESSAGE.ROLES_NOT_AUTHORIZED })
@@ -90,7 +83,6 @@ export class RolesController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một roles' })
   @ApiUnauthorizedResponse({ description: ROLES_MESSAGE.ROLES_NOT_AUTHORIZED })

@@ -67,7 +67,7 @@ export class MucTieuMonHocService extends BaseService {
   async findAll(filter: FilterMucTieuMonHoc) {
     const key = format(REDIS_CACHE_VARS.LIST_MTMH_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { page = 0, limit = LIMIT, idSyllabus, sortBy, searchKey, sortType } = filter;
       const skip = page * limit;
       if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
@@ -111,7 +111,7 @@ export class MucTieuMonHocService extends BaseService {
   async findOne(id: number) {
     const key = format(REDIS_CACHE_VARS.DETAIL_MTMH_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       try {
         result = await this.mucTieuMonHocEntityRepository
           .createQueryBuilder('mtmh')
@@ -238,5 +238,21 @@ export class MucTieuMonHocService extends BaseService {
 
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_MTMH_CACHE_COMMON_KEY]);
+  }
+
+  async addList(data: Array<CreateMucTieuMonHocDto>, user: UsersEntity) {
+    const newData = [];
+    data.forEach((value, index) => {
+      newData[index] = {
+        ...value,
+        createdBy: user?.id,
+        updatedBy: user?.id,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      delete newData[index]['id'];
+    });
+
+    return await this.mucTieuMonHocEntityRepository.save(newData);
   }
 }

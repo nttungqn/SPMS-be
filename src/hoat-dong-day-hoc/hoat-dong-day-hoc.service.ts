@@ -6,6 +6,8 @@ import { FilterHoatDongDayHoc } from './dto/filter-hoat-đong-day-hoc';
 import { HoatDongDayHocEntity } from './entity/hoat-dong-day-hoc.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
+import { CreateHoatDongDayHocDTO } from './dto/create-hoat-dong-day-hoc';
+import { UsersEntity } from 'users/entity/user.entity';
 
 @Injectable()
 export class HoatDongDayHocService {
@@ -17,7 +19,7 @@ export class HoatDongDayHocService {
   async findAll(filter: FilterHoatDongDayHoc): Promise<HoatDongDayHocEntity[] | any> {
     const key = format(REDIS_CACHE_VARS.LIST_HDDH_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType } = filter;
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
@@ -50,7 +52,7 @@ export class HoatDongDayHocService {
   async findOne(id: number): Promise<HoatDongDayHocEntity | any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.hoatDongDayHocRepository.findOne({
         where: { id, isDeleted: false },
         relations: ['createdBy', 'updatedBy']
@@ -144,5 +146,20 @@ export class HoatDongDayHocService {
 
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_HDDH_CACHE_COMMON_KEY]);
+  }
+
+  async addList(data: Array<CreateHoatDongDayHocDTO>, user: UsersEntity) {
+    const newData = [];
+    data.forEach((value, index) => {
+      newData[index] = {
+        ...value,
+        createdBy: user?.id,
+        updatedBy: user?.id,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      delete newData[index]['id'];
+    });
+    return await this.hoatDongDayHocRepository.save(newData);
   }
 }

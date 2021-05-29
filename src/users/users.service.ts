@@ -21,7 +21,7 @@ export class UsersService {
   async findAll(filter: FilterUser) {
     const key = format(REDIS_CACHE_VARS.LIST_USER_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       try {
         const { page = 0, limit = LIMIT, search = '', sortBy = '', sortType = '', ...other } = filter;
         if (other.isDeleted) other.isDeleted = String(other.isDeleted) === 'true';
@@ -86,7 +86,7 @@ export class UsersService {
   async findOne(query): Promise<any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_USER_CACHE_KEY, JSON.stringify(query));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.usersRepository.findOne({ ...query });
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_USER_CACHE_TTL);
     }
@@ -116,7 +116,7 @@ export class UsersService {
   async getProfile(query): Promise<any> {
     const key = format(REDIS_CACHE_VARS.PROFILE_USER_CACHE_KEY, JSON.stringify(query));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.usersRepository
         .createQueryBuilder('users')
         .leftJoinAndSelect('users.role', 'roles')
@@ -213,5 +213,20 @@ export class UsersService {
 
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_USER_CACHE_COMMON_KEY]);
+  }
+
+  async createUserNotConfirm(newData) {
+    const userEmail = await this.usersRepository.findOne({ email: newData?.email, isDeleted: false });
+    if (userEmail) {
+      return { message: 'EMAIL_EXISTS' };
+    }
+    const userUsername = await this.usersRepository.findOne({ username: newData?.username, isDeleted: false });
+    if (userUsername) {
+      return { message: 'USERNAME_EXISTS' };
+    }
+
+    const newUser = await this.usersRepository.create({ ...newData });
+    const user = await this.usersRepository.save(newUser);
+    return user;
   }
 }

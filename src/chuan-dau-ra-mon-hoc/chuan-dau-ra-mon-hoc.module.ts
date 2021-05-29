@@ -6,9 +6,16 @@ import { ChuanDauRaMonHocEntity } from './entity/chuan-dau-ra-mon-hoc.entity';
 import { MucTieuMonHocModule } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.module';
 import { SyllabusModule } from 'syllabus/syllabus.module';
 import { RedisCacheModule } from 'cache/redisCache.module';
+import { PermissionModule } from 'permission/permission.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ChuanDauRaMonHocEntity]), MucTieuMonHocModule, SyllabusModule, RedisCacheModule],
+  imports: [
+    TypeOrmModule.forFeature([ChuanDauRaMonHocEntity]),
+    MucTieuMonHocModule,
+    SyllabusModule,
+    RedisCacheModule,
+    PermissionModule
+  ],
   controllers: [ChuanDauRaMonHocController],
   providers: [ChuanDauRaMonHocService],
   exports: [ChuanDauRaMonHocService]

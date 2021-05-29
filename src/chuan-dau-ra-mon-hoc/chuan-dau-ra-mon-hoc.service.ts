@@ -66,7 +66,7 @@ export class ChuanDauRaMonHocService extends BaseService {
   async findAll(filter: FilterChuanDauRaMonHocDto) {
     const key = format(REDIS_CACHE_VARS.LIST_CDRMH_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { page = 0, limit = LIMIT, idMucTieuMonHoc, idSyllabus, sortBy, sortType, searchKey } = filter;
       const skip = page * limit;
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
@@ -102,7 +102,7 @@ export class ChuanDauRaMonHocService extends BaseService {
   async findOne(id: number) {
     const key = format(REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const found = await this.chuanDauRaMonHocService.findOne(id, {
         relations: ['mucTieuMonHoc', 'createdBy', 'updatedBy'],
         where: { isDeleted: false }
@@ -214,5 +214,20 @@ export class ChuanDauRaMonHocService extends BaseService {
 
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_CDRMH_CACHE_COMMON_KEY]);
+  }
+
+  async addList(data: Array<CreateChuanDauRaMonHocDto>, user: UsersEntity) {
+    const newData = [];
+    data.forEach((value, index) => {
+      newData[index] = {
+        ...value,
+        createBy: user?.id,
+        updateBy: user?.id,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      delete newData[index]['id'];
+    });
+    return await this.chuanDauRaMonHocService.save(newData);
   }
 }

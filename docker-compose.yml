@@ -1,6 +1,19 @@
 version: "3.8"
 
 services:
+  main:
+    container_name: main
+    image: ${IMAGE}
+    command: npm run start:dev
+    ports:
+      - 5000:5000
+    env_file:
+      - .env
+    networks:
+      - spms-network
+    depends_on:
+      - redis
+      - mysql
   mysql:
     image: mysql:8.0.22
     restart: on-failure

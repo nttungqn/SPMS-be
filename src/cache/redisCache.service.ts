@@ -36,6 +36,6 @@ export class RedisCacheService {
         if (e.includes(value)) map.push(e);
       });
     });
-    await this.store.del(map);
+    if (map.length > 0) await this.store.del(map);
   }
 }

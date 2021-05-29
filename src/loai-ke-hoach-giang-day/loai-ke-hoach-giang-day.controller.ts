@@ -29,13 +29,14 @@ import { BaseFilterDto, fliterLoaiKeHoachGiangDay } from './dto/fliterLoaiKeHoac
 import { LOAIKEHOACHGIANGDAY_MESSAGE } from './../constant/constant';
 import { FindAllLoaiKeHoachGiangDayDtoResponse } from './dto/loai-ke-hoach-giang-day.response';
 import { LoaiKeHoachGiangDayEntity } from './entity/loaiKeHoachGiangDay.entity';
+import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('loai-ke-hoach-giang-day')
 @Controller('loai-ke-hoach-giang-day')
 export class LoaiKeHoachGiangDayController {
   constructor(private readonly loaiKeHoachGiangDayService: LoaiKeHoachGiangDayService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách loại kế hoạch giảng dạy' })
   @ApiUnauthorizedResponse({ description: LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_NOT_AUTHORIZED })
@@ -45,7 +46,7 @@ export class LoaiKeHoachGiangDayController {
     return await this.loaiKeHoachGiangDayService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin loại kế hoạch giảng dạy' })
   @ApiNotFoundResponse({ description: LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_ID_NOT_FOUND })
@@ -56,7 +57,7 @@ export class LoaiKeHoachGiangDayController {
     return await this.loaiKeHoachGiangDayService.findById(Number(id));
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo loại kế hoạch giảng dạy' })
   @ApiUnauthorizedResponse({ description: LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_NOT_AUTHORIZED })
@@ -73,7 +74,7 @@ export class LoaiKeHoachGiangDayController {
     return res.json({ result: result });
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật loại kế hoạch giảng dạy' })
   @ApiNotFoundResponse({ description: LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_ID_NOT_FOUND })
@@ -92,7 +93,7 @@ export class LoaiKeHoachGiangDayController {
     return new HttpException(LOAIKEHOACHGIANGDAY_MESSAGE.UPDATE_LOAIKEHOACHGIANGDAY_SUCCESSFULLY, HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa loại kế hoạch giảng dạy' })
   @ApiNotFoundResponse({ description: LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_ID_NOT_FOUND })

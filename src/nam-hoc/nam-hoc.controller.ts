@@ -31,8 +31,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { NAMHOC_MESSAGE } from 'constant/constant';
 import { FindAllNamHocResponse } from './Responses/find-all-nam-hoc.response';
 import { NamHocResponse } from './Responses/nam-hoc.respones';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('nam-hoc')
@@ -40,8 +38,28 @@ import { RolesGuard } from 'guards/roles.guard';
 export class NamHocController {
   constructor(private readonly schoolYearService: NamHocService) {}
 
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy danh sách các năm học' })
+  @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
+  @ApiOkResponse({ type: FindAllNamHocResponse })
+  @Get()
+  findAll() {
+    return this.schoolYearService.findAll();
+  }
+
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy thông tin một năm học' })
+  @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
+  @ApiNotFoundResponse({ description: NAMHOC_MESSAGE.NAMHOC_ID_NOT_FOUND })
+  @ApiOkResponse({ type: NamHocResponse })
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.schoolYearService.findById(id);
+  }
+
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo mới một năm học' })
   @ApiCreatedResponse({ description: NAMHOC_MESSAGE.CREATE_NAMHOC_SUCCESSFULLY })
@@ -56,30 +74,6 @@ export class NamHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
-  @ApiBearerAuth('token')
-  @ApiOperation({ summary: 'Lấy danh sách các năm học' })
-  @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
-  @ApiOkResponse({ type: FindAllNamHocResponse })
-  @Get()
-  findAll() {
-    return this.schoolYearService.findAll();
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
-  @ApiBearerAuth('token')
-  @ApiOperation({ summary: 'Lấy thông tin một năm học' })
-  @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
-  @ApiNotFoundResponse({ description: NAMHOC_MESSAGE.NAMHOC_ID_NOT_FOUND })
-  @ApiOkResponse({ type: NamHocResponse })
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.schoolYearService.findById(id);
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin một năm học' })
   @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })
@@ -94,7 +88,6 @@ export class NamHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một năm học' })
   @ApiUnauthorizedResponse({ description: NAMHOC_MESSAGE.NAMHOC_NOT_AUTHORIZED })

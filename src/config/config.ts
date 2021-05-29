@@ -26,9 +26,8 @@ const FIREBASECONFIG = {
   databaseURL: 'https://spms-f664f.firebaseio.com'
 };
 const REDIS_CONFIG = {
-  HOST: 'localhost',
-  PORT: 6376,
-  URL: 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com:18872',
+  HOST: process.env.REDIS_HOST || 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com',
+  PORT: +process.env.REDIS_PORT || 18872,
   PASSWORD: 'A7yzKrnkLM8vN3w6G1nzn5MozR9YIOsD',
   TTL: 600,
   MAX: 256

@@ -19,7 +19,7 @@ export class ChuanDauRaNganhDaoTaoService {
   async findAll(filter: any): Promise<any> {
     const key = format(REDIS_CACHE_VARS.LIST_CDRNDT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { limit = LIMIT, page = 0, ...rest } = filter;
       const skip = Number(page) * Number(limit);
       const query = {
@@ -47,7 +47,7 @@ export class ChuanDauRaNganhDaoTaoService {
   async findById(id: number): Promise<any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       result = await this.chuanDauRaNDTRepository.findOne({
         where: { id, isDeleted: false },
         relations: ['nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
@@ -102,7 +102,9 @@ export class ChuanDauRaNganhDaoTaoService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, id.toString());
+      const keyCDR_NDT = format(REDIS_CACHE_VARS.LIST_CDRNDT_NDT_CACHE_KEY, updated.nganhDaoTao.toString());
       await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_TTL);
+      await this.cacheManager.del(keyCDR_NDT);
       await this.delCacheAfterChange();
       return updated;
     } catch (error) {
@@ -126,7 +128,9 @@ export class ChuanDauRaNganhDaoTaoService {
         updatedBy
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, id.toString());
+      const keyCDR_NDT = format(REDIS_CACHE_VARS.LIST_CDRNDT_NDT_CACHE_KEY, deleted.nganhDaoTao.toString());
       await this.cacheManager.del(key);
+      await this.cacheManager.del(keyCDR_NDT);
       await this.delCacheAfterChange();
       return deleted;
     } catch (error) {
@@ -137,7 +141,7 @@ export class ChuanDauRaNganhDaoTaoService {
   async getAllList(idCTNDT: number): Promise<any> {
     const key = format(REDIS_CACHE_VARS.LIST_CDRNDT_NDT_CACHE_KEY, idCTNDT.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       try {
         const list = await this.chuanDauRaNDTRepository.find({
           where: { isDeleted: false, nganhDaoTao: idCTNDT },

@@ -15,7 +15,8 @@ import {
   Res,
   UploadedFile,
   UseInterceptors,
-  Type
+  Type,
+  Response
 } from '@nestjs/common';
 import { MonHocService } from './mon-hoc.service';
 import { CreateMonHocDto } from './dto/create-mon-hoc.dto';
@@ -37,9 +38,8 @@ import { MonHocEntity } from './entity/mon-hoc.entity';
 import * as nodexlsv from 'node-xlsx';
 import * as fs from 'fs';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
+import { join } from 'path';
 
 @ApiTags('mon-hoc')
 @Controller('mon-hoc')
@@ -51,15 +51,21 @@ export class MonHocController {
     'SỐ TC',
     'LT',
     'TH',
-    'BT',
-    'LOẠI HP',
-    'KHỐI KIẾN THỨC',
-    'LOẠI KIẾN THỨC',
-    'NGÀNH/CHUYÊN NGÀNH'
+    'BT'
+    // 'LOẠI HP',
+    // 'KHỐI KIẾN THỨC',
+    // 'LOẠI KIẾN THỨC',
+    // 'NGÀNH/CHUYÊN NGÀNH'
   ];
 
+  @Get('template-import')
+  @ApiOperation({ summary: 'import data từ file xlsx' })
+  async sendFileTemplateImportSubject(@Req() req, @Res() res) {
+    res.setHeader('Content-disposition', 'attachment; filename=template.xlsx');
+    return res.sendFile('template-import-subjects.xlsx', { root: 'src/assets/templates' });
+  }
+
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các môn học' })
   @ApiUnauthorizedResponse({ description: MONHOC_MESSAGE.MONHOC_NOT_AUTHORIZED })
@@ -70,7 +76,6 @@ export class MonHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin môn học' })
   @ApiUnauthorizedResponse({ description: MONHOC_MESSAGE.MONHOC_NOT_AUTHORIZED })
@@ -81,7 +86,6 @@ export class MonHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Tạo môn học' })
   @ApiUnauthorizedResponse({ description: MONHOC_MESSAGE.MONHOC_NOT_AUTHORIZED })
@@ -99,7 +103,6 @@ export class MonHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật thông tin môn học' })
   @ApiUnauthorizedResponse({ description: MONHOC_MESSAGE.MONHOC_NOT_AUTHORIZED })
@@ -117,7 +120,6 @@ export class MonHocController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa môn học' })
   @ApiUnauthorizedResponse({ description: MONHOC_MESSAGE.MONHOC_NOT_AUTHORIZED })
@@ -131,7 +133,6 @@ export class MonHocController {
   }
   @Post('import-data')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'import data từ file xlsx' })
   @UseInterceptors(FileInterceptor('file', {}))

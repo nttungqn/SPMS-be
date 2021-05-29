@@ -1,25 +1,25 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, forwardRef, Inject } from '@nestjs/common';
 import { ROLES_MESSAGE } from 'constant/constant';
-import { ROLES_KEY } from './roles.decorator';
-import { Role } from './roles.enum';
+import { PermissionEntity } from 'permission/entity/permission.entity';
+import { PermissionService } from 'permission/permission.service';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    @Inject(forwardRef(() => PermissionService))
+    private permissionService: PermissionService
+  ) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass()
-    ]);
-    if (requiredRoles === undefined) {
-      return true;
-    }
-    const { user } = context.switchToHttp().getRequest();
-    const roleUser = user.role['value'];
-    if (!requiredRoles.includes(roleUser)) {
-      throw new ForbiddenException(ROLES_MESSAGE.NO_PERMISTION);
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const { user, route, method } = context.switchToHttp().getRequest();
+    const resource = (route.path + '').split('/')[1].toLocaleUpperCase();
+    try {
+      const permission = await this.permissionService.findOne(user.role.id, resource, String(method).toLowerCase());
+      if (permission.isEnable === false) {
+        throw new ForbiddenException(ROLES_MESSAGE.NO_PERMISTION); // deny
+      }
+    } catch (error) {
+      throw new ForbiddenException(ROLES_MESSAGE.AUTHORIZATION_ERROR); // not grant
     }
     return true;
   }

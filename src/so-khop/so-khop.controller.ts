@@ -15,8 +15,6 @@ import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swa
 import { FilterSoKhopNganhDaoTao } from './dto/filter-so-khop.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RowSoKhopNganhDaoTao } from './dto/row-so-khop.dto';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { UpdateSoKhopRequestBody } from './body/update-so-kho-request-body';
 import { GetUser } from 'auth/user.decorator';
@@ -29,7 +27,6 @@ export class SoKhopController {
   constructor(private readonly soKhopService: SoKhopService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy thông tin so khớp môn học của 1 ngành đào tạo trong 2 năm' })
   @ApiOkResponse({ description: 'OK', type: [RowSoKhopNganhDaoTao] })
@@ -43,7 +40,6 @@ export class SoKhopController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật so khớp môn học của 1 ngành đào tạo trong 2 năm' })
   @ApiOkResponse({ description: SOKHOP_MESSAGE.UPDATE_MONHOCTRUOC_SUCCESSFULLY })

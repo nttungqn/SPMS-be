@@ -17,13 +17,14 @@ import { CreateChuanDauRaDto } from './dto/createChuanDauRa.dto';
 import { FilterChuanDauRaDto } from './dto/filterChuanDauRa.dto';
 import * as lodash from 'lodash';
 import { ChuanDauRaResponseDto, ChuanDauTaDto } from './interfaces/chuanDauRa.response';
+import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('chuan-dau-ra')
 @Controller('chuan-dau-ra')
 export class ChuanDauRaController {
   constructor(private readonly chuanDauRaService: ChuanDauRaService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @Get()
   @ApiOperation({ summary: 'lấy thông tin chuẩn đầu ra' })
@@ -33,7 +34,7 @@ export class ChuanDauRaController {
     return await this.chuanDauRaService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @Get(':id')
   @ApiOperation({ summary: 'lấy thông tin chi tiết của 1 chuẩn đầu ra' })
@@ -44,7 +45,7 @@ export class ChuanDauRaController {
     return await this.chuanDauRaService.findById(Number(id));
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @Post()
   @ApiCreatedResponse({ description: CHUANDAURA_MESSAGE.CREATE_CHUANDAURA_SUCCESSFULLY })
@@ -67,7 +68,7 @@ export class ChuanDauRaController {
     return res.status(HttpStatus.CREATED).json({ message: CHUANDAURA_MESSAGE.CREATE_CHUANDAURA_SUCCESSFULLY });
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: CHUANDAURA_MESSAGE.UPDATE_CHUANDAURA_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUANDAURA_MESSAGE.UPDATE_CHUANDAURA_FAILED })
@@ -87,7 +88,7 @@ export class ChuanDauRaController {
     return res.status(HttpStatus.OK).json({ message: CHUANDAURA_MESSAGE.UPDATE_CHUANDAURA_SUCCESSFULLY });
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOkResponse({ description: CHUANDAURA_MESSAGE.DELETE_CHUANDAURA_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUANDAURA_MESSAGE.DELETE_CHUANDAURA_FAILED })

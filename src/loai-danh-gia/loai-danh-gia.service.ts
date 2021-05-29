@@ -52,7 +52,7 @@ export class LoaiDanhGiaService extends BaseService {
   async findAll(filter: FilterLoaiDanhGia) {
     const key = format(REDIS_CACHE_VARS.LIST_LDG_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { page = 0, limit = LIMIT, idSyllabus, sortBy, sortType, searchKey } = filter;
       const skip = page * limit;
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
@@ -95,7 +95,7 @@ export class LoaiDanhGiaService extends BaseService {
   async findOne(id: number) {
     const key = format(REDIS_CACHE_VARS.DETAIL_LDG_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       try {
         result = await this.loaiDanhGiaRepository
           .createQueryBuilder('ldg')
@@ -257,5 +257,21 @@ export class LoaiDanhGiaService extends BaseService {
 
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_LDG_CACHE_COMMON_KEY]);
+  }
+
+  async addList(data: Array<CreateLoaiDanhGiaDto>, user: UsersEntity) {
+    const newData = [];
+    data.forEach((value, index) => {
+      newData[index] = {
+        ...value,
+        createBy: user.id,
+        updateBy: user.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        syllabus: value.idSyllabus
+      };
+      delete newData[index]['id'];
+    });
+    return await this.loaiDanhGiaRepository.save(newData);
   }
 }

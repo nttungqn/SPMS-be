@@ -11,7 +11,8 @@ import {
   HttpException,
   HttpStatus,
   ParseIntPipe,
-  NotFoundException
+  NotFoundException,
+  Post
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -30,9 +31,10 @@ import { FilterUser } from './dto/filter-user.dto';
 import { UsersEntity } from './entity/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteMutipleUsersDto } from './dto/delete-multiple-users.dto';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
+import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
+import { AUTH_MESSAGE, EXPIREDIN, SALT, TTL_RESET_PASSWORD } from 'constant/constant';
 
 @ApiTags('users')
 @Controller('users')
@@ -40,7 +42,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USER_NOT_AUTHORIZED })
@@ -51,7 +52,6 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USERS_NOT_AUTHORIZED })
@@ -65,7 +65,6 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.USER, Role.SINHVIEN, Role.GIAOVIEN, Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Cập nhật một user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USERS_NOT_AUTHORIZED })
@@ -83,7 +82,6 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USERS_NOT_AUTHORIZED })
@@ -97,7 +95,6 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa tất cả user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USERS_NOT_AUTHORIZED })
@@ -110,7 +107,6 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.QUANLY, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Xóa một số user' })
   @ApiUnauthorizedResponse({ description: USER_MESSAGE.USER_NOT_AUTHORIZED })
@@ -119,5 +115,16 @@ export class UsersController {
   deleteMutipleUsers(@Body() data: DeleteMutipleUsersDto) {
     const ids = data.ids;
     return this.usersService.deleteMutipleUsers(ids);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy danh sách các user' })
+  @ApiUnauthorizedResponse({ description: USER_MESSAGE.USER_NOT_AUTHORIZED })
+  @ApiOkResponse({ type: FindAllUserDtoResponse })
+  @Post()
+  async createUser(@Body() body: CreateUserDto) {
+    const hashPwd = await bcrypt.hash(body.password, SALT);
+    return this.usersService.createUserNotConfirm({ ...body, password: hashPwd });
   }
 }

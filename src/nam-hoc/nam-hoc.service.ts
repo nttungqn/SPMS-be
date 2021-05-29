@@ -39,7 +39,7 @@ export class NamHocService {
   async findAll() {
     const key = REDIS_CACHE_VARS.LIST_NAM_HOC_CACHE_KEY;
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const list = await this.schoolYearRepository.find({ where: { isDeleted: false }, order: { ma: 'ASC' } });
       result = { contents: list };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_NAM_HOC_CACHE_TTL);
@@ -52,7 +52,7 @@ export class NamHocService {
   async findById(id: number): Promise<NamHocEntity> {
     const key = format(REDIS_CACHE_VARS.DETAIL_NAM_HOC_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       try {
         result = await this.schoolYearRepository.findOne(id, { where: { isDeleted: false } });
       } catch (error) {

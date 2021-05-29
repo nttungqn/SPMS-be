@@ -16,7 +16,10 @@ export class GomNhomEntity extends CreateGomNhomDTO {
   @JoinColumn({ name: 'ID_LoaiKhoiKienThuc' })
   loaiKhoiKienThuc?: LoaiKhoiKienThucEntity;
 
-  @OneToMany(() => ChiTietGomNhomEntity, (chiTietGomNhom) => chiTietGomNhom.gomNhom)
+  @OneToMany(() => ChiTietGomNhomEntity, (chiTietGomNhom) => chiTietGomNhom.gomNhom, {
+    onDelete: 'CASCADE',
+    cascade: ['insert']
+  })
   @JoinColumn({ name: 'id' })
   chiTietGomNhom?: ChiTietGomNhomEntity[];
 

@@ -17,7 +17,8 @@ export class AppService {
   }
   async search(query): Promise<any> {
     const { search = '' } = query;
-    const filter = search ? { search, limit: 3 } : { limit: 3 };
+    const searchKey = search;
+    const filter = searchKey ? { searchKey, limit: 3 } : { limit: 3 };
     const syllabusPromise = this.syllabusService.search({ ...filter });
     const chuongTrinhDaoTaoPromise = this.chuongTrinhDaoTaoService.findAll({ ...filter });
     const nganhDaoTaoPromise = this.nganhDaoTaoService.findAll({ ...filter });
