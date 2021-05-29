@@ -10,7 +10,8 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
-  ParseIntPipe
+  ParseIntPipe,
+  HttpCode
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -60,9 +61,15 @@ export class ChuanDauRaMonHocController {
   @ApiNotFoundResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_ID_NOT_FOUND })
   @ApiConflictResponse({ description: CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_EXIST })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body() createChuanDauRaMonHocDto: CreateChuanDauRaMonHocDto, @GetUser() user: UsersEntity) {
-    await this.chuanDauRaMonHocService.create(createChuanDauRaMonHocDto, user);
-    return new HttpException(CHUANDAURAMONHOC_MESSAGE.CREATE_CHUANDAURAMONHOC_SUCCESSFULLY, HttpStatus.CREATED);
+    const result = await this.chuanDauRaMonHocService.create(createChuanDauRaMonHocDto, user);
+    return {
+      response: CHUANDAURAMONHOC_MESSAGE.CREATE_CHUANDAURAMONHOC_SUCCESSFULLY,
+      message: CHUANDAURAMONHOC_MESSAGE.CREATE_CHUANDAURAMONHOC_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

@@ -95,8 +95,13 @@ export class ChiTietGomNhomController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() newData: CreateChiTietGomNhomDTO, @GetUser() user: UsersEntity): Promise<any> {
-    await this.chiTietGomNhomService.create(newData, user.id);
-    return new HttpException(CHITIETGOMNHOM_MESSAGE.CREATE_CHITIETGOMNHOM_SUCCESSFULLY, HttpStatus.CREATED);
+    const result = await this.chiTietGomNhomService.create(newData, user.id);
+    return {
+      response: CHITIETGOMNHOM_MESSAGE.CREATE_CHITIETGOMNHOM_SUCCESSFULLY,
+      message: CHITIETGOMNHOM_MESSAGE.CREATE_CHITIETGOMNHOM_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

@@ -11,7 +11,8 @@ import {
   Req,
   HttpException,
   HttpStatus,
-  ParseIntPipe
+  ParseIntPipe,
+  HttpCode
 } from '@nestjs/common';
 import { ChiTietKeHoachService } from './chi-tiet-ke-hoach.service';
 import { CreateChiTietKeHoachDto } from './dto/create-chi-tiet-ke-hoach.dto';
@@ -69,13 +70,20 @@ export class ChiTietKeHoachController {
   @ApiInternalServerErrorResponse({ description: CHITIETKEHOACH_MESSAGE.CREATE_CHITIETKEHOACH_FAILED })
   @ApiOkResponse({ type: CreateChiTietKeHoachDto })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body() CreateChiTietKeHoachDto: CreateChiTietKeHoachDto, @Req() req) {
     const user = req.user || {};
-    return await this.chiTietKeHoachService.create({
+    const result = await this.chiTietKeHoachService.create({
       ...CreateChiTietKeHoachDto,
       updatedBy: user?.id,
       createdBy: user?.id
     });
+    return {
+      response: CHITIETKEHOACH_MESSAGE.CREATE_CHITIETKEHOACH_SUCCESSFULLY,
+      message: CHITIETKEHOACH_MESSAGE.CREATE_CHITIETKEHOACH_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
