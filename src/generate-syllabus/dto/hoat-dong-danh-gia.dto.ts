@@ -8,4 +8,8 @@ export class HoatDongDanhGiaCustom extends CreateHoatDongDanhGiaDto {
   @ApiProperty({ required: true })
   @IsNumber()
   id?: number;
+
+  @ApiProperty()
+  @IsNumber()
+  loaiDanhGia?: number;
 }

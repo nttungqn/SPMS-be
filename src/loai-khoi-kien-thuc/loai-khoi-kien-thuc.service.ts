@@ -112,7 +112,8 @@ export class LoaiKhoiKienThucService {
       });
       result = await this.typeOfKnowledgeBlockRepository.save(createResult);
       const key = format(REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -134,7 +135,8 @@ export class LoaiKhoiKienThucService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_TTL);
       await this.delCacheAfterChange();
       return results;
     } catch (error) {

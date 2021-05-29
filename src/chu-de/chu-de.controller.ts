@@ -47,7 +47,7 @@ export class ChuDeController {
     return await this.chuDeService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy chi tiết chủ đề' })
   @ApiNotFoundResponse({ description: CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND })
