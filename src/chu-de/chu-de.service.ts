@@ -121,9 +121,9 @@ export class ChuDeService extends BaseService {
     if (await this.isExist(null, newData)) {
       throw new ConflictException(CHUDE_MESSAGE.CHUDE_EXIST);
     }
-    const chuDe = await this.createEntity(new ChuDeEntity(), newData, newData.idSyllabus);
 
     try {
+      const chuDe = await this.createEntity(new ChuDeEntity(), newData, newData.idSyllabus);
       const result = await this.chuDeRepository.save({
         ...chuDe,
         createdBy: syllabusCreatedBy.id,
@@ -132,7 +132,8 @@ export class ChuDeService extends BaseService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -157,15 +158,16 @@ export class ChuDeService extends BaseService {
     if (await this.isExist(oldData, newData)) {
       throw new ConflictException(CHUDE_MESSAGE.CHUDE_EXIST);
     }
-    const chuDe = await this.createEntity(oldData, newData, idSyllabus);
     try {
+      const chuDe = await this.createEntity(oldData, newData, idSyllabus);
       const result = await this.chuDeRepository.save({
         ...chuDe,
         updatedAt: new Date(),
         updatedBy: updatedBy.id
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -235,7 +237,11 @@ export class ChuDeService extends BaseService {
               if (keyService[key] === keyService.hoatDongDayHoc) {
                 result = await service.findOne(Number(idData));
               } else {
-                result = await service.isInSyllabus(Number(idData), idSyllabus);
+                try {
+                  result = await service.isInSyllabus(Number(idData), idSyllabus);
+                } catch (error) {
+                  throw new Error(error?.message);
+                }
               }
               chuDe[key].push(result);
             }
@@ -277,17 +283,22 @@ export class ChuDeService extends BaseService {
 
   async addList(data: Array<CreateChuDeDto>, user: UsersEntity) {
     const newData = [];
-    data.forEach((value, index) => {
-      newData[index] = {
-        ...value,
-        createdBy: user?.id,
-        updatedBy: user?.id,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      delete newData[index]['id'];
-    });
-    return await this.chuDeRepository.save(newData);
+    try {
+      data.forEach(async (value, index) => {
+        const chuDe = await this.createEntity(new ChuDeEntity(), value, value.idSyllabus);
+        newData[index] = {
+          ...chuDe,
+          createdBy: user?.id,
+          updatedBy: user?.id,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        delete newData[index]['id'];
+      });
+      return await this.chuDeRepository.save(newData);
+    } catch (error) {
+      throw new InternalServerErrorException(error?.message || CHUDE_MESSAGE.DELETE_CHUDE_FAILED);
+    }
   }
 }
 const keyService = {

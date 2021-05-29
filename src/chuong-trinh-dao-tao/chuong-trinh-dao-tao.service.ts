@@ -89,7 +89,8 @@ export class ChuongTrinhDaoTaoService {
       const newChuongTrinhDaoTao = await this.chuongTrinhDaoTaoRepository.create(newData);
       const result = await this.chuongTrinhDaoTaoRepository.save(newChuongTrinhDaoTao);
       const key = format(REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {

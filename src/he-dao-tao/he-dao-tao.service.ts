@@ -29,7 +29,8 @@ export class HeDaotaoService {
     try {
       const result = await this.typeOfEduRepository.save(createTypeOfEducationDto);
       const key = format(REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -75,7 +76,8 @@ export class HeDaotaoService {
     try {
       const result = await this.typeOfEduRepository.save({ ...found, ...updateTypeOfEducationDto });
       const key = format(REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {

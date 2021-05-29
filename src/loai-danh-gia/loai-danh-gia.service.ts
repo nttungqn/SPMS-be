@@ -31,8 +31,8 @@ export class LoaiDanhGiaService extends BaseService {
     const syllabusCreatedBy: any = syllabus.createdBy;
     if (await this.isExistV2(null, newData)) throw new ConflictException(LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST);
 
-    const loaiDanhGia = await this.createEntity(new LoaiDanhGiaEntity(), newData, newData.idSyllabus);
     try {
+      const loaiDanhGia = await this.createEntity(new LoaiDanhGiaEntity(), newData, newData.idSyllabus);
       const result = await this.loaiDanhGiaRepository.save({
         ...loaiDanhGia,
         createdAt: new Date(),
@@ -41,7 +41,8 @@ export class LoaiDanhGiaService extends BaseService {
         updatedBy: createdBy.id
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_LDG_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LDG_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_LDG_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -150,7 +151,8 @@ export class LoaiDanhGiaService extends BaseService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_LDG_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LDG_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_LDG_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -231,8 +233,13 @@ export class LoaiDanhGiaService extends BaseService {
         if (uniqueId.indexOf(idCDRMH) === -1) {
           uniqueId.push(idCDRMH);
           if (arrChuanDauRaMonHoc.indexOf(idCDRMH) === -1) {
-            const result = await this.chuanDauRaMonHocService.isInSyllabus(Number(idCDRMH), idSyllabus);
-            loaiDanhGia.chuanDauRaMonHoc.push(result);
+            try {
+              const result = await this.chuanDauRaMonHocService.isInSyllabus(Number(idCDRMH), idSyllabus);
+              loaiDanhGia.chuanDauRaMonHoc.push(result);
+            } catch (error) {
+              console.log(error);
+              return;
+            }
           }
         }
       }
@@ -259,19 +266,22 @@ export class LoaiDanhGiaService extends BaseService {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_LDG_CACHE_COMMON_KEY]);
   }
 
-  async addList(data: Array<CreateLoaiDanhGiaDto>, user: UsersEntity) {
+  async addList(data: Array<CreateLoaiDanhGiaDto>, user: UsersEntity, syllabusId: number) {
     const newData = [];
-    data.forEach((value, index) => {
-      newData[index] = {
-        ...value,
-        createBy: user.id,
-        updateBy: user.id,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        syllabus: value.idSyllabus
-      };
-      delete newData[index]['id'];
-    });
+    await Promise.all(
+      data.map(async (value) => {
+        delete value['id'];
+        const loaiDanhGia = await this.createEntity(new LoaiDanhGiaEntity(), value, syllabusId);
+
+        newData.push({
+          ...loaiDanhGia,
+          createBy: user.id,
+          updateBy: user.id,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+      })
+    );
     return await this.loaiDanhGiaRepository.save(newData);
   }
 }
