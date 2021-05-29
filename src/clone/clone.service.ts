@@ -473,6 +473,15 @@ export class CloneService {
       queryRunner.release();
       throw new BadRequestException(CLONE_MESSAGE.CONTENT_EXISTED);
     }
+    if (chuanDauRaList.length === 0) {
+      throw new BadRequestException(CLONE_MESSAGE.CHUAN_DAU_RA_NOT_EMPTY);
+    }
+    if (khoiKienThucList.length === 0) {
+      throw new BadRequestException(CLONE_MESSAGE.KHOI_KIEN_THUC_NOT_EMPTY);
+    }
+    if (keHoachGiangDayList.length === 0) {
+      throw new BadRequestException(CLONE_MESSAGE.KE_HOACH_GIANG_DAY_NOT_EMPTY);
+    }
     try {
       // Xử lý chuẩn đầu ra
       let indexLv1 = 0;

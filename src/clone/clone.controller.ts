@@ -1,16 +1,4 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  UseGuards,
-  ValidationPipe
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'auth/user.decorator';
@@ -44,15 +32,6 @@ export class CloneController {
     @Param('idCTNDT') idCTNDT: number,
     @GetUser() user: UsersEntity
   ) {
-    if (data.chuanDauRa.length === 0) {
-      throw new BadRequestException(CLONE_MESSAGE.CHUAN_DAU_RA_NOT_EMPTY);
-    }
-    if (data.khoiKienThuc.length === 0) {
-      throw new BadRequestException(CLONE_MESSAGE.KHOI_KIEN_THUC_NOT_EMPTY);
-    }
-    if (data.keHoachGiangDay.length === 0) {
-      throw new BadRequestException(CLONE_MESSAGE.KE_HOACH_GIANG_DAY_NOT_EMPTY);
-    }
     await this.cloneService.CreateChiTietNganhDaoTao(
       data.chuanDauRa,
       data.khoiKienThuc,
