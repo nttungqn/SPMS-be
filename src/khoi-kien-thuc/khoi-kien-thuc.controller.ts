@@ -12,7 +12,8 @@ import {
   HttpException,
   HttpStatus,
   ValidationPipe,
-  ParseIntPipe
+  ParseIntPipe,
+  HttpCode
 } from '@nestjs/common';
 import { KhoiKienThucService } from './khoi-kien-thuc.service';
 import { CreateKhoiKienThucDto } from './dto/create-khoi-kien-thuc.dto';
@@ -69,10 +70,20 @@ export class KhoiKienThucController {
   @ApiConflictResponse({ description: KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_EXIST })
   @ApiUnauthorizedResponse({ description: KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_NOT_AUTHORIZED })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body(ValidationPipe) createKhoiKienThucDto: CreateKhoiKienThucDto, @Req() req) {
     const user = req.user || {};
-    await this.khoiKienThucService.create({ ...createKhoiKienThucDto, createdBy: user?.id, updatedBy: user?.id });
-    return new HttpException(KHOIKIENTHUC_MESSAGE.CREATE_KHOIKIENTHUC_SUCCESSFULLY, HttpStatus.CREATED);
+    const result = await this.khoiKienThucService.create({
+      ...createKhoiKienThucDto,
+      createdBy: user?.id,
+      updatedBy: user?.id
+    });
+    return {
+      response: KHOIKIENTHUC_MESSAGE.CREATE_KHOIKIENTHUC_SUCCESSFULLY,
+      message: KHOIKIENTHUC_MESSAGE.CREATE_KHOIKIENTHUC_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

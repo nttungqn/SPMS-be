@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   Post,
@@ -31,6 +32,7 @@ import * as lodash from 'lodash';
 import { CHUANDAURA_NGANHDAOTAO_MESSAGE } from 'constant/constant';
 import { ChuanDauRaNDTDto, ChuanDauRaNDTResponseDto } from './interfaces/chuanDauRaNDT.response';
 import { RolesGuard } from 'guards/roles.guard';
+import { ChuanDauRaNganhDaoTaoEntity } from './entity/chuanDauRaNganhDaoTao.entity';
 
 @ApiTags('chuan-dau-ra-nganh-dao-tao')
 @Controller('chuan-dau-ra-nganh-dao-tao')
@@ -64,10 +66,12 @@ export class ChuanDauRaNganhDaoTaoController {
   @ApiCreatedResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.CREATE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUANDAURA_NGANHDAOTAO_MESSAGE.CREATE_CHUANDAURA_NGANHDAOTAO_FAILED })
   @ApiOperation({ summary: 'tạo mới chuẩn đầu ra ngành đào tạo' })
+  @HttpCode(HttpStatus.CREATED)
   async create(@Req() req, @Body() newData: CreateChuanDauRaNganhDaoTaoDto, @Res() res): Promise<any> {
     const user = req.user || {};
+    let result: ChuanDauRaNganhDaoTaoEntity;
     try {
-      await this.chuanDauRaNganhDaoTaoService.create({
+      result = await this.chuanDauRaNganhDaoTaoService.create({
         ...newData,
         createdBy: user?.id,
         updatedBy: user?.id
@@ -78,9 +82,12 @@ export class ChuanDauRaNganhDaoTaoController {
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return res
-      .status(HttpStatus.CREATED)
-      .json({ message: CHUANDAURA_NGANHDAOTAO_MESSAGE.CREATE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY });
+    return {
+      response: CHUANDAURA_NGANHDAOTAO_MESSAGE.CREATE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY,
+      message: CHUANDAURA_NGANHDAOTAO_MESSAGE.CREATE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
