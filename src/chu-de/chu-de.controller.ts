@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Param,
@@ -47,7 +48,7 @@ export class ChuDeController {
     return await this.chuDeService.findAll(filter);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy chi tiết chủ đề' })
   @ApiNotFoundResponse({ description: CHUDE_MESSAGE.CHUDE_ID_NOT_FOUND })
@@ -65,9 +66,15 @@ export class ChuDeController {
   @ApiInternalServerErrorResponse({ description: CHUDE_MESSAGE.CREATE_CHUDE_FAILED })
   @ApiOkResponse({ description: CHUDE_MESSAGE.CREATE_CHUDE_SUCCESSFULLY })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body() newData: CreateChuDeDto, @GetUser() user: UsersEntity): Promise<any> {
-    await this.chuDeService.create(newData, user);
-    return new HttpException(CHUDE_MESSAGE.CREATE_CHUDE_SUCCESSFULLY, HttpStatus.CREATED);
+    const result = await this.chuDeService.create(newData, user);
+    return {
+      response: CHUDE_MESSAGE.CREATE_CHUDE_SUCCESSFULLY,
+      message: CHUDE_MESSAGE.CREATE_CHUDE_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

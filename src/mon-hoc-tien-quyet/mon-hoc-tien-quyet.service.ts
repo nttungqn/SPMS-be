@@ -31,7 +31,8 @@ export class MonHocTienQuyetService {
       const newRow = await this.prerequisiteSubjectRepository.create(createPrerequisiteSubjectDto);
       const result = await this.prerequisiteSubjectRepository.save(newRow);
       const key = format(REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -127,7 +128,8 @@ export class MonHocTienQuyetService {
       newPrere.updatedBy = updatePrerequisiteSubjectDto.updatedBy;
       const result = await this.prerequisiteSubjectRepository.save(newPrere);
       const key = format(REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {

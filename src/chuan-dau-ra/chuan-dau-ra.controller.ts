@@ -1,4 +1,4 @@
-import { Delete, HttpStatus } from '@nestjs/common';
+import { Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { Body, Controller, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -18,6 +18,7 @@ import { FilterChuanDauRaDto } from './dto/filterChuanDauRa.dto';
 import * as lodash from 'lodash';
 import { ChuanDauRaResponseDto, ChuanDauTaDto } from './interfaces/chuanDauRa.response';
 import { RolesGuard } from 'guards/roles.guard';
+import { ChuanDauRaEntity } from './entity/chuanDauRa.entity';
 
 @ApiTags('chuan-dau-ra')
 @Controller('chuan-dau-ra')
@@ -51,10 +52,12 @@ export class ChuanDauRaController {
   @ApiCreatedResponse({ description: CHUANDAURA_MESSAGE.CREATE_CHUANDAURA_SUCCESSFULLY })
   @ApiInternalServerErrorResponse({ description: CHUANDAURA_MESSAGE.CREATE_CHUANDAURA_FAILED })
   @ApiOperation({ summary: 'tạo mới chuẩn đầu ra' })
+  @HttpCode(HttpStatus.CREATED)
   async create(@Req() req, @Body() newData: CreateChuanDauRaDto, @Res() res): Promise<any> {
     const user = req.user || {};
+    let result: ChuanDauRaEntity;
     try {
-      await this.chuanDauRaService.create({
+      result = await this.chuanDauRaService.create({
         ...newData,
         createdBy: user?.id,
         updatedBy: user?.id
@@ -65,7 +68,12 @@ export class ChuanDauRaController {
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return res.status(HttpStatus.CREATED).json({ message: CHUANDAURA_MESSAGE.CREATE_CHUANDAURA_SUCCESSFULLY });
+    return {
+      response: CHUANDAURA_MESSAGE.CREATE_CHUANDAURA_SUCCESSFULLY,
+      message: CHUANDAURA_MESSAGE.CREATE_CHUANDAURA_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

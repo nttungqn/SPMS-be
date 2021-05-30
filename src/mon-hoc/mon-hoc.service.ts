@@ -91,7 +91,8 @@ export class MonHocService {
       const monhoc = await this.monHocRepository.create(newData);
       const result = await this.monHocRepository.save(monhoc);
       const key = format(REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -116,7 +117,8 @@ export class MonHocService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {

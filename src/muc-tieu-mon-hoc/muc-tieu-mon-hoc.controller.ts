@@ -11,7 +11,8 @@ import {
   Req,
   HttpException,
   HttpStatus,
-  ParseIntPipe
+  ParseIntPipe,
+  HttpCode
 } from '@nestjs/common';
 import { MucTieuMonHocService } from './muc-tieu-mon-hoc.service';
 import { CreateMucTieuMonHocDto } from './dto/create-muc-tieu-mon-hoc.dto';
@@ -70,9 +71,15 @@ export class MucTieuMonHocController {
   @ApiInternalServerErrorResponse({ description: MUCTIEUMONHOC_MESSAGE.CREATE_MUCTIEUMONHOC_FAILED })
   @ApiConflictResponse({ description: MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_EXIST })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body() createMucTieuMonHocDto: CreateMucTieuMonHocDto, @GetUser() user: UsersEntity) {
-    await this.mucTieuMonHocService.create(createMucTieuMonHocDto, user);
-    return new HttpException(MUCTIEUMONHOC_MESSAGE.CREATE_MUCTIEUMONHOC_SUCCESSFULLY, HttpStatus.CREATED);
+    const result = await this.mucTieuMonHocService.create(createMucTieuMonHocDto, user);
+    return {
+      response: MUCTIEUMONHOC_MESSAGE.CREATE_MUCTIEUMONHOC_SUCCESSFULLY,
+      message: MUCTIEUMONHOC_MESSAGE.CREATE_MUCTIEUMONHOC_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

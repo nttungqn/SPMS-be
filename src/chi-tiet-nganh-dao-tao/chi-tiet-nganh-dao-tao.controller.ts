@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   Post,
@@ -33,6 +34,8 @@ import { Roles } from 'guards/roles.decorator';
 import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { FilterIsExistChiTietCTDT } from './dto/filter-exist-CTNganhDaoTao.dto';
+import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
+import { ChiTietNganhDaoTaoEntity } from './entity/chiTietNganhDaoTao.entity';
 @ApiTags('chi-tiet-nganh-dao-tao')
 @Controller('chi-tiet-nganh-dao-tao')
 export class ChiTietNganhDaoTaoController {
@@ -74,10 +77,12 @@ export class ChiTietNganhDaoTaoController {
   @ApiInternalServerErrorResponse({ description: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_FAILED })
   @ApiOperation({ summary: 'tạo mới chi tiết ngành đào tạo' })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Req() req, @Body() newData: CreateCTNganhDaoTaoDto, @Res() res): Promise<any> {
     const user = req.user || {};
+    let result: ChiTietNganhDaoTaoEntity;
     try {
-      await this.chiTietNganhDaoTao.create({
+      result = await this.chiTietNganhDaoTao.create({
         ...newData,
         createdBy: user?.id,
         updatedBy: user?.id
@@ -88,7 +93,12 @@ export class ChiTietNganhDaoTaoController {
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return res.status(HttpStatus.CREATED).json({ message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY });
+    return {
+      response: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY,
+      message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

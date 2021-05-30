@@ -31,7 +31,8 @@ export class KhoiKienThucService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_KKT_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_KKT_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_KKT_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -100,7 +101,8 @@ export class KhoiKienThucService {
     try {
       const updated = await this.knowledgeBlockRepository.save({ ...result, ...knowledgeBlock, updatedAt: new Date() });
       const key = format(REDIS_CACHE_VARS.DETAIL_KKT_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_KKT_CACHE_TTL);
+      const detail = await this.findOne(updated.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_KKT_CACHE_TTL);
       await this.delCacheAfterChange();
       return updated;
     } catch (error) {

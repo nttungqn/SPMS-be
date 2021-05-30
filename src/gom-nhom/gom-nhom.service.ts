@@ -99,7 +99,8 @@ export class GomNhomService {
       const gomNhom = await this.gomNhomRepository.create(newData);
       const result = await this.gomNhomRepository.save(gomNhom);
       const key = format(REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -126,7 +127,8 @@ export class GomNhomService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_GOM_NHOM_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {

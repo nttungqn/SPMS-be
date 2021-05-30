@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   Post,
@@ -31,6 +32,7 @@ import * as lodash from 'lodash';
 import { ChuongTrinhDaoTaoDto, ChuongTrinhDaoTaoResponseDto } from './interfaces/chuongTrinhTaoDao.response';
 import { RolesGuard } from 'guards/roles.guard';
 import { FilterIsExistCTDT } from './dto/filter-is-exist-chuong-trinh-dao-tao.dto';
+import { ChuongTrinhDaoTaoEntity } from './entity/chuongTrinhDaoTao.entity';
 
 @ApiTags('chuong-trinh-dao-tao')
 @Controller('chuong-trinh-dao-tao')
@@ -69,19 +71,24 @@ export class ChuongTrinhDaoTaoController {
   @ApiInternalServerErrorResponse({ description: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED })
   @ApiOperation({ summary: 'tạo mới chương trình đào tạo' })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Req() req, @Res() res, @Body() newData: CreateChuongTrinhDaoTaoDto) {
     const user = req.user || {};
+    let result: ChuongTrinhDaoTaoEntity;
     try {
-      await this.chuongTrinhDaoTaoService.create({ ...newData, createdBy: user?.id, updatedBy: user?.id });
+      result = await this.chuongTrinhDaoTaoService.create({ ...newData, createdBy: user?.id, updatedBy: user?.id });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED,
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return res
-      .status(HttpStatus.CREATED)
-      .json({ message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
+    return {
+      response: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY,
+      message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
