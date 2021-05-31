@@ -488,7 +488,7 @@ export class CloneService {
     try {
       // Xử lý chuẩn đầu ra
       let indexLv1 = 0;
-      chuanDauRaList.forEach((cdrlv1) => {
+      for (const cdrlv1 of chuanDauRaList) {
         indexLv1++;
         keptProperties(cdrlv1, 'ma', 'chuanDauRa', 'children');
         keptProperties(cdrlv1.chuanDauRa, 'id');
@@ -497,7 +497,7 @@ export class CloneService {
         cdrlv1.updatedBy = user.id;
         cdrlv1.ma = `${indexLv1}`;
         let indexLv2 = 0;
-        cdrlv1.children?.forEach((cdrlv2) => {
+        for (const cdrlv2 of cdrlv1.children) {
           indexLv2++;
           keptProperties(cdrlv2, 'ma', 'chuanDauRa', 'children');
           keptProperties(cdrlv2.chuanDauRa, 'id');
@@ -506,7 +506,7 @@ export class CloneService {
           cdrlv2.updatedBy = user.id;
           cdrlv2.ma = `${indexLv1}.${indexLv2}`;
           let indexLv3 = 0;
-          cdrlv2.children?.forEach((cdrlv3) => {
+          for (const cdrlv3 of cdrlv2.children) {
             indexLv3++;
             keptProperties(cdrlv3, 'ma', 'chuanDauRa'); //Chỉ áp dụng 3 cấp
             keptProperties(cdrlv3.chuanDauRa, 'id');
@@ -514,28 +514,28 @@ export class CloneService {
             cdrlv3.createdBy = user.id;
             cdrlv3.updatedBy = user.id;
             cdrlv3.ma = `${indexLv1}.${indexLv2}.${indexLv3}`;
-          });
-        });
-      });
+          }
+        }
+      }
       //Save Chuẩn đầu ra
       ctndt.chuanDaura = chuanDauRaList;
       await ctndtRepository.save(ctndt);
       delete ctndt.chuanDaura;
       // xử lý khối kiến thức
-      khoiKienThucList?.forEach((kktE) => {
+      for (const kktE of khoiKienThucList) {
         kktE.chiTietNganh = Number(idCTNDT);
         kktE.createdBy = user.id;
         kktE.updatedBy = user.id;
         removeProperties(kktE, 'id', 'createdAt', 'updatedAt', 'isDeleted');
-        kktE.loaiKhoiKienThuc?.forEach((lkktE) => {
+        for (const lkktE of kktE.loaiKhoiKienThuc) {
           lkktE.createdBy = user.id;
           lkktE.updatedBy = user.id;
           removeProperties(lkktE, 'id', 'isDeleted');
-          lkktE.gomNhom?.forEach((gnE) => {
+          for (const gnE of lkktE.gomNhom) {
             gnE.createdBy = user.id;
             gnE.updatedBy = user.id;
             removeProperties(gnE, 'id', 'idLKKT', 'loaiKhoiKienThuc', 'createdAt', 'updatedAt', 'isDeleted');
-            gnE.chiTietGomNhom?.forEach((ctgnE) => {
+            for (const ctgnE of gnE.chiTietGomNhom) {
               ctgnE.createdBy = user.id;
               ctgnE.updatedBy = user.id;
               removeProperties(
@@ -549,26 +549,26 @@ export class CloneService {
                 'monHoc',
                 'isDeleted'
               );
-            });
+            }
             gnE.chiTietGomNhom = gnE.chiTietGomNhom.filter((ctgnE) => ctgnE.idMH != null);
-          });
+          }
           lkktE.gomNhom = lkktE.gomNhom.filter((gnE) => gnE.chiTietGomNhom.length >= 0);
-        });
-      });
+        }
+      }
+
       // save khối kiến thức
       ctndt.khoiKienThucList = khoiKienThucList;
       const results = await ctndtRepository.save(ctndt);
       const ctgnArr: ChiTietGomNhomEntity[] = [];
-      results.khoiKienThucList?.forEach((kktE) => {
-        kktE.loaiKhoiKienThuc?.forEach((lkktK) => {
-          lkktK.gomNhom?.forEach((gnE) => {
-            gnE.chiTietGomNhom?.forEach((ctgnE) => {
+      for (const kktE of results.khoiKienThucList) {
+        for (const lkktK of kktE.loaiKhoiKienThuc) {
+          for (const gnE of lkktK.gomNhom) {
+            for (const ctgnE of gnE.chiTietGomNhom) {
               ctgnArr.push(ctgnE);
-              console.log(ctgnE);
-            });
-          });
-        });
-      });
+            }
+          }
+        }
+      }
       delete ctndt.khoiKienThucList;
       // Xử lý Kế hoạch giảng dạy
       for (const khgdE of keHoachGiangDayList) {
@@ -584,11 +584,10 @@ export class CloneService {
           for (; index < length; index++) {
             if (ctgnArr[index].idMH === ctkhE.chiTietGomNhom.monHoc.id) {
               ctkhE.idCTGN = ctgnArr[index].id;
-              ctgnArr.splice(index, 1);
               break;
             }
           }
-          if (index === length) {
+          if (index === length && length != 0) {
             // id môn học trong kế hoạch giảng dạy không nàm trong nội dung
             throw new BadRequestException();
           }
