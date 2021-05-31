@@ -48,8 +48,12 @@ export class HoatDongDanhGiaService extends BaseService {
       for (const idCDRMH of chuanDauRaMonHoc) {
         if (uniqueId.indexOf(idCDRMH) === -1) {
           uniqueId.push(idCDRMH);
-          const result = await this.chuaDauRaMonHocService.isInSyllabus(Number(idCDRMH), idSyllabus);
-          hoatDongDanhGia.chuanDauRaMonHoc.push(result);
+          try {
+            const result = await this.chuaDauRaMonHocService.isInSyllabus(Number(idCDRMH), idSyllabus);
+            hoatDongDanhGia.chuanDauRaMonHoc.push(result);
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
       delete newData.chuanDauRaMonHoc;
@@ -69,7 +73,8 @@ export class HoatDongDanhGiaService extends BaseService {
       });
       const result = await this.findOne(saved.id);
       const key = format(REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -184,7 +189,8 @@ export class HoatDongDanhGiaService extends BaseService {
         updatedBy: updateBy.id
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_HDDG_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -253,18 +259,48 @@ export class HoatDongDanhGiaService extends BaseService {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_HDDG_CACHE_COMMON_KEY]);
   }
 
-  async addList(data: Array<CreateHoatDongDanhGiaDto>, user: UsersEntity) {
+  async createEntity(newData: CreateHoatDongDanhGiaDto, idSyllabus: number) {
+    const hoatDongDanhGia = new HoatDongDanhGiaEntity();
+    const { chuanDauRaMonHoc } = newData;
+    if (chuanDauRaMonHoc) {
+      hoatDongDanhGia.chuanDauRaMonHoc = [];
+      const uniqueId = [];
+      for (const idCDRMH of chuanDauRaMonHoc) {
+        if (uniqueId.indexOf(idCDRMH) === -1) {
+          uniqueId.push(idCDRMH);
+          try {
+            const result = await this.chuaDauRaMonHocService.isInSyllabus(Number(idCDRMH), idSyllabus);
+            hoatDongDanhGia.chuanDauRaMonHoc.push(result);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+      delete newData.chuanDauRaMonHoc;
+    }
+    for (const key in newData) {
+      if (Object.prototype.hasOwnProperty.call(newData, key)) {
+        hoatDongDanhGia[KeyHDDG[key]] = newData[key];
+      }
+    }
+    return hoatDongDanhGia;
+  }
+
+  async addList(data: Array<CreateHoatDongDanhGiaDto>, user: UsersEntity, syllabusId: number) {
     const newData = [];
-    data.forEach((value, index) => {
-      newData[index] = {
-        ...value,
-        createdBy: user?.id,
-        updatedBy: user?.id,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      delete newData[index]['id'];
-    });
+    await Promise.all(
+      data.map(async (value) => {
+        delete value['id'];
+        const hoatDongDanhGia = await this.createEntity(value, syllabusId);
+        newData.push({
+          ...hoatDongDanhGia,
+          createdBy: user?.id,
+          updatedBy: user?.id,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+      })
+    );
     return await this.hoatDongDanhGiaService.save(newData);
   }
 }

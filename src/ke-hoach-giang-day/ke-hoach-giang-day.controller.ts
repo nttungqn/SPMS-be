@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   Post,
@@ -63,13 +64,20 @@ export class KeHoachGiangDayController {
   @ApiInternalServerErrorResponse({ description: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED })
   @ApiOperation({ summary: 'tạo mới kế hoạch giảng dạy' })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Req() req, @Body() newData: CreateKeHoachGiangDayDto, @Res() res): Promise<any> {
     const user = req.user || {};
     try {
-      await this.keHoachGiangDayService.create({
+      const result = await this.keHoachGiangDayService.create({
         ...newData,
         createdBy: user?.id,
         updatedBy: user?.id
+      });
+      return res.status(HttpStatus.CREATED).json({
+        response: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY,
+        message: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY,
+        status: HttpStatus.CREATED,
+        id: result.id
       });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -77,9 +85,6 @@ export class KeHoachGiangDayController {
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return res
-      .status(HttpStatus.CREATED)
-      .json({ message: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY });
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

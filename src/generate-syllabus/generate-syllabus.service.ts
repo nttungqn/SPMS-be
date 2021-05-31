@@ -35,7 +35,9 @@ export class GenerateSyllabusService {
 
       // 3
       // #TODO update id muc_tieu_mon_hoc
-      const subjectOutputStandardsData = data?.outputStandard_subjectOutputStandards.map((sOS) => {
+      JSON.parse(JSON.stringify(data?.outputStandard_subjectOutputStandards));
+      let subjectOutputStandardsData = JSON.parse(JSON.stringify(data?.outputStandard_subjectOutputStandards));
+      subjectOutputStandardsData = subjectOutputStandardsData.map((sOS) => {
         data?.goal_subjectGoals.forEach((sG, index) => {
           if (sOS.mucTieuMonHoc === sG.id) sOS.mucTieuMonHoc = subjectGoals[index].id;
         });
@@ -47,12 +49,14 @@ export class GenerateSyllabusService {
 
       // 5
       // #TODO update id
-      const evaluationTypes = data?.evaluation_evaluationTypes.map((eT) => {
+      let evaluationTypes = JSON.parse(JSON.stringify(data?.evaluation_evaluationTypes));
+      evaluationTypes = evaluationTypes.map((eT) => {
         // array string or array number
         const etCopy = eT;
         data?.outputStandard_subjectOutputStandards.forEach((sOS, i) => {
           eT.chuanDauRaMonHoc.forEach((value, j) => {
-            if (value == sOS.id.toString()) etCopy.chuanDauRaMonHoc[j] = subjectOutputStandards[i].id.toString();
+            if (value.toString() === sOS.id.toString())
+              etCopy.chuanDauRaMonHoc[j] = subjectOutputStandards[i].id.toString();
           });
         });
         etCopy.idSyllabus = +syllabusId;
@@ -60,22 +64,26 @@ export class GenerateSyllabusService {
       });
 
       // #TODO update id
-      let evaluationActivities = data?.evaluation_evaluationActivities.map((eA) => {
+      let evaluationActivities = JSON.parse(JSON.stringify(data?.evaluation_evaluationActivities));
+      evaluationActivities = evaluationActivities.map((eA) => {
         const eACopy = eA;
         data?.outputStandard_subjectOutputStandards.forEach((sOS, i) => {
           eA.chuanDauRaMonHoc.forEach((value, j) => {
-            if (value == sOS.id.toString()) eACopy.chuanDauRaMonHoc[j] = subjectOutputStandards[i].id.toString();
+            if (value.toString() === sOS.id.toString())
+              eACopy.chuanDauRaMonHoc[j] = subjectOutputStandards[i].id.toString();
           });
         });
         return eACopy;
       });
 
       // #TODO update id
-      let theoreticalTeachingPlanTopics = data?.theoreticalTeachingPlan_topics.map((tTPT) => {
+      let theoreticalTeachingPlanTopics = JSON.parse(JSON.stringify(data?.theoreticalTeachingPlan_topics));
+      theoreticalTeachingPlanTopics = theoreticalTeachingPlanTopics.map((tTPT) => {
         const tTPTCopy = tTPT;
         data?.outputStandard_subjectOutputStandards.forEach((sOS, i) => {
           tTPT.chuanDauRaMonHoc.forEach((value, j) => {
-            if (value == sOS.id.toString()) tTPTCopy.chuanDauRaMonHoc[j] = subjectOutputStandards[i].id.toString();
+            if (value.toString() === sOS.id.toString())
+              tTPTCopy.chuanDauRaMonHoc[j] = subjectOutputStandards[i].id.toString();
           });
         });
         tTPTCopy.idSyllabus = +syllabusId;
@@ -83,11 +91,13 @@ export class GenerateSyllabusService {
       });
 
       // #TODO update id
-      let practiceTeachingPlanTopics = data?.practiceTeachingPlan_topics.map((tTPT) => {
+      let practiceTeachingPlanTopics = JSON.parse(JSON.stringify(data?.practiceTeachingPlan_topics));
+      practiceTeachingPlanTopics = data?.practiceTeachingPlan_topics.map((tTPT) => {
         const tTPTCopy = tTPT;
         data?.outputStandard_subjectOutputStandards.forEach((sOS, i) => {
           tTPT.chuanDauRaMonHoc.forEach((value, j) => {
-            if (value == sOS.id.toString()) tTPTCopy.chuanDauRaMonHoc[j] = subjectOutputStandards[i].id.toString();
+            if (value.toString() === sOS.id.toString())
+              tTPTCopy.chuanDauRaMonHoc[j] = subjectOutputStandards[i].id.toString();
           });
         });
         tTPTCopy.idSyllabus = +syllabusId;
@@ -95,26 +105,32 @@ export class GenerateSyllabusService {
       });
 
       // 6
-      const evaluationTypesBeSaved = await this.loaiDanhGiaService.addList(evaluationTypes, user);
-
+      const evaluationTypesBeSaved = await this.loaiDanhGiaService.addList(evaluationTypes, user, syllabusId);
+      console.log(evaluationTypesBeSaved);
       // 7
       evaluationActivities = evaluationActivities.map((eA) => {
         const eACopy = eA;
         data?.evaluation_evaluationTypes.forEach((value, i) => {
-          if (value.id === eA.idLoaiDanhGia) eACopy.idLoaiDanhGia = evaluationTypesBeSaved[i].id;
+          if (value.id.toString() === eA.loaiDanhGia.toString()) eACopy.loaiDanhGia = evaluationTypesBeSaved[i].id;
         });
         return eACopy;
       });
 
       // 8
-      const evaluationActivitiesSaved = await this.hoatDongDanhGiaService.addList(evaluationActivities, user);
+      const evaluationActivitiesSaved = await this.hoatDongDanhGiaService.addList(
+        evaluationActivities,
+        user,
+        syllabusId
+      );
+      console.log(evaluationActivitiesSaved);
 
       // 9
       theoreticalTeachingPlanTopics = theoreticalTeachingPlanTopics.map((tTP) => {
         const tTPCopy = tTP;
         data?.evaluation_evaluationActivities.forEach((eA, i) => {
           tTP.hoatDongDanhGia.forEach((value, j) => {
-            if (value === eA.id.toString()) tTPCopy.hoatDongDanhGia[j] = evaluationActivitiesSaved[i].id.toString();
+            if (value.toString() === eA.id.toString())
+              tTPCopy.hoatDongDanhGia[j] = evaluationActivitiesSaved[i].id.toString();
           });
         });
         return tTPCopy;
@@ -124,7 +140,8 @@ export class GenerateSyllabusService {
         const tTPCopy = tTP;
         data?.evaluation_evaluationActivities.forEach((eA, i) => {
           tTP.hoatDongDanhGia.forEach((value, j) => {
-            if (value === eA.id.toString()) tTPCopy.hoatDongDanhGia[j] = evaluationActivitiesSaved[i].id.toString();
+            if (value.toString() === eA.id.toString())
+              tTPCopy.hoatDongDanhGia[j] = evaluationActivitiesSaved[i].id.toString();
           });
         });
         return tTPCopy;
@@ -141,7 +158,8 @@ export class GenerateSyllabusService {
         const tTPCopy = tTP;
         data?.teachingActivity_teachingActivities.forEach((eA, i) => {
           tTP.hoatDongDayHoc.forEach((value, j) => {
-            if (value === eA.id.toString()) tTPCopy.hoatDongDayHoc[j] = teachingActivitiesSaved[i].id.toString();
+            if (value.toString() === eA.id.toString())
+              tTPCopy.hoatDongDayHoc[j] = teachingActivitiesSaved[i].id.toString();
           });
         });
         return tTPCopy;
@@ -151,7 +169,8 @@ export class GenerateSyllabusService {
         const tTPCopy = tTP;
         data?.teachingActivity_teachingActivities.forEach((eA, i) => {
           tTP.hoatDongDayHoc.forEach((value, j) => {
-            if (value === eA.id.toString()) tTPCopy.hoatDongDayHoc[j] = teachingActivitiesSaved[i].id.toString();
+            if (value.toString() === eA.id.toString())
+              tTPCopy.hoatDongDayHoc[j] = teachingActivitiesSaved[i].id.toString();
           });
         });
         return tTPCopy;

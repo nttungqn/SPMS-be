@@ -79,7 +79,8 @@ export class ChuanDauRaNganhDaoTaoService {
       const newChuanDauRaNDT = await this.chuanDauRaNDTRepository.create(newData);
       const result = await this.chuanDauRaNDTRepository.save(newChuanDauRaNDT);
       const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_TTL);
+      const detail = await this.findById(result?.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -103,7 +104,8 @@ export class ChuanDauRaNganhDaoTaoService {
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, id.toString());
       const keyCDR_NDT = format(REDIS_CACHE_VARS.LIST_CDRNDT_NDT_CACHE_KEY, updated.nganhDaoTao.toString());
-      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_TTL);
+      const detail = await this.findById(updated?.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_TTL);
       await this.cacheManager.del(keyCDR_NDT);
       await this.delCacheAfterChange();
       return updated;

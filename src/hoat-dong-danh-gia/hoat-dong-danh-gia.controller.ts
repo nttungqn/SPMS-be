@@ -10,7 +10,8 @@ import {
   ParseIntPipe,
   HttpException,
   HttpStatus,
-  UseGuards
+  UseGuards,
+  HttpCode
 } from '@nestjs/common';
 import { HoatDongDanhGiaService } from './hoat-dong-danh-gia.service';
 import { CreateHoatDongDanhGiaDto } from './dto/create-hoat-dong-danh-gia.dto';
@@ -47,9 +48,15 @@ export class HoatDongDanhGiaController {
   @ApiOkResponse({ description: HOATDONGDANHGIA_MESSAGE.CREATE_HOATDONGDANHGIA_SUCCESSFULLY })
   @ApiConflictResponse({ description: HOATDONGDANHGIA_MESSAGE.HOATDONGDANHGIA_EXIST })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body() createHoatDongDanhGiaDto: CreateHoatDongDanhGiaDto, @GetUser() user: UsersEntity) {
-    await this.hoatDongDanhGiaService.create(createHoatDongDanhGiaDto, user);
-    return new HttpException(HOATDONGDANHGIA_MESSAGE.CREATE_HOATDONGDANHGIA_SUCCESSFULLY, HttpStatus.CREATED);
+    const result = await this.hoatDongDanhGiaService.create(createHoatDongDanhGiaDto, user);
+    return {
+      response: HOATDONGDANHGIA_MESSAGE.CREATE_HOATDONGDANHGIA_SUCCESSFULLY,
+      message: HOATDONGDANHGIA_MESSAGE.CREATE_HOATDONGDANHGIA_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

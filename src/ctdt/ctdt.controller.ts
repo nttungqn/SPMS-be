@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   Post,
@@ -63,6 +64,7 @@ export class CtdtController {
   @ApiInternalServerErrorResponse({ description: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_FAILED })
   @ApiOperation({ summary: 'tạo mới ngành đào tạo' })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Req() req, @Body() newData: CreateNganhDaoTaoDto, @Res() res): Promise<any> {
     const user = req.user || {};
     try {
@@ -71,9 +73,13 @@ export class CtdtController {
         createdBy: user?.id,
         updatedBy: user?.id
       });
-      return res
-        .status(HttpStatus.CREATED)
-        .json({ message: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_SUCCESSFULLY, content });
+      return res.status(HttpStatus.CREATED).json({
+        response: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_SUCCESSFULLY,
+        message: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_SUCCESSFULLY,
+        status: HttpStatus.CREATED,
+        id: content.id,
+        content
+      });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_FAILED,

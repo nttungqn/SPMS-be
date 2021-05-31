@@ -12,7 +12,8 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
-  ValidationPipe
+  ValidationPipe,
+  HttpCode
 } from '@nestjs/common';
 import { LoaiDanhGiaService } from './loai-danh-gia.service';
 import { CreateLoaiDanhGiaDto } from './dto/create-loai-danh-gia.dto';
@@ -50,9 +51,15 @@ export class LoaiDanhGiaController {
   @ApiConflictResponse({ description: LOAIDANHGIA_MESSAGE.LOAIDANHGIA_EXIST })
   @ApiUnauthorizedResponse({ description: LOAIDANHGIA_MESSAGE.LOAIDANHGIA_NOT_AUTHORIZED })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body(ValidationPipe) createLoaiDanhGiaDto: CreateLoaiDanhGiaDto, @GetUser() user: UsersEntity) {
-    await this.loaiDanhGiaService.create(createLoaiDanhGiaDto, user);
-    return new HttpException(LOAIDANHGIA_MESSAGE.CREATE_LOAIDANHGIA_SUCCESSFULLY, HttpStatus.CREATED);
+    const result = await this.loaiDanhGiaService.create(createLoaiDanhGiaDto, user);
+    return {
+      response: LOAIDANHGIA_MESSAGE.CREATE_LOAIDANHGIA_SUCCESSFULLY,
+      message: LOAIDANHGIA_MESSAGE.CREATE_LOAIDANHGIA_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

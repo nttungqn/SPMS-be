@@ -13,7 +13,8 @@ import {
   Query,
   BadRequestException,
   HttpException,
-  HttpStatus
+  HttpStatus,
+  HttpCode
 } from '@nestjs/common';
 import { MonHocTienQuyetService } from './mon-hoc-tien-quyet.service';
 import { CreateMonHocTienQuyetDto } from './dto/create-mon-hoc-tien-quyet.dto';
@@ -49,16 +50,22 @@ export class MonHocTienQuyetController {
   @ApiInternalServerErrorResponse({ description: MONHOCTIENQUYET_MESSAGE.CREATE_MONHOCTIENQUYET_FAILED })
   @ApiConflictResponse({ description: MONHOCTIENQUYET_MESSAGE.MONHOCTIENQUYET_EXIST })
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body(ValidationPipe) createPrerequisiteSubjectDto: CreateMonHocTienQuyetDto, @Req() req) {
     const user = req.user || {};
     const { monHoc, monHocTruoc } = createPrerequisiteSubjectDto;
     if (monHoc === monHocTruoc) return new BadRequestException();
-    await this.prerequisiteSubjectService.create({
+    const result = await this.prerequisiteSubjectService.create({
       ...createPrerequisiteSubjectDto,
       updatedBy: user?.id,
       createdBy: user?.id
     });
-    return new HttpException(MONHOCTIENQUYET_MESSAGE.CREATE_MONHOCTIENQUYET_SUCCESSFULLY, HttpStatus.CREATED);
+    return {
+      response: MONHOCTIENQUYET_MESSAGE.CREATE_MONHOCTIENQUYET_SUCCESSFULLY,
+      message: MONHOCTIENQUYET_MESSAGE.CREATE_MONHOCTIENQUYET_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

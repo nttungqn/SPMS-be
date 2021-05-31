@@ -152,7 +152,8 @@ export class ChiTietGomNhomService {
       const ctGomNhom = await this.chiTietGomNhomRepository.create(chiTietGomNhom);
       const result = await this.chiTietGomNhomRepository.save(ctGomNhom);
       const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL);
+      const detail = await this.findById(result?.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL);
       await this.deleteKeysAfterChange();
       return result;
     } catch (error) {
@@ -186,7 +187,8 @@ export class ChiTietGomNhomService {
     try {
       const result = await this.chiTietGomNhomRepository.save(chiTietGomNhom);
       const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL);
       await this.deleteKeysAfterChange();
       return result;
     } catch (error) {
