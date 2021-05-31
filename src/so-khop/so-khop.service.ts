@@ -112,32 +112,44 @@ export class SoKhopService {
     const ctmhArr = [];
     const ctmhTrcArr = [];
     body.contents.forEach((e) => {
-      if (!ctmhArr.includes(e.idChiTietGomNhom)) {
+      if (e.idChiTietGomNhom != null && !ctmhArr.includes(e.idChiTietGomNhom)) {
         ctmhArr.push(e.idChiTietGomNhom);
       }
-      if (!ctmhTrcArr.includes(e.idChiTietMonHocTrc)) {
+      if (e.idChiTietMonHocTrc != null && !ctmhTrcArr.includes(e.idChiTietMonHocTrc)) {
         ctmhTrcArr.push(e.idChiTietMonHocTrc);
       }
     });
-    const [chiTietGomNhom, totals] = await this.chiTietGomNhomService.getChiTietGomNhomByKhoaAndNganh(
-      idNganh,
-      khoaTuyenNam2,
-      ctmhArr
-    );
+    console.log('Ok2');
+    let [chiTietGomNhom, totals] = [[], 0];
+    if (ctmhArr.length > 0) {
+      [chiTietGomNhom, totals] = await this.chiTietGomNhomService.getChiTietGomNhomByKhoaAndNganh(
+        idNganh,
+        khoaTuyenNam2,
+        ctmhArr
+      );
+    }
+
     if (ctmhArr.length != totals) {
       throw new BadRequestException(`${SOKHOP_MESSAGE.CHITIETGOMNHOM_NOT_IN}_${khoaTuyenNam2}`);
     }
-    const [chiTietGomNhomTrc, totalsTrc] = await this.chiTietGomNhomService.getChiTietGomNhomByKhoaAndNganh(
-      idNganh,
-      khoaTuyenNam1,
-      ctmhTrcArr
-    );
-    if (ctmhTrcArr.length != totalsTrc) {
-      throw new BadRequestException(`${SOKHOP_MESSAGE.CHITIETGOMNHOM_MONHOCTRUOC_NOT_IN}_${khoaTuyenNam2}`);
+    console.log('Ok1');
+    let [chiTietGomNhomTrc, totalsTrc] = [[], 0];
+    if (ctmhTrcArr.length > 0) {
+      [chiTietGomNhomTrc, totalsTrc] = await this.chiTietGomNhomService.getChiTietGomNhomByKhoaAndNganh(
+        idNganh,
+        khoaTuyenNam1,
+        ctmhTrcArr
+      );
+      if (ctmhTrcArr.length != totalsTrc) {
+        throw new BadRequestException(`${SOKHOP_MESSAGE.CHITIETGOMNHOM_MONHOCTRUOC_NOT_IN}_${khoaTuyenNam2}`);
+      }
     }
+    console.log('Ok');
     chiTietGomNhom.forEach((ctgnE) => {
       const row = body.contents.find((e) => e.idChiTietGomNhom == ctgnE.id);
-      ctgnE.ctgnMonHoctruoc = chiTietGomNhomTrc.find((e) => e.id == row.idChiTietMonHocTrc);
+      const idCTGNMTrc = chiTietGomNhomTrc.find((e) => e.id == row.idChiTietMonHocTrc);
+      console.log(typeof idCTGNMTrc === 'undefined' ? null : idCTGNMTrc);
+      ctgnE.ctgnMonHoctruoc = typeof idCTGNMTrc === 'undefined' ? null : idCTGNMTrc;
       ctgnE.updatedBy = user.id;
       ctgnE.updatedAt = new Date();
     });
