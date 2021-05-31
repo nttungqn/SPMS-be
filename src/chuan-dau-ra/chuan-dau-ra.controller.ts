@@ -68,12 +68,12 @@ export class ChuanDauRaController {
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return {
+    return res.status(HttpStatus.CREATED).json({
       response: CHUANDAURA_MESSAGE.CREATE_CHUANDAURA_SUCCESSFULLY,
       message: CHUANDAURA_MESSAGE.CREATE_CHUANDAURA_SUCCESSFULLY,
       status: HttpStatus.CREATED,
       id: result.id
-    };
+    });
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

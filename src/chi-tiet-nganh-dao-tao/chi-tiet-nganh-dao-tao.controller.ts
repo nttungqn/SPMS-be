@@ -93,12 +93,11 @@ export class ChiTietNganhDaoTaoController {
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return {
+    return res.status(HttpStatus.CREATED).json({
       response: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY,
       message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_SUCCESSFULLY,
-      status: HttpStatus.CREATED,
       id: result.id
-    };
+    });
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

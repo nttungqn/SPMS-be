@@ -83,12 +83,12 @@ export class ChuongTrinhDaoTaoController {
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return {
+    return res.status(HttpStatus.CREATED).json({
       response: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY,
       message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY,
       status: HttpStatus.CREATED,
       id: result.id
-    };
+    });
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')

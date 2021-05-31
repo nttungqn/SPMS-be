@@ -73,13 +73,13 @@ export class CtdtController {
         createdBy: user?.id,
         updatedBy: user?.id
       });
-      return {
+      return res.status(HttpStatus.CREATED).json({
         response: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_SUCCESSFULLY,
         message: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_SUCCESSFULLY,
         status: HttpStatus.CREATED,
         id: content.id,
         content
-      };
+      });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: NGANHDAOTAO_MESSAGE.CREATE_NGANHDAOTAO_FAILED,
