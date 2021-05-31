@@ -73,12 +73,12 @@ export class KeHoachGiangDayController {
         createdBy: user?.id,
         updatedBy: user?.id
       });
-      return {
+      return res.status(HttpStatus.CREATED).json({
         response: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY,
         message: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY,
         status: HttpStatus.CREATED,
         id: result.id
-      };
+      });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED,

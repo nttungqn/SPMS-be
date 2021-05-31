@@ -82,12 +82,12 @@ export class ChuanDauRaNganhDaoTaoController {
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return {
+    return res.status(HttpStatus.CREATED).json({
       response: CHUANDAURA_NGANHDAOTAO_MESSAGE.CREATE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY,
       message: CHUANDAURA_NGANHDAOTAO_MESSAGE.CREATE_CHUANDAURA_NGANHDAOTAO_SUCCESSFULLY,
       status: HttpStatus.CREATED,
       id: result.id
-    };
+    });
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
