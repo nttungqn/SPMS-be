@@ -71,12 +71,17 @@ export class LoaiKhoiKienThucController {
   @Post()
   async create(@Body(ValidationPipe) createTypeOfKnowledgeBlockDto: CreateLoaiKhoiKienThucDto, @Req() req) {
     const user = req.user || {};
-    await this.typeOfKnowledgeBlockService.create({
+    const result = await this.typeOfKnowledgeBlockService.create({
       ...createTypeOfKnowledgeBlockDto,
       createdBy: user?.id,
       updatedBy: user?.id
     });
-    return new HttpException(LOAIKHOIKIENTHUC_MESSAGE.CREATE_LOAIKHOIKIENTHUC_SUCCESSFULLY, HttpStatus.CREATED);
+    return {
+      response: LOAIKHOIKIENTHUC_MESSAGE.CREATE_LOAIKHOIKIENTHUC_SUCCESSFULLY,
+      message: LOAIKHOIKIENTHUC_MESSAGE.CREATE_LOAIKHOIKIENTHUC_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

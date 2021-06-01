@@ -7,9 +7,11 @@ import { CreateLoaiDanhGiaDto } from 'loai-danh-gia/dto/create-loai-danh-gia.dto
 import { LoaiDanhGiaEntity } from 'loai-danh-gia/entity/loai-danh-gia.entity';
 import { MucTieuMonHocEntity } from 'muc-tieu-mon-hoc/entity/muc-tieu-mon-hoc.entity';
 import { Entity } from 'typeorm';
+import { ChuanDauRaMonHocCustom } from './chuan-dau-ra-mon-hoc.dto';
 import { HoatDongDanhGiaCustom } from './hoat-dong-danh-gia.dto';
 import { HoatDongDayHocCustom } from './hoat-dong-day-hoc.dto';
 import { LoaiDanhGiaCustom } from './loai-danh-gia-dto';
+import { MucTieuMonHocCustom } from './muc-tieu-mon-hoc.dto';
 
 @Entity()
 export class SyllabusDto {
@@ -25,13 +27,13 @@ export class SyllabusDto {
   @IsOptional()
   description_subjectDescription?: string;
 
-  @ApiProperty({ description: 'description_subjectDescription' })
+  @ApiProperty({ description: 'goal_subjectGoals' })
   @IsOptional()
-  goal_subjectGoals?: Array<MucTieuMonHocEntity>;
+  goal_subjectGoals?: Array<MucTieuMonHocCustom>;
 
   @ApiProperty({ description: 'outputStandard_subjectOutputStandards' })
   @IsOptional()
-  outputStandard_subjectOutputStandards?: Array<ChuanDauRaMonHocEntity>;
+  outputStandard_subjectOutputStandards?: Array<ChuanDauRaMonHocCustom>;
 
   @ApiProperty({ description: 'evaluation_evaluationTypes' })
   @IsOptional()

@@ -55,7 +55,6 @@ export class ChuanDauRaService {
       if (!result) {
         throw new HttpException(CHUANDAURA_MESSAGE.CHUANDAURA_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
-
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CDR_CACHE_TTL);
     }
 
@@ -75,7 +74,8 @@ export class ChuanDauRaService {
       const newChuanDauRa = await this.chuanDauRaRepository.create(newData);
       const result = await this.chuanDauRaRepository.save(newChuanDauRa);
       const key = format(REDIS_CACHE_VARS.DETAIL_CDR_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -95,7 +95,8 @@ export class ChuanDauRaService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CDR_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
+      const detail = await this.findById(updated.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
       await this.delCacheAfterChange();
       return updated;
     } catch (error) {

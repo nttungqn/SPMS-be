@@ -55,7 +55,8 @@ export class ChuanDauRaMonHocService extends BaseService {
         updatedBy: createdBy.id
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -147,8 +148,9 @@ export class ChuanDauRaMonHocService extends BaseService {
         updatedAt: new Date(),
         updatedBy: updatedBy.id
       });
+      const detail = await this.findOne(result.id);
       const key = format(REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_TTL);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -216,11 +218,18 @@ export class ChuanDauRaMonHocService extends BaseService {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_CDRMH_CACHE_COMMON_KEY]);
   }
 
-  async addList(data: Array<ChuanDauRaMonHocEntity>, user: UsersEntity) {
-    data.forEach((value) => {
-      value.createdBy = user.id;
-      value.updatedBy = user.id;
+  async addList(data: Array<CreateChuanDauRaMonHocDto>, user: UsersEntity) {
+    const newData = [];
+    data.forEach((value, index) => {
+      newData[index] = {
+        ...value,
+        createBy: user?.id,
+        updateBy: user?.id,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      delete newData[index]['id'];
     });
-    return await this.chuanDauRaMonHocService.save(data);
+    return await this.chuanDauRaMonHocService.save(newData);
   }
 }

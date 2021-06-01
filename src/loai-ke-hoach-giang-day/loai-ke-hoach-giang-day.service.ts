@@ -72,7 +72,8 @@ export class LoaiKeHoachGiangDayService {
       const loaiKeHoachGiangDay = await this.loaiKeHoachGiangDayEntity.create(newData);
       const result = await this.loaiKeHoachGiangDayEntity.save(loaiKeHoachGiangDay);
       const key = format(REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -99,7 +100,8 @@ export class LoaiKeHoachGiangDayService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_TTL);
+      const detail = await this.findById(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {

@@ -45,7 +45,8 @@ export class RolesService {
         await this.permisionService.savePermissons(permissions, result.id);
       }
       const key = format(REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_KEY, result?.id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
@@ -120,7 +121,8 @@ export class RolesService {
         await this.permisionService.updatePermission(permissions, result.id);
       }
       const key = format(REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_TTL);
+      const detail = await this.findOne(result.id);
+      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_ROLE_CACHE_TTL);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {

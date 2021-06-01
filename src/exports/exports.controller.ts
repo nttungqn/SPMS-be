@@ -39,7 +39,31 @@ export class ExportsController {
   async receiveDataExportPdf(@Req() req, @Body() body: postDataDto, @Res() res): Promise<any> {
     try {
       res.setHeader('Content-disposition', `attachment; filename=${body.fileName || 'noname'}.pdf`);
-      await pdf.create(body.data, options).toStream(function (err, stream) {
+      await pdf.create(await htmlTemlpate(body.data), options).toStream(function (err, stream) {
+        if (err) return console.log(err);
+        stream.pipe(res);
+        stream.on('end', () => res.end());
+      });
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'INTERNAL_SERVER_ERROR' });
+    }
+  }
+  @Get('json')
+  async findAllReturnJson(@Req() req, @Query() filter: ExportsDto, @Res() res): Promise<any> {
+    try {
+      const { data } = await this.exportsService.exportsFilePdf(filter);
+      return res.json({ data });
+    } catch (error) {
+      console.log(`error`, error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'INTERNAL_SERVER_ERROR' });
+    }
+  }
+
+  @Post('json/pdf')
+  async receiveJsonExportPdf(@Req() req, @Body() body: postDataDto, @Res() res): Promise<any> {
+    try {
+      res.setHeader('Content-disposition', `attachment; filename=${body.fileName || 'noname'}.pdf`);
+      await pdf.create(await htmlTemlpate(JSON.parse(body.data)), options).toStream(function (err, stream) {
         if (err) return console.log(err);
         stream.pipe(res);
         stream.on('end', () => res.end());
