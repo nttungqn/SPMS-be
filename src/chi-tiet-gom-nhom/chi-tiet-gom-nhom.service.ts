@@ -111,6 +111,34 @@ export class ChiTietGomNhomService {
     if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
   }
+  async getChiTietGomNhomByChiTietNDT(idCTNDT: number) {
+    const query = this.chiTietGomNhomRepository
+      .createQueryBuilder('ctgn')
+      .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+      .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom', `gomNhom.isDeleted = ${false}`)
+      .where((qb) => {
+        qb.where((qb) => {
+          qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc', 'loaiKhoiKienThuc.isDeleted = false').where(
+            (qb) => {
+              qb.innerJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc', `khoiKienThuc.isDeleted = ${false}`).where(
+                (qb) => {
+                  qb.innerJoin(
+                    'khoiKienThuc.chiTietNganh',
+                    'chiTietNganh',
+                    'chiTietNganh.isDeleted = false and chiTietNganh.id = :idCTNDT',
+                    { idCTNDT }
+                  );
+                }
+              );
+            }
+          );
+        });
+      })
+      .andWhere('ctgn.isDeleted = false');
+    const result = await query.getMany();
+
+    return result;
+  }
 
   async findById(id: number): Promise<ChiTietGomNhomEntity | any> {
     const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());

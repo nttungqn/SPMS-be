@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ChiTietGomNhomService } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.service';
 import { ChiTietGomNhomEntity } from 'chi-tiet-gom-nhom/entity/chi-tiet-gom-nhom.entity';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
 import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
@@ -10,7 +11,7 @@ import { UsersEntity } from 'users/entity/user.entity';
 
 @Injectable()
 export class CloneService {
-  constructor(private conection: Connection) {
+  constructor(private conection: Connection, private ctgnService: ChiTietGomNhomService) {
     conection = getConnection();
   }
   async khoiKienThucDetailClone(idCTNDTClone: number, idCTNDT: number) {
@@ -59,7 +60,6 @@ export class CloneService {
     });
     return khoiKienThucListClone;
   }
-
   async createKhoiKienThucDetailClone(
     khoiKienThucList: KhoiKienThucEntity[],
     idCTNDTClone: number,
@@ -356,6 +356,266 @@ export class CloneService {
       await this.conection.getRepository(ChiTietNganhDaoTaoEntity).save(ctndt);
     } catch (error) {
       return new InternalServerErrorException(CLONE_MESSAGE.CREATE_KE_HOACH_GIANG_DAY_FAILED);
+    }
+  }
+  async ChiTietNganhDaoTaoClone(idCTNDTClone: number, idCTNDT: number) {
+    //const chiTietNganhDaoTaoRepository = this.conection.getRepository(ChiTietNganhDaoTaoEntity);
+    const chuanDauRaRepository = this.conection.getRepository(ChuanDauRaNganhDaoTaoEntity);
+    const khoiKienThucRepository = this.conection.getRepository(KhoiKienThucEntity);
+    const keHoachGiangDayRepository = this.conection.getRepository(KeHoachGiangDayEntity);
+
+    const khoiKienThucListClone = await khoiKienThucRepository
+      .createQueryBuilder('kkt')
+      .leftJoinAndSelect('kkt.loaiKhoiKienThuc', 'lkkt', 'lkkt.isDeleted = false')
+      .where((qb) => {
+        qb.leftJoinAndSelect('lkkt.gomNhom', 'gn', 'gn.isDeleted = false').where((qb) => {
+          qb.leftJoinAndSelect('gn.chiTietGomNhom', 'ctgn', 'ctgn.isDeleted = false').where((qb) => {
+            qb.leftJoinAndSelect('ctgn.monHoc', 'mh');
+          });
+        });
+      })
+      .andWhere('kkt.chiTietNganh = :idCTNDTClone', { idCTNDTClone })
+      .andWhere('kkt.isDeleted = false')
+      .getMany();
+
+    const chuanDauRaListClone = await chuanDauRaRepository
+      .createQueryBuilder('cdr')
+      .leftJoinAndSelect('cdr.chuanDauRa', 'cdrName')
+      .leftJoinAndSelect('cdr.children', 'clv1')
+      .where((qb) => {
+        qb.leftJoinAndSelect('clv1.chuanDauRa', 'cdrNameLv1')
+          .leftJoinAndSelect('clv1.children', 'clv2')
+          .where((qb) => {
+            qb.leftJoinAndSelect('clv2.chuanDauRa', 'cdrNameLv2');
+          });
+      })
+      .where('cdr.parent is null and cdr.nganhDaoTao = :idCTNDTClone', { idCTNDTClone })
+      .getMany();
+
+    const khgdClone = await keHoachGiangDayRepository
+      .createQueryBuilder('khgd')
+      .leftJoinAndSelect('khgd.chiTietKeHoach', 'ctkh', 'ctkh.isDeleted = false')
+      .where((qb) => {
+        qb.leftJoinAndSelect('ctkh.chiTietGomNhom', 'ctgn', 'ctgn.isDeleted = false').where((qb) => {
+          qb.leftJoinAndSelect('ctgn.monHoc', 'monHoc').leftJoinAndSelect('ctgn.gomNhom', 'gn', 'gn.isDeleted = false');
+        });
+      })
+      .andWhere('khgd.isDeleted = false')
+      .andWhere('khgd.nganhDaoTao = :idCTNDTClone', { idCTNDTClone })
+      .getMany();
+    // Xử lý dữ liệu khoiKienThucListClone
+    khoiKienThucListClone?.forEach((kktE) => {
+      kktE.chiTietNganh = idCTNDT;
+      keptProperties(
+        kktE,
+        'chiTietNganh',
+        'maKKT',
+        'ten',
+        'tinChiTuChon',
+        'tinChiBatBuoc',
+        'tinChiTuChonTuDo',
+        'ghiChu',
+        'tongTinChi',
+        'loaiKhoiKienThuc'
+      );
+      kktE.loaiKhoiKienThuc?.forEach((lkktE) => {
+        keptProperties(lkktE, 'maLoaiKhoiKienThuc', 'ten', 'tongTinChi', 'noidung', 'gomNhom');
+        lkktE.gomNhom?.forEach((gnE) => {
+          keptProperties(gnE, 'maGN', 'tieuDe', 'stt', 'loaiNhom', 'soTCBB', 'chiTietGomNhom');
+          gnE.chiTietGomNhom?.forEach((ctgnE) => {
+            removeProperties(ctgnE, 'id', 'idGN', 'ctgnMonHoctruoc', 'gomNhom', 'createdAt', 'updatedAt', 'isDeleted');
+          });
+        });
+      });
+    });
+    // Xử lý dữ liệu chuanDauRaListClone
+    chuanDauRaListClone?.forEach((cdrlv1) => {
+      keptProperties(cdrlv1, 'ma', 'chuanDauRa', 'children');
+      cdrlv1.children?.forEach((cdrlv2) => {
+        keptProperties(cdrlv2, 'ma', 'chuanDauRa', 'children');
+        cdrlv2.children?.forEach((cdrlv3) => {
+          keptProperties(cdrlv3, 'ma', 'chuanDauRa');
+        });
+      });
+    });
+    khgdClone?.forEach((khgdE) => {
+      keptProperties(khgdE, 'maKeHoach', 'tenHocKy', 'sTT', 'nganhDaoTao', 'chiTietKeHoach');
+      khgdE.chiTietKeHoach?.forEach((ctkhE) => {
+        keptProperties(ctkhE, 'ghiChu', 'chiTietGomNhom');
+        keptProperties(ctkhE.chiTietGomNhom, 'ghiChu', 'gomNhom', 'monHoc');
+        removeProperties(ctkhE.chiTietGomNhom.gomNhom, 'isDeleted', 'createdAt', 'updatedAt', 'id');
+        removeProperties(ctkhE.chiTietGomNhom.monHoc, 'updatedAt', 'createdAt', 'isDeleted');
+      });
+    });
+    return { chuanDauRa: chuanDauRaListClone, khoiKienThuc: khoiKienThucListClone, keHoachGiangDay: khgdClone };
+  }
+
+  async CreateChiTietNganhDaoTao(
+    chuanDauRaList: ChuanDauRaNganhDaoTaoEntity[],
+    khoiKienThucList: KhoiKienThucEntity[],
+    keHoachGiangDayList: KeHoachGiangDayEntity[],
+    idCTNDT: number,
+    user: UsersEntity
+  ) {
+    const queryRunner = this.conection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    const ctndtRepository = queryRunner.manager.getRepository(ChiTietNganhDaoTaoEntity);
+    const ctndt = await ctndtRepository
+      .createQueryBuilder('ctndt')
+      .leftJoinAndSelect('ctndt.keHoachGiangDayList', 'khgd')
+      .leftJoinAndSelect('ctndt.chuanDaura', 'chuanDaura')
+      .leftJoinAndSelect('ctndt.khoiKienThucList', 'khoiKienThucList')
+      .where({ id: idCTNDT })
+      .getOne();
+    if (ctndt.chuanDaura.length > 0 || ctndt.keHoachGiangDayList.length > 0 || ctndt.khoiKienThucList.length > 0) {
+      queryRunner.release();
+      throw new BadRequestException(CLONE_MESSAGE.CONTENT_EXISTED);
+    }
+    if (chuanDauRaList.length === 0) {
+      queryRunner.release();
+      throw new BadRequestException(CLONE_MESSAGE.CHUAN_DAU_RA_NOT_EMPTY);
+    }
+    if (khoiKienThucList.length === 0) {
+      queryRunner.release();
+      throw new BadRequestException(CLONE_MESSAGE.KHOI_KIEN_THUC_NOT_EMPTY);
+    }
+    if (keHoachGiangDayList.length === 0) {
+      queryRunner.release();
+      throw new BadRequestException(CLONE_MESSAGE.KE_HOACH_GIANG_DAY_NOT_EMPTY);
+    }
+    try {
+      // Xử lý chuẩn đầu ra
+      let indexLv1 = 0;
+      chuanDauRaList.forEach((cdrlv1) => {
+        indexLv1++;
+        keptProperties(cdrlv1, 'ma', 'chuanDauRa', 'children');
+        keptProperties(cdrlv1.chuanDauRa, 'id');
+        cdrlv1.nganhDaoTao = idCTNDT;
+        cdrlv1.createdBy = user.id;
+        cdrlv1.updatedBy = user.id;
+        cdrlv1.ma = `${indexLv1}`;
+        let indexLv2 = 0;
+        cdrlv1.children?.forEach((cdrlv2) => {
+          indexLv2++;
+          keptProperties(cdrlv2, 'ma', 'chuanDauRa', 'children');
+          keptProperties(cdrlv2.chuanDauRa, 'id');
+          cdrlv2.nganhDaoTao = idCTNDT;
+          cdrlv2.createdBy = user.id;
+          cdrlv2.updatedBy = user.id;
+          cdrlv2.ma = `${indexLv1}.${indexLv2}`;
+          let indexLv3 = 0;
+          cdrlv2.children?.forEach((cdrlv3) => {
+            indexLv3++;
+            keptProperties(cdrlv3, 'ma', 'chuanDauRa'); //Chỉ áp dụng 3 cấp
+            keptProperties(cdrlv3.chuanDauRa, 'id');
+            cdrlv3.nganhDaoTao = idCTNDT;
+            cdrlv3.createdBy = user.id;
+            cdrlv3.updatedBy = user.id;
+            cdrlv3.ma = `${indexLv1}.${indexLv2}.${indexLv3}`;
+          });
+        });
+      });
+      //Save Chuẩn đầu ra
+      ctndt.chuanDaura = chuanDauRaList;
+      await ctndtRepository.save(ctndt);
+      delete ctndt.chuanDaura;
+      // xử lý khối kiến thức
+      khoiKienThucList?.forEach((kktE) => {
+        kktE.chiTietNganh = Number(idCTNDT);
+        kktE.createdBy = user.id;
+        kktE.updatedBy = user.id;
+        removeProperties(kktE, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+        kktE.loaiKhoiKienThuc?.forEach((lkktE) => {
+          lkktE.createdBy = user.id;
+          lkktE.updatedBy = user.id;
+          removeProperties(lkktE, 'id', 'isDeleted');
+          lkktE.gomNhom?.forEach((gnE) => {
+            gnE.createdBy = user.id;
+            gnE.updatedBy = user.id;
+            removeProperties(gnE, 'id', 'idLKKT', 'loaiKhoiKienThuc', 'createdAt', 'updatedAt', 'isDeleted');
+            gnE.chiTietGomNhom?.forEach((ctgnE) => {
+              ctgnE.createdBy = user.id;
+              ctgnE.updatedBy = user.id;
+              removeProperties(
+                ctgnE,
+                'id',
+                'idGN',
+                'ctgnMonHoctruoc',
+                'gomNhom',
+                'createdAt',
+                'updatedAt',
+                'monHoc',
+                'isDeleted'
+              );
+            });
+            gnE.chiTietGomNhom = gnE.chiTietGomNhom.filter((ctgnE) => ctgnE.idMH != null);
+          });
+          lkktE.gomNhom = lkktE.gomNhom.filter((gnE) => gnE.chiTietGomNhom.length >= 0);
+        });
+      });
+      // save khối kiến thức
+      ctndt.khoiKienThucList = khoiKienThucList;
+      const results = await ctndtRepository.save(ctndt);
+      const ctgnArr: ChiTietGomNhomEntity[] = [];
+      results.khoiKienThucList?.forEach((kktE) => {
+        kktE.loaiKhoiKienThuc?.forEach((lkktK) => {
+          lkktK.gomNhom?.forEach((gnE) => {
+            gnE.chiTietGomNhom?.forEach((ctgnE) => {
+              ctgnArr.push(ctgnE);
+              console.log(ctgnE);
+            });
+          });
+        });
+      });
+      delete ctndt.khoiKienThucList;
+      // Xử lý Kế hoạch giảng dạy
+      for (const khgdE of keHoachGiangDayList) {
+        khgdE.nganhDaoTao = Number(idCTNDT);
+        khgdE.createdBy = user.id;
+        khgdE.updatedBy = user.id;
+        removeProperties(khgdE, 'id', 'createdAt', 'updatedAt', 'isDeleted');
+        khgdE.chiTietKeHoach = khgdE.chiTietKeHoach.filter((ctkhE) => {
+          ctkhE.createdBy = user.id;
+          ctkhE.updatedBy = user.id;
+          const length = ctgnArr.length;
+          let index = 0;
+          for (; index < length; index++) {
+            if (ctgnArr[index].idMH === ctkhE.chiTietGomNhom.monHoc.id) {
+              ctkhE.idCTGN = ctgnArr[index].id;
+              ctgnArr.splice(index, 1);
+              break;
+            }
+          }
+          if (index === length) {
+            // id môn học trong kế hoạch giảng dạy không nàm trong nội dung
+            throw new BadRequestException();
+          }
+          removeProperties(
+            ctkhE,
+            'idKHGD',
+            'id',
+            'chiTietKeHoach',
+            'createdAt',
+            'updatedAt',
+            'isDeleted',
+            'chiTietGomNhom'
+          );
+          return Number.isInteger(ctkhE.idCTGN);
+        });
+      }
+      //save Kế hoạch giảng dạy
+      ctndt.keHoachGiangDayList = keHoachGiangDayList;
+      await ctndtRepository.save(ctndt);
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException(CLONE_MESSAGE.MON_HOC_NOT_EXIST_IN_KHOI_KIEN_THUC);
+      }
+      throw new InternalServerErrorException();
+    } finally {
+      await queryRunner.release();
     }
   }
   async deleteKhoiKienThuc(idKKT: number) {
