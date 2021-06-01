@@ -9,12 +9,10 @@ export class RedisCacheService {
   ) {}
 
   async get(key): Promise<any> {
-    return undefined;
     return await this.cache.get(key);
   }
 
   async set(key, value, ttl = REDIS_CONFIG.TTL) {
-    return undefined;
     await this.cache.set(key, value, { ttl });
   }
 

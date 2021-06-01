@@ -33,8 +33,8 @@ export default async (data) => `
           ${
             process.env.TEMPLATE_PDF
               ? `html {
-                    zoom: 0.55;
-               }`
+               zoom: 0.55;
+          }`
               : ''
           }
           ul, ol, li{
@@ -300,12 +300,12 @@ export default async (data) => `
                                                                                     { title: 'Ghi Chú' }
                                                                                   ],
                                                                                   fields: [
-                                                                                    'idMH.ma',
-                                                                                    'idMH.tenTiengViet',
-                                                                                    'idMH.soTinChi',
-                                                                                    'idMH.soTietLyThuyet',
-                                                                                    'idMH.soTietThucHanh',
-                                                                                    'idMH.soTietTuHoc',
+                                                                                    'monHoc.ma',
+                                                                                    'monHoc.tenTiengViet',
+                                                                                    'monHoc.soTinChi',
+                                                                                    'monHoc.soTietLyThuyet',
+                                                                                    'monHoc.soTietThucHanh',
+                                                                                    'monHoc.soTietTuHoc',
                                                                                     'groupType',
                                                                                     'ghiChu'
                                                                                   ],
@@ -367,20 +367,20 @@ export default async (data) => `
                                                          item?.tenHocKy
                                                        }</span></b></p></td>
                                                   </tr>
-                                                  ${item?.chiTietKHGD
+                                                  ${item?.chiTietKeHoach
                                                     ?.map((subItem, index) => {
                                                       return `
                                                        <tr>
                                                             <td>${index + 1}</td>
                                                             ${[
-                                                              'idCTGN.idMH.ma',
-                                                              'idCTGN.idMH.tenTiengViet',
-                                                              'idCTGN.idMH.soTinChi',
-                                                              'idCTGN.idMH.soTietLyThuyet',
-                                                              'idCTGN.idMH.soTietThucHanh',
-                                                              'idCTGN.idMH.soTietTuHoc',
-                                                              'idCTGN.idGN.loaiNhom',
-                                                              'idCTGN.idGN.ghiChu'
+                                                              'chiTietGomNhom.monHoc.ma',
+                                                              'chiTietGomNhom.monHoc.tenTiengViet',
+                                                              'chiTietGomNhom.monHoc.soTinChi',
+                                                              'chiTietGomNhom.monHoc.soTietLyThuyet',
+                                                              'chiTietGomNhom.monHoc.soTietThucHanh',
+                                                              'chiTietGomNhom.monHoc.soTietTuHoc',
+                                                              'chiTietGomNhom.gomNhom.loaiNhom',
+                                                              'chiTietGomNhom.gomNhom.ghiChu'
                                                             ]
                                                               .map((field) => `<td>${get(subItem, field, '')}</td>`)
                                                               .join('')}

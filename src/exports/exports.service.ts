@@ -152,53 +152,6 @@ export class ExportsService {
         .where({ id: result?.id })
         .getOne();
 
-      // const khoiKienThucData = await this.khoiKienThucService.findAll({ chiTietNganh: result?.id });
-      // const khoiKienThuc = khoiKienThucData?.contents || [];
-      // let chuanDauRaNganhDaoTao = [];
-      // try {
-      //   const chuanDauRaNganhDaoTaoData = await this.chuanDauRaNganhGomNhomService.findAll({
-      //     nganhDaoTao: result?.id,
-      //     limit: 10000
-      //   });
-      //   chuanDauRaNganhDaoTao = chuanDauRaNganhDaoTaoData?.contents || [];
-      // } catch (error) {
-      //   chuanDauRaNganhDaoTao = [];
-      // }
-      // const results = groupBy(chuanDauRaNganhDaoTao, 'parent.ma');
-      // const loaiKhoiKienThucArray = khoiKienThuc.map(async (item) => {
-      //   const results = await this.loaiKhoiKienThucService.findAllWithHaveSelectField({
-      //     idKhoiKienThuc: item?.id,
-      //     createdAt: 'ASC'
-      //   });
-      //   return { ...item, loaiKhoiKienThuc: results || [] };
-      // });
-      // const dataResults = await Promise.all(loaiKhoiKienThucArray);
-      // for (let i = 0; i < dataResults?.length; i++) {
-      //   const gomNhomPromise = dataResults[i]?.loaiKhoiKienThuc?.map(async (item) => {
-      //     const results = await this.gomNhomService.findAllWithSelectField({
-      //       idLKKT: item?.id,
-      //       select: 'chiTietGomNhom,chiTietGomNhom.idMH'
-      //     });
-      //     return { ...item, gomNhom: results || [] };
-      //   });
-      //   const gomNhom = await Promise.all(gomNhomPromise);
-      //   dataResults[i] = { ...dataResults[i], loaiKhoiKienThuc: gomNhom };
-      // }
-      // let keHoachGiangDay = [];
-      // try {
-      //   const keHoachGiangDayData = await this.keHoachGiangDayService.findAll({ nganhDaoTao: result?.id });
-      //   keHoachGiangDay = keHoachGiangDayData?.contents || [];
-      // } catch (error) {
-      //   keHoachGiangDay = [];
-      // }
-      // const chiTietKHGDArr = keHoachGiangDay?.map(async (item) => {
-      //   const results = await this.chiTietKeHoachGiangDayService.findAllWithSelectField({
-      //     idKHGD: item?.id,
-      //     select: 'idCTGN,idCTGN.idGN,idCTGN.idMH'
-      //   });
-      //   return { ...item, chiTietKHGD: results || [] };
-      // });
-      // const chiTietKeHoach = await Promise.all(chiTietKHGDArr);
       const data = {
         khoa,
         coHoiNgheNghiep,
@@ -218,6 +171,41 @@ export class ExportsService {
       };
       const fileName = `${maNganhDaoTao}_${khoa}.pdf`;
       return { data, fileName };
+    } catch (error) {
+      console.log('error', error);
+      throw new HttpException('INTERNAL_SERVER_ERROR', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async getInfoCTNDT(id): Promise<any> {
+    try {
+      const ctndt = await this.chiTietNganhDaoTaoService.findById(id);
+      const khoa = lodash.get(ctndt, 'khoa', '');
+      const coHoiNgheNghiep = lodash.get(ctndt, 'coHoiNgheNghiep', '');
+      const mucTieuChung = lodash.get(ctndt, 'mucTieuChung', '');
+      const tenNganhDaoTao = lodash.get(ctndt, 'nganhDaoTao.ten', '');
+      const maNganhDaoTao = lodash.get(ctndt, 'nganhDaoTao.maNganhDaoTao', '');
+      const loaiHinh = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.loaiHinh', '');
+      const trinhDo = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.trinhDo', '');
+      const tongTinChi = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.tongTinChi', '');
+      const doiTuong = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.doiTuong', '');
+      const quiTrinhDaoTao = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.quiTrinhDaoTao', '');
+      const dieuKienTotNghiep = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.dieuKienTotNghiep', '');
+
+      const data = {
+        khoa,
+        coHoiNgheNghiep,
+        mucTieuChung,
+        tenNganhDaoTao,
+        maNganhDaoTao,
+        trinhDo,
+        loaiHinh,
+        tongTinChi,
+        doiTuong,
+        quiTrinhDaoTao,
+        dieuKienTotNghiep
+      };
+      return data;
     } catch (error) {
       console.log('error', error);
       throw new HttpException('INTERNAL_SERVER_ERROR', HttpStatus.INTERNAL_SERVER_ERROR);

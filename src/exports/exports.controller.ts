@@ -1,8 +1,10 @@
+import { IdExportDto } from './dto/Id.dto';
 import { postDataDto } from './dto/postCreatePdf';
 import { ExportsDto } from './dto/exports.dto';
-import { Controller, Get, Query, Req, UseGuards, HttpStatus, Res, Post, Body } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards, HttpStatus, Res, Post, Body, Param } from '@nestjs/common';
 import { ExportsService } from './exports.service';
 import htmlTemlpate from 'utils/templateCTDT/template';
+import htmlTemlpatePreviewV2 from 'utils/templateCTDT/templatePreview-v2';
 import * as pdf from 'html-pdf';
 const options = { format: 'A4', type: 'pdf', width: '8.5in', height: '11in', border: '5mm' };
 
@@ -82,6 +84,24 @@ export class ExportsController {
         stream.pipe(res);
         stream.on('end', () => res.end());
       });
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'INTERNAL_SERVER_ERROR' });
+    }
+  }
+
+  @Post('preview/pdf/:id')
+  async PreviewPDFV2(@Req() req, @Param() params: IdExportDto, @Body() body: postDataDto, @Res() res): Promise<any> {
+    try {
+      const data = await this.exportsService.getInfoCTNDT(params.id);
+      const extractBody = typeof body.data === 'string' ? JSON.parse(body.data) : body.data;
+      res.setHeader('Content-disposition', 'attachment; filename=preview.pdf');
+      await pdf
+        .create(await htmlTemlpatePreviewV2({ ...data, ...extractBody }), options)
+        .toStream(function (err, stream) {
+          if (err) return console.log(err);
+          stream.pipe(res);
+          stream.on('end', () => res.end());
+        });
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'INTERNAL_SERVER_ERROR' });
     }
