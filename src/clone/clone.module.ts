@@ -7,6 +7,7 @@ import { ChiTietGomNhomModule } from 'chi-tiet-gom-nhom/chi-tiet-gom-nhom.module
 @Module({
   controllers: [CloneController],
   providers: [CloneService],
-  imports: [PermissionModule, ChiTietGomNhomModule]
+  imports: [PermissionModule, ChiTietGomNhomModule],
+  exports: [CloneService]
 })
 export class CloneModule {}

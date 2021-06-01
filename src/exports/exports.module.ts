@@ -8,6 +8,7 @@ import { KhoiKIenThucModule } from 'khoi-kien-thuc/khoi-kien-thuc.module';
 import { ExportsController } from './exports.controller';
 import { ExportsService } from './exports.service';
 import { GomNhomModule } from 'gom-nhom/gom-nhom.module';
+import { CloneModule } from 'clone/clone.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { GomNhomModule } from 'gom-nhom/gom-nhom.module';
     LoaiKhoiKienThucModule,
     GomNhomModule,
     KeHoachGiangDayModule,
-    ChiTietKeHoachModule
+    ChiTietKeHoachModule,
+    CloneModule
   ],
   controllers: [ExportsController],
   providers: [ExportsService]

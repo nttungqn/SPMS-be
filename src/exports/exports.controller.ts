@@ -48,4 +48,18 @@ export class ExportsController {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'INTERNAL_SERVER_ERROR' });
     }
   }
+  @Get('v2')
+  async findAllV2(@Req() req, @Query() filter: ExportsDto, @Res() res): Promise<any> {
+    try {
+      const { data, fileName = 'export.pdf' } = await this.exportsService.exportsFilePdf(filter);
+      res.setHeader('Content-disposition', 'attachment; filename=' + fileName);
+      await pdf.create(await htmlTemlpate(data), options).toStream(function (err, stream) {
+        if (err) return console.log(err);
+        stream.pipe(res);
+        stream.on('end', () => res.end());
+      });
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'INTERNAL_SERVER_ERROR' });
+    }
+  }
 }
