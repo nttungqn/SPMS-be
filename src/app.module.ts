@@ -41,6 +41,7 @@ import { CloneModule } from './clone/clone.module';
 import { PermissionModule } from './permission/permission.module';
 import { ResourcesModule } from './resources/resources.module';
 import { GenerateSyllabusModule } from 'generate-syllabus/generate-syllabus.module';
+import { BloomModule } from './bloom/bloom.module';
 
 @Module({
   imports: [
@@ -83,7 +84,8 @@ import { GenerateSyllabusModule } from 'generate-syllabus/generate-syllabus.modu
     CloneModule,
     PermissionModule,
     ResourcesModule,
-    GenerateSyllabusModule
+    GenerateSyllabusModule,
+    BloomModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService, CronService]
