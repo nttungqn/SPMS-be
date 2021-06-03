@@ -117,8 +117,8 @@ export class MonHocService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_KEY, id.toString());
-      const detail = await this.findById(result.id);
-      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_MON_HOC_CACHE_TTL);
+      await this.cacheManager.del(key);
+      await this.findById(result.id);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {

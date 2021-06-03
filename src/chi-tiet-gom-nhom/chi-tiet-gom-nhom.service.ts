@@ -215,8 +215,8 @@ export class ChiTietGomNhomService {
     try {
       const result = await this.chiTietGomNhomRepository.save(chiTietGomNhom);
       const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());
-      const detail = await this.findById(result.id);
-      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL);
+      await this.cacheManager.del(key);
+      await this.findById(result.id);
       await this.deleteKeysAfterChange();
       return result;
     } catch (error) {

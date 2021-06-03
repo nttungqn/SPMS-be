@@ -135,8 +135,8 @@ export class LoaiKhoiKienThucService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_KEY, result?.id.toString());
-      const detail = await this.findOne(result.id);
-      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_LKKT_CACHE_TTL);
+      await this.cacheManager.del(key);
+      await this.findOne(result.id);
       await this.delCacheAfterChange();
       return results;
     } catch (error) {

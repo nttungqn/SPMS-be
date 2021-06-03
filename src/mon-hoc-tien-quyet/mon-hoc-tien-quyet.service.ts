@@ -128,8 +128,8 @@ export class MonHocTienQuyetService {
       newPrere.updatedBy = updatePrerequisiteSubjectDto.updatedBy;
       const result = await this.prerequisiteSubjectRepository.save(newPrere);
       const key = format(REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_KEY, id.toString());
-      const detail = await this.findById(result.id);
-      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_MHTQ_CACHE_TTL);
+      await this.cacheManager.del(key);
+      await this.findById(result.id);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
