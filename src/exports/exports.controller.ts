@@ -6,12 +6,18 @@ import { ExportsService } from './exports.service';
 import htmlTemlpate from 'utils/templateCTDT/template';
 import htmlTemlpatePreviewV2 from 'utils/templateCTDT/templatePreview-v2';
 import * as pdf from 'html-pdf';
-const options = { format: 'A4', type: 'pdf', width: '8.5in', height: '11in', border: {
-  "top": "5mm",            // default is 0, units: mm, cm, in, px
-  "right": "5mm",
-  "bottom": "10mm",
-  "left": "5mm"
-}, };
+const options = {
+  format: 'A4',
+  type: 'pdf',
+  width: '8.5in',
+  height: '11in',
+  border: {
+    top: '5mm', // default is 0, units: mm, cm, in, px
+    right: '5mm',
+    bottom: '10mm',
+    left: '5mm'
+  }
+};
 
 @Controller('exports')
 export class ExportsController {

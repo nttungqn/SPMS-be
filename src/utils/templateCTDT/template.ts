@@ -34,12 +34,12 @@ export default async (data) => `
      
      <style>
      ${
-          process.env.TEMPLATE_PDF
-            ? `html {
+       process.env.TEMPLATE_PDF
+         ? `html {
                   zoom: 0.55;
              }`
-            : ''
-        }
+         : ''
+     }
      .muctieucuthe ul,
      .muctieucuthe ol,
      .muctieucuthe li {
