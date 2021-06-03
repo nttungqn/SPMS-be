@@ -1,4 +1,10 @@
-import { Injectable, InternalServerErrorException, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  ConflictException,
+  BadRequestException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
 import { CHUDE_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
@@ -121,9 +127,8 @@ export class ChuDeService extends BaseService {
     if (await this.isExist(null, newData)) {
       throw new ConflictException(CHUDE_MESSAGE.CHUDE_EXIST);
     }
-
+    const chuDe = await this.createEntity(new ChuDeEntity(), newData, newData.idSyllabus);
     try {
-      const chuDe = await this.createEntity(new ChuDeEntity(), newData, newData.idSyllabus);
       const result = await this.chuDeRepository.save({
         ...chuDe,
         createdBy: syllabusCreatedBy.id,
@@ -137,6 +142,7 @@ export class ChuDeService extends BaseService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(CHUDE_MESSAGE.CREATE_CHUDE_FAILED);
     }
   }
@@ -240,7 +246,7 @@ export class ChuDeService extends BaseService {
                 try {
                   result = await service.isInSyllabus(Number(idData), idSyllabus);
                 } catch (error) {
-                  throw new Error(error?.message);
+                  throw new BadRequestException(error?.message);
                 }
               }
               chuDe[key].push(result);

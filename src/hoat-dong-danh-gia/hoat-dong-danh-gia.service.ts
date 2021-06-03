@@ -239,8 +239,8 @@ export class HoatDongDanhGiaService extends BaseService {
       .where((qb) => {
         qb.where('ldg.syllabus = :idSyllabus', { idSyllabus });
       })
-      .andWhere('ldg.isDeleted = false')
-      .andWhere('ldg.id = :idHoatDongDanhGia', { idHoatDongDanhGia });
+      .andWhere('hddg.isDeleted = false')
+      .andWhere('hddg.id = :idHoatDongDanhGia', { idHoatDongDanhGia });
     const result = await query.getOne();
     if (!result) throw new BadRequestException(`HOATDONGDANHGIA_${idHoatDongDanhGia}_NOT_IN_SYLLABUS`);
     return result;
