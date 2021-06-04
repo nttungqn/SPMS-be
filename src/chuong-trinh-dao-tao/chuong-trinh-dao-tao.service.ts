@@ -114,7 +114,8 @@ export class ChuongTrinhDaoTaoService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_KEY, id.toString());
-      await this.cacheManager.set(key, updated, REDIS_CACHE_VARS.DETAIL_CTDT_CACHE_TTL);
+      await this.cacheManager.del(key);
+      await this.findById(updated.id);
       await this.delCacheAfterChange();
       return updated;
     } catch (error) {
@@ -224,7 +225,6 @@ export class ChuongTrinhDaoTaoService {
       const listNDTSaved = [];
       for (const ndt of listNDT) {
         if(ndt?.maNganhDaoTao && ndt?.ten){
-
           const newNDT = await nganhDaoTaoRepo.create({
             maNganhDaoTao: ndt?.maNganhDaoTao,
             ten: ndt?.ten,
@@ -232,9 +232,10 @@ export class ChuongTrinhDaoTaoService {
             createdBy: user?.id,
             updatedBy: user?.id
           });
+          
           const ndtSaved = await nganhDaoTaoRepo.save(newNDT);
-          if(ndt?.khoa){
 
+          if(ndt?.khoa){
             const newCTNDT = await ctndtRepo.create({
               khoa: ndt?.khoa,
               coHoiNgheNghiep: ndt?.coHoiNgheNghiep,

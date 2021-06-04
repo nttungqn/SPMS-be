@@ -130,8 +130,8 @@ export class ChiTietKeHoachService {
     try {
       const result = await this.chiTietKeHoachRepository.save({ ...oldData, ...newData, updatedAt: new Date() });
       const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_KE_HOACH_CACHE_KEY, id.toString());
-      const detail = await this.findOne(result.id);
-      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHI_TIET_KE_HOACH_CACHE_TTL);
+      await this.cacheManager.del(key);
+      await this.findOne(result.id);
       await this.deleteKeysAfterChange();
       return result;
     } catch (error) {

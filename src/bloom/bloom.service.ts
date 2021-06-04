@@ -13,7 +13,9 @@ export class BloomService {
     private bloomRepository: Repository<BloomEntity>
   ) {}
   async findAll(filter: FilterBloom) {
-    if (filter?.mucDo?.length > 0) {
+    if (filter?.mucDo?.length == 1) {
+      return await this.bloomRepository.find({ where: { mucDo: filter.mucDo[0] } });
+    } else if (filter?.mucDo?.length > 1) {
       return await this.bloomRepository.find({ where: { mucDo: In(filter.mucDo) } });
     } else {
       return await this.bloomRepository.find();
