@@ -7,12 +7,17 @@ import { IChuongTrinhDaoTao } from './interfaces/chuongTrinhDaoTao.interface';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
 import { FilterIsExistCTDT } from './dto/filter-is-exist-chuong-trinh-dao-tao.dto';
+import { Connection, getConnection, createConnection } from 'typeorm';
+import { NganhDaoTaoEntity } from 'ctdt/entity/nganhDaoTao.entity';
+import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
+import * as lodash from 'lodash';
 
 @Injectable()
 export class ChuongTrinhDaoTaoService {
   constructor(
     @InjectRepository(ChuongTrinhDaoTaoEntity) private chuongTrinhDaoTaoRepository: Repository<ChuongTrinhDaoTaoEntity>,
-    private cacheManager: RedisCacheService
+    private cacheManager: RedisCacheService,
+    private connection: Connection
   ) {}
   async findAll(filter): Promise<ChuongTrinhDaoTaoEntity[] | any> {
     const key = format(REDIS_CACHE_VARS.LIST_CTDT_CACHE_KEY, JSON.stringify(filter));
@@ -178,6 +183,83 @@ export class ChuongTrinhDaoTaoService {
       return null;
     } catch (error) {
       throw new InternalServerErrorException();
+    }
+  }
+
+  async createDetail(newData, user):Promise<any>{
+    const connection = getConnection();
+    const queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const ctdtRepo = await queryRunner.manager.getRepository(ChuongTrinhDaoTaoEntity);
+      const nganhDaoTaoRepo = await queryRunner.manager.getRepository(NganhDaoTaoEntity);
+      const ctndtRepo = await queryRunner.manager.getRepository(ChiTietNganhDaoTaoEntity);
+      const isCTDTExist = await ctdtRepo.findOne({
+        where: [
+          { ten: newData?.ten, isDeleted: false },
+          { maCTDT: newData?.maCTDT, isDeleted: false }
+        ]
+      })
+      if (isCTDTExist) {
+        return {message: CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_NAME_OR_CODE_EXIST, isError: true};
+      }
+
+      const newCTDT = await ctdtRepo.create({
+        maCTDT: newData?.maCTDT,
+        loaiHinh: newData?.loaiHinh,
+        ten: newData?.ten,
+        trinhDo: newData?.trinhDo,
+        tongTinChi: newData?.tongTinChi || 0,
+        doiTuong: newData?.doiTuong,
+        quiTrinhDaoTao: newData?.quiTrinhDaoTao,
+        dieuKienTotNghiep: newData?.dieuKienTotNghiep,
+        createdBy: user?.id,
+        updatedBy: user?.id
+      });
+      const ctdt = await ctdtRepo.save(newCTDT);
+
+      const listNDT = newData?.payload || [];
+      const listNDTSaved = [];
+      for (const ndt of listNDT) {
+        if(ndt?.maNganhDaoTao && ndt?.ten){
+
+          const newNDT = await nganhDaoTaoRepo.create({
+            maNganhDaoTao: ndt?.maNganhDaoTao,
+            ten: ndt?.ten,
+            chuongTrinhDaoTao: ctdt?.id,
+            createdBy: user?.id,
+            updatedBy: user?.id
+          });
+          const ndtSaved = await nganhDaoTaoRepo.save(newNDT);
+          if(ndt?.khoa){
+
+            const newCTNDT = await ctndtRepo.create({
+              khoa: ndt?.khoa,
+              coHoiNgheNghiep: ndt?.coHoiNgheNghiep,
+              mucTieuChung: ndt?.mucTieuChung,
+              nganhDaoTao: ndtSaved?.id,
+              createdBy: user?.id,
+              updatedBy: user?.id
+            });
+            
+            const ctndtSaved = await ctndtRepo.save(newCTNDT);
+            listNDTSaved.push({ndt: ndtSaved, ctndt: ctndtSaved});
+          }
+          listNDTSaved.push({ndt: ndtSaved, ctndt: null});
+        }
+      }
+
+      await queryRunner.commitTransaction();
+      return {message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY, isError: false, data: {ctdt, ndtsaved: listNDTSaved}}
+    } catch (error) {
+      console.log(error);
+      await queryRunner.rollbackTransaction();
+      return {message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED, isError: false, error: lodash.get(error, 'sqlMessage', 'error')}
+    }finally {
+      console.log('Transaction ended');
+      await queryRunner.release();
     }
   }
 }
