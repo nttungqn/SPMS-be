@@ -224,27 +224,32 @@ export class ChuongTrinhDaoTaoService {
       const listNDT = newData?.payload || [];
       const listNDTSaved = [];
       for (const ndt of listNDT) {
-        const newNDT = await nganhDaoTaoRepo.create({
-          maNganhDaoTao: ndt?.maNganhDaoTao,
-          ten: ndt?.ten,
-          chuongTrinhDaoTao: ctdt?.id,
-          createdBy: user?.id,
-          updatedBy: user?.id
-        });
-        const ndtSaved = await nganhDaoTaoRepo.save(newNDT);
+        if(ndt?.maNganhDaoTao && ndt?.ten){
+          const newNDT = await nganhDaoTaoRepo.create({
+            maNganhDaoTao: ndt?.maNganhDaoTao,
+            ten: ndt?.ten,
+            chuongTrinhDaoTao: ctdt?.id,
+            createdBy: user?.id,
+            updatedBy: user?.id
+          });
+          
+          const ndtSaved = await nganhDaoTaoRepo.save(newNDT);
 
-        const newCTNDT = await ctndtRepo.create({
-          khoa: ndt?.khoa,
-          coHoiNgheNghiep: ndt?.coHoiNgheNghiep,
-          mucTieuChung: ndt?.mucTieuChung,
-          nganhDaoTao: ndtSaved?.id,
-          createdBy: user?.id,
-          updatedBy: user?.id
-        });
-
-        const ctndtSaved = await ctndtRepo.save(newCTNDT);
-
-        listNDTSaved.push({ndt: ndtSaved, ctndt: ctndtSaved});
+          if(ndt?.khoa){
+            const newCTNDT = await ctndtRepo.create({
+              khoa: ndt?.khoa,
+              coHoiNgheNghiep: ndt?.coHoiNgheNghiep,
+              mucTieuChung: ndt?.mucTieuChung,
+              nganhDaoTao: ndtSaved?.id,
+              createdBy: user?.id,
+              updatedBy: user?.id
+            });
+            
+            const ctndtSaved = await ctndtRepo.save(newCTNDT);
+            listNDTSaved.push({ndt: ndtSaved, ctndt: ctndtSaved});
+          }
+          listNDTSaved.push({ndt: ndtSaved, ctndt: null});
+        }
       }
 
       await queryRunner.commitTransaction();

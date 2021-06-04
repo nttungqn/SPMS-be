@@ -133,10 +133,10 @@ export class ChuongTrinhDaoTaoController {
   @ApiBearerAuth('token')
   @Post('create-detail')
   async createDetail(@Req() req, @Res() res, @Body() body: CreateDetailChuongTrinhDaoTaoDto) {
-    const found = await this.chuongTrinhDaoTaoService.isExist({ten: body?.ten, maCTDT: body?.maCTDT});
-    if (found) {
-      return res.status(HttpStatus.OK).json({ isConflict: true, content: found });
-    }
+    // const found = await this.chuongTrinhDaoTaoService.isExist({ten: body?.ten, maCTDT: body?.maCTDT});
+    // if (found) {
+    //   return res.status(HttpStatus.OK).json({ isConflict: true, content: found });
+    // }
     
     const user = req.user || {};
     try {
