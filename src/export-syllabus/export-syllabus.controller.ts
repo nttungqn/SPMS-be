@@ -3,10 +3,11 @@ import { postDataDto } from './dto/postCreatePdf';
 import { ExportsDto } from './dto/exports.dto';
 import { Controller, Get, Query, Req, UseGuards, HttpStatus, Res, Post, Body, Param } from '@nestjs/common';
 import { ExportSyllabusService } from './export-syllabus.service';
-import htmlTemlpate from 'utils/template-syllabus/template-syllabus';
+import htmlTemlpate from 'utils/template-syllabus/template-syllabus2';
 import htmlTemlpatePreviewV2 from 'utils/templateCTDT/templatePreview-v2';
 import * as pdf from 'html-pdf';
 const options = { format: 'A4', type: 'pdf', width: '8.5in', height: '11in', border: '5mm' };
+const fs = require('fs');
 
 @Controller('export-syllabus')
 export class ExportSyllabusController {
@@ -22,6 +23,7 @@ export class ExportSyllabusController {
         stream.pipe(res);
         stream.on('end', () => res.end());
       });
+      return res.json(data);
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'INTERNAL_SERVER_ERROR' });
     }

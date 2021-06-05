@@ -1,3 +1,15 @@
+const CHAPTER = {
+  CHAP_1: 'THÔNG TIN CHUNG',
+  CHAP_2: 'MÔ TẢ MÔN HỌC (COURSE DESCRIPTION)',
+  CHAP_3: 'MỤC TIÊU MÔN HỌC (COURSE GOALS)',
+  CHAP_4: 'CHUẨN ĐẦU RA MÔN HỌC',
+  CHAP_5: 'KẾ HOẠCH GIẢNG DẠY LÝ THUYẾT',
+  CHAP_6: 'KẾ HOẠCH GIẢNG DẠY THỰC HÀNH',
+  CHAP_7: 'ĐÁNH GIÁ',
+  CHAP_8: 'TÀI NGUYÊN MÔN HỌC',
+  CHAP_9: 'CÁC QUY ĐỊNH CHUNG'
+};
+
 export default async (data) => `
 <html>
 

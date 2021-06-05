@@ -1,5 +1,4 @@
-<html>
-
+export default `
 <head>
     <meta content="text/html; charset=UTF-8" http-equiv="content-type">
     <style type="text/css">
@@ -1346,7 +1345,7 @@
         }
 
         .lst-kix_list_37-8>li:before {
-            content: "\01f8ad  "
+            content: "\\01f8ad  "
         }
 
         ol.lst-kix_list_41-6.start {
@@ -1394,7 +1393,7 @@
         }
 
         .lst-kix_list_37-1>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ol.lst-kix_list_31-2 {
@@ -1410,7 +1409,7 @@
         }
 
         .lst-kix_list_37-3>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         .lst-kix_list_21-6>li {
@@ -1434,7 +1433,7 @@
         }
 
         .lst-kix_list_18-2>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         .lst-kix_list_26-0>li {
@@ -1454,7 +1453,7 @@
         }
 
         .lst-kix_list_38-2>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         .lst-kix_list_38-4>li:before {
@@ -1470,7 +1469,7 @@
         }
 
         .lst-kix_list_38-5>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         .lst-kix_list_25-2>li {
@@ -1494,7 +1493,7 @@
         }
 
         .lst-kix_list_18-8>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         ol.lst-kix_list_27-3.start {
@@ -1578,11 +1577,11 @@
         }
 
         .lst-kix_list_36-2>li:before {
-            content: ""counter(lst-ctn-kix_list_36-0, decimal) ".\0025cf ."counter(lst-ctn-kix_list_36-2, decimal) ". "
+            content: ""counter(lst-ctn-kix_list_36-0, decimal) ".\\0025cf ."counter(lst-ctn-kix_list_36-2, decimal) ". "
         }
 
         .lst-kix_list_9-0>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ol.lst-kix_list_24-3.start {
@@ -1702,7 +1701,7 @@
         }
 
         .lst-kix_list_2-1>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_19-8>li {
@@ -1710,11 +1709,11 @@
         }
 
         .lst-kix_list_2-3>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_35-3>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ol.lst-kix_list_24-8.start {
@@ -1730,7 +1729,7 @@
         }
 
         .lst-kix_list_35-6>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_36-5>li {
@@ -1918,7 +1917,7 @@
         }
 
         .lst-kix_list_18-5>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         .lst-kix_list_13-6>li:before {
@@ -1990,7 +1989,7 @@
         }
 
         .lst-kix_list_31-3>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_36-7>li:before {
@@ -2078,7 +2077,7 @@
         }
 
         .lst-kix_list_33-3>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_12-2>li:before {
@@ -2098,7 +2097,7 @@
         }
 
         .lst-kix_list_1-2>li:before {
-            content: ""counter(lst-ctn-kix_list_1-0, decimal) ".\0025cf ."counter(lst-ctn-kix_list_1-2, decimal) ". "
+            content: ""counter(lst-ctn-kix_list_1-0, decimal) ".\\0025cf ."counter(lst-ctn-kix_list_1-2, decimal) ". "
         }
 
         .lst-kix_list_1-0>li {
@@ -2281,7 +2280,7 @@
         }
 
         .lst-kix_list_32-2>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         ul.lst-kix_list_17-8 {
@@ -2293,7 +2292,7 @@
         }
 
         .lst-kix_list_32-3>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ul.lst-kix_list_17-7 {
@@ -2505,11 +2504,11 @@
         }
 
         .lst-kix_list_6-1>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_6-3>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_6-8>li {
@@ -2525,7 +2524,7 @@
         }
 
         .lst-kix_list_6-2>li:before {
-            content: ""counter(lst-ctn-kix_list_6-0, decimal) ".\0025cf ."counter(lst-ctn-kix_list_6-2, decimal) ". "
+            content: ""counter(lst-ctn-kix_list_6-0, decimal) ".\\0025cf ."counter(lst-ctn-kix_list_6-2, decimal) ". "
         }
 
         ol.lst-kix_list_15-0.start {
@@ -2697,7 +2696,7 @@
         }
 
         .lst-kix_list_31-2>li:before {
-            content: ""counter(lst-ctn-kix_list_31-0, decimal) ".\0025cf ."counter(lst-ctn-kix_list_31-2, decimal) ". "
+            content: ""counter(lst-ctn-kix_list_31-0, decimal) ".\\0025cf ."counter(lst-ctn-kix_list_31-2, decimal) ". "
         }
 
         .lst-kix_list_31-4>li:before {
@@ -2793,7 +2792,7 @@
         }
 
         .lst-kix_list_32-6>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_12-1>li:before {
@@ -2801,15 +2800,15 @@
         }
 
         .lst-kix_list_33-0>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_33-2>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         .lst-kix_list_32-8>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         .lst-kix_list_23-6>li {
@@ -2881,7 +2880,7 @@
         }
 
         .lst-kix_list_33-6>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ol.lst-kix_list_21-1.start {
@@ -2889,7 +2888,7 @@
         }
 
         .lst-kix_list_33-8>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         ol.lst-kix_list_29-0.start {
@@ -2913,7 +2912,7 @@
         }
 
         .lst-kix_list_30-5>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         .lst-kix_list_22-8>li {
@@ -2933,7 +2932,7 @@
         }
 
         .lst-kix_list_35-5>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         ol.lst-kix_list_40-6.start {
@@ -2957,7 +2956,7 @@
         }
 
         .lst-kix_list_30-2>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         ol.lst-kix_list_20-5.start {
@@ -2981,11 +2980,11 @@
         }
 
         .lst-kix_list_8-0>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_30-6>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_8-7>li:before {
@@ -3077,7 +3076,7 @@
         }
 
         .lst-kix_list_35-8>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         .lst-kix_list_11-1>li:before {
@@ -3097,7 +3096,7 @@
         }
 
         .lst-kix_list_11-0>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_8-8>li:before {
@@ -3281,7 +3280,7 @@
         }
 
         .lst-kix_list_10-0>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ol.lst-kix_list_21-7.start {
@@ -3293,11 +3292,11 @@
         }
 
         .lst-kix_list_31-1>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_18-3>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_18-7>li:before {
@@ -3353,7 +3352,7 @@
         }
 
         .lst-kix_list_36-1>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ol.lst-kix_list_24-5 {
@@ -3477,7 +3476,7 @@
         }
 
         .lst-kix_list_32-5>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         .lst-kix_list_11-4>li:before {
@@ -3541,7 +3540,7 @@
         }
 
         .lst-kix_list_12-0>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ol.lst-kix_list_4-7 {
@@ -3593,7 +3592,7 @@
         }
 
         .lst-kix_list_33-5>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         ol.lst-kix_list_19-3.start {
@@ -3757,7 +3756,7 @@
         }
 
         .lst-kix_list_37-7>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         ol.lst-kix_list_21-5.start {
@@ -3765,7 +3764,7 @@
         }
 
         .lst-kix_list_38-0>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_19-7>li {
@@ -3781,7 +3780,7 @@
         }
 
         .lst-kix_list_37-4>li:before {
-            content: "\01f8ad  "
+            content: "\\01f8ad  "
         }
 
         .lst-kix_list_25-6>li {
@@ -3789,7 +3788,7 @@
         }
 
         .lst-kix_list_37-5>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ul.lst-kix_list_31-3 {
@@ -3805,7 +3804,7 @@
         }
 
         .lst-kix_list_38-8>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         .lst-kix_list_40-3>li {
@@ -3821,7 +3820,7 @@
         }
 
         .lst-kix_list_38-3>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_23-4>li {
@@ -3833,7 +3832,7 @@
         }
 
         .lst-kix_list_38-6>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ol.lst-kix_list_34-3.start {
@@ -3905,7 +3904,7 @@
         }
 
         .lst-kix_list_18-6>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_39-5>li:before {
@@ -4093,7 +4092,7 @@
         }
 
         .lst-kix_list_1-1>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_11-7>li:before {
@@ -4113,7 +4112,7 @@
         }
 
         .lst-kix_list_1-3>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ul.lst-kix_list_33-2 {
@@ -4225,7 +4224,7 @@
         }
 
         .lst-kix_list_35-2>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         ol.lst-kix_list_19-7 {
@@ -4241,7 +4240,7 @@
         }
 
         .lst-kix_list_30-3>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         ol.lst-kix_list_19-2 {
@@ -4265,7 +4264,7 @@
         }
 
         .lst-kix_list_30-8>li:before {
-            content: "\0025aa  "
+            content: "\\0025aa  "
         }
 
         ol.lst-kix_list_19-5 {
@@ -4545,7 +4544,7 @@
         }
 
         .lst-kix_list_36-3>li:before {
-            content: "\0025cf  "
+            content: "\\0025cf  "
         }
 
         .lst-kix_list_26-1>li {
@@ -4633,7 +4632,7 @@
         }
 
         .lst-kix_list_2-2>li:before {
-            content: ""counter(lst-ctn-kix_list_2-0, decimal) ".\0025cf ."counter(lst-ctn-kix_list_2-2, decimal) ". "
+            content: ""counter(lst-ctn-kix_list_2-0, decimal) ".\\0025cf ."counter(lst-ctn-kix_list_2-2, decimal) ". "
         }
 
         .lst-kix_list_13-2>li:before {
@@ -5699,1426 +5698,4 @@
         }
     </style>
 </head>
-
-<body class="c60">
-    <div>
-        <p class="c10 c12"><span class="c14 c67"></span></p>
-    </div>
-    <h3 class="c65 c69"><span class="c4 c71">&nbsp;</span></h3>
-    <p class="c32 title"><span class="c14 c44">&#272;&#7872; C&#431;&#416;NG M&Ocirc;N H&#7884;C</span><span
-            class="c4 c58">&nbsp;</span></p>
-    <p class="c32 title"><span class="c4 c58">CSC13002 &ndash; Nh&#7853;p M&ocirc;n C&ocirc;ng Ngh&#7879; Ph&#7847;n
-            M&#7873;m</span></p>
-    <ol class="c6 lst-kix_list_41-0 start" start="1">
-        <li class="c59 li-bullet-0">
-            <h1 style="display:inline"><span class="c4">TH&Ocirc;NG TIN CHUNG</span></h1>
-        </li>
-    </ol>
-    <p class="c10"><span class="c14 c39 c27">(H&#432;&#7899;ng d&#7851;n: m&ocirc; t&#7843; c&aacute;c th&ocirc;ng tin
-            c&#417; b&#7843;n c&#7911;a m&ocirc;n h&#7885;c)</span></p><a
-        id="t.94f37507212b865d0e688655a6a35fe4ae37abee"></a><a id="t.0"></a>
-    <table class="c56">
-        <tbody>
-            <tr class="c9">
-                <td class="c49" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">T&ecirc;n m&ocirc;n h&#7885;c (ti&#7871;ng Vi&#7879;t):</span></p>
-                </td>
-                <td class="c34" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">Nh&#7853;p m&ocirc;n C&ocirc;ng ngh&#7879; ph&#7847;n
-                            m&#7873;m</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c49" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">T&ecirc;n m&ocirc;n h&#7885;c (ti&#7871;ng Anh):</span></p>
-                </td>
-                <td class="c34" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">Introduction to Software Engineering</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c49" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">M&atilde; s&#7889; m&ocirc;n h&#7885;c:</span></p>
-                </td>
-                <td class="c34" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">CSC13002</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c49" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">Thu&#7897;c kh&#7889;i ki&#7871;n th&#7913;c:</span></p>
-                </td>
-                <td class="c34" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">Chuy&ecirc;n ng&agrave;nh</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c49" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">S&#7889; t&iacute;n ch&#7881;:</span></p>
-                </td>
-                <td class="c34" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">4</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c49" colspan="1" rowspan="1">
-                    <p class="c15"><span class="c0">S&#7889; ti&#7871;t l&yacute; thuy&#7871;t:</span></p>
-                </td>
-                <td class="c34" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">45</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c49" colspan="1" rowspan="1">
-                    <p class="c15"><span class="c0">S&#7889; ti&#7871;t th&#7921;c h&agrave;nh:</span></p>
-                </td>
-                <td class="c34" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">30</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c49" colspan="1" rowspan="1">
-                    <p class="c15"><span class="c0">S&#7889; ti&#7871;t t&#7921; h&#7885;c:</span></p>
-                </td>
-                <td class="c34" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">90</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c49" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">C&aacute;c m&ocirc;n h&#7885;c ti&ecirc;n quy&#7871;t</span></p>
-                </td>
-                <td class="c34" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">Kh&ocirc;ng</span></p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <ol class="c6 lst-kix_list_41-0" start="2">
-        <li class="c59 li-bullet-0">
-            <h1 style="display:inline"><span class="c4">M&Ocirc; T&#7842; M&Ocirc;N H&#7884;C (COURSE
-                    DESCRIPTION)</span></h1>
-        </li>
-    </ol>
-    <p class="c10"><span class="c14 c39 c27">(H&#432;&#7899;ng d&#7851;n: m&#7897;t &#273;o&#7841;n v&#259;n m&ocirc;
-            t&#7843; t&oacute;m t&#7855;t v&#7873; n&#7897;i dung c&#7911;a m&ocirc;n h&#7885;c)</span></p>
-    <p class="c24"><span class="c0">M&ocirc;n h&#7885;c n&agrave;y nh&#7857;m cung c&#7845;p cho sinh vi&ecirc;n
-            m&#7897;t c&aacute;i nh&igrave;n t&#7893;ng qu&aacute;t v&#7873; l&#297;nh v&#7921;c C&ocirc;ng ngh&#7879;
-            ph&#7847;n m&#7873;m, c&aacute;c ki&#7871;n th&#7913;c n&#7873;n t&#7843;ng li&ecirc;n quan &#273;&#7871;n
-            c&aacute;c th&agrave;nh ph&#7847;n ch&iacute;nh y&#7871;u trong l&#297;nh v&#7921;c c&ocirc;ng ngh&#7879;
-            ph&#7847;n m&#7873;m (kh&aacute;i ni&#7879;m v&#7873; ph&#7847;n m&#7873;m, c&aacute;c ti&#7871;n
-            tr&igrave;nh, c&aacute;c ph&#432;&#417;ng ph&aacute;p, k&#7929; thu&#7853;t ph&aacute;t tri&#7875;n
-            ph&#7847;n m&#7873;m, c&aacute;c ph&#432;&#417;ng ph&aacute;p t&#7893; ch&#7913;c qu&#7843;n l&yacute;,
-            c&ocirc;ng c&#7909; v&agrave; m&ocirc;i tr&#432;&#7901;ng ph&aacute;t tri&#7875;n v&agrave; tri&#7875;n khai
-            ph&#7847;n m&#7873;m...). M&ocirc;n h&#7885;c c&#361;ng gi&uacute;p x&acirc;y d&#7921;ng ki&#7871;n
-            th&#7913;c n&#7873;n t&#7843;ng cho chuy&ecirc;n ng&agrave;nh K&#7929; thu&#7853;t ph&#7847;n m&#7873;m
-            nh&#7857;m t&#7841;o s&#7921; s&#7861;n s&agrave;ng cho c&aacute;c m&ocirc;n h&#7885;c chuy&ecirc;n
-            s&acirc;u h&#417;n &#7903; c&aacute;c n&#259;m sau. M&ocirc;n h&#7885;c c&#361;ng gi&uacute;p sinh
-            vi&ecirc;n c&oacute; nh&#7919;ng tr&#7843;i nghi&#7879;m th&#7921;c t&#7871; v&#7873; qu&aacute;
-            tr&igrave;nh x&acirc;y d&#7921;ng m&#7897;t ph&#7847;n m&#7873;m &#7903; m&#7913;c &#273;&#7897;
-            &#273;&#417;n gi&#7843;n m&#7897;t c&aacute;ch c&oacute; h&#7879; th&#7889;ng v&agrave; c&oacute;
-            ph&#432;&#417;ng ph&aacute;p.</span></p>
-    <ol class="c6 lst-kix_list_41-0" start="3">
-        <li class="c59 li-bullet-0">
-            <h1 style="display:inline"><span class="c4">M&#7908;C TI&Ecirc;U M&Ocirc;N H&#7884;C (COURSE GOALS)</span>
-            </h1>
-        </li>
-    </ol>
-    <p class="c10"><span class="c14 c39 c27">(H&#432;&#7899;ng d&#7851;n: Li&#7879;t k&ecirc; c&aacute;c m&#7909;c
-            ti&ecirc;u m&ocirc;n h&#7885;c, t&#7915; 5-8 m&#7909;c ti&ecirc;u &#7903; m&#7913;c &#273;&#7897; t&#7893;ng
-            qu&aacute;t. S&#7917; d&#7909;ng &#273;&#7897;ng t&#7915; Bloom &#7903; m&#7913;c &#273;&#7897; nh&oacute;m.
-            M&#7895;i m&#7909;c ti&ecirc;u m&ocirc;n h&#7885;c &#273;&#432;&#7907;c mapping v&#7899;i chu&#7849;n
-            &#273;&#7847;u ra c&#7845;p ch&#432;&#417;ng tr&igrave;nh)</span></p>
-    <hr style="page-break-before:always;display:none;">
-    <p class="c62"><span class="c0">Sinh vi&ecirc;n h&#7885;c xong m&ocirc;n h&#7885;c n&agrave;y c&oacute; kh&#7843;
-            n&#259;ng :</span></p><a id="t.08b95ece929dbfe729e1695e28288c5c636ef47f"></a><a id="t.1"></a>
-    <table class="c20">
-        <tbody>
-            <tr class="c9">
-                <td class="c29 c70" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">M&#7909;c ti&ecirc;u</span></p>
-                </td>
-                <td class="c29 c46" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">M&ocirc; t&#7843; (m&#7913;c t&#7893;ng qu&aacute;t )</span></p>
-                </td>
-                <td class="c29 c53" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">C&#272;R CDIO<br>c&#7911;a ch&#432;&#417;ng tr&igrave;nh</span>
-                    </p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c54" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G1</span></p>
-                </td>
-                <td class="c19" colspan="1" rowspan="1">
-                    <p class="c35"><span class="c0">L&agrave;m vi&#7879;c &#7903; m&#7913;c &#273;&#7897; c&aacute;
-                            nh&acirc;n v&agrave; c&#7897;ng t&aacute;c nh&oacute;m &#273;&#7875; tr&igrave;nh b&agrave;y
-                            m&#7897;t s&#7889; b&aacute;o c&aacute;o k&#7929; thu&#7853;t theo m&#7851;u cho
-                            tr&#432;&#7899;c trong l&#297;nh v&#7921;c k&#7929; thu&#7853;t ph&#7847;n m&#7873;m</span>
-                    </p>
-                </td>
-                <td class="c13" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">2.2, 2.3.1</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c54" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G2</span></p>
-                </td>
-                <td class="c19" colspan="1" rowspan="1">
-                    <p class="c35"><span class="c0">Gi&#7843;i th&iacute;ch &#273;&#432;&#7907;c c&aacute;c thu&#7853;t
-                            ng&#7919; ti&#7871;ng Anh thu&#7897;c chuy&ecirc;n ng&agrave;nh K&#7929; thu&#7853;t
-                            ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c13" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">2.4.3, 2.4.5</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c54" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G3</span></p>
-                </td>
-                <td class="c19" colspan="1" rowspan="1">
-                    <p class="c35"><span class="c0">Gi&#7843;i th&iacute;ch &#273;&#432;&#7907;c c&aacute;c kh&aacute;i
-                            ni&#7879;m c&#417; b&#7843;n, thu&#7853;t ng&#7919;, tr&aacute;ch nhi&#7879;m, c&ocirc;ng
-                            vi&#7879;c v&agrave; nguy&ecirc;n t&#7855;c &#273;&#7841;o &#273;&#7913;c c&#417; b&#7843;n
-                            thu&#7897;c l&#297;nh v&#7921;c K&#7929; ngh&#7879; ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c13" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">1.5, 3.3</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c54" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G4</span></p>
-                </td>
-                <td class="c19" colspan="1" rowspan="1">
-                    <p class="c35"><span class="c0">Ph&acirc;n lo&#7841;i v&agrave; so s&aacute;nh &#273;&#432;&#7907;c
-                            c&aacute;c lo&#7841;i ti&#7871;n tr&igrave;nh ph&aacute;t tri&#7875;n ph&#7847;n m&#7873;m
-                            kh&aacute;c nhau</span></p>
-                </td>
-                <td class="c13" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">1.3.6, 1.5</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c54" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G5</span></p>
-                </td>
-                <td class="c19" colspan="1" rowspan="1">
-                    <p class="c35"><span class="c0">Tri&#7875;n khai &#7903; m&#7913;c &#273;&#7897; c&#417; b&#7843;n
-                            &#273;&#432;&#7907;c cho t&#7915;ng pha trong qu&aacute; tr&igrave;nh ph&aacute;t
-                            tri&#7875;n ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c13" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">1.5.5, 5.1.1, 5.1.3, 5.2.1, 5.2.2, 5.3.1, 6.1.1</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c54" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G6</span></p>
-                </td>
-                <td class="c19" colspan="1" rowspan="1">
-                    <p class="c35"><span class="c0">X&acirc;y d&#7921;ng &#273;&#432;&#7907;c m&#7897;t s&#7889;
-                            th&agrave;nh ph&#7847;n c&#7911;a s&#7843;n ph&#7849;m ph&#7847;n m&#7873;m &#7903; quy
-                            m&ocirc; nh&#7887;</span></p>
-                </td>
-                <td class="c13" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">1.5.6, 5.1.3, 5.2.2, 5.3.2, 6.1.2</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c54" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G7</span></p>
-                </td>
-                <td class="c19" colspan="1" rowspan="1">
-                    <p class="c35"><span class="c0">S&#7917; d&#7909;ng c&aacute;c c&ocirc;ng c&#7909; ph&#7847;n
-                            m&#7873;m h&#7895; tr&#7907;</span></p>
-                </td>
-                <td class="c13" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">1.5</span></p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <ol class="c6 lst-kix_list_41-0" start="4">
-        <li class="c59 li-bullet-0">
-            <h1 style="display:inline"><span class="c4">CHU&#7848;N &#272;&#7846;U RA M&Ocirc;N H&#7884;C</span></h1>
-        </li>
-    </ol>
-    <p class="c10"><span class="c14 c27 c39">(H&#432;&#7899;ng d&#7851;n: M&ocirc; t&#7843; chi ti&#7871;t c&aacute;c
-            chu&#7849;n &#273;&#7847;u ra c&#7911;a m&ocirc;n h&#7885;c. &#7912;ng v&#7899;i m&#7895;i m&#7909;c
-            ti&ecirc;u &#7903; m&#7909;c ph&iacute;a tr&ecirc;n c&oacute; th&#7875; c&oacute; 1 hay nhi&#7873;u
-            chu&#7849;n &#273;&#7847;u ra chi ti&#7871;t. &#272;&aacute;nh m&atilde; s&#7889; chu&#7849;n &#273;&#7847;u
-            ra m&ocirc;n h&#7885;c &#7903; c&#7845;p 2 t&#432;&#417;ng &#7913;ng v&#7899;i m&#7895;i m&#7909;c
-            ti&ecirc;u m&ocirc;n h&#7885;c. M&#7913;c &#273;&#7897; &#273;&#432;&#7907;c th&#7875; hi&#7879;n b&#7857;ng
-            c&aacute;c k&yacute; hi&#7879;u I-Introduce, T-Teach v&agrave; U-Utilize. C&aacute;c &#273;&#7897;ng
-            t&#7915; m&ocirc; t&#7843; &#273;&#432;&#7907;c s&#7917; d&#7909;ng t&#7915; c&aacute;c &#273;&#7897;ng
-            t&#7915; chi ti&#7871;t c&#7911;a Bloom cho m&#7913;c &#273;&#7897; t&#432;&#417;ng &#7913;ng &ndash; xem
-            th&ecirc;m b&#7843;ng c&aacute;c &#273;&#7897;ng t&#7915; Bloom chi ti&#7871;t cho ng&agrave;nh k&#7929;
-            thu&#7853;t.)</span></p><a id="t.79acfbcf7dff81506992c34f6e1bb6c10402f9c9"></a><a id="t.2"></a>
-    <table class="c20">
-        <tbody>
-            <tr class="c9">
-                <td class="c7 c29" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c4 c5">Chu&#7849;n &#273;&#7847;u ra</span></p>
-                </td>
-                <td class="c21 c29" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">M&ocirc; t&#7843; (M&#7913;c chi ti&#7871;t - h&agrave;nh
-                            &#273;&#7897;ng)</span></p>
-                </td>
-                <td class="c42 c29" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">M&#7913;c &#273;&#7897; (I/T/U)</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G1.1</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Th&agrave;nh l&#7853;p, t&#7893; ch&#7913;c, v&#7853;n h&agrave;nh
-                            v&agrave; qu&#7843;n l&yacute; nh&oacute;m</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I, T</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G1.2</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Tham gia th&#7843;o lu&#7853;n, tranh lu&#7853;n theo nh&oacute;m
-                            tr&ecirc;n ch&#7911; &#273;&#7873; m&ocirc;n h&#7885;c</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">U</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G1.3</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Ph&acirc;n t&iacute;ch, t&#7893;ng h&#7907;p v&agrave; vi&#7871;t
-                            t&agrave;i li&#7879;u k&#7929; thu&#7853;t theo m&#7851;u cho tr&#432;&#7899;c theo
-                            c&aacute; nh&acirc;n ho&#7863;c c&#7897;ng t&aacute;c nh&oacute;m</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I, T</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G2.1</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Gi&#7843;i th&iacute;ch &#273;&#432;&#7907;c thu&#7853;t ng&#7919;
-                            ti&#7871;ng Anh chuy&ecirc;n ng&agrave;nh c&#7911;a m&ocirc;n h&#7885;c</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G2.2</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">T&oacute;m t&#7855;t &#273;&#432;&#7907;c n&#7897;i dung c&oacute;
-                            t&agrave;i li&#7879;u ti&#7871;ng Anh li&ecirc;n quan &#273;&#7871;n c&aacute;c b&agrave;i
-                            gi&#7843;ng</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G3.1</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Gi&#7843;i th&iacute;ch c&aacute;c kh&aacute;i ni&#7879;m c&#417;
-                            b&#7843;n trong ng&agrave;nh k&#7929; ngh&#7879; ph&#7847;n m&#7873;m: ph&#7847;n m&#7873;m,
-                            h&#7879; th&#7889;ng, c&aacute;c ti&#7871;n tr&igrave;nh v&agrave; pha trong qu&aacute;
-                            tr&igrave;nh ph&aacute;t tri&#7875;n ph&#7847;n m&#7873;m, SRS, c&aacute;c l&#432;&#7907;c
-                            &#273;&#7891;</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I, T</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G3.2</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">M&ocirc; t&#7843; &#273;&#432;&#7907;c vai tr&ograve;, tr&aacute;ch
-                            nhi&#7879;m v&agrave; &#273;&#7841;o &#273;&#7913;c ngh&#7873; nghi&#7879;p khi l&agrave;m
-                            vi&#7879;c trong l&#297;nh v&#7921;c K&#7929; ngh&#7879; ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G3.3</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">C&#7911;ng c&#7889; k&#7929; n&#259;ng c&#7853;p nh&#7853;t tri
-                            th&#7913;c m&#7899;i, t&#7921; h&#7885;c, t&#7921; ph&aacute;t tri&#7875;n v&agrave;
-                            th&iacute;ch nghi</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G3.4</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">H&igrave;nh th&agrave;nh k&#7929; n&#259;ng kh&#7903;i
-                            &#273;&#7847;u ho&#7841;t &#273;&#7897;ng ngh&#7873; nghi&#7879;p</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G4.1</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Ph&acirc;n bi&#7879;t &#273;&#432;&#7907;c s&#7921; kh&aacute;c nhau
-                            gi&#7919;a c&aacute;c m&ocirc; h&igrave;nh ph&aacute;t tri&#7875;n ph&#7847;n m&#7873;m:
-                            m&ocirc; h&igrave;nh th&aacute;c n&#432;&#7899;c, m&ocirc; h&igrave;nh ti&#7871;n
-                            h&oacute;a, m&ocirc; h&igrave;nh ph&aacute;t tri&#7875;n d&#7921;a tr&ecirc;n component
-                            c&oacute; s&#7861;n</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I, T</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G5.1</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">M&ocirc; t&#7843; c&aacute;c pha ch&iacute;nh trong quy tr&igrave;nh
-                            ph&aacute;t tri&#7875;n ph&#7847;n m&#7873;m: thu th&#7853;p y&ecirc;u c&#7847;u, ph&acirc;n
-                            t&iacute;ch, thi&#7871;t k&#7871;, c&agrave;i &#273;&#7863;t, ki&#7875;m ch&#7913;ng,
-                            v&#7853;n h&agrave;nh v&agrave; ti&#7871;n h&oacute;a</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I, T</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G5.2</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Ph&aacute;c th&#7843;o c&aacute;c ti&#7871;n tr&igrave;nh cho pha
-                            ph&acirc;n t&iacute;ch, thi&#7871;t k&#7871;</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I, T, U</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G5.3</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Tr&igrave;nh b&agrave;y t&#7847;m quan tr&#7885;ng c&#7911;a
-                            vi&#7879;c qu&#7843;n l&yacute; d&#7921; &aacute;n ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G5.4</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Tr&#7843;i nghi&#7879;m c&aacute;c c&ocirc;ng &#273;o&#7841;n trong
-                            quy tr&igrave;nh ph&aacute;t tri&#7875;n ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I, T, U</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G6.1</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">X&acirc;y d&#7921;ng m&#7897;t s&#7889; th&agrave;nh ph&#7847;n
-                            c&#417; b&#7843;n cho m&#7897;t ph&#7847;n m&#7873;m &#7903; m&#7913;c &#273;&#7897;
-                            &#273;&#417;n gi&#7843;n m&#7897;t c&aacute;ch c&oacute; h&#7879; th&#7889;ng v&agrave;
-                            c&oacute; ph&#432;&#417;ng ph&aacute;p</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I, T, U</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c7" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">G7.1</span></p>
-                </td>
-                <td class="c21" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">S&#7917; d&#7909;ng m&#7897;t s&#7889; c&ocirc;ng c&#7909;
-                            &#273;&#417;n gi&#7843;n v&agrave; &aacute;p d&#7909;ng c&aacute;c c&ocirc;ng ngh&#7879;
-                            h&#7895; tr&#7907; ph&aacute;t tri&#7875;n ph&#7847;n m&#7873;m (v&iacute; d&#7909;: Visio,
-                            Axure, UML...)</span></p>
-                </td>
-                <td class="c42" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">I, T, U</span></p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <ol class="c6 lst-kix_list_41-0" start="5">
-        <li class="c59 li-bullet-0">
-            <h1 style="display:inline"><span class="c4">K&#7870; HO&#7840;CH GI&#7842;NG D&#7840;Y L&Yacute;
-                    THUY&#7870;T</span></h1>
-        </li>
-    </ol>
-    <p class="c10"><span class="c14 c39 c27">(H&#432;&#7899;ng d&#7851;n: M&ocirc; t&#7843; chi ti&#7871;t qu&aacute;
-            tr&igrave;nh gi&#7843;ng d&#7841;y theo t&#7915;ng ch&#7911; &#273;&#7873;: t&ecirc;n ch&#7911;
-            &#273;&#7873;, danh s&aacute;ch c&aacute;c chu&#7849;n &#273;&#7847;u ra chi ti&#7871;t t&#432;&#417;ng
-            &#7913;ng v&#7899;i m&#7895;i ch&#7911; &#273;&#7873;, c&aacute;c ho&#7841;t &#273;&#7897;ng d&#7841;y
-            v&agrave; h&#7885;c g&#7907;i &yacute;, c&aacute;c ho&#7841;t &#273;&#7897;ng &#273;&aacute;nh gi&aacute;
-            n&#7871;u c&oacute;)</span></p><a id="t.370b0293c853639a8a26fc46f1956b5d98aa730d"></a><a id="t.3"></a>
-    <table class="c20">
-        <tbody>
-            <tr class="c9">
-                <td class="c55 c29" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">STT</span></p>
-                </td>
-                <td class="c8 c29" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">T&ecirc;n ch&#7911; &#273;&#7873;</span></p>
-                </td>
-                <td class="c63 c29" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">Chu&#7849;n &#273;&#7847;u ra</span></p>
-                </td>
-                <td class="c17 c29" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">Ho&#7841;t &#273;&#7897;ng d&#7841;y/</span></p>
-                    <p class="c23"><span class="c4 c5">Ho&#7841;t &#273;&#7897;ng h&#7885;c (g&#7907;i &yacute;)</span>
-                    </p>
-                </td>
-                <td class="c25 c29" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">Ho&#7841;t &#273;&#7897;ng <br>&#273;&aacute;nh gi&aacute;</span>
-                    </p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c55" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">1</span></p>
-                </td>
-                <td class="c8" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Gi&#7899;i thi&#7879;u &amp; t&#7893;ng quan k&#7929; ngh&#7879;
-                            ph&#7847;n m&#7873;m</span></p>
-                    <p class="c10"><span class="c0">Xem video #1, #2</span></p>
-                    <p class="c35 c12"><span class="c0"></span></p>
-                    <p class="c10 c12"><span class="c0"></span></p>
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c63" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G1.2, G2.1, G3.1, G3.2, G3.3, G3.4, G5.4</span></p>
-                </td>
-                <td class="c17" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thuy&#7871;t gi&#7843;ng<br>Ph&acirc;n nh&oacute;m &amp; ch&#417;i
-                            tr&ograve; ch&#417;i </span></p>
-                </td>
-                <td class="c25" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c55" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">2</span></p>
-                </td>
-                <td class="c8" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Quy tr&igrave;nh ph&#7847;n m&#7873;m</span></p>
-                    <p class="c10"><span class="c0">Xem Video #3, #4</span></p>
-                </td>
-                <td class="c63" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G2.1, G2.2, G4.1, G5.1 </span></p>
-                </td>
-                <td class="c17" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thuy&#7871;t gi&#7843;ng</span></p>
-                    <p class="c10"><span class="c0">Th&#7843;o lu&#7853;n nh&oacute;m</span></p>
-                </td>
-                <td class="c25" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c30 c14"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c55" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">3</span></p>
-                </td>
-                <td class="c8" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Y&ecirc;u c&#7847;u ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c63" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G1.1, G1.3, G2.1, G3.2, G5.1, G6.1</span></p>
-                </td>
-                <td class="c17" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Ph&acirc;n nh&oacute;m &#273;&#7891; &aacute;n</span></p>
-                </td>
-                <td class="c25" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">BTVN#1</span></p>
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c55" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">4</span></p>
-                </td>
-                <td class="c8" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">M&ocirc; h&igrave;nh h&oacute;a ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c63" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G2.1, G5.2, G6.1, G7.1</span></p>
-                </td>
-                <td class="c17" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thuy&#7871;t gi&#7843;ng</span></p>
-                    <p class="c10"><span class="c0">Th&#7843;o lu&#7853;n v&agrave; th&#7875; hi&#7879;n tr&ecirc;n
-                            b&#7843;ng</span></p>
-                </td>
-                <td class="c25" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">BTTL#1</span></p>
-                    <p class="c10"><span class="c0">DAMH#1</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c55" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">5</span></p>
-                </td>
-                <td class="c8" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thi&#7871;t k&#7871; ki&#7871;n tr&uacute;c ph&#7847;n
-                            m&#7873;m</span></p>
-                </td>
-                <td class="c63" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G1.2, G2.1, G5.1, G5.2, G6.1, G7.1, </span></p>
-                </td>
-                <td class="c17" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thuy&#7871;t gi&#7843;ng</span></p>
-                </td>
-                <td class="c25" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">BTVN#2</span></p>
-                    <p class="c10"><span class="c0">DAMH#2</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c55" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">6</span></p>
-                </td>
-                <td class="c8" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thi&#7871;t k&#7871; x&#7917; l&yacute; ph&#7847;n m&#7873;m</span>
-                    </p>
-                </td>
-                <td class="c63" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G2.1, G5.2, G6.1, G7.1</span></p>
-                </td>
-                <td class="c17" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Tr&ograve; ch&#417;i nh&#7853;p vai</span></p>
-                </td>
-                <td class="c25" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">DAMH#2</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c55" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">7</span></p>
-                </td>
-                <td class="c8" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thi&#7871;t k&#7871; giao di&#7879;n ng&#432;&#7901;i
-                            d&ugrave;ng</span></p>
-                </td>
-                <td class="c63" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G1.2, G1.3, G2.1, G2.2, G5.2, G6.1, G7.1 </span></p>
-                </td>
-                <td class="c17" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Nh&oacute;m th&#7843;o lu&#7853;n &amp; thi&#7871;t k&#7871; 1
-                            m&agrave;n h&igrave;nh</span></p>
-                </td>
-                <td class="c25" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">BTTL#2</span></p>
-                    <p class="c10"><span class="c0">BTVN#3</span></p>
-                    <p class="c10"><span class="c0">DAMH#2</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c55" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">8</span></p>
-                </td>
-                <td class="c8" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Ki&#7875;m ch&#7913;ng ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c63" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G1.3, G2.1, G5.1, G5.2, G6.1, G7.1</span></p>
-                </td>
-                <td class="c17" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thuy&#7871;t gi&#7843;ng</span></p>
-                    <p class="c10"><span class="c0">L&agrave;m b&agrave;i t&#7853;p t&#7841;o test case</span></p>
-                </td>
-                <td class="c25" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">BTVN#4</span></p>
-                    <p class="c10"><span class="c0">DAMH#3</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c55" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">9</span></p>
-                </td>
-                <td class="c8" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Ph&#432;&#417;ng ph&aacute;p ph&aacute;t tri&#7875;n ph&#7847;n
-                            m&#7873;m nhanh g&#7885;n, linh ho&#7841;t</span></p>
-                    <p class="c10"><span class="c0">Xem video #5</span></p>
-                </td>
-                <td class="c63" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G2.1, G2.2, G3.1, G4.1 </span></p>
-                </td>
-                <td class="c17" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Th&#7843;o lu&#7853;n nh&oacute;m</span></p>
-                </td>
-                <td class="c25" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">B&agrave;i &#273;&#7885;c th&ecirc;m v&agrave; vi&#7871;t b&aacute;o
-                            c&aacute;o (BTVN#5)</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c55" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">10</span></p>
-                </td>
-                <td class="c8" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Qu&#7843;n l&yacute; d&#7921; &aacute;n ph&#7847;n m&#7873;m</span>
-                    </p>
-                    <p class="c10"><span class="c0">Xem video #6</span></p>
-                </td>
-                <td class="c63" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G2.1, G3.1, G3.4, G5.3</span></p>
-                </td>
-                <td class="c17" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Tr&ograve; ch&#417;i</span></p>
-                    <p class="c10"><span class="c0">Th&#7843;o lu&#7853;n nh&oacute;m</span></p>
-                </td>
-                <td class="c25" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c55" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">11</span></p>
-                </td>
-                <td class="c8" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">&Ocirc;n t&#7853;p</span></p>
-                </td>
-                <td class="c63" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G2.1, G3.1, G3.2, G3.4, G4.1, G5.1, G5.2, G5.3, G5.4, G7.1</span>
-                    </p>
-                </td>
-                <td class="c17" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c25" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">DAMH#4</span></p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <ol class="c6 lst-kix_list_41-0" start="6">
-        <li class="c59 li-bullet-0">
-            <h1 style="display:inline"><span class="c4">K&#7870; HO&#7840;CH GI&#7842;NG D&#7840;Y TH&#7920;C
-                    H&Agrave;NH (n&#7871;u c&oacute;)</span></h1>
-        </li>
-    </ol>
-    <p class="c10"><span class="c14 c39 c27">(H&#432;&#7899;ng d&#7851;n: M&ocirc; t&#7843; t&#432;&#417;ng t&#7921;
-            nh&#432; k&#7871; ho&#7841;ch gi&#7843;ng d&#7841;y l&yacute; thuy&#7871;t. C&aacute;c ch&#7911;
-            &#273;&#7873; &#273;&#432;&#7907;c li&#7879;t k&ecirc; tu&#7847;n t&#7921; v&agrave; c&aacute;c chu&#7849;n
-            &#273;&#7847;u ra, ho&#7841;t &#273;&#7897;ng gi&#7843;ng d&#7841;y v&agrave; &#273;&aacute;nh gi&aacute;
-            t&#432;&#417;ng &#7913;ng cho t&#7915;ng ch&#7911; &#273;&#7873;.<br>L&#432;u &yacute;: &#273;&#7889;i
-            v&#7899;i h&igrave;nh th&#7913;c th&#7921;c h&agrave;nh l&agrave; h&igrave;nh th&#7913;c 2 &ndash;
-            ngh&#297;a l&agrave; GVTH kh&ocirc;ng l&ecirc;n l&#7899;p th&igrave; c&oacute; th&#7875; ghi trong
-            ho&#7841;t &#273;&#7897;ng d&#7841;y &amp; h&#7885;c l&agrave; &ldquo;th&#7843;o lu&#7853;n v&agrave;
-            tr&#7843; l&#7901;i th&#7855;c m&#7855;c tr&ecirc;n di&#7877;n &#273;&agrave;n m&ocirc;n
-            h&#7885;c&rdquo;)</span></p><a id="t.c5b009a38f6f7c91f5fe641710f60566cbd28b06"></a><a id="t.4"></a>
-    <table class="c20">
-        <tbody>
-            <tr class="c68">
-                <td class="c37 c29" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c4 c5">Tu&#7847;n</span></p>
-                </td>
-                <td class="c52 c29" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">Ch&#7911; &#273;&#7873;</span></p>
-                </td>
-                <td class="c45 c29" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">Chu&#7849;n &#273;&#7847;u ra</span></p>
-                </td>
-                <td class="c36 c29" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">Ho&#7841;t &#273;&#7897;ng d&#7841;y/</span></p>
-                    <p class="c23"><span class="c4 c5">Ho&#7841;t &#273;&#7897;ng h&#7885;c (g&#7907;i &yacute;)</span>
-                    </p>
-                </td>
-                <td class="c33 c29" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">Ho&#7841;t &#273;&#7897;ng <br>&#273;&aacute;nh gi&aacute;</span>
-                    </p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c37" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">1</span></p>
-                </td>
-                <td class="c52" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Gi&#7899;i thi&#7879;u m&ocirc;n h&#7885;c v&agrave; m&ocirc;i
-                            tr&#432;&#7901;ng l&agrave;m vi&#7879;c </span></p>
-                </td>
-                <td class="c45" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c36" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thuy&#7871;t gi&#7843;ng</span></p>
-                    <p class="c10"><span class="c0">Demo</span></p>
-                </td>
-                <td class="c33" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c37" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">2</span></p>
-                </td>
-                <td class="c52" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Quy tr&igrave;nh ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c45" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c36" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Th&#7843;o lu&#7853;n v&agrave; tr&#7843; l&#7901;i th&#7855;c
-                            m&#7855;c tr&ecirc;n di&#7877;n &#273;&agrave;n m&ocirc;n h&#7885;c</span></p>
-                </td>
-                <td class="c33" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c37" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">3</span></p>
-                </td>
-                <td class="c52" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Y&ecirc;u c&#7847;u ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c45" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c36" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Th&#7843;o lu&#7853;n v&agrave; tr&#7843; l&#7901;i th&#7855;c
-                            m&#7855;c tr&ecirc;n di&#7877;n &#273;&agrave;n m&ocirc;n h&#7885;c</span></p>
-                </td>
-                <td class="c33" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c37" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">4</span></p>
-                </td>
-                <td class="c52" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">M&ocirc; h&igrave;nh h&oacute;a ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c45" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c36" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Th&#7843;o lu&#7853;n v&agrave; tr&#7843; l&#7901;i th&#7855;c
-                            m&#7855;c tr&ecirc;n di&#7877;n &#273;&agrave;n m&ocirc;n h&#7885;c</span></p>
-                </td>
-                <td class="c33" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c37" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">5</span></p>
-                </td>
-                <td class="c52" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thi&#7871;t k&#7871; ki&#7871;n tr&uacute;c ph&#7847;n
-                            m&#7873;m</span></p>
-                </td>
-                <td class="c45" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c36" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Th&#7843;o lu&#7853;n v&agrave; tr&#7843; l&#7901;i th&#7855;c
-                            m&#7855;c tr&ecirc;n di&#7877;n &#273;&agrave;n m&ocirc;n h&#7885;c</span></p>
-                </td>
-                <td class="c33" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c37" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">6</span></p>
-                </td>
-                <td class="c52" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thi&#7871;t k&#7871; x&#7917; l&yacute; ph&#7847;n m&#7873;m</span>
-                    </p>
-                </td>
-                <td class="c45" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c36" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Th&#7843;o lu&#7853;n v&agrave; tr&#7843; l&#7901;i th&#7855;c
-                            m&#7855;c tr&ecirc;n di&#7877;n &#273;&agrave;n m&ocirc;n h&#7885;c</span></p>
-                </td>
-                <td class="c33" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c37" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">7</span></p>
-                </td>
-                <td class="c52" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thi&#7871;t k&#7871; giao di&#7879;n ng&#432;&#7901;i
-                            d&ugrave;ng</span></p>
-                </td>
-                <td class="c45" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c36" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Th&#7843;o lu&#7853;n v&agrave; tr&#7843; l&#7901;i th&#7855;c
-                            m&#7855;c tr&ecirc;n di&#7877;n &#273;&agrave;n m&ocirc;n h&#7885;c</span></p>
-                </td>
-                <td class="c33" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c37" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">8</span></p>
-                </td>
-                <td class="c52" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Ki&#7875;m ch&#7913;ng ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c45" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c36" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Th&#7843;o lu&#7853;n v&agrave; tr&#7843; l&#7901;i th&#7855;c
-                            m&#7855;c tr&ecirc;n di&#7877;n &#273;&agrave;n m&ocirc;n h&#7885;c</span></p>
-                </td>
-                <td class="c33" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c37" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">9</span></p>
-                </td>
-                <td class="c52" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Seminar 1</span></p>
-                </td>
-                <td class="c45" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c36" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">C&aacute;c c&ocirc;ng c&#7909; h&#7895; tr&#7907; v&#7869; UML,
-                            h&#7895; tr&#7907; l&#7853;p tr&igrave;nh</span></p>
-                </td>
-                <td class="c33" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c37" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c0">10</span></p>
-                </td>
-                <td class="c52" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Seminar 2</span></p>
-                </td>
-                <td class="c45" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c36" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">H&#432;&#7899;ng d&#7851;n l&#7853;p tr&igrave;nh x&#7917; l&yacute;
-                            s&#7921; ki&#7879;n, truy xu&#7845;t c&#417; s&#7903; d&#7919; li&#7879;u ...</span></p>
-                </td>
-                <td class="c33" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <ol class="c6 lst-kix_list_41-0" start="7">
-        <li class="c59 li-bullet-0">
-            <h1 style="display:inline"><span class="c4">&#272;&Aacute;NH GI&Aacute;</span></h1>
-        </li>
-    </ol>
-    <p class="c10"><span class="c14 c39 c27">(H&#432;&#7899;ng d&#7851;n: M&ocirc; t&#7843; c&aacute;c th&agrave;nh
-            ph&#7847;n b&agrave;i t&#7853;p, b&agrave;i thi, &#273;&#7891; &aacute;n... d&ugrave;ng &#273;&#7875;
-            &#273;&aacute;nh gi&aacute; k&#7871;t qu&#7843; c&#7911;a sinh vi&ecirc;n khi tham gia m&ocirc;n h&#7885;c
-            n&agrave;y. B&ecirc;n c&#7841;nh m&#7895;i nh&oacute;m b&agrave;i t&#7853;p, b&agrave;i thi... c&#7847;n
-            c&oacute; t&#7881; l&#7879; % &#273;i&#7875;m t&#432;&#417;ng &#7913;ng) </span></p><a
-        id="t.96eb44cd32d9728b3b087d435a4de03e7ea6ee3c"></a><a id="t.5"></a>
-    <table class="c20">
-        <tbody>
-            <tr class="c9">
-                <td class="c51" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">M&atilde;</span></p>
-                </td>
-                <td class="c61" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">T&ecirc;n</span></p>
-                </td>
-                <td class="c72" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">M&ocirc; t&#7843; (g&#7907;i &yacute;)</span></p>
-                </td>
-                <td class="c43" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">C&aacute;c chu&#7849;n &#273;&#7847;u ra &#273;&#432;&#7907;c
-                            &#273;&aacute;nh gi&aacute;</span></p>
-                </td>
-                <td class="c66" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4 c5">T&#7881; l&#7879; (%)</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c24"><span class="c4">BTTL</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c4">B&agrave;i t&#7853;p t&#7841;i l&#7899;p</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c4">5%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">BTTL#1</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">M&ocirc; h&igrave;nh h&oacute;a ph&#7847;n m&#7873;m</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">M&ocirc; h&igrave;nh h&oacute;a d&#7921;a tr&ecirc;n y&ecirc;u
-                            c&#7847;u &#273;&#7863;t t&#7843; &#273;&atilde; c&oacute; s&#7861;n</span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G1.3, G5.4, G6.1</span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">2.5%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">BTTL#2</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">Thi&#7871;t k&#7871; giao di&#7879;n</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thi&#7871;t k&#7871; 1 m&agrave;n h&igrave;nh t&igrave;m ki&#7871;m
-                            s&#7843;n ph&#7849;m</span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G5.4, G6.1</span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">2.5%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c24"><span class="c4">BTVN</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c4">B&agrave;i t&#7853;p v&#7873; nh&agrave;</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c4">20%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">BTVN#1</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">B&agrave;i t&#7853;p Thu th&#7853;p y&ecirc;u c&#7847;u </span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">X&acirc;y d&#7921;ng danh s&aacute;ch c&acirc;u h&#7887;i v&agrave;
-                            c&aacute;c th&agrave;nh ph&#7847;n c&#7847;n h&#7887;i </span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G5.4, G6.1</span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">4%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">BTVN#2</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">B&agrave;i t&#7853;p Thi&#7871;t k&#7871; ki&#7871;n
-                            tr&uacute;c</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Thi&#7871;t k&#7871; l&#7899;p &#273;&#7889;i t&#432;&#7907;ng cho
-                            m&#7897;t &#273;&#7863;c t&#7843; cho tr&#432;&#7899;c</span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G5.2, G5.4, G6.1</span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">4%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">BTVN#3</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">B&agrave;i t&#7853;p Thi&#7871;t k&#7871; giao di&#7879;n</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">X&acirc;y d&#7921;ng m&#7897;t m&agrave;n h&igrave;nh giao
-                            di&#7879;n t&#432;&#417;ng t&aacute;c ng&#432;&#7901;i d&ugrave;ng</span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G5.4, G6.1, G7.1</span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">4%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">BTVN#4</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">B&agrave;i t&#7853;p X&acirc;y d&#7921;ng b&#7897; ki&#7875;m
-                            th&#7917;</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">X&acirc;y d&#7921;ng danh s&aacute;ch c&aacute;c test cases
-                            v&agrave; test data</span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G5.4, G6.1</span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">4%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">BTVN#5</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">Vi&#7871;t b&aacute;o c&aacute;o v&#7873; PP ph&aacute;t tri&#7875;n
-                            ph&#7847;n m&#7873;m nhanh</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">&#272;&#7885;c t&agrave;i li&#7879;u v&agrave; vi&#7871;t b&aacute;o
-                            c&aacute;o v&#7873; ph&#432;&#417;ng ph&aacute;p ph&aacute;t tri&#7875;n ph&#7847;n
-                            m&#7873;m nhanh</span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G1.3, G2.2, G4.1</span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">4%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c4">DAMH</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c4">&#272;&#7891; &aacute;n m&ocirc;n h&#7885;c</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c4">35%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">DAMH#1</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">T&agrave;i li&#7879;u ph&acirc;n t&iacute;ch y&ecirc;u
-                            c&#7847;u</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Vi&#7871;t t&agrave;i li&#7879;u k&#7929; thu&#7853;t theo m&#7851;u
-                            cho tr&#432;&#7899;c</span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G1.1, G1.3, G5.2, G5.4, G6.1, G7.1, </span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">10%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">DAMH#2</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">T&agrave;i li&#7879;u thi&#7871;t k&#7871; h&#7879;
-                            th&#7889;ng</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Vi&#7871;t t&agrave;i li&#7879;u k&#7929; thu&#7853;t theo m&#7851;u
-                            cho tr&#432;&#7899;c</span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G1.1, G1.3, G5.2, G5.4, G6.1, G7.1</span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">10%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">DAMH#3</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">T&agrave;i li&#7879;u ki&#7875;m th&#7917; h&#7879;
-                            th&#7889;ng</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Vi&#7871;t t&agrave;i li&#7879;u k&#7929; thu&#7853;t theo m&#7851;u
-                            cho tr&#432;&#7899;c</span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G1.1, G1.3, G5.4, G6.1</span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">10%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">DAMH#4</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">S&#7843;n ph&#7849;m cu&#7889;i</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">T&agrave;i li&#7879;u k&#7929; thu&#7853;t v&agrave; s&#7843;n
-                            ph&#7849;m</span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G1.1, G5.4, G6.1, G7.1</span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c18"><span class="c0">5%</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c11" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4">LTCK</span></p>
-                </td>
-                <td class="c2" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c4">Thi l&yacute; thuy&#7871;t cu&#7889;i k&#7923;</span></p>
-                </td>
-                <td class="c31" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">T&#7921; lu&#7853;n</span></p>
-                </td>
-                <td class="c47" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">G3.1, G4.1, G5.1</span></p>
-                </td>
-                <td class="c16" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c4">40%</span></p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <ol class="c6 lst-kix_list_41-0" start="8">
-        <li class="c59 li-bullet-0">
-            <h1 style="display:inline"><span class="c4">T&Agrave;I NGUY&Ecirc;N M&Ocirc;N H&#7884;C</span></h1>
-        </li>
-    </ol>
-    <h2 class="c10 c65"><span class="c4">Gi&aacute;o tr&igrave;nh</span></h2>
-    <p class="c10 c26"><span class="c4 c27">Software Engineering (8,9)10th , </span><span class="c14 c27">Ian
-            Sommerville, Pearson, (2007,2010)2015</span></p>
-    <h2 class="c10 c65"><span class="c4">T&agrave;i li&#7879;u tham kh&#7843;o</span></h2>
-    <p class="c35"><span class="c4 c27">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Software Engineering: A
-            Practitioner&#39;s Approach</span><span class="c14 c27">, </span><span class="c4 c27">&nbsp; </span><span
-            class="c14">Roger S. Pressman, </span><span class="c14 c50">McGraw-Hill Education</span><span class="c0">,
-            2014.</span></p>
-    <p class="c10 c26"><span class="c4 c27">What Every Engineer Should Know about Software Engineering, </span><span
-            class="c14 c27">Laplante, Phillip A.</span><span class="c4 c27">&nbsp;</span></p>
-    <p class="c10 c26"><span class="c4 c27">M&ocirc; H&igrave;nh CMMI M&#7897;t C&aacute;ch Ti&#7871;p C&#7853;n
-            C&#7843;i Ti&#7871;n Quy Tr&igrave;nh Ph&#7847;n M&ecirc;m, &nbsp;</span><span
-            class="c14 c27">&#272;&#7891;ng Th&#7883; B&iacute;ch Th&#7911;y, Tr&#7847;n &#272;an Th&#432;, Ho&agrave;ng
-            V&#361; Qu&#7923;nh H&agrave;, 2007.</span></p>
-    <p class="c10 c26"><span class="c4 c27">K&#7929; ngh&#7879; ph&#7847;n m&#7873;m, T&#7853;p 1, 2, 3,</span><span
-            class="c14 c27">&nbsp;Roger S. Pressman, B&#7843;n d&#7883;ch c&#7911;a Ng&ocirc; Trung Vi&#7879;t,
-            1999.</span></p>
-    <p class="c10 c12"><span class="c0"></span></p>
-    <p class="c10"><span class="c4">Danh s&aacute;ch c&aacute;c video tham kh&#7843;o</span></p><a
-        id="t.62d54fa7206e4f2970fbacb1a1f9451f1c5d5a17"></a><a id="t.6"></a>
-    <table class="c20">
-        <tbody>
-            <tr class="c9">
-                <td class="c22" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4">STT</span></p>
-                </td>
-                <td class="c40" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4">T&ecirc;n video</span></p>
-                </td>
-                <td class="c48" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4">M&ocirc; t&#7843;</span></p>
-                </td>
-                <td class="c57" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4">Link li&ecirc;n k&#7871;t</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c22" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4">1</span></p>
-                </td>
-                <td class="c40" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">10 Questions to Introduce Software Engineering </span></p>
-                </td>
-                <td class="c48" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c57" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">https://www.youtube.com/watch?v=gi5kxGslkNc</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c22" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4">2</span></p>
-                </td>
-                <td class="c40" colspan="1" rowspan="1">
-                    <p class="c35"><span class="c0">Why Software Engineering Matters</span></p>
-                </td>
-                <td class="c48" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c57" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">https://www.youtube.com/watch?v=R3NzTt0BTWE</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c22" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4">3</span></p>
-                </td>
-                <td class="c40" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Plan-driven and Agile Software Processes </span></p>
-                </td>
-                <td class="c48" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c57" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">https://www.youtube.com/watch?v=q8X2Rk5sRFI</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c22" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4">4</span></p>
-                </td>
-                <td class="c40" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Fundamental Activities in Software Engineering</span></p>
-                </td>
-                <td class="c48" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c57" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">https://www.youtube.com/watch?v=Z2no7DxDWRI</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c22" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4">5</span></p>
-                </td>
-                <td class="c40" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Intro to Scrum in Under 10 Minutes</span></p>
-                </td>
-                <td class="c48" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c57" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">https://www.youtube.com/watch?v=XU0llRltyFM</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c22" colspan="1" rowspan="1">
-                    <p class="c23"><span class="c4">6</span></p>
-                </td>
-                <td class="c40" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">Software Project Management - Why it&#39;s Different</span></p>
-                </td>
-                <td class="c48" colspan="1" rowspan="1">
-                    <p class="c10 c12"><span class="c0"></span></p>
-                </td>
-                <td class="c57" colspan="1" rowspan="1">
-                    <p class="c10"><span class="c0">https://www.youtube.com/watch?v=TYBVAvWkG6M</span></p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <p class="c10 c12"><span class="c0"></span></p>
-    <h2 class="c10 c65"><span class="c4">T&agrave;i nguy&ecirc;n kh&aacute;c</span></h2>
-    <p class="c10 c26"><span class="c0">Visual Studio .NET</span></p>
-    <p class="c10 c26"><span class="c0">Mircosoft SQL, 2008</span></p>
-    <p class="c10 c26"><span class="c0">Visio</span></p>
-    <p class="c10 c26"><span class="c0">Axure</span></p>
-    <h1 class="c64"><span class="c41 c4"></span></h1>
-    <p class="c10 c26 c12"><span class="c0"></span></p>
-    <hr style="page-break-before:always;display:none;">
-    <ol class="c6 lst-kix_list_41-0" start="9">
-        <li class="c59 li-bullet-0">
-            <h1 style="display:inline"><span class="c4">C&Aacute;C QUY &#272;&#7882;NH CHUNG</span></h1>
-        </li>
-    </ol>
-    <ul class="c6 lst-kix_list_38-0 start">
-        <li class="c3 li-bullet-0"><span class="c0">Sinh vi&ecirc;n c&#7847;n tu&acirc;n th&#7911; nghi&ecirc;m
-                t&uacute;c c&aacute;c n&#7897;i quy v&agrave; quy &#273;&#7883;nh c&#7911;a Khoa v&agrave;
-                Tr&#432;&#7901;ng.</span></li>
-        <li class="c3 li-bullet-0"><span class="c0">Sinh vi&ecirc;n kh&ocirc;ng &#273;&#432;&#7907;c v&#7855;ng
-                qu&aacute; 3 bu&#7893;i tr&ecirc;n t&#7893;ng s&#7889; c&aacute;c bu&#7893;i h&#7885;c l&yacute;
-                thuy&#7871;t.</span></li>
-        <li class="c3 li-bullet-0"><span class="c0">&#272;&#7889;i v&#7899;i b&#7845;t k&#7923; s&#7921; gian l&#7853;n
-                n&agrave;o trong qu&aacute; tr&igrave;nh l&agrave;m b&agrave;i t&#7853;p hay b&agrave;i thi, sinh
-                vi&ecirc;n ph&#7843;i ch&#7883;u m&#7885;i h&igrave;nh th&#7913;c k&#7927; lu&#7853;t c&#7911;a
-                Khoa/Tr&#432;&#7901;ng v&agrave; b&#7883; 0 &#273;i&#7875;m cho m&ocirc;n h&#7885;c n&agrave;y.</span>
-        </li>
-    </ul>
-    <div>
-        <p class="c10 c12"><span class="c14 c73"></span></p>
-    </div>
-</body>
-
-</html>
+`;

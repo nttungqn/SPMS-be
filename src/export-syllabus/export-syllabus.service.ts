@@ -24,13 +24,6 @@ import { LoaiDanhGiaService } from 'loai-danh-gia/loai-danh-gia.service';
 export class ExportSyllabusService {
   constructor(
     private chiTietNganhDaoTaoService: ChiTietNganhDaoTaoService,
-    private khoiKienThucService: KhoiKienThucService,
-    private chuanDauRaNganhGomNhomService: ChuanDauRaNganhDaoTaoService,
-    private loaiKhoiKienThucService: LoaiKhoiKienThucService,
-    private gomNhomService: GomNhomService,
-    private keHoachGiangDayService: KeHoachGiangDayService,
-    private chiTietKeHoachGiangDayService: ChiTietKeHoachService,
-    private cloneService: CloneService,
     private mucTieuMonHocService: MucTieuMonHocService,
     private connection: Connection,
     private syllabusService: SyllabusService,
@@ -52,10 +45,16 @@ export class ExportSyllabusService {
       const soTinChi = lodash.get(syllabus, 'monHoc.soTinChi', '');
       const soTietThucHanh = lodash.get(syllabus, 'monHoc.soTietThucHanh', '');
       const soTietTuHoc = lodash.get(syllabus, 'monHoc.soTietTuHoc', '');
-      // TODO: syllbus.monHocTienQuyet
+      const soTietLyThuyet = lodash.get(syllabus, 'monHoc.soTietLyThuyet', '');
+      let monHocTienQuyet = lodash.get(syllabus, 'monHocTienQuyet', []);
+      if (monHocTienQuyet.length > 0) {
+        monHocTienQuyet = monHocTienQuyet.forEach((e) => e.monHocTruoc.tenTiengViet).join(', ');
+      } else {
+        monHocTienQuyet = 'Không';
+      }
 
       // 2.
-      const mota = lodash.get(syllabus, 'moTa');
+      const moTa = lodash.get(syllabus, 'moTa', 'Không');
 
       // 3.
       let mucTieuMonHoc = await this.mucTieuMonHocService.findAll({ idSyllabus: filter.syllabusId, sortBy: 'ma' });
@@ -63,7 +62,7 @@ export class ExportSyllabusService {
 
       // 4.
       let chuanDauRaMonHoc = await this.chuanDauRaMonHocService.findAll({ idSyllabus: filter.syllabusId });
-      chuanDauRaMonHoc = lodash.get(chuanDauRaMonHoc, 'contents');
+      chuanDauRaMonHoc = lodash.get(chuanDauRaMonHoc, 'contents', []);
 
       // prepare for 5 & 6
       let loaiKeHoachGiangDay = await this.loaiKeHoachGiangDayService.findAll({});
@@ -84,12 +83,14 @@ export class ExportSyllabusService {
       // 6.
       let keHoachGiangDayThucHanh = await this.chuDeService.findAll({
         idSyllabus: filter.syllabusId,
-        idLKHGD: thucHanhId
+        idLKHGD: thucHanhId,
+        sortBy: 'tuan'
       });
       keHoachGiangDayThucHanh = lodash.get(keHoachGiangDayThucHanh, 'contents', []);
 
       // 7.
-      const loaiDanhGia = await this.loaiDanhGiaService.findAll({ idSyllabus: filter.syllabusId });
+      let loaiDanhGia = await this.loaiDanhGiaService.findAll({ idSyllabus: filter.syllabusId });
+      loaiDanhGia = lodash.get(loaiDanhGia, 'contents', []);
 
       // 8.
       const taiNguyen = lodash.get(syllabus, 'taiNguyen', '');
@@ -104,7 +105,9 @@ export class ExportSyllabusService {
         soTinChi,
         soTietThucHanh,
         soTietTuHoc,
-        mota,
+        soTietLyThuyet,
+        monHocTienQuyet,
+        moTa,
         mucTieuMonHoc,
         chuanDauRaMonHoc,
         keHoachGiangDayLyThuyet,
@@ -113,9 +116,10 @@ export class ExportSyllabusService {
         taiNguyen,
         quiDinh
       };
-      const fileName = `syllabus.pdf`;
+      const fileName = `syllabus-${ma}-${tenTiengViet}.pdf`;
       return { data, fileName };
     } catch (error) {
+      console.log(error);
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
