@@ -95,8 +95,8 @@ export class ChuanDauRaService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CDR_CACHE_KEY, id.toString());
-      const detail = await this.findById(updated.id);
-      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHU_DE_CACHE_TTL);
+      await this.cacheManager.del(key);
+      await this.findById(updated.id);
       await this.delCacheAfterChange();
       return updated;
     } catch (error) {

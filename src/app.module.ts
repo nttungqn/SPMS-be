@@ -42,6 +42,7 @@ import { PermissionModule } from './permission/permission.module';
 import { ResourcesModule } from './resources/resources.module';
 import { GenerateSyllabusModule } from 'generate-syllabus/generate-syllabus.module';
 import { ExportSyllabusModule } from 'export-syllabus/export-syllabus.module';
+import { BloomModule } from './bloom/bloom.module';
 
 @Module({
   imports: [
@@ -85,7 +86,8 @@ import { ExportSyllabusModule } from 'export-syllabus/export-syllabus.module';
     PermissionModule,
     ResourcesModule,
     GenerateSyllabusModule,
-    ExportSyllabusModule
+    ExportSyllabusModule,
+    BloomModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService, CronService]

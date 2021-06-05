@@ -48,7 +48,7 @@ export class LoaiKeHoachGiangDayService {
     const key = format(REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      const result = await this.loaiKeHoachGiangDayEntity.findOne({
+      result = await this.loaiKeHoachGiangDayEntity.findOne({
         where: { id, isDeleted: false },
         relations: ['createdBy', 'updatedBy']
       });
@@ -101,8 +101,8 @@ export class LoaiKeHoachGiangDayService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_KEY, id.toString());
-      const detail = await this.findById(result.id);
-      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_LKHGD_CACHE_TTL);
+      await this.cacheManager.del(key);
+      await this.findById(result.id);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
