@@ -5508,7 +5508,8 @@ export default `
         .c60 {
             background-color: #ffffff;
             max-width: 499.2pt;
-            padding: 58.5pt 51pt 21.6pt 45.4pt
+            padding: 15pt 51pt 21.6pt 45.4pt;
+            margin: auto;
         }
 
         .c4 {

@@ -6,10 +6,6 @@ import evaluationTable from './evaluation-table';
 
 export default (data) => `
 <body class="c60">
-    <div>
-        <p class="c10 c12"><span class="c14 c67"></span></p>
-    </div>
-    <h3 class="c65 c69"><span class="c4 c71">&nbsp;</span></h3>
     <p class="c32 title"><span class="c14 c44">ĐỀ CƯƠNG MÔN HỌC</span><span class="c4 c58">&nbsp;</span></p>
     <p class="c32 title"><span class="c4 c58">${data.ma} &ndash; ${data.tenTiengViet}</span></p>
     <ol class="c6 lst-kix_list_41-0 start" start="1">
@@ -43,14 +39,6 @@ export default (data) => `
                 </td>
                 <td class="c34" colspan="1" rowspan="1">
                     <p class="c28"><span class="c0">${data.ma}</span></p>
-                </td>
-            </tr>
-            <tr class="c9">
-                <td class="c49" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">Thuộc khối kiến thức:</span></p>
-                </td>
-                <td class="c34" colspan="1" rowspan="1">
-                    <p class="c28"><span class="c0">${data.khoiKienThuc}</span></p>
                 </td>
             </tr>
             <tr class="c9">
@@ -169,7 +157,7 @@ export default (data) => `
             <h1 style="display:inline"><span class="c4">CÁC QUY ĐỊNH CHUNG</span></h1>
         </li>
     </ol>
-    ${data.quiDinh}
+    ${data.quiDinh || ''}
     <div>
         <p class="c10 c12"><span class="c14 c73"></span></p>
     </div>

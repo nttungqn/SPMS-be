@@ -116,7 +116,7 @@ export class ExportSyllabusService {
         taiNguyen,
         quiDinh
       };
-      const fileName = `syllabus-${ma}-${tenTiengViet}.pdf`;
+      const fileName = `syllabus-${ma}.pdf`;
       return { data, fileName };
     } catch (error) {
       console.log(error);
