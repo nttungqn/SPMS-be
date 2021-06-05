@@ -20,5 +20,5 @@ export class fliterLoaiKeHoachGiangDay extends BaseFilterDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumberString()
-  readonly idCD: number;
+  readonly idCD?: number;
 }

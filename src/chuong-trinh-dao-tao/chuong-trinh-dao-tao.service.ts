@@ -187,7 +187,7 @@ export class ChuongTrinhDaoTaoService {
     }
   }
 
-  async createDetail(newData, user):Promise<any>{
+  async createDetail(newData, user): Promise<any> {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
@@ -202,9 +202,9 @@ export class ChuongTrinhDaoTaoService {
           { ten: newData?.ten, isDeleted: false },
           { maCTDT: newData?.maCTDT, isDeleted: false }
         ]
-      })
+      });
       if (isCTDTExist) {
-        return {message: CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_NAME_OR_CODE_EXIST, isError: true};
+        return { message: CHUONGTRINHDAOTAO_MESSAGE.CHUONGTRINHDAOTAO_NAME_OR_CODE_EXIST, isError: true };
       }
 
       const newCTDT = await ctdtRepo.create({
@@ -224,7 +224,7 @@ export class ChuongTrinhDaoTaoService {
       const listNDT = newData?.payload || [];
       const listNDTSaved = [];
       for (const ndt of listNDT) {
-        if(ndt?.maNganhDaoTao && ndt?.ten){
+        if (ndt?.maNganhDaoTao && ndt?.ten) {
           const newNDT = await nganhDaoTaoRepo.create({
             maNganhDaoTao: ndt?.maNganhDaoTao,
             ten: ndt?.ten,
@@ -232,10 +232,10 @@ export class ChuongTrinhDaoTaoService {
             createdBy: user?.id,
             updatedBy: user?.id
           });
-          
+
           const ndtSaved = await nganhDaoTaoRepo.save(newNDT);
 
-          if(ndt?.khoa){
+          if (ndt?.khoa) {
             const newCTNDT = await ctndtRepo.create({
               khoa: ndt?.khoa,
               coHoiNgheNghiep: ndt?.coHoiNgheNghiep,
@@ -244,21 +244,29 @@ export class ChuongTrinhDaoTaoService {
               createdBy: user?.id,
               updatedBy: user?.id
             });
-            
+
             const ctndtSaved = await ctndtRepo.save(newCTNDT);
-            listNDTSaved.push({ndt: ndtSaved, ctndt: ctndtSaved});
+            listNDTSaved.push({ ndt: ndtSaved, ctndt: ctndtSaved });
           }
-          listNDTSaved.push({ndt: ndtSaved, ctndt: null});
+          listNDTSaved.push({ ndt: ndtSaved, ctndt: null });
         }
       }
 
       await queryRunner.commitTransaction();
-      return {message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY, isError: false, data: {ctdt, ndtsaved: listNDTSaved}}
+      return {
+        message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY,
+        isError: false,
+        data: { ctdt, ndtsaved: listNDTSaved }
+      };
     } catch (error) {
       console.log(error);
       await queryRunner.rollbackTransaction();
-      return {message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED, isError: false, error: lodash.get(error, 'sqlMessage', 'error')}
-    }finally {
+      return {
+        message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED,
+        isError: false,
+        error: lodash.get(error, 'sqlMessage', 'error')
+      };
+    } finally {
       console.log('Transaction ended');
       await queryRunner.release();
     }

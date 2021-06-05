@@ -44,7 +44,6 @@ export class CreateChuongTrinhDaoTaoDto {
   readonly dieuKienTotNghiep?: string;
 }
 
-
 export class CreateDetailChuongTrinhDaoTaoDto {
   @ApiProperty({ required: false })
   @IsString()
@@ -90,7 +89,6 @@ export class CreateDetailChuongTrinhDaoTaoDto {
   @IsArray()
   @Type(() => ChiTietNganhDaoTaoBody)
   readonly payload: ChiTietNganhDaoTaoBody[];
-
 }
 
 class ChiTietNganhDaoTaoBody {
@@ -107,10 +105,10 @@ class ChiTietNganhDaoTaoBody {
   khoa: number;
 
   @IsString()
-  @ApiProperty({required: false})
+  @ApiProperty({ required: false })
   coHoiNgheNghiep: string;
 
   @IsString()
-  @ApiProperty({required: false})
+  @ApiProperty({ required: false })
   mucTieuChung: string;
 }

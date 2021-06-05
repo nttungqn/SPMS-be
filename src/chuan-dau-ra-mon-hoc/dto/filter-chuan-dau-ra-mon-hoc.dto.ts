@@ -6,12 +6,12 @@ export class FilterChuanDauRaMonHocDto extends BaseFilterDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumberString()
-  idMucTieuMonHoc: number;
+  idMucTieuMonHoc?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumberString()
-  idSyllabus: number;
+  idSyllabus?: number;
 
   @ApiProperty({ required: false, description: ' this field search by mota , ma ,mucDo' })
   @IsOptional()
@@ -19,10 +19,10 @@ export class FilterChuanDauRaMonHocDto extends BaseFilterDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  sortBy: string;
+  sortBy?: string;
 
   @ApiProperty({ required: false, description: 'ASC| DESC' })
   @IsOptional()
   @IsIn(['ASC', 'DESC'])
-  sortType: 'ASC' | 'DESC';
+  sortType?: 'ASC' | 'DESC';
 }

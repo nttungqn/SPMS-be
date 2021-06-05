@@ -137,11 +137,11 @@ export class ChuongTrinhDaoTaoController {
     // if (found) {
     //   return res.status(HttpStatus.OK).json({ isConflict: true, content: found });
     // }
-    
+
     const user = req.user || {};
     try {
       const results = await this.chuongTrinhDaoTaoService.createDetail(body, user);
-      return res.json({data: results});
+      return res.json({ data: results });
     } catch (error) {
       return res.status(HttpStatus.OK).json({
         message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED,
