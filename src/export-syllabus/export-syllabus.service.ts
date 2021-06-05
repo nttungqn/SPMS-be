@@ -1,17 +1,6 @@
-import { ChiTietKeHoachService } from './../chi-tiet-ke-hoach/chi-tiet-ke-hoach.service';
-import { KeHoachGiangDayService } from './../ke-hoach-giang-day/ke-hoach-giang-day.service';
-import { GomNhomService } from './../gom-nhom/gom-nhom.service';
-import { LoaiKhoiKienThucService } from './../loai-khoi-kien-thuc/loai-khoi-kien-thuc.service';
-import { ChuanDauRaNganhDaoTaoService } from './../chuan-dau-ra-nganh-dao-tao/chuan-dau-ra-nganh-dao-tao.service';
-import { KhoiKienThucService } from './../khoi-kien-thuc/khoi-kien-thuc.service';
-import { CTNGANHDAOTAO_MESSAGE } from 'constant/constant';
-import { ChiTietNganhDaoTaoService } from './../chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import * as lodash from 'lodash';
-import { groupBy } from 'utils/utils';
-import { CloneService } from 'clone/clone.service';
 import { Connection, getConnection } from 'typeorm';
-import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
 import { SyllabusService } from 'syllabus/syllabus.service';
 import { ExportsDto } from './dto/exports.dto';
 import { MucTieuMonHocService } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.service';
@@ -23,7 +12,6 @@ import { LoaiDanhGiaService } from 'loai-danh-gia/loai-danh-gia.service';
 @Injectable()
 export class ExportSyllabusService {
   constructor(
-    private chiTietNganhDaoTaoService: ChiTietNganhDaoTaoService,
     private mucTieuMonHocService: MucTieuMonHocService,
     private connection: Connection,
     private syllabusService: SyllabusService,
@@ -121,97 +109,6 @@ export class ExportSyllabusService {
     } catch (error) {
       console.log(error);
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  async exportsFilePdfV2(filter): Promise<any> {
-    try {
-      const { contents = [] } = await this.chiTietNganhDaoTaoService.findAll({
-        nganhDaoTao: filter?.nganhDaoTao,
-        khoa: filter?.khoa
-      });
-      if (!contents?.length) {
-        throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
-      }
-      const result = contents[0] || null;
-      const khoa = lodash.get(result, 'khoa', '');
-      const coHoiNgheNghiep = lodash.get(result, 'coHoiNgheNghiep', '');
-      const mucTieuChung = lodash.get(result, 'mucTieuChung', '');
-      const tenNganhDaoTao = lodash.get(result, 'nganhDaoTao.ten', '');
-      const maNganhDaoTao = lodash.get(result, 'nganhDaoTao.maNganhDaoTao', '');
-      const loaiHinh = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.loaiHinh', '');
-      const trinhDo = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.trinhDo', '');
-      const tongTinChi = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.tongTinChi', '');
-      const doiTuong = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.doiTuong', '');
-      const quiTrinhDaoTao = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.quiTrinhDaoTao', '');
-      const dieuKienTotNghiep = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.dieuKienTotNghiep', '');
-
-      const ctndt = await this.connection
-        .getRepository(ChiTietNganhDaoTaoEntity)
-        .createQueryBuilder('ctndt')
-        .leftJoinAndSelect('ctndt.keHoachGiangDayList', 'khgd')
-        .leftJoinAndSelect('ctndt.chuanDaura', 'chuanDaura')
-        .leftJoinAndSelect('ctndt.khoiKienThucList', 'khoiKienThucList')
-        .where({ id: result?.id })
-        .getOne();
-
-      const data = {
-        khoa,
-        coHoiNgheNghiep,
-        mucTieuChung,
-        tenNganhDaoTao,
-        maNganhDaoTao,
-        trinhDo,
-        loaiHinh,
-        tongTinChi,
-        doiTuong,
-        quiTrinhDaoTao,
-        dieuKienTotNghiep,
-        khoiKienThuc: ctndt?.khoiKienThucList,
-        chuanDauRaNganhDaoTao: ctndt.chuanDaura,
-        cauTrucChuongTrinh: ctndt?.khoiKienThucList,
-        keHoachGiangDay: ctndt?.keHoachGiangDayList
-      };
-      const fileName = `${maNganhDaoTao}_${khoa}.pdf`;
-      return { data, fileName };
-    } catch (error) {
-      console.log('error', error);
-      throw new HttpException('INTERNAL_SERVER_ERROR', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  async getInfoCTNDT(id): Promise<any> {
-    try {
-      const ctndt = await this.chiTietNganhDaoTaoService.findById(id);
-      const khoa = lodash.get(ctndt, 'khoa', '');
-      const coHoiNgheNghiep = lodash.get(ctndt, 'coHoiNgheNghiep', '');
-      const mucTieuChung = lodash.get(ctndt, 'mucTieuChung', '');
-      const tenNganhDaoTao = lodash.get(ctndt, 'nganhDaoTao.ten', '');
-      const maNganhDaoTao = lodash.get(ctndt, 'nganhDaoTao.maNganhDaoTao', '');
-      const loaiHinh = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.loaiHinh', '');
-      const trinhDo = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.trinhDo', '');
-      const tongTinChi = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.tongTinChi', '');
-      const doiTuong = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.doiTuong', '');
-      const quiTrinhDaoTao = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.quiTrinhDaoTao', '');
-      const dieuKienTotNghiep = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.dieuKienTotNghiep', '');
-
-      const data = {
-        khoa,
-        coHoiNgheNghiep,
-        mucTieuChung,
-        tenNganhDaoTao,
-        maNganhDaoTao,
-        trinhDo,
-        loaiHinh,
-        tongTinChi,
-        doiTuong,
-        quiTrinhDaoTao,
-        dieuKienTotNghiep
-      };
-      return data;
-    } catch (error) {
-      console.log('error', error);
-      throw new HttpException('INTERNAL_SERVER_ERROR', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

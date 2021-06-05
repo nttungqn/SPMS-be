@@ -1,4 +1,3 @@
-import { IdExportDto } from './dto/Id.dto';
 import { postDataDto } from './dto/postCreatePdf';
 import { ExportsDto } from './dto/exports.dto';
 import { Controller, Get, Query, Req, UseGuards, HttpStatus, Res, Post, Body, Param } from '@nestjs/common';
