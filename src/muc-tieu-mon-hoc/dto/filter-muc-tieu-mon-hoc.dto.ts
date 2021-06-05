@@ -16,7 +16,7 @@ export class FilterMucTieuMonHoc extends BaseFilterDto {
     required: false
   })
   @IsOptional()
-  sortBy: string;
+  sortBy?: string;
 
   @ApiProperty({ required: false, description: 'ASC| DESC' })
   @IsOptional()

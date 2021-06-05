@@ -6,6 +6,7 @@ import { Like, Repository } from 'typeorm';
 import { LoaiKeHoachGiangDayEntity } from './entity/loaiKeHoachGiangDay.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
+import { fliterLoaiKeHoachGiangDay } from './dto/fliterLoaiKeHoachGiangDay.dto';
 
 @Injectable()
 export class LoaiKeHoachGiangDayService {

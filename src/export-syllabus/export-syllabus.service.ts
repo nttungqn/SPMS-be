@@ -12,6 +12,13 @@ import { groupBy } from 'utils/utils';
 import { CloneService } from 'clone/clone.service';
 import { Connection, getConnection } from 'typeorm';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
+import { SyllabusService } from 'syllabus/syllabus.service';
+import { ExportsDto } from './dto/exports.dto';
+import { MucTieuMonHocService } from 'muc-tieu-mon-hoc/muc-tieu-mon-hoc.service';
+import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
+import { ChuDeService } from 'chu-de/chu-de.service';
+import { LoaiKeHoachGiangDayService } from 'loai-ke-hoach-giang-day/loai-ke-hoach-giang-day.service';
+import { LoaiDanhGiaService } from 'loai-danh-gia/loai-danh-gia.service';
 
 @Injectable()
 export class ExportSyllabusService {
@@ -24,100 +31,92 @@ export class ExportSyllabusService {
     private keHoachGiangDayService: KeHoachGiangDayService,
     private chiTietKeHoachGiangDayService: ChiTietKeHoachService,
     private cloneService: CloneService,
-    private connection: Connection
+    private mucTieuMonHocService: MucTieuMonHocService,
+    private connection: Connection,
+    private syllabusService: SyllabusService,
+    private chuanDauRaMonHocService: ChuanDauRaMonHocService,
+    private chuDeService: ChuDeService,
+    private loaiKeHoachGiangDayService: LoaiKeHoachGiangDayService,
+    private loaiDanhGiaService: LoaiDanhGiaService
   ) {
     connection = getConnection();
   }
-  async exportsFilePdf(filter): Promise<any> {
+  async exportsFilePdf(filter: ExportsDto): Promise<any> {
     try {
-      const { contents = [] } = await this.chiTietNganhDaoTaoService.findAll({
-        nganhDaoTao: filter?.nganhDaoTao,
-        khoa: filter?.khoa
+      const syllabus = await this.syllabusService.findOne(filter.syllabusId);
+
+      // 1.
+      const ma = lodash.get(syllabus, 'monHoc.ma', '');
+      const tenTiengViet = lodash.get(syllabus, 'monHoc.tenTiengViet', '');
+      const tenTiengAnh = lodash.get(syllabus, 'monHoc.tenTiengAnh', '');
+      const soTinChi = lodash.get(syllabus, 'monHoc.soTinChi', '');
+      const soTietThucHanh = lodash.get(syllabus, 'monHoc.soTietThucHanh', '');
+      const soTietTuHoc = lodash.get(syllabus, 'monHoc.soTietTuHoc', '');
+      // TODO: syllbus.monHocTienQuyet
+
+      // 2.
+      const mota = lodash.get(syllabus, 'moTa');
+
+      // 3.
+      let mucTieuMonHoc = await this.mucTieuMonHocService.findAll({ idSyllabus: filter.syllabusId, sortBy: 'ma' });
+      mucTieuMonHoc = lodash.get(mucTieuMonHoc, 'contents', []);
+
+      // 4.
+      let chuanDauRaMonHoc = await this.chuanDauRaMonHocService.findAll({ idSyllabus: filter.syllabusId });
+      chuanDauRaMonHoc = lodash.get(chuanDauRaMonHoc, 'contents');
+
+      // prepare for 5 & 6
+      let loaiKeHoachGiangDay = await this.loaiKeHoachGiangDayService.findAll({});
+      loaiKeHoachGiangDay = lodash.get(loaiKeHoachGiangDay, 'contents', []);
+      let lyThuyetId, thucHanhId;
+      loaiKeHoachGiangDay.forEach((e) => {
+        if (e['ma'] == 'LT' || e['ten'] == 'Lý Thuyết') lyThuyetId = e['id'];
+        if (e['ma'] == 'TH' || e['ten'] == 'Thực Hành') thucHanhId = e['id'];
       });
-      if (!contents?.length) {
-        throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
-      }
-      const result = contents[0] || null;
-      const khoa = lodash.get(result, 'khoa', '');
-      const coHoiNgheNghiep = lodash.get(result, 'coHoiNgheNghiep', '');
-      const mucTieuChung = lodash.get(result, 'mucTieuChung', '');
-      const tenNganhDaoTao = lodash.get(result, 'nganhDaoTao.ten', '');
-      const maNganhDaoTao = lodash.get(result, 'nganhDaoTao.maNganhDaoTao', '');
-      const loaiHinh = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.loaiHinh', '');
-      const trinhDo = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.trinhDo', '');
-      const tongTinChi = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.tongTinChi', '');
-      const doiTuong = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.doiTuong', '');
-      const quiTrinhDaoTao = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.quiTrinhDaoTao', '');
-      const dieuKienTotNghiep = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.dieuKienTotNghiep', '');
-      const khoiKienThucData = await this.khoiKienThucService.findAll({ chiTietNganh: result?.id });
-      const khoiKienThuc = khoiKienThucData?.contents || [];
-      let chuanDauRaNganhDaoTao = [];
-      try {
-        const chuanDauRaNganhDaoTaoData = await this.chuanDauRaNganhGomNhomService.findAll({
-          nganhDaoTao: result?.id,
-          limit: 10000
-        });
-        chuanDauRaNganhDaoTao = chuanDauRaNganhDaoTaoData?.contents || [];
-      } catch (error) {
-        chuanDauRaNganhDaoTao = [];
-      }
-      const results = groupBy(chuanDauRaNganhDaoTao, 'parent.ma');
-      const loaiKhoiKienThucArray = khoiKienThuc.map(async (item) => {
-        const results = await this.loaiKhoiKienThucService.findAllWithHaveSelectField({
-          idKhoiKienThuc: item?.id,
-          createdAt: 'ASC'
-        });
-        return { ...item, loaiKhoiKienThuc: results || [] };
+
+      // 5.
+      let keHoachGiangDayLyThuyet = await this.chuDeService.findAll({
+        idSyllabus: filter.syllabusId,
+        idLKHGD: lyThuyetId
       });
-      const dataResults = await Promise.all(loaiKhoiKienThucArray);
-      for (let i = 0; i < dataResults?.length; i++) {
-        const gomNhomPromise = dataResults[i]?.loaiKhoiKienThuc?.map(async (item) => {
-          const results = await this.gomNhomService.findAllWithSelectField({
-            idLKKT: item?.id,
-            select: 'chiTietGomNhom,chiTietGomNhom.idMH'
-          });
-          return { ...item, gomNhom: results || [] };
-        });
-        const gomNhom = await Promise.all(gomNhomPromise);
-        dataResults[i] = { ...dataResults[i], loaiKhoiKienThuc: gomNhom };
-      }
-      let keHoachGiangDay = [];
-      try {
-        const keHoachGiangDayData = await this.keHoachGiangDayService.findAll({ nganhDaoTao: result?.id });
-        keHoachGiangDay = keHoachGiangDayData?.contents || [];
-      } catch (error) {
-        keHoachGiangDay = [];
-      }
-      const chiTietKHGDArr = keHoachGiangDay?.map(async (item) => {
-        const results = await this.chiTietKeHoachGiangDayService.findAllWithSelectField({
-          idKHGD: item?.id,
-          select: 'idCTGN,idCTGN.idGN,idCTGN.idMH'
-        });
-        return { ...item, chiTietKHGD: results || [] };
+      keHoachGiangDayLyThuyet = lodash.get(keHoachGiangDayLyThuyet, 'contents', []);
+
+      // 6.
+      let keHoachGiangDayThucHanh = await this.chuDeService.findAll({
+        idSyllabus: filter.syllabusId,
+        idLKHGD: thucHanhId
       });
-      const chiTietKeHoach = await Promise.all(chiTietKHGDArr);
+      keHoachGiangDayThucHanh = lodash.get(keHoachGiangDayThucHanh, 'contents', []);
+
+      // 7.
+      const loaiDanhGia = await this.loaiDanhGiaService.findAll({ idSyllabus: filter.syllabusId });
+
+      // 8.
+      const taiNguyen = lodash.get(syllabus, 'taiNguyen', '');
+
+      // 9.
+      const quiDinh = lodash.get(syllabus, 'quiDinh', '');
+
       const data = {
-        khoa,
-        coHoiNgheNghiep,
-        mucTieuChung,
-        tenNganhDaoTao,
-        maNganhDaoTao,
-        trinhDo,
-        loaiHinh,
-        tongTinChi,
-        doiTuong,
-        quiTrinhDaoTao,
-        dieuKienTotNghiep,
-        khoiKienThuc,
-        chuanDauRaNganhDaoTao: results,
-        cauTrucChuongTrinh: dataResults,
-        keHoachGiangDay: chiTietKeHoach
+        ma,
+        tenTiengViet,
+        tenTiengAnh,
+        soTinChi,
+        soTietThucHanh,
+        soTietTuHoc,
+        mota,
+        mucTieuMonHoc,
+        chuanDauRaMonHoc,
+        keHoachGiangDayLyThuyet,
+        keHoachGiangDayThucHanh,
+        loaiDanhGia,
+        taiNguyen,
+        quiDinh
       };
-      const fileName = `${maNganhDaoTao}_${khoa}.pdf`;
+      const fileName = `syllabus.pdf`;
       return { data, fileName };
     } catch (error) {
-      console.log('error', error);
-      throw new HttpException('INTERNAL_SERVER_ERROR', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

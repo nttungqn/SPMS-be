@@ -3,12 +3,12 @@ import { postDataDto } from './dto/postCreatePdf';
 import { ExportsDto } from './dto/exports.dto';
 import { Controller, Get, Query, Req, UseGuards, HttpStatus, Res, Post, Body, Param } from '@nestjs/common';
 import { ExportSyllabusService } from './export-syllabus.service';
-import htmlTemlpate from 'utils/templateCTDT/template';
+import htmlTemlpate from 'utils/template-syllabus/template-syllabus';
 import htmlTemlpatePreviewV2 from 'utils/templateCTDT/templatePreview-v2';
 import * as pdf from 'html-pdf';
 const options = { format: 'A4', type: 'pdf', width: '8.5in', height: '11in', border: '5mm' };
 
-@Controller('exports')
+@Controller('export-syllabus')
 export class ExportSyllabusController {
   constructor(private readonly exportsService: ExportSyllabusService) {}
 
