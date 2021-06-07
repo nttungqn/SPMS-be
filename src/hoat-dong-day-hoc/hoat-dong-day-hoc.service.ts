@@ -68,7 +68,7 @@ export class HoatDongDayHocService {
   }
 
   async create(newData: HoatDongDayHocEntity): Promise<any> {
-    const checkExistName = await this.hoatDongDayHocRepository.findOne({ ma: newData?.ma, isDeleted: false });
+    const checkExistName = await this.hoatDongDayHocRepository.findOne({ ten: newData?.ten, isDeleted: false });
     if (checkExistName) {
       throw new ConflictException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_EXIST);
     }
