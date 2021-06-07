@@ -92,7 +92,7 @@ export class HoatDongDayHocService {
     }
 
     // check Ma is exist
-    const hoatDongDayHocByMa = await this.hoatDongDayHocRepository.findOne({ ma: updatedData.ma, isDeleted: false });
+    const hoatDongDayHocByMa = await this.hoatDongDayHocRepository.findOne({ ten: updatedData.ten, isDeleted: false });
     if (hoatDongDayHocByMa) {
       throw new ConflictException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_EXIST);
     }

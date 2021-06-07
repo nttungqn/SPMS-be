@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Param,
@@ -63,14 +64,20 @@ export class HoatDongDayHocController {
   @ApiInternalServerErrorResponse({ description: HOATDONGDAYHOC_MESSAGE.CREATE_HOATDONGDAYHOC_FAILED })
   @ApiOkResponse({ description: HOATDONGDAYHOC_MESSAGE.CREATE_HOATDONGDAYHOC_SUCCESSFULLY })
   @Post()
-  async create(@Req() req, @Body() newData: CreateHoatDongDayHocDTO, @Res() res): Promise<any> {
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Req() req, @Body() newData: CreateHoatDongDayHocDTO): Promise<any> {
     const user = req.user || {};
     const result = await this.hoatDongDayHocService.create({
       ...newData,
       createdBy: user?.id,
       updatedBy: user?.id
     });
-    return res.json({ result: result });
+    return {
+      response: HOATDONGDAYHOC_MESSAGE.CREATE_HOATDONGDAYHOC_SUCCESSFULLY,
+      message: HOATDONGDAYHOC_MESSAGE.CREATE_HOATDONGDAYHOC_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    };
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
