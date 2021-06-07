@@ -38,7 +38,7 @@ export class ChiTietGomNhomEntity {
   @ApiProperty()
   @OneToOne(() => ChiTietGomNhomEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idCTGNMonHocTruoc' })
-  @Column({ name: 'idCTGNMonHocTruoc' })
+  @Column({ name: 'idCTGNMonHocTruoc', nullable: true })
   ctgnMonHoctruoc?: ChiTietGomNhomEntity;
 
   @ApiProperty()
