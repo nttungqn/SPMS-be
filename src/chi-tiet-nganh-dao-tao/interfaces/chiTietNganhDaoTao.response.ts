@@ -9,6 +9,9 @@ export class ChiTietNganhDaoTaoDto {
   khoa: number;
 
   @ApiProperty()
+  tongTinChi: number;
+
+  @ApiProperty()
   coHoiNgheNghiep: string;
 
   @ApiProperty()

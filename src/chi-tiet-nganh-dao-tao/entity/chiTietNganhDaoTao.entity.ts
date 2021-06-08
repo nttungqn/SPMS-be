@@ -18,6 +18,11 @@ export class ChiTietNganhDaoTaoEntity {
   @Column({ name: 'Khoa' })
   khoa: number;
 
+  // @IsInt()
+  // @ApiProperty()
+  @Column({ default: 0, name: 'TongTinChi' })
+  tongTinChi: number;
+
   @IsString()
   @ApiProperty()
   @Column({ name: 'CoHoiNgheNghiep' })

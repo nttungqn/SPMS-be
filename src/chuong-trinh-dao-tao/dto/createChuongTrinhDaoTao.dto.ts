@@ -23,11 +23,6 @@ export class CreateChuongTrinhDaoTaoDto {
   @IsNotEmpty()
   readonly trinhDo?: string;
 
-  @IsInt()
-  @ApiProperty({ required: false, example: 0 })
-  @IsNotEmpty()
-  readonly tongTinChi?: number;
-
   @IsString()
   @ApiProperty({ required: false })
   @IsNotEmpty()

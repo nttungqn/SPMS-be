@@ -20,7 +20,7 @@ export class FilterChuongTrinhDaoTao extends BaseFilterDto {
 
   @ApiProperty({
     required: false,
-    description: 'Search by id, maCTDT, loaiHinh, trinhDo, dieuKienTotNghiep, ten, tongTinChi, doiTuong, quiTrinhDaoTao'
+    description: 'Search by id, maCTDT, loaiHinh, trinhDo, dieuKienTotNghiep, ten, doiTuong, quiTrinhDaoTao'
   })
   @IsOptional()
   readonly searchKey?: string;
@@ -28,7 +28,7 @@ export class FilterChuongTrinhDaoTao extends BaseFilterDto {
   @ApiProperty({
     required: false,
     description:
-      'Sort by: id, maCTDT, loaiHinh, trinhDo, dieuKienTotNghiep, ten, tongTinChi, doiTuong, quiTrinhDaoTao, createdAt, updatedAt'
+      'Sort by: id, maCTDT, loaiHinh, trinhDo, dieuKienTotNghiep, ten, doiTuong, quiTrinhDaoTao, createdAt, updatedAt'
   })
   @IsOptional()
   readonly sortBy?: string;

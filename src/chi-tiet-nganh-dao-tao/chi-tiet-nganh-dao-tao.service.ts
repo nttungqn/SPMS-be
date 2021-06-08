@@ -3,13 +3,11 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
-  NotFoundException
+  InternalServerErrorException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CTNGANHDAOTAO_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
 import { Repository } from 'typeorm';
-import { FilterCTNganhDaoTaoDto } from './dto/filterCTNganhDaoTao.dto';
 import { ChiTietNganhDaoTaoEntity } from './entity/chiTietNganhDaoTao.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
@@ -44,7 +42,7 @@ export class ChiTietNganhDaoTaoService {
       const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
-      const searchField = ['id', 'khoa', 'coHoiNgheNghiep', 'mucTieuChung'];
+      const searchField = ['id', 'khoa', 'tongTinChi', 'coHoiNgheNghiep', 'mucTieuChung'];
       const searchQuery = searchField
         .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'ctndt.' + e + ' LIKE :search'))
         .join(' OR ');
