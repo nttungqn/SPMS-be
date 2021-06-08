@@ -220,7 +220,7 @@ export class ExportsService {
         .andWhere('kkt.isDeleted = false')
         .getMany();
 
-      const chuanDauRaList = await chuanDauRaRepository
+      const query = chuanDauRaRepository
         .createQueryBuilder('cdr')
         .leftJoinAndSelect('cdr.chuanDauRa', 'cdrName')
         .leftJoinAndSelect('cdr.children', 'clv1')
@@ -232,8 +232,10 @@ export class ExportsService {
             });
         })
         .where('cdr.parent is null and cdr.nganhDaoTao = :idCTNDT', { idCTNDT: result.id })
-        .getMany();
-
+        .orderBy('cdr.ma', 'ASC')
+        .addOrderBy('clv1.ma', 'ASC')
+        .addOrderBy('clv2.ma', 'ASC');
+      const chuanDauRaList = await query.getMany();
       const khgd = await keHoachGiangDayRepository
         .createQueryBuilder('khgd')
         .leftJoinAndSelect('khgd.chiTietKeHoach', 'ctkh', 'ctkh.isDeleted = false')
