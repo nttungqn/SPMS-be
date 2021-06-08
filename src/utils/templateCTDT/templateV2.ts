@@ -367,7 +367,7 @@ export default async (data) => `
                                                                                     '',
                                                                                     ''
                                                                                   ],
-                                                                                  tongTC: subItem?.tongTinChi
+                                                                                  tongTC: 0
                                                                                 })}
                                                                                 `;
                                                                              })
