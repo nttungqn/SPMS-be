@@ -34,7 +34,6 @@ export class ChuongTrinhDaoTaoService {
         'trinhDo',
         'dieuKienTotNghiep',
         'ten',
-        'tongTinChi',
         'doiTuong',
         'quiTrinhDaoTao'
       ];
@@ -212,7 +211,6 @@ export class ChuongTrinhDaoTaoService {
         loaiHinh: newData?.loaiHinh,
         ten: newData?.ten,
         trinhDo: newData?.trinhDo,
-        tongTinChi: newData?.tongTinChi || 0,
         doiTuong: newData?.doiTuong,
         quiTrinhDaoTao: newData?.quiTrinhDaoTao,
         dieuKienTotNghiep: newData?.dieuKienTotNghiep,

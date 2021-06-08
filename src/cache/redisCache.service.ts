@@ -1,4 +1,4 @@
-import { Injectable, Inject, CACHE_MANAGER } from '@nestjs/common';
+import { Inject, CACHE_MANAGER } from '@nestjs/common';
 import { Cache, Store } from 'cache-manager';
 import { REDIS_CONFIG } from 'config/config';
 

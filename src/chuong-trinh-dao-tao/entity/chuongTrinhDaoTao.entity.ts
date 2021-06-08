@@ -28,11 +28,6 @@ export class ChuongTrinhDaoTaoEntity {
   @Column({ name: 'TrinhDo' })
   trinhDo: string;
 
-  @IsInt()
-  @ApiProperty()
-  @Column({ default: 0, name: 'TongTinChi' })
-  tongTinChi: number;
-
   @IsString()
   @ApiProperty()
   @Column({ name: 'DoiTuong' })
