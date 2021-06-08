@@ -4,6 +4,7 @@ import { ExportsDto } from './dto/exports.dto';
 import { Controller, Get, Query, Req, UseGuards, HttpStatus, Res, Post, Body, Param } from '@nestjs/common';
 import { ExportsService } from './exports.service';
 import htmlTemlpate from 'utils/templateCTDT/template';
+import htmlTemlpateV2 from 'utils/templateCTDT/templateV2';
 import htmlTemlpatePreviewV2 from 'utils/templateCTDT/templatePreview-v2';
 import * as pdf from 'html-pdf';
 const options = {
@@ -26,9 +27,9 @@ export class ExportsController {
   @Get()
   async findAll(@Req() req, @Query() filter: ExportsDto, @Res() res): Promise<any> {
     try {
-      const { data, fileName = 'export.pdf' } = await this.exportsService.exportsFilePdf(filter);
+      const { data, fileName = 'export.pdf' } = await this.exportsService.exportsFilePdfV3(filter);
       res.setHeader('Content-disposition', 'attachment; filename=' + fileName);
-      await pdf.create(await htmlTemlpate(data), options).toStream(function (err, stream) {
+      await pdf.create(await htmlTemlpateV2(data), options).toStream(function (err, stream) {
         if (err) return console.log(err);
         stream.pipe(res);
         stream.on('end', () => res.end());
