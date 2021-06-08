@@ -517,9 +517,10 @@ export class CloneService {
         }
       }
       //Save Chuẩn đầu ra
-      ctndt.chuanDaura = chuanDauRaList;
-      await ctndtRepository.save(ctndt);
-      delete ctndt.chuanDaura;
+      //ctndt.chuanDaura = chuanDauRaList;
+      //await ctndtRepository.save(ctndt);
+      //delete ctndt.chuanDaura;
+      await queryRunner.manager.getRepository(ChuanDauRaNganhDaoTaoEntity).save(chuanDauRaList);
       // xử lý khối kiến thức
       for (const kktE of khoiKienThucList) {
         kktE.chiTietNganh = Number(idCTNDT);
@@ -556,10 +557,24 @@ export class CloneService {
       }
 
       // save khối kiến thức
-      ctndt.khoiKienThucList = khoiKienThucList;
-      const results = await ctndtRepository.save(ctndt);
+      // ctndt.khoiKienThucList = khoiKienThucList;
+      // const results = await ctndtRepository.save(ctndt);
+
+      // const ctgnArr: ChiTietGomNhomEntity[] = [];
+      // for (const kktE of results.khoiKienThucList) {
+      //   for (const lkktK of kktE.loaiKhoiKienThuc) {
+      //     for (const gnE of lkktK.gomNhom) {
+      //       for (const ctgnE of gnE.chiTietGomNhom) {
+      //         ctgnArr.push(ctgnE);
+      //       }
+      //     }
+      //   }
+      // }
+      // delete ctndt.khoiKienThucList;
+
+      const results = await queryRunner.manager.getRepository(KhoiKienThucEntity).save(khoiKienThucList);
       const ctgnArr: ChiTietGomNhomEntity[] = [];
-      for (const kktE of results.khoiKienThucList) {
+      for (const kktE of results) {
         for (const lkktK of kktE.loaiKhoiKienThuc) {
           for (const gnE of lkktK.gomNhom) {
             for (const ctgnE of gnE.chiTietGomNhom) {
@@ -568,7 +583,6 @@ export class CloneService {
           }
         }
       }
-      delete ctndt.khoiKienThucList;
       // Xử lý Kế hoạch giảng dạy
       for (const khgdE of keHoachGiangDayList) {
         khgdE.nganhDaoTao = Number(idCTNDT);
@@ -604,8 +618,9 @@ export class CloneService {
         });
       }
       //save Kế hoạch giảng dạy
-      ctndt.keHoachGiangDayList = keHoachGiangDayList;
-      await ctndtRepository.save(ctndt);
+      // ctndt.keHoachGiangDayList = keHoachGiangDayList;
+      // await ctndtRepository.save(ctndt);
+      await queryRunner.manager.getRepository(KeHoachGiangDayEntity).save(keHoachGiangDayList);
       await queryRunner.commitTransaction();
     } catch (error) {
       await queryRunner.rollbackTransaction();

@@ -12,6 +12,9 @@ import { groupBy } from 'utils/utils';
 import { CloneService } from 'clone/clone.service';
 import { Connection, getConnection } from 'typeorm';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
+import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
+import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
+import { KhoiKienThucEntity } from 'khoi-kien-thuc/entity/khoi-kien-thuc.entity';
 
 @Injectable()
 export class ExportsService {
@@ -168,6 +171,100 @@ export class ExportsService {
         chuanDauRaNganhDaoTao: ctndt.chuanDaura,
         cauTrucChuongTrinh: ctndt?.khoiKienThucList,
         keHoachGiangDay: ctndt?.keHoachGiangDayList
+      };
+      const fileName = `${maNganhDaoTao}_${khoa}.pdf`;
+      return { data, fileName };
+    } catch (error) {
+      console.log('error', error);
+      throw new HttpException('INTERNAL_SERVER_ERROR', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async exportsFilePdfV3(filter): Promise<any> {
+    try {
+      const { contents = [] } = await this.chiTietNganhDaoTaoService.findAll({
+        nganhDaoTao: filter?.nganhDaoTao,
+        khoa: filter?.khoa
+      });
+      if (!contents?.length) {
+        throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
+      }
+      const result = contents[0] || null;
+      const khoa = lodash.get(result, 'khoa', '');
+      const coHoiNgheNghiep = lodash.get(result, 'coHoiNgheNghiep', '');
+      const mucTieuChung = lodash.get(result, 'mucTieuChung', '');
+      const tenNganhDaoTao = lodash.get(result, 'nganhDaoTao.ten', '');
+      const maNganhDaoTao = lodash.get(result, 'nganhDaoTao.maNganhDaoTao', '');
+      const loaiHinh = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.loaiHinh', '');
+      const trinhDo = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.trinhDo', '');
+      const tongTinChi = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.tongTinChi', '');
+      const doiTuong = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.doiTuong', '');
+      const quiTrinhDaoTao = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.quiTrinhDaoTao', '');
+      const dieuKienTotNghiep = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.dieuKienTotNghiep', '');
+
+      const chuanDauRaRepository = this.connection.getRepository(ChuanDauRaNganhDaoTaoEntity);
+      const khoiKienThucRepository = this.connection.getRepository(KhoiKienThucEntity);
+      const keHoachGiangDayRepository = this.connection.getRepository(KeHoachGiangDayEntity);
+
+      const khoiKienThucList = await khoiKienThucRepository
+        .createQueryBuilder('kkt')
+        .leftJoinAndSelect('kkt.loaiKhoiKienThuc', 'lkkt', 'lkkt.isDeleted = false')
+        .where((qb) => {
+          qb.leftJoinAndSelect('lkkt.gomNhom', 'gn', 'gn.isDeleted = false').where((qb) => {
+            qb.leftJoinAndSelect('gn.chiTietGomNhom', 'ctgn', 'ctgn.isDeleted = false').where((qb) => {
+              qb.leftJoinAndSelect('ctgn.monHoc', 'mh');
+            });
+          });
+        })
+        .andWhere('kkt.chiTietNganh = :idCTNDT', { idCTNDT: result.id })
+        .andWhere('kkt.isDeleted = false')
+        .getMany();
+
+      const chuanDauRaList = await chuanDauRaRepository
+        .createQueryBuilder('cdr')
+        .leftJoinAndSelect('cdr.chuanDauRa', 'cdrName')
+        .leftJoinAndSelect('cdr.children', 'clv1')
+        .where((qb) => {
+          qb.leftJoinAndSelect('clv1.chuanDauRa', 'cdrNameLv1')
+            .leftJoinAndSelect('clv1.children', 'clv2')
+            .where((qb) => {
+              qb.leftJoinAndSelect('clv2.chuanDauRa', 'cdrNameLv2');
+            });
+        })
+        .where('cdr.parent is null and cdr.nganhDaoTao = :idCTNDT', { idCTNDT: result.id })
+        .getMany();
+
+      const khgd = await keHoachGiangDayRepository
+        .createQueryBuilder('khgd')
+        .leftJoinAndSelect('khgd.chiTietKeHoach', 'ctkh', 'ctkh.isDeleted = false')
+        .where((qb) => {
+          qb.leftJoinAndSelect('ctkh.chiTietGomNhom', 'ctgn', 'ctgn.isDeleted = false').where((qb) => {
+            qb.leftJoinAndSelect('ctgn.monHoc', 'monHoc').leftJoinAndSelect(
+              'ctgn.gomNhom',
+              'gn',
+              'gn.isDeleted = false'
+            );
+          });
+        })
+        .andWhere('khgd.isDeleted = false')
+        .andWhere('khgd.nganhDaoTao = :idCTNDT', { idCTNDT: result.id })
+        .getMany();
+      const data = {
+        khoa,
+        coHoiNgheNghiep,
+        mucTieuChung,
+        tenNganhDaoTao,
+        maNganhDaoTao,
+        trinhDo,
+        loaiHinh,
+        tongTinChi,
+        doiTuong,
+        quiTrinhDaoTao,
+        dieuKienTotNghiep,
+        khoiKienThuc: khoiKienThucList,
+        chuanDauRaNganhDaoTao: chuanDauRaList,
+        cauTrucChuongTrinh: khoiKienThucList,
+        keHoachGiangDay: khgd
       };
       const fileName = `${maNganhDaoTao}_${khoa}.pdf`;
       return { data, fileName };
