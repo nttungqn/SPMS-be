@@ -9,6 +9,7 @@ export default ({ subTitles = [], titles = [], data = [], fields = [], tongTC = 
           <tbody>
                ${data
                  .map((item, index) => {
+                   tongTC += item?.soTCBB;
                    let str = '';
                    if (item?.tieuDe) {
                      str += `
