@@ -9,14 +9,14 @@ export default ({ subTitles = [], titles = [], data = [], fields = [], tongTC = 
           <tbody>
                ${data
                  .map((item, index) => {
+                   tongTC += item?.soTCBB;
                    let str = '';
-                   if (item?.tieuDe) {
-                     str += `
-                    <tr>
-                      <td colspan='1000'>${item?.tieuDe}</td>
-                    </tr>
-                  `;
-                   }
+                   // [if(item?.loaiNhom === 'TC')] or if(item?.loaiNhom === 'BB')
+                   str += `
+                   <tr>
+                     <td colspan='1000'>Hoàn thành ${item?.soTCBB} tín chỉ trong các học phần sau</td>
+                   </tr>
+                 `;
                    const bodyRows = generateRows(item?.chiTietGomNhom, fields, item?.loaiNhom);
                    return `${str}${bodyRows}`;
                  })
