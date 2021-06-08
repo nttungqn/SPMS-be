@@ -24,132 +24,181 @@ const titles = {
 import renderTables from 'utils/templateCTDT/components/tables';
 import { getStringHtml } from './components/list';
 import renderTableSubject, { generateHeader } from 'utils/templateCTDT/components/tableSubject';
+import header from './components/header';
+import footerSiganature from './components/footer-siganature';
 
 export default async (data) => `
 <!DOCTYPE html>
 <html>
      <head>
-      <style>
-          html {
-               zoom: 0.55;
-          }
-          ul, ol, li{
-               list-style: none;
-          }
-           ol {
-               list-style-type: none;
-               counter-reset: item;
-               margin: 0;
-               padding: 0;
-          }
+     
+     <style>
+     ${
+       process.env.TEMPLATE_PDF
+         ? `html {
+                  zoom: 0.55;
+             }`
+         : ''
+     }
+     .muctieucuthe ul,
+     .muctieucuthe ol,
+     .muctieucuthe li {
+         list-style: none;
+     }
 
-          ol > li {
-               display: table;
-               counter-increment: item;
-               margin-bottom: 0.6em;
-          }
+     .muctieucuthe ol {
+         list-style-type: none;
+     }
 
-          ol > li:before {
-               content: counters(item, ".") ". ";
-               display: table-cell;
-               padding-right: 0.6em;  
-               font-weight: 700;  
-          }
+     .muctieucuthe ol>li {
+         display: table;
+         margin-bottom: 0.6em;
+         width: 90%;
+         margin-top: 10px;
+     }
 
-          li ol > li {
-               margin: 0;
-          }
+     .muctieucuthe ol>li:before {
+         padding-right: 0.3em;
+         font-weight: 700;
+     }
+ </style>
 
-          li ol > li:before {
-               content: counters(item, ".") " ";
-               font-weight: 700;
-          }
-      </style>
-      <style>
-          .row{
-               margin: 5px
-          }
+ <style>
+     .row {
+         margin: 5px
+     }
 
-           .titleChuongTrinhDaoTao{
-                text-align: center;
-           }
-           .titleChuongTrinhDaoTao h2{
-                font-weight: 700;
-                font-size: 26px;
-                text-transform: uppercase;
-           }
-           .table-info-top{
-               display: -webkit-box; 
-               display: flex;
-           }
-           .table-title,.table-value{
-                text-transform: capitalize;
-           }
-           .table-value{
-                margin-left: 20px;
-           }
-           .block-info{
-               display: flex;
-               display: -webkit-flex;
-           }
-           .part-title{
-                text-transform: uppercase;
-                font-size: 15px;
-                font-weight: 700;
-           }
-           .row.muctieucuthe > ul{
-                padding: 0;
-           }
-      </style>
-      <style>
-        table, td, th {
-          border: 1px solid black;
-        }
-        
-        table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-        th{
-          text-align: center;
-        }
-        td, th {
-          padding: 10px;
-        }
-      </style>
-      <style>
-      table {
-        page-break-after: always;
-      }
-      tr {
-        page-break-inside: avoid;
-      }
-      table tr {
-        break-inside: avoid !important;
-      }
-      thead {display: table-header-group !important;}
-      tbody {display: table-row-group !important;}
-      tfoot {display: table-header-group !important;}
-        table, td, th {
-          border: 1px solid black;
-        }
-        
-        table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-        th{
-          text-align: center;
-        }
-        td, th {
-          padding: 10px;
-        }
-      </style>
+     .thongtinchung {
+         margin-top: 30px;
+     }
+
+     .titleChuongTrinhDaoTao {
+         text-align: center;
+     }
+
+     .titleChuongTrinhDaoTao h2 {
+         font-weight: 700;
+         font-size: 26px;
+         text-transform: uppercase;
+     }
+
+     .table-info-top {
+         display: -webkit-box;
+         display: flex;
+     }
+
+     .table-title,
+     .table-value {
+         text-transform: capitalize;
+     }
+
+     .table-value {
+         margin-left: 20px;
+     }
+
+     .block-info {
+         display: flex;
+         display: -webkit-flex;
+     }
+
+     .part-title {
+         text-transform: uppercase;
+         font-size: 15px;
+         font-weight: 700;
+     }
+
+     .row.muctieucuthe>ul {
+         padding: 0;
+     }
+ </style>
+
+ <style>
+     .tables_container table,
+     .tables_container td,
+     .tables_container th {
+         border: 1px solid black;
+     }
+
+     .tables_container table {
+         width: 100%;
+         border-collapse: collapse;
+     }
+
+     .tables_container th {
+         text-align: center;
+     }
+
+     .tables_container td,
+     .tables_container th {
+         padding: 10px;
+     }
+ </style>
+
+ <style>
+     .tables_container table {
+         page-break-after: always;
+     }
+
+     .tables_container tr, .tables_container th, .tables_container td {
+         page-break-inside: avoid;
+     }
+     
+
+     .tables_container table tr {
+         break-inside: avoid !important;
+     }
+
+     .tables_container thead {
+         display: table-header-group !important;
+     }
+
+     .tables_container tbody {
+         display: table-row-group !important;
+     }
+
+     .tables_container tfoot {
+         display: table-header-group !important;
+     }
+ </style>
+  
+   <style>
+     .row-header {
+         display: flex;
+         display: -webkit-flex;
+         flex-direction: row;
+         -webkit-justify-content: space-around;
+         justify-content: space-around;
+     }
+
+     .headers {
+         text-align: center;
+     }
+
+     .line {
+         border: 1px solid black;
+         width: 70%;
+         margin: 0 auto;
+     }
+ </style>
+
+ <style>
+     .note {
+         text-align: center;
+         margin: 20px 0;
+     }
+     .note p{
+       font-style: italic;
+     }
+ </style>
+
      </head>
      <body>
-          <div class=\"wrapper\">
-               <div class=\"container-fluid\" style=\"font-family: sans-serif\">
-                    <div class="row top">
+          <div class="wrapper">
+               <div class="container-fluid" style="font-family: sans-serif">
+
+                    ${header()}
+
+                    <div class="row top thongtinchung">
                          <div class="container">
                               <div class="row titleChuongTrinhDaoTao">
                                    <h2>${titles.CHUONG_TRINH_DAO_TAO}</h2>
@@ -177,6 +226,7 @@ export default async (data) => `
                               </div>
                          </div>
                     </div>
+                    
                     <div class="row">
                          <div class="container">
                               <div class="row">
@@ -233,7 +283,7 @@ export default async (data) => `
                                                   </li>
                                              </ol>
                                         </li>
-                                        <li class="li-menu-lv1">
+                                        <li class="li-menu-lv1 tables_container">
                                              <p class="part-title">${titles.CAU_TRUC_CHUONG_TRINH}</p>
                                              
                                              ${renderTables({
@@ -255,8 +305,8 @@ export default async (data) => `
                                              })}
                                         
                                              </li>
-                                        <li class="li-menu-lv1">
-                                             <p class="part-title">${titles.CAU_TRUC_CHUONG_TRINH}</p>
+                                        <li class="li-menu-lv1 tables_container">
+                                             <p class="part-title">${titles.NOI_DUNG_CHUONG_TRINH}</p>
                                         
                                              <ol>
                                                   ${data?.cauTrucChuongTrinh
@@ -329,7 +379,7 @@ export default async (data) => `
                                                     .join('')}
                                              </ol>
                                         </li>
-                                        <li class="li-menu-lv1">
+                                        <li class="li-menu-lv1 tables_container">
                                         <p class="part-title">${titles.KE_HOACH_GIANG_DAY}</p>
                                         <table>
                                              ${generateHeader(
@@ -394,6 +444,8 @@ export default async (data) => `
                          </div>
                     </div>
                     
+                    ${footerSiganature()}
+
                </div>
           </div>
      </body>

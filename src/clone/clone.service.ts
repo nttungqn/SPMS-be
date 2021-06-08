@@ -454,7 +454,6 @@ export class CloneService {
     chuanDauRaList: ChuanDauRaNganhDaoTaoEntity[],
     khoiKienThucList: KhoiKienThucEntity[],
     keHoachGiangDayList: KeHoachGiangDayEntity[],
-    idCTNDTClone: number,
     idCTNDT: number,
     user: UsersEntity
   ) {

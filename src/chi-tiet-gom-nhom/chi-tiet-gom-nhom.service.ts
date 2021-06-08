@@ -215,8 +215,8 @@ export class ChiTietGomNhomService {
     try {
       const result = await this.chiTietGomNhomRepository.save(chiTietGomNhom);
       const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());
-      const detail = await this.findById(result.id);
-      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL);
+      await this.cacheManager.del(key);
+      await this.findById(result.id);
       await this.deleteKeysAfterChange();
       return result;
     } catch (error) {
@@ -360,6 +360,34 @@ export class ChiTietGomNhomService {
     } catch (error) {
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.DELETE_CHITIETGOMNHOM_FAILED);
     }
+  }
+  async getChiTietGomNhomByKhoaAndNganh(idNganh: number, khoa: number, ctgnArr: string[]) {
+    return await this.chiTietGomNhomRepository
+      .createQueryBuilder('ctgn')
+      .leftJoin('ctgn.gomNhom', 'gomNhom', 'gomNhom.isDeleted = false')
+      .where((qb) => {
+        qb.where((qb) => {
+          qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc', 'loaiKhoiKienThuc.isDeleted = false').where(
+            (qb) => {
+              qb.innerJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc', 'khoiKienThuc.isDeleted = false').where(
+                (qb) => {
+                  qb.innerJoin(
+                    'khoiKienThuc.chiTietNganh',
+                    'chiTietNganh',
+                    'chiTietNganh.isDeleted = false'
+                  ).where('chiTietNganh.khoa = :khoa and chiTietNganh.nganhDaoTao = :idNganh', { khoa, idNganh });
+                }
+              );
+            }
+          );
+        });
+      })
+      .andWhere('ctgn.id IN (:...ctgnArr)', { ctgnArr })
+      .getManyAndCount();
+  }
+
+  async updateMonHocTruoc(chiTietGomNhom: ChiTietGomNhomEntity[]) {
+    await this.chiTietGomNhomRepository.save(chiTietGomNhom);
   }
 
   async deleteKeysAfterChange() {

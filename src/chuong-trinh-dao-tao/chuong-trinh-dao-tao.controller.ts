@@ -25,7 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { CHUONGTRINHDAOTAO_MESSAGE } from 'constant/constant';
 import { ChuongTrinhDaoTaoService } from './chuong-trinh-dao-tao.service';
-import { CreateChuongTrinhDaoTaoDto } from './dto/createChuongTrinhDaoTao.dto';
+import { CreateChuongTrinhDaoTaoDto, CreateDetailChuongTrinhDaoTaoDto } from './dto/createChuongTrinhDaoTao.dto';
 import { FilterChuongTrinhDaoTao } from './dto/filterChuongTrinhDaoTao.dto';
 import { IdDto } from './dto/Id.dto';
 import * as lodash from 'lodash';
@@ -83,12 +83,12 @@ export class ChuongTrinhDaoTaoController {
         error: lodash.get(error, 'response', 'error')
       });
     }
-    return {
+    return res.status(HttpStatus.CREATED).json({
       response: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY,
       message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_SUCCESSFULLY,
       status: HttpStatus.CREATED,
       id: result.id
-    };
+    });
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
@@ -127,5 +127,26 @@ export class ChuongTrinhDaoTaoController {
       });
     }
     return res.status(HttpStatus.OK).json({ message: CHUONGTRINHDAOTAO_MESSAGE.DELETE_CHUONGTRINHDAOTAO_SUCCESSFULLY });
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth('token')
+  @Post('create-detail')
+  async createDetail(@Req() req, @Res() res, @Body() body: CreateDetailChuongTrinhDaoTaoDto) {
+    // const found = await this.chuongTrinhDaoTaoService.isExist({ten: body?.ten, maCTDT: body?.maCTDT});
+    // if (found) {
+    //   return res.status(HttpStatus.OK).json({ isConflict: true, content: found });
+    // }
+
+    const user = req.user || {};
+    try {
+      const results = await this.chuongTrinhDaoTaoService.createDetail(body, user);
+      return res.json({ data: results });
+    } catch (error) {
+      return res.status(HttpStatus.OK).json({
+        message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED,
+        error: lodash.get(error, 'response', 'error')
+      });
+    }
   }
 }

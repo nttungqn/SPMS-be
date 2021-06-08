@@ -144,8 +144,8 @@ export class UsersService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_USER_CACHE_KEY, id.toString());
-      const detail = await this.findOne(updated.id);
-      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_USER_CACHE_TTL);
+      await this.cacheManager.del(key);
+      await this.findOne(updated.id);
       await this.delCacheAfterChange();
       return updated;
     } catch (error) {

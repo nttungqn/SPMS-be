@@ -68,7 +68,7 @@ export class HoatDongDayHocService {
   }
 
   async create(newData: HoatDongDayHocEntity): Promise<any> {
-    const checkExistName = await this.hoatDongDayHocRepository.findOne({ ma: newData?.ma, isDeleted: false });
+    const checkExistName = await this.hoatDongDayHocRepository.findOne({ ten: newData?.ten, isDeleted: false });
     if (checkExistName) {
       throw new ConflictException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_EXIST);
     }
@@ -92,7 +92,7 @@ export class HoatDongDayHocService {
     }
 
     // check Ma is exist
-    const hoatDongDayHocByMa = await this.hoatDongDayHocRepository.findOne({ ma: updatedData.ma, isDeleted: false });
+    const hoatDongDayHocByMa = await this.hoatDongDayHocRepository.findOne({ ten: updatedData.ten, isDeleted: false });
     if (hoatDongDayHocByMa) {
       throw new ConflictException(HOATDONGDAYHOC_MESSAGE.HOATDONGDAYHOC_EXIST);
     }
@@ -104,8 +104,8 @@ export class HoatDongDayHocService {
         updatedAt: new Date()
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_KEY, id.toString());
-      const detail = await this.findOne(result.id);
-      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_HDDH_CACHE_TTL);
+      await this.cacheManager.del(key);
+      await this.findOne(result.id);
       await this.delCacheAfterChange();
       return result;
     } catch (error) {

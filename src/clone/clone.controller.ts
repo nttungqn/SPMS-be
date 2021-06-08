@@ -24,11 +24,10 @@ export class CloneController {
   }
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
-  @Post('/chi-tiet-nganh-dao-tao/:idCTNDT/:idCTNDTClone')
+  @Post('/chi-tiet-nganh-dao-tao/:idCTNDT')
   @HttpCode(HttpStatus.CREATED)
   async createChiTietNganhDaoTao(
     @Body() data: CreateCTDTBody,
-    @Param('idCTNDTClone') idCTNDTClone: number,
     @Param('idCTNDT') idCTNDT: number,
     @GetUser() user: UsersEntity
   ) {
@@ -36,7 +35,6 @@ export class CloneController {
       data.chuanDauRa,
       data.khoiKienThuc,
       data.keHoachGiangDay,
-      idCTNDTClone,
       idCTNDT,
       user
     );

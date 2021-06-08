@@ -104,9 +104,9 @@ export class ChuanDauRaNganhDaoTaoService {
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, id.toString());
       const keyCDR_NDT = format(REDIS_CACHE_VARS.LIST_CDRNDT_NDT_CACHE_KEY, updated.nganhDaoTao.toString());
-      const detail = await this.findById(updated?.id);
-      await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_TTL);
+      await this.cacheManager.del(key);
       await this.cacheManager.del(keyCDR_NDT);
+      await this.findById(updated?.id);
       await this.delCacheAfterChange();
       return updated;
     } catch (error) {
@@ -130,7 +130,8 @@ export class ChuanDauRaNganhDaoTaoService {
         updatedBy
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, id.toString());
-      const keyCDR_NDT = format(REDIS_CACHE_VARS.LIST_CDRNDT_NDT_CACHE_KEY, deleted.nganhDaoTao.toString());
+      const keyCDR_NDT = format(REDIS_CACHE_VARS.LIST_CDRNDT_NDT_CACHE_KEY, deleted.nganhDaoTao?.toString());
+      console.log(keyCDR_NDT);
       await this.cacheManager.del(key);
       await this.cacheManager.del(keyCDR_NDT);
       await this.delCacheAfterChange();

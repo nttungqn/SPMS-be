@@ -4,7 +4,7 @@ export default ({ subTitles = [], titles = [], data = [], fields = [], tongTC = 
     return '';
   }
   return `
-     <table>
+     <table style="position: relative;left: -80px;">
           ${generateHeader(titles, subTitles)}
           <tbody>
                ${data

@@ -21,21 +21,21 @@ export class FilterChuDe extends BaseFilterDto {
   @ApiProperty({ required: false })
   @IsNumberString()
   @IsOptional()
-  readonly idSyllabus: number;
+  readonly idSyllabus?: number;
 
   @ApiProperty({ required: false })
   @IsNumberString()
   @IsOptional()
-  readonly idLKHGD: number;
+  readonly idLKHGD?: number;
 
   @ApiProperty({
     required: false
   })
   @IsOptional()
-  sortBy: string;
+  sortBy?: string;
 
   @ApiProperty({ required: false, description: 'ASC| DESC' })
   @IsOptional()
   @IsIn(['ASC', 'DESC'])
-  sortType: 'ASC' | 'DESC';
+  sortType?: 'ASC' | 'DESC';
 }

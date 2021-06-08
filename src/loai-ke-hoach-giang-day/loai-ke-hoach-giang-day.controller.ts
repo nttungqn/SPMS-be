@@ -82,12 +82,7 @@ export class LoaiKeHoachGiangDayController {
   @ApiInternalServerErrorResponse({ description: LOAIKEHOACHGIANGDAY_MESSAGE.UPDATE_LOAIKEHOACHGIANGDAY_FAILED })
   @ApiOkResponse({ description: LOAIKEHOACHGIANGDAY_MESSAGE.UPDATE_LOAIKEHOACHGIANGDAY_SUCCESSFULLY })
   @Put(':id')
-  async update(
-    @Req() req,
-    @Param('id') id: number,
-    @Body() updatedData: CreateLoaiKeHoachGiangDayDto,
-    @Res() res
-  ): Promise<any> {
+  async update(@Req() req, @Param('id') id: number, @Body() updatedData: CreateLoaiKeHoachGiangDayDto): Promise<any> {
     const user = req.user || {};
     await this.loaiKeHoachGiangDayService.update(Number(id), { ...updatedData, updatedBy: user?.id });
     return new HttpException(LOAIKEHOACHGIANGDAY_MESSAGE.UPDATE_LOAIKEHOACHGIANGDAY_SUCCESSFULLY, HttpStatus.OK);
