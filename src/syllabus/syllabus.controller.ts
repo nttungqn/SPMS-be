@@ -75,8 +75,8 @@ export class SyllabusController {
     return await this.syllabusService.findAll({ ...filter, createdBy: user.id });
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @ApiBearerAuth('token')
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách Syllabus' })
   @ApiUnauthorizedResponse({ description: SYLLABUS_MESSAGE.SYLLABUS_NOT_AUTHORIZED })
   @ApiOkResponse({ description: 'OK', type: FindAllSyllabusResponse })
