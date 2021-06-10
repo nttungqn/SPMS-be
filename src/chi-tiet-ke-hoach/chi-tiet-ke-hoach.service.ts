@@ -1,4 +1,10 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, CHITIETKEHOACH_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { Repository } from 'typeorm';
@@ -36,6 +42,9 @@ export class ChiTietKeHoachService {
       await this.deleteKeysAfterChange();
       return result;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_FOREIGN_KEY_NOT_FOUND);
+      }
       throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.CREATE_CHITIETKEHOACH_FAILED);
     }
   }
@@ -135,6 +144,9 @@ export class ChiTietKeHoachService {
       await this.deleteKeysAfterChange();
       return result;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(CHITIETKEHOACH_MESSAGE.CHITIETKEHOACH_FOREIGN_KEY_NOT_FOUND);
+      }
       throw new InternalServerErrorException(CHITIETKEHOACH_MESSAGE.UPDATE_CHITIETKEHOACH_FAILED);
     }
   }

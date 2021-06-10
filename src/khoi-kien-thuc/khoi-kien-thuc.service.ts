@@ -24,6 +24,7 @@ export class KhoiKienThucService {
     }
     const { tinChiBatBuoc = 0, tinChiTuChonTuDo = 0, tinChiTuChon = 0 } = knowledgeBlock;
     knowledgeBlock.tongTinChi = tinChiBatBuoc + tinChiTuChonTuDo + tinChiTuChon;
+    knowledgeBlock.maKKT = knowledgeBlock.maKKT.toUpperCase().trim();
     try {
       const result = await this.knowledgeBlockRepository.save({
         ...knowledgeBlock,
@@ -36,6 +37,7 @@ export class KhoiKienThucService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(KHOIKIENTHUC_MESSAGE.CREATE_KHOIKIENTHUC_FAILED);
     }
   }
@@ -90,6 +92,9 @@ export class KhoiKienThucService {
     const result = await this.knowledgeBlockRepository.findOne(id, { where: { isDeleted: false } });
     if (!result) throw new NotFoundException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_ID_NOT_FOUND);
     const { tinChiBatBuoc, tinChiTuChonTuDo, tinChiTuChon } = knowledgeBlock;
+    if (knowledgeBlock.maKKT) {
+      knowledgeBlock.maKKT = knowledgeBlock.maKKT.toUpperCase().trim();
+    }
     const type: { tinChiBatBuoc: number; tinChiTuChonTuDo: number; tinChiTuChon: number } = {
       tinChiBatBuoc,
       tinChiTuChonTuDo,

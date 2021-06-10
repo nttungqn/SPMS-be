@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
-import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, Length, Min, minLength } from 'class-validator';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
 export class CreateKhoiKienThucDto {
@@ -13,6 +13,7 @@ export class CreateKhoiKienThucDto {
 
   @ApiProperty()
   @Column({ name: 'MaKTT' })
+  @Length(5)
   @IsNotEmpty()
   maKKT?: string;
 
@@ -24,19 +25,22 @@ export class CreateKhoiKienThucDto {
   @ApiProperty()
   @Column({ name: 'TinChiTuChon', default: 0 })
   @IsInt()
-  @IsOptional()
+  @IsNotEmpty()
+  @Min(0)
   tinChiTuChon?: number;
 
   @ApiProperty()
   @Column({ name: 'TCBatBuoc', default: 0 })
   @IsInt()
-  @IsOptional()
+  @IsNotEmpty()
+  @Min(0)
   tinChiBatBuoc?: number;
 
   @ApiProperty()
   @Column({ name: 'TCTuChonTuDo', default: 0 })
   @IsInt()
-  @IsOptional()
+  @IsNotEmpty()
+  @Min(0)
   tinChiTuChonTuDo?: number;
 
   @ApiProperty()
