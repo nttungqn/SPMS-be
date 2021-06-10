@@ -1,11 +1,12 @@
 import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
 
 export class CreateChuanDauRaMonHocDto {
   @ApiProperty()
   @IsInt()
   @IsNotEmpty()
+  @Min(1)
   mucTieuMonHoc?: number;
 
   @ApiProperty()
@@ -14,12 +15,11 @@ export class CreateChuanDauRaMonHocDto {
   ma?: string;
 
   @ApiProperty()
-  @IsString()
-  @Optional()
+  @IsNotEmpty()
   mota?: string;
 
   @ApiProperty()
   @IsString({ each: true })
-  @Optional()
+  @IsNotEmpty()
   mucDo?: string[];
 }

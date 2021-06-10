@@ -114,6 +114,9 @@ export class ChiTietNganhDaoTaoService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_FOREIGN_KEY_NOT_FOUND);
+      }
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -135,6 +138,9 @@ export class ChiTietNganhDaoTaoService {
       await this.delCacheAfterChange();
       return updated;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_FOREIGN_KEY_NOT_FOUND);
+      }
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

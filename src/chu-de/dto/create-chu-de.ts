@@ -1,17 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Length, Min } from 'class-validator';
 
 export class CreateChuDeDto {
   @ApiProperty({ required: true })
   @IsInt()
+  @Min(1)
   idSyllabus?: number;
 
   @ApiProperty({ required: true })
   @IsInt()
+  @Min(1)
   idLKHGD?: number;
 
   @ApiProperty({ required: true })
   @IsString()
+  @IsNotEmpty()
+  @Length(2)
   ma?: string;
 
   @ApiProperty()
@@ -21,6 +25,7 @@ export class CreateChuDeDto {
 
   @ApiProperty()
   @IsInt()
+  @Min(1)
   tuan?: number;
 
   @ApiProperty()

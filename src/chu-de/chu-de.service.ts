@@ -142,7 +142,9 @@ export class ChuDeService extends BaseService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
-      console.log(error);
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(CHUDE_MESSAGE.CHUDE_FOREIGN_KEY_NOT_FOUND);
+      }
       throw new InternalServerErrorException(CHUDE_MESSAGE.CREATE_CHUDE_FAILED);
     }
   }
@@ -164,8 +166,8 @@ export class ChuDeService extends BaseService {
     if (await this.isExist(oldData, newData)) {
       throw new ConflictException(CHUDE_MESSAGE.CHUDE_EXIST);
     }
+    const chuDe = await this.createEntity(oldData, newData, idSyllabus);
     try {
-      const chuDe = await this.createEntity(oldData, newData, idSyllabus);
       const result = await this.chuDeRepository.save({
         ...chuDe,
         updatedAt: new Date(),
@@ -235,22 +237,26 @@ export class ChuDeService extends BaseService {
 
       if (dataUpdate[key]) {
         for (const idData of dataUpdate[key]) {
-          if (uniqueId.indexOf(idData) === -1) {
-            uniqueId.push(idData);
-            if (arrId.indexOf(idData) === -1) {
-              const service = this.getService(keyService[key]);
-              let result;
-              if (keyService[key] === keyService.hoatDongDayHoc) {
-                result = await service.findOne(Number(idData));
-              } else {
-                try {
-                  result = await service.isInSyllabus(Number(idData), idSyllabus);
-                } catch (error) {
-                  throw new BadRequestException(error?.message);
+          if (!Number.isNaN(Number(idData))) {
+            if (uniqueId.indexOf(idData) === -1) {
+              uniqueId.push(idData);
+              if (arrId.indexOf(idData) === -1) {
+                const service = this.getService(keyService[key]);
+                let result;
+                if (keyService[key] === keyService.hoatDongDayHoc) {
+                  result = await service.findOne(Number(idData));
+                } else {
+                  try {
+                    result = await service.isInSyllabus(Number(idData), idSyllabus);
+                  } catch (error) {
+                    throw new BadRequestException(error?.message);
+                  }
                 }
+                chuDe[key].push(result);
               }
-              chuDe[key].push(result);
             }
+          } else {
+            throw new BadRequestException(CHUDE_MESSAGE.CHUDE_INPUT_ARRAY_INVALIAD);
           }
         }
         delete newData[key];
