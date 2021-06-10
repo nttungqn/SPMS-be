@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ChiTietKeHoachEntity } from 'chi-tiet-ke-hoach/entity/chi-tiet-ke-hoach.entity';
 import { GomNhomEntity } from 'gom-nhom/entity/gom-nhom.entity';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, BaseEntity } from 'typeorm';
@@ -62,4 +63,7 @@ export class ChiTietGomNhomEntity {
   @ApiProperty()
   @Column({ name: 'isDeleted' })
   isDeleted?: boolean;
+
+  @OneToOne(() => ChiTietKeHoachEntity, (ctkh) => ctkh.chiTietGomNhom)
+  ctkhgd?: ChiTietKeHoachEntity;
 }
