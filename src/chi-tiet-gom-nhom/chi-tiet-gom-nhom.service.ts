@@ -11,6 +11,7 @@ import { UpdateChiTietGomNhomDTO } from './dto/update-chi-tiet-gom-nhom.dto';
 import { ChiTietGomNhomEntity } from './entity/chi-tiet-gom-nhom.entity';
 import * as format from 'string-format';
 import { FilterByChiTietNganhDaoTao } from './dto/filter-by-chi-tiet-nganh-dao-tao.dto';
+import { FilterByKeHoachGiangDay } from './dto/filter-by-ke-hoach-giang-day.dto';
 
 @Injectable()
 export class ChiTietGomNhomService {
@@ -384,6 +385,33 @@ export class ChiTietGomNhomService {
       })
       .andWhere('ctgn.id IN (:...ctgnArr)', { ctgnArr })
       .getManyAndCount();
+  }
+
+  async getAllSubjectByKeHoachGiangDay(idKeHoachGiangDay: number, filter: FilterByKeHoachGiangDay) {
+    const { limit = LIMIT, page = 0, searchKey } = filter;
+    const skip = Number(page) * Number(limit);
+    const [list, total] = await this.chiTietGomNhomRepository
+      .createQueryBuilder('ctgn')
+      .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+      .innerJoinAndSelect('ctgn.gomNhom', 'gomNhom', 'gomNhom.isDeleted = false')
+      .innerJoin('ctgn.ctkhgd', 'ctkhgd', 'ctkhgd.isDeleted = false')
+      .where((qb) => {
+        qb.where((qb) => {
+          qb.innerJoin('ctkhgd.idKHGD', 'khgd', 'khgd.isDeleted = false and khgd.id = :idKHGD', {
+            idKHGD: idKeHoachGiangDay
+          });
+        });
+        searchKey
+          ? qb.andWhere(
+              `monHoc.tenTiengViet LIKE '%${searchKey}%' OR monHoc.tenTiengAnh LIKE '%${searchKey}%' OR monHoc.ma LIKE '%${searchKey}%'`
+            )
+          : {};
+      })
+      .andWhere(`ctgn.isDeleted = ${false}`)
+      .take(limit)
+      .skip(skip)
+      .getManyAndCount();
+    return { contents: list, total, page: Number(page) };
   }
 
   async updateMonHocTruoc(chiTietGomNhom: ChiTietGomNhomEntity[]) {

@@ -39,6 +39,7 @@ import { Roles } from 'guards/roles.decorator';
 import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { FilterByChiTietNganhDaoTao } from './dto/filter-by-chi-tiet-nganh-dao-tao.dto';
+import { FilterByKeHoachGiangDay } from './dto/filter-by-ke-hoach-giang-day.dto';
 
 @ApiTags('chi-tiet-gom-nhom')
 @Controller('chi-tiet-gom-nhom')
@@ -63,6 +64,14 @@ export class ChiTietGomNhomController {
     @Query() filter: FilterByChiTietNganhDaoTao
   ) {
     return await this.chiTietGomNhomService.getAllSubjectsByChiTietNDT(idCTNDT, filter);
+  }
+
+  @Get('/ke-hoach-giang-day/:idKeHoachGiangDay')
+  async getAllSubjectByKeHoachGiangDay(
+    @Param('idKeHoachGiangDay', ParseIntPipe) idKeHoachGiangDay: number,
+    @Query() filter: FilterByKeHoachGiangDay
+  ) {
+    return await this.chiTietGomNhomService.getAllSubjectByKeHoachGiangDay(idKeHoachGiangDay, filter);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
