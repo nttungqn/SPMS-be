@@ -23,8 +23,8 @@ export class UsersService {
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
       try {
-        const { page = 0, limit = LIMIT, search = '', sortBy = '', sortType = '', ...other } = filter;
-        if (other.isDeleted) other.isDeleted = String(other.isDeleted) === 'true';
+        const { page = 0, limit = LIMIT, search = '', sortBy = '', sortType = '', ...otherParams } = filter;
+        const other = { isDeleted: false, ...otherParams };
         if (other.isActive) other.isActive = String(other.isActive) === 'true';
         const skip = Number(page) * Number(limit);
         const querySearch = search
@@ -135,7 +135,7 @@ export class UsersService {
   async update(id: number, updateData): Promise<any> {
     const user = await this.usersRepository.findOne({ id, isDeleted: false });
     if (!user) {
-      throw new HttpException(USER_MESSAGE.USER_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
+      throw new HttpException(USER_MESSAGE.USER_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     try {
       const updated = await this.usersRepository.save({
