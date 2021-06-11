@@ -33,7 +33,7 @@ export class RedisCacheService {
     const map = [];
     allKey.forEach((e, _) => {
       commonKey.forEach((value, i) => {
-        if (e.includes(value.replaceAll('{}', ''))) map.push(e);
+        if (e.includes(value.replace(/{}/g, ''))) map.push(e);
       });
     });
     if (map.length > 0) await this.store.del(map);
