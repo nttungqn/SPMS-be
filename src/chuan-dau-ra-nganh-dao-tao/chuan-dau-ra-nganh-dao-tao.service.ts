@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
@@ -75,6 +81,13 @@ export class ChuanDauRaNganhDaoTaoService {
     if (checkExistData) {
       throw new HttpException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_IS_EXIST, HttpStatus.CONFLICT);
     }
+    if (newData?.parent <= 0) {
+      newData.parent = null;
+    } else if (newData?.parent > 0) {
+      const chuanDauRaNDT = await this.chuanDauRaNDTRepository.findOne({ id: newData?.parent, isDeleted: false });
+      if (!chuanDauRaNDT)
+        throw new BadRequestException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_ID_PARENT_NOT_FOUND);
+    }
     try {
       const newChuanDauRaNDT = await this.chuanDauRaNDTRepository.create(newData);
       const result = await this.chuanDauRaNDTRepository.save(newChuanDauRaNDT);
@@ -84,6 +97,9 @@ export class ChuanDauRaNganhDaoTaoService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_FOREIGN_KEY_NOT_FOUND);
+      }
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -95,6 +111,13 @@ export class ChuanDauRaNganhDaoTaoService {
         CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_ID_NOT_FOUND,
         HttpStatus.BAD_REQUEST
       );
+    }
+    if (updatedData?.parent <= 0) {
+      updatedData.parent = null;
+    } else if (updatedData?.parent > 0) {
+      const chuanDauRaNDT = await this.chuanDauRaNDTRepository.findOne({ id: updatedData?.parent, isDeleted: false });
+      if (!chuanDauRaNDT)
+        throw new BadRequestException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_ID_PARENT_NOT_FOUND);
     }
     try {
       const updated = await this.chuanDauRaNDTRepository.save({
@@ -110,6 +133,9 @@ export class ChuanDauRaNganhDaoTaoService {
       await this.delCacheAfterChange();
       return updated;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_FOREIGN_KEY_NOT_FOUND);
+      }
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

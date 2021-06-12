@@ -250,6 +250,7 @@ export class LoaiDanhGiaService extends BaseService {
         loaiDanhGia[KEY_LDG[key]] = newData[key];
       }
     }
+    loaiDanhGia.ma = loaiDanhGia.ma.toUpperCase().trim();
     return loaiDanhGia;
   }
 

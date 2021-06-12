@@ -13,13 +13,13 @@ export class CreateKhoiKienThucDto {
 
   @ApiProperty()
   @Column({ name: 'MaKTT' })
-  @Length(5)
-  @IsNotEmpty()
+  @IsOptional()
   maKKT?: string;
 
   @ApiProperty()
   @Column({ name: 'Ten' })
   @IsNotEmpty()
+  @Length(5)
   ten?: string;
 
   @ApiProperty()

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 import { HeDaoTaoEntity } from 'he-dao-tao/entity/type-of-education.entity';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
 import { NamHocEntity } from 'nam-hoc/entity/nam-hoc.entity';
@@ -11,6 +11,7 @@ export class CreateSyllabusDto {
   @Column({ name: 'idMH' })
   @ManyToOne(() => MonHocEntity, { eager: true })
   @JoinColumn({ name: 'idMH' })
+  @Min(1)
   monHoc?: number;
 
   @ApiProperty({ description: 'Id Hệ Đào Tạo' })
@@ -18,6 +19,7 @@ export class CreateSyllabusDto {
   @Column({ name: 'idHDT' })
   @ManyToOne(() => HeDaoTaoEntity, { eager: true })
   @JoinColumn({ name: 'idHDT' })
+  @Min(1)
   heDaoTao?: number;
 
   @ApiProperty()
@@ -25,6 +27,7 @@ export class CreateSyllabusDto {
   @Column({ name: 'idNH' })
   @ManyToOne(() => NamHocEntity)
   @JoinColumn({ name: 'idNH' })
+  @Min(1)
   namHoc?: number;
 
   @ApiProperty()

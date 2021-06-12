@@ -63,6 +63,7 @@ export class HoatDongDanhGiaService extends BaseService {
         hoatDongDanhGia[KeyHDDG[key]] = newData[key];
       }
     }
+    hoatDongDanhGia.ma = hoatDongDanhGia.ma.toUpperCase().trim();
     try {
       const saved = await this.hoatDongDanhGiaService.save({
         ...hoatDongDanhGia,
@@ -182,6 +183,7 @@ export class HoatDongDanhGiaService extends BaseService {
         oldData[KeyHDDG[key]] = newData[key];
       }
     }
+    oldData.ma = oldData.ma.toUpperCase().trim();
     try {
       const result = await this.hoatDongDanhGiaService.save({
         ...oldData,

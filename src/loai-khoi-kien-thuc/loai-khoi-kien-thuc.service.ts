@@ -118,6 +118,9 @@ export class LoaiKhoiKienThucService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_FOREIGN_KEY_NOT_FOUND);
+      }
       if (error instanceof QueryFailedError) throw new BadRequestException();
       throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.CREATE_LOAIKHOIKIENTHUC_FAILED);
     }
@@ -141,6 +144,9 @@ export class LoaiKhoiKienThucService {
       await this.delCacheAfterChange();
       return results;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_FOREIGN_KEY_NOT_FOUND);
+      }
       if (error instanceof QueryFailedError) throw new BadRequestException();
       throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.UPDATE_LOAIKHOIKIENTHUC_FAILED);
     }

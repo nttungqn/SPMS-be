@@ -69,6 +69,7 @@ export class LoaiKeHoachGiangDayService {
     if (checkExistName) {
       throw new ConflictException(LOAIKEHOACHGIANGDAY_MESSAGE.LOAIKEHOACHGIANGDAY_EXIST);
     }
+    newData.ma = newData.ma.toUpperCase().trim();
     try {
       const loaiKeHoachGiangDay = await this.loaiKeHoachGiangDayEntity.create(newData);
       const result = await this.loaiKeHoachGiangDayEntity.save(loaiKeHoachGiangDay);

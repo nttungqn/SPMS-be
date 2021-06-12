@@ -179,6 +179,9 @@ export class ChuDeService extends BaseService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(CHUDE_MESSAGE.CHUDE_FOREIGN_KEY_NOT_FOUND);
+      }
       throw new InternalServerErrorException(CHUDE_MESSAGE.UPDATE_CHUDE_FAILED);
     }
   }

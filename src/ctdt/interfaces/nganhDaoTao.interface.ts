@@ -1,6 +1,6 @@
 export interface INganhDaoTao {
   readonly id: number;
-  readonly maNganhDaoTao: string;
+  maNganhDaoTao: string;
   readonly ten: string;
   readonly chuongTrinhDaoTao: number;
   readonly createdAt?: Date;

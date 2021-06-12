@@ -1,4 +1,11 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChiTietNganhDaoTaoService } from 'chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
 import { KEHOACHGIANGDAY_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
@@ -88,7 +95,7 @@ export class KeHoachGiangDayService {
 
     const record = await this.chiTietNganhDaoTaoService.findById(newData.nganhDaoTao);
     if (!record) {
-      throw new HttpException(KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED, HttpStatus.CONFLICT);
+      throw new BadRequestException(KEHOACHGIANGDAY_MESSAGE.CTNGANHDAOTAO_FOREIGN_KEY_NOT_FOUND);
     }
     try {
       const newKeHoachGiangDay = await this.keHoachGiangDayRepository.create(newData);
@@ -107,6 +114,10 @@ export class KeHoachGiangDayService {
     const keHoachGiangDay = await this.keHoachGiangDayRepository.findOne({ id, isDeleted: false });
     if (!keHoachGiangDay) {
       throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
+    }
+    const record = await this.chiTietNganhDaoTaoService.findById(updatedData.nganhDaoTao);
+    if (!record) {
+      throw new BadRequestException(KEHOACHGIANGDAY_MESSAGE.CTNGANHDAOTAO_FOREIGN_KEY_NOT_FOUND);
     }
     try {
       const updated = await this.keHoachGiangDayRepository.save({

@@ -32,7 +32,7 @@ export class MucTieuMonHocService extends BaseService {
     const syllabusCreatedBy: any = syllabus.createdBy;
     const mucTieuMonHoc = new MucTieuMonHocEntity();
     mucTieuMonHoc.syllabus = newData.syllabus;
-    mucTieuMonHoc.ma = newData.ma;
+    mucTieuMonHoc.ma = newData.ma.toUpperCase().trim();
     mucTieuMonHoc.moTa = newData.moTa;
 
     if (await this.isExistV2(null, newData)) throw new ConflictException(MUCTIEUMONHOC_MESSAGE.MUCTIEUMONHOC_EXIST);
@@ -164,7 +164,7 @@ export class MucTieuMonHocService extends BaseService {
     try {
       const result = await this.mucTieuMonHocEntityRepository.save({
         ...oldData,
-        ...{ ma, syllabus, moTa },
+        ...{ ma: ma.toUpperCase().trim(), syllabus, moTa },
         updatedAt: new Date(),
         updatedBy: updatedBy.id
       });
