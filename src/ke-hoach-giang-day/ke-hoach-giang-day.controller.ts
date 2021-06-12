@@ -31,6 +31,7 @@ import * as lodash from 'lodash';
 import { KEHOACHGIANGDAY_MESSAGE } from 'constant/constant';
 import { KeHoachGiangDayDto, KeHoachGiangDayResponseDto } from './interfaces/keHoachGiangDay.response';
 import { RolesGuard } from 'guards/roles.guard';
+import { UpdateKeHoachGiangDayDto } from './dto/updateKeHoachGiangDay.dto';
 
 @ApiTags('ke-hoach-giang-day')
 @Controller('ke-hoach-giang-day')
@@ -96,7 +97,7 @@ export class KeHoachGiangDayController {
   async update(
     @Req() req,
     @Param() param: IdDto,
-    @Body() updatedData: CreateKeHoachGiangDayDto,
+    @Body() updatedData: UpdateKeHoachGiangDayDto,
     @Res() res
   ): Promise<any> {
     const user = req.user || {};

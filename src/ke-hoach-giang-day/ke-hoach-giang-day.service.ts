@@ -14,6 +14,7 @@ import { CreateKeHoachGiangDayDto } from './dto/createKeHoachGiangDay.dto';
 import { KeHoachGiangDayEntity } from './entity/keHoachGiangDay.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
+import { UpdateKeHoachGiangDayDto } from './dto/updateKeHoachGiangDay.dto';
 
 @Injectable()
 export class KeHoachGiangDayService {
@@ -110,7 +111,7 @@ export class KeHoachGiangDayService {
     }
   }
 
-  async update(id: number, updatedData: CreateKeHoachGiangDayDto): Promise<any> {
+  async update(id: number, updatedData: UpdateKeHoachGiangDayDto): Promise<any> {
     const keHoachGiangDay = await this.keHoachGiangDayRepository.findOne({ id, isDeleted: false });
     if (!keHoachGiangDay) {
       throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
