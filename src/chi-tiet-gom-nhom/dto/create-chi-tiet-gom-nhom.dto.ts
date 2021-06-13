@@ -1,13 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 
 export class CreateChiTietGomNhomDTO {
   @ApiProperty()
   @IsInt()
+  @IsNotEmpty()
+  @Min(1)
   idGN?: number;
 
   @ApiProperty()
   @IsInt()
+  @IsNotEmpty()
+  @Min(1)
   idMH?: number;
 
   @ApiProperty()

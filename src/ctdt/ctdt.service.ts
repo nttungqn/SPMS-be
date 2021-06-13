@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LIMIT, NGANHDAOTAO_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { Repository, Like } from 'typeorm';
@@ -80,6 +80,7 @@ export class CtdtService {
       throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_NAME_EXIST, HttpStatus.CONFLICT);
     }
     try {
+      newData.maNganhDaoTao = newData.maNganhDaoTao.toUpperCase().trim();
       const newNganhDaoTao = await this.nganhDaoTaoRepository.create(newData);
       const result = await this.nganhDaoTaoRepository.save(newNganhDaoTao);
       const key = format(REDIS_CACHE_VARS.DETAIL_NDT_CACHE_KEY, result?.id.toString());
@@ -88,6 +89,9 @@ export class CtdtService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_FOREIGN_KEY_NOT_FOUND);
+      }
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -105,6 +109,9 @@ export class CtdtService {
       await this.delCacheAfterChange();
       return updated;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_FOREIGN_KEY_NOT_FOUND);
+      }
       throw new HttpException(error?.message || 'error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

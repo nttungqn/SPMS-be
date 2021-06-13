@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ChuongTrinhDaoTaoEntity } from 'chuong-trinh-dao-tao/entity/chuongTrinhDaoTao.entity';
-import { IsInt, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, Length, Min } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
@@ -13,17 +13,23 @@ export class NganhDaoTaoEntity {
   @ApiProperty()
   @IsString()
   @Column()
+  @Length(5)
+  @IsNotEmpty()
   maNganhDaoTao: string;
 
   @IsString()
   @ApiProperty()
   @Column()
+  @Length(5)
+  @IsNotEmpty()
   ten: string;
 
   @ApiProperty()
   @IsInt()
   @OneToOne(() => ChuongTrinhDaoTaoEntity)
   @JoinColumn({ name: 'ctdtID' })
+  @IsNotEmpty()
+  @Min(1)
   chuongTrinhDaoTao: number;
 
   @Column()

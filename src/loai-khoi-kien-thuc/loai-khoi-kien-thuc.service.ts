@@ -28,7 +28,8 @@ export class LoaiKhoiKienThucService {
     const key = format(REDIS_CACHE_VARS.LIST_LKKT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, idKhoiKienThuc, sortType, ...otherParam } = filter;
+      const queryByIdLKKT = idKhoiKienThuc ? { khoiKienThuc: idKhoiKienThuc } : {};
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const searchField = ['id', 'maLoaiKhoiKienThuc', 'ten', 'tongTinChi', 'noiDung'];
@@ -51,7 +52,7 @@ export class LoaiKhoiKienThucService {
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `lkkt.${sortBy}` : null, sortType);
         })
-        .andWhere({ isDeleted: false, ...otherParam })
+        .andWhere({ isDeleted: false, ...otherParam, ...queryByIdLKKT })
         .skip(skip)
         .take(limit)
         .andWhere('lkkt.isDeleted = false')
@@ -117,6 +118,9 @@ export class LoaiKhoiKienThucService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_FOREIGN_KEY_NOT_FOUND);
+      }
       if (error instanceof QueryFailedError) throw new BadRequestException();
       throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.CREATE_LOAIKHOIKIENTHUC_FAILED);
     }
@@ -140,6 +144,9 @@ export class LoaiKhoiKienThucService {
       await this.delCacheAfterChange();
       return results;
     } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new BadRequestException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_FOREIGN_KEY_NOT_FOUND);
+      }
       if (error instanceof QueryFailedError) throw new BadRequestException();
       throw new InternalServerErrorException(LOAIKHOIKIENTHUC_MESSAGE.UPDATE_LOAIKHOIKIENTHUC_FAILED);
     }

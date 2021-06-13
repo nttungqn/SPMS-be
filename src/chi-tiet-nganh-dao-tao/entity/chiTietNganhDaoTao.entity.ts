@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
-import { IsInt, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
 import { NganhDaoTaoEntity } from 'ctdt/entity/nganhDaoTao.entity';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
@@ -16,6 +16,7 @@ export class ChiTietNganhDaoTaoEntity {
   @ApiProperty()
   @IsInt()
   @Column({ name: 'Khoa' })
+  @Min(1900)
   khoa: number;
 
   // @IsInt()
@@ -26,17 +27,21 @@ export class ChiTietNganhDaoTaoEntity {
   @IsString()
   @ApiProperty()
   @Column({ name: 'CoHoiNgheNghiep' })
+  @IsOptional()
   coHoiNgheNghiep: string;
 
   @IsString()
   @ApiProperty()
   @Column({ name: 'MucTieuChung' })
+  @IsOptional()
   mucTieuChung: string;
 
   @ApiProperty()
   @IsInt()
   @OneToOne(() => NganhDaoTaoEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ID_NganhDaoTao' })
+  @IsOptional()
+  @Min(1)
   nganhDaoTao: number;
 
   @Column()

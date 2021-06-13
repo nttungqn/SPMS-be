@@ -26,6 +26,9 @@ export class HeDaotaoService {
     if (await this.isExist(createTypeOfEducationDto)) {
       throw new ConflictException(HEDAOTAO_MESSAGE.HEDAOTAO_EXIST);
     }
+    if (createTypeOfEducationDto?.ma) {
+      createTypeOfEducationDto.ma = createTypeOfEducationDto.ma.toUpperCase().trim();
+    }
     try {
       const result = await this.typeOfEduRepository.save(createTypeOfEducationDto);
       const key = format(REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_KEY, result?.id.toString());
@@ -73,6 +76,9 @@ export class HeDaotaoService {
   async update(id: number, updateTypeOfEducationDto: UpdateHeDaoTaoDto) {
     const found = await this.findById(id);
     await this.checkConflictException(id, updateTypeOfEducationDto);
+    if (updateTypeOfEducationDto?.ma) {
+      updateTypeOfEducationDto.ma = updateTypeOfEducationDto.ma.toUpperCase().trim();
+    }
     try {
       const result = await this.typeOfEduRepository.save({ ...found, ...updateTypeOfEducationDto });
       const key = format(REDIS_CACHE_VARS.DETAIL_HE_DAO_TAO_CACHE_KEY, id.toString());

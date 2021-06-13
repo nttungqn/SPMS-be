@@ -12,7 +12,8 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
-  HttpCode
+  HttpCode,
+  BadRequestException
 } from '@nestjs/common';
 import { NamHocService } from './nam-hoc.service';
 import { CreateNamHocDto } from './dto/create-nam-hoc.dto';
@@ -71,6 +72,10 @@ export class NamHocController {
   @HttpCode(HttpStatus.CREATED)
   @UsePipes(ValidationPipe)
   async create(@Body() createSchoolYearDto: CreateNamHocDto) {
+    const namHoc = createSchoolYearDto.ten.split('-');
+    if (Number(namHoc[1]) - Number(namHoc[0]) != 1) {
+      throw new BadRequestException(NAMHOC_MESSAGE.NAMHOC_INVALID);
+    }
     const result = await this.schoolYearService.create(createSchoolYearDto);
     return {
       response: NAMHOC_MESSAGE.CREATE_NAMHOC_SUCCESSFULLY,

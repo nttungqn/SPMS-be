@@ -18,7 +18,8 @@ export class ChuanDauRaService {
     const key = format(REDIS_CACHE_VARS.LIST_CDR_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      const { limit = LIMIT, page = 0, search = '', ...rest } = filter;
+      const { limit = LIMIT, page = 0, search = '', sortBy, sortType, ...rest } = filter;
+      const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const skip = Number(page) * Number(limit);
       const querySearch = search ? { ten: Like(`%${search}%`) } : {};
       const query = {
@@ -26,16 +27,20 @@ export class ChuanDauRaService {
         ...querySearch,
         ...rest
       };
-      const list = await this.chuanDauRaRepository.find({
-        relations: ['createdBy', 'updatedBy'],
-        skip,
-        take: limit,
-        where: query
-      });
+      const [list, total] = await this.chuanDauRaRepository
+        .createQueryBuilder('cdr')
+        .leftJoinAndSelect('cdr.createdBy', 'createdBy')
+        .leftJoinAndSelect('cdr.updatedBy', 'updatedBy')
+        .where((qb) => {
+          isSortFieldInForeignKey
+            ? qb.orderBy(sortBy, sortType)
+            : qb.orderBy(sortBy ? `cdr.${sortBy}` : null, sortType);
+        })
+        .andWhere(query)
+        .getManyAndCount();
       if (!list.length) {
         throw new HttpException(CHUANDAURA_MESSAGE.CHUANDAURA_EMPTY, HttpStatus.NOT_FOUND);
       }
-      const total = await this.chuanDauRaRepository.count({ ...query });
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CDR_CACHE_TTL);
     }

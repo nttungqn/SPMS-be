@@ -1,17 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Length, Matches, Min } from 'class-validator';
 
 export class CreateMucTieuMonHocDto {
   @ApiProperty()
   @IsNotEmpty()
+  @IsInt()
+  @Min(1)
   syllabus?: number;
 
   @ApiProperty()
   @IsNotEmpty()
+  @Matches(/^[a-zA-Z0-9]{2,}$/, { message: 'Mã chỉ gồm chữ và số' })
   ma?: string;
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty()
+  @Length(5)
   moTa?: string;
 
   @ApiProperty()

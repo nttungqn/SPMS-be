@@ -25,6 +25,7 @@ export class NamHocService {
     if (await this.isExist(createSchoolYearDto)) {
       throw new ConflictException(NAMHOC_MESSAGE.NAMHOC_EXIST);
     }
+    createSchoolYearDto.ma = createSchoolYearDto.ma.toUpperCase().trim();
     try {
       const result = await this.schoolYearRepository.save(createSchoolYearDto);
       const key = format(REDIS_CACHE_VARS.DETAIL_NAM_HOC_CACHE_KEY, result?.id.toString());
@@ -72,6 +73,9 @@ export class NamHocService {
   async update(id: number, updateSchoolYearDto: UpdateNamHocDto) {
     const found = await this.findById(id);
     await this.checkConflictException(id, updateSchoolYearDto);
+    if (updateSchoolYearDto?.ma) {
+      updateSchoolYearDto.ma = updateSchoolYearDto.ma.toUpperCase().trim();
+    }
     try {
       const result = await this.schoolYearRepository.save({ ...found, ...updateSchoolYearDto });
       const key = format(REDIS_CACHE_VARS.DETAIL_NAM_HOC_CACHE_KEY, result?.id.toString());

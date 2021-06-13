@@ -36,6 +36,11 @@ export class ChuanDauRaMonHocService extends BaseService {
     const chuanDauRaMonHoc = new ChuanDauRaMonHocEntity();
     const { mucDo } = newData;
     if (mucDo) {
+      mucDo?.forEach((e) => {
+        if (!['I', 'T', 'U'].includes(e)) {
+          throw new BadRequestException(CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_MUCDO_IN_I_T_U);
+        }
+      });
       chuanDauRaMonHoc.mucDo = mucDo.join(', ');
       delete newData.mucDo;
     }
@@ -134,6 +139,11 @@ export class ChuanDauRaMonHocService extends BaseService {
       throw new ConflictException(CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_EXIST);
     const { mucDo } = newData;
     if (mucDo) {
+      mucDo?.forEach((e) => {
+        if (!['I', 'T', 'U'].includes(e)) {
+          throw new BadRequestException(CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_MUCDO_IN_I_T_U);
+        }
+      });
       oldData.mucDo = mucDo.join(', ');
       delete newData.mucDo;
     }

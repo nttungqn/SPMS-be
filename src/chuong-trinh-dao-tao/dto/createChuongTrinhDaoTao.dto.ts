@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsInt, IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class CreateChuongTrinhDaoTaoDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsNotEmpty()
+  @Length(2)
   readonly maCTDT?: string;
 
   @IsString()
@@ -16,6 +17,7 @@ export class CreateChuongTrinhDaoTaoDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsNotEmpty()
+  @Length(5)
   readonly ten?: string;
 
   @IsString()
@@ -31,11 +33,13 @@ export class CreateChuongTrinhDaoTaoDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsNotEmpty()
+  @Length(5)
   readonly quiTrinhDaoTao?: string;
 
   @IsString()
   @ApiProperty({ required: false })
   @IsNotEmpty()
+  @Length(5)
   readonly dieuKienTotNghiep?: string;
 }
 

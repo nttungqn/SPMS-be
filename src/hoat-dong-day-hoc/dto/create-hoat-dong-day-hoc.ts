@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, Length } from 'class-validator';
 import { Column } from 'typeorm';
 
 export class CreateHoatDongDayHocDTO {
@@ -10,6 +10,7 @@ export class CreateHoatDongDayHocDTO {
 
   @ApiProperty()
   @Column({ name: 'ten' })
-  @IsOptional()
+  @IsNotEmpty()
+  @Length(5)
   ten: string;
 }

@@ -87,6 +87,7 @@ export class MonHocService {
     if (checkExistName) {
       throw new ConflictException(MONHOC_MESSAGE.MONHOC_EXIST);
     }
+    newData.ma = newData.ma.toUpperCase().trim();
     try {
       const monhoc = await this.monHocRepository.create(newData);
       const result = await this.monHocRepository.save(monhoc);
@@ -109,7 +110,9 @@ export class MonHocService {
     if (await this.isExist(monhoc, updatedData)) {
       throw new ConflictException(MONHOC_MESSAGE.MONHOC_EXIST);
     }
-
+    if (updatedData?.ma) {
+      updatedData.ma = updatedData.ma.toUpperCase().trim();
+    }
     try {
       const result = await this.monHocRepository.save({
         ...monhoc,
@@ -181,26 +184,39 @@ export class MonHocService {
         const soTietLyThuyet = e[3] || 0;
         const soTietThucHanh = e[4] || 0;
         const soTietTuHoc = e[5] || 0;
-        const newMonHoc = await queryRunner.manager.getRepository(MonHocEntity).create({
-          ma,
-          tenTiengViet,
-          soTinChi,
-          soTietLyThuyet,
-          soTietThucHanh,
-          soTietTuHoc,
-          tenTiengAnh: '',
-          createdBy: user?.id,
-          updatedBy: user?.id
-        });
-        const result = await queryRunner.manager.getRepository(MonHocEntity).save(newMonHoc);
-        console.log('🚀 ~ file: mon-hoc.service.ts ~ line 189 ~ MonHocService ~ resultsArr ~ result', result);
+        if (
+          (ma + '').length >= 5 &&
+          (tenTiengViet + '').length >= 5 &&
+          soTinChi >= 0 &&
+          soTietLyThuyet >= 0 &&
+          soTietThucHanh >= 0 &&
+          soTietTuHoc >= 0
+        ) {
+          const newMonHoc = await queryRunner.manager.getRepository(MonHocEntity).create({
+            ma: (ma + '').toUpperCase().trim(),
+            tenTiengViet,
+            soTinChi,
+            soTietLyThuyet,
+            soTietThucHanh,
+            soTietTuHoc,
+            tenTiengAnh: '',
+            createdBy: user?.id,
+            updatedBy: user?.id
+          });
+          const result = await queryRunner.manager.getRepository(MonHocEntity).save(newMonHoc);
+          console.log('🚀 ~ file: mon-hoc.service.ts ~ line 189 ~ MonHocService ~ resultsArr ~ result', result);
+        } else {
+          throw new BadRequestException(`MONHOC_${ma}_INVALID`);
+        }
       });
       await Promise.all(resultsArr);
       console.log('transaction successfully.');
       await queryRunner.commitTransaction();
       return { message: MONHOC_MESSAGE.IMPORT_SUCCESSFULLY, isError: false };
     } catch (error) {
-      console.log(error);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       await queryRunner.rollbackTransaction();
       console.log('ERROR, transaction ended');
       return { message: MONHOC_MESSAGE.IMPORT_FAILED, isError: true, error: error?.sqlMessage };

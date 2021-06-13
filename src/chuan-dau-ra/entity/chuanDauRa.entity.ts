@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsString } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty, IsString } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from 'users/entity/user.entity';
@@ -12,11 +12,14 @@ export class ChuanDauRaEntity {
   @ApiProperty()
   @IsString()
   @Column({ name: 'Ten' })
+  @IsNotEmpty()
   ten: string;
 
   @ApiProperty()
   @IsInt()
   @Column({ name: 'MucDo' })
+  @IsIn([1, 2, 3])
+  @IsNotEmpty()
   mucDo: number;
 
   @Column()
