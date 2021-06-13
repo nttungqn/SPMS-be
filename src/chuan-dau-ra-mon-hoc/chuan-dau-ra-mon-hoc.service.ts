@@ -95,7 +95,7 @@ export class ChuanDauRaMonHocService extends BaseService {
         })
         .andWhere('cdr.isDeleted =:isDeleted', { isDeleted: false })
         .skip(skip)
-        .take(limit)
+        .take(Number(limit) === -1 ? null: Number(limit))
         .getManyAndCount();
       result = { contents: list, total, page: page };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CDRMH_CACHE_TTL);

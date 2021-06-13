@@ -38,7 +38,7 @@ export class HoatDongDayHocService {
             : qb.orderBy(sortBy ? `hddh.${sortBy}` : null, sortType);
         })
         .skip(skip)
-        .take(limit)
+        .take(Number(limit) === -1 ? null: Number(limit))
         .andWhere('hddh.isDeleted = false')
         .getManyAndCount();
       result = { contents: results, total, page: Number(page) };

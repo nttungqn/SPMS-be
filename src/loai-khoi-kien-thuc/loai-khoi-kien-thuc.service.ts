@@ -51,10 +51,15 @@ export class LoaiKhoiKienThucService {
           isSortFieldInForeignKey
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `lkkt.${sortBy}` : null, sortType);
+        }).where((qb) => {
+          qb.leftJoinAndSelect('khoiKienThuc.chiTietNganh', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`)
+          .where(qb => {
+            qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`)
+          });
         })
         .andWhere({ isDeleted: false, ...otherParam, ...queryByIdLKKT })
         .skip(skip)
-        .take(limit)
+        .take(Number(limit) === -1 ? null: Number(limit))
         .andWhere('lkkt.isDeleted = false')
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };

@@ -22,7 +22,7 @@ export class ResourcesService {
     const query = this.resourceRepository
       .createQueryBuilder('rs')
       .leftJoinAndSelect('rs.permission', 'pms', 'pms.idRole = :idRole', { idRole })
-      .take(limit)
+      .take(Number(limit) === -1 ? null: Number(limit))
       .skip(skip);
     searchKey
       ? query.andWhere('(rs.name LIKE :searchName OR rs.description LIKE :searchName)', {

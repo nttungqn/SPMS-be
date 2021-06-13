@@ -69,7 +69,7 @@ export class KhoiKienThucService {
       })
       .andWhere({ ...otherParam, isDeleted: false })
       .skip(skip)
-      .take(limit)
+      .take(Number(limit) === -1 ? null: Number(limit))
       .andWhere('kkt.isDeleted = false')
       .getManyAndCount();
     return { contents: list, total, page: Number(page) };

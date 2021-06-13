@@ -24,5 +24,5 @@ export class CreateChiTietKeHoachDto {
   @ApiProperty()
   @Column({ name: 'GhiChu' })
   @IsOptional()
-  ghiChu?: number;
+  ghiChu?: string;
 }
