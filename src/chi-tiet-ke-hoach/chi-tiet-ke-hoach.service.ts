@@ -60,7 +60,6 @@ export class ChiTietKeHoachService {
           .createQueryBuilder('ctkhgd')
           .leftJoinAndSelect('ctkhgd.createdBy', 'createdBy')
           .leftJoinAndSelect('ctkhgd.updatedBy', 'updatedBy')
-          .leftJoinAndSelect('ctkhgd.idKHGD', 'idKHGD')
           .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN')
           .where((qb) => {
             qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom', `idCTGN.isDeleted = ${false}`).leftJoinAndSelect(
@@ -68,6 +67,9 @@ export class ChiTietKeHoachService {
               'monHoc',
               `gomNhom.isDeleted = ${false}`
             );
+            qb.leftJoinAndSelect('ctkhgd.idKHGD', 'khgd', `khgd.isDeleted = ${false}`).where((qb) => {
+              qb.leftJoinAndSelect('khgd.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
+            });
           })
           .where(query);
 

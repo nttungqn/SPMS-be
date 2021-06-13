@@ -42,7 +42,28 @@ export class ChiTietGomNhomService {
           .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom')
           .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
           .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
-          .where(query);
+          .where((qb) => {
+            qb.where((qb) => {
+              qb.leftJoinAndSelect(
+                'gomNhom.loaiKhoiKienThuc',
+                'loaiKhoiKienThuc',
+                `loaiKhoiKienThuc.isDeleted = ${false}`
+              ).where((qb) => {
+                qb.leftJoinAndSelect(
+                  'loaiKhoiKienThuc.khoiKienThuc',
+                  'khoiKienThuc',
+                  `khoiKienThuc.isDeleted = ${false}`
+                ).where((qb) => {
+                  qb.leftJoinAndSelect(
+                    'khoiKienThuc.chiTietNganh',
+                    'chiTietNganh',
+                    `chiTietNganh.isDeleted = ${false}`
+                  );
+                });
+              });
+            });
+          })
+          .andWhere(query);
 
         if (search != '') {
           queryBuilder.andWhere(
