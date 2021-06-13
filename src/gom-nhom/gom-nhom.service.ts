@@ -38,6 +38,19 @@ export class GomNhomService {
           .leftJoinAndSelect('gn.chiTietGomNhom', 'chiTietGomNhom')
           .where((qb) => {
             qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
+            qb.leftJoinAndSelect(
+              'gn.loaiKhoiKienThuc',
+              'loaiKhoiKienThuc',
+              `loaiKhoiKienThuc.isDeleted = ${false}`
+            ).where((qb) => {
+              qb.leftJoinAndSelect(
+                'loaiKhoiKienThuc.khoiKienThuc',
+                'khoiKienThuc',
+                `khoiKienThuc.isDeleted = ${false}`
+              ).where((qb) => {
+                qb.leftJoinAndSelect('khoiKienThuc.chiTietNganh', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`);
+              });
+            });
           })
           .andWhere(query);
 
