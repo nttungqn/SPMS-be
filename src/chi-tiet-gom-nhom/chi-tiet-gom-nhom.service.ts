@@ -58,7 +58,9 @@ export class ChiTietGomNhomService {
                     'khoiKienThuc.chiTietNganh',
                     'chiTietNganh',
                     `chiTietNganh.isDeleted = ${false}`
-                  );
+                  ).where(qb => {
+                    qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`)
+                  });
                 });
               });
             });
@@ -72,7 +74,7 @@ export class ChiTietGomNhomService {
           );
         }
 
-        const [list, total] = await queryBuilder.orderBy(sortByTemp, sortType).skip(skip).take(limit).getManyAndCount();
+        const [list, total] = await queryBuilder.orderBy(sortByTemp, sortType).skip(skip).take(Number(limit) === -1 ? null: Number(limit)).getManyAndCount();
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_GOM_NHOM_CACHE_TTL);
       } catch (error) {
@@ -122,7 +124,7 @@ export class ChiTietGomNhomService {
             : {};
         })
         .andWhere('ctgn.isDeleted = false')
-        .take(limit)
+        .take(Number(limit) === -1 ? null: Number(limit))
         .skip(skip);
       const [list, total] = await query.getManyAndCount();
 
@@ -329,7 +331,7 @@ export class ChiTietGomNhomService {
           maMonHoc ? qb.andWhere(`monHoc.ma LIKE '%${maMonHoc}%'`) : {};
         })
         .andWhere(`ctgn.isDeleted = ${false}`)
-        .take(limit)
+        .take(Number(limit) === -1 ? null: Number(limit))
         .skip(skip)
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
@@ -434,7 +436,7 @@ export class ChiTietGomNhomService {
           : {};
       })
       .andWhere(`ctgn.isDeleted = ${false}`)
-      .take(limit)
+      .take(Number(limit) === -1 ? null: Number(limit))
       .skip(skip)
       .getManyAndCount();
     return { contents: list, total, page: Number(page) };

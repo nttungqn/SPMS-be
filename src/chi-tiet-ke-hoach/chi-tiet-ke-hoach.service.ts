@@ -91,7 +91,7 @@ export class ChiTietKeHoachService {
           );
         }
 
-        const [list, total] = await queryBuilder.orderBy(sortByTemp, sortType).skip(skip).take(limit).getManyAndCount();
+        const [list, total] = await queryBuilder.orderBy(sortByTemp, sortType).skip(skip).take(Number(limit) === -1 ? null: Number(limit)).getManyAndCount();
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_KE_HOACH_CACHE_TTL);
       } catch (error) {
@@ -120,6 +120,9 @@ export class ChiTietKeHoachService {
             'monHoc',
             `gomNhom.isDeleted = ${false}`
           );
+          qb.leftJoinAndSelect('idKHGD.nganhDaoTao', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`).where(qb => {
+            qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`)
+          });
         })
         .andWhere(`ctkhgd.id = ${id}`)
         .andWhere(`ctkhgd.isDeleted = ${false}`)

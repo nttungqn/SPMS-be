@@ -72,7 +72,7 @@ export class ChuDeService extends BaseService {
             : {};
         })
         .skip(skip)
-        .take(limit)
+        .take(Number(limit) === -1 ? null: Number(limit))
         .andWhere(`cd.isDeleted = ${false}`)
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };

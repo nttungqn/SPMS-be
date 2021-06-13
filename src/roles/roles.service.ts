@@ -80,7 +80,7 @@ export class RolesService {
         })
         .andWhere('(role.isDeleted = false and role.name <> :adminRole)', { adminRole: 'ADMIN' })
         .skip(skip)
-        .take(limit);
+        .take(Number(limit) === -1 ? null: Number(limit));
       const [results, total] = await query.getManyAndCount();
       result = { contents: results, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_ROLE_CACHE_TTL);
