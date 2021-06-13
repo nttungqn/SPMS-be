@@ -139,7 +139,7 @@ export default async (data) => `
          page-break-after: always;
      }
 
-     .tables_container tr, .tables_container th, .tables_container td {
+     .tables_container tbody .tables_container thead, .tables_container tr, .tables_container th, .tables_container td {
          page-break-inside: avoid;
      }
      
@@ -238,7 +238,7 @@ export default async (data) => `
                                                   <li class="li-menu-lv2">
                                                        <p class="part-title">${titles.MUC_TIEU_CHUNG}</p>
                                                        <div class="row muctieuchung">
-                                                            <p>${data?.mucTieuChung}</p>
+                                                            <p>${data?.mucTieuChung || ''}</p>
                                                        </div>
                                                   </li>
                                                   <li class="li-menu-lv2">
@@ -250,7 +250,7 @@ export default async (data) => `
                                                   <li class="li-menu-lv2">
                                                        <p class="part-title">${titles.CO_HOI_NGHE_NGHIEP}</p>
                                                        <div class="row cohoinghenghiep">
-                                                            <p>${data?.coHoiNgheNghiep}</p>
+                                                            <p>${data?.coHoiNgheNghiep || ''}</p>
                                                        </div>
                                                   </li>
                                              </ol>
@@ -260,10 +260,10 @@ export default async (data) => `
                                           titles.THOI_GIAN_DAO_TAO
                                         }: 4 năm</p></li>
                                         <li class="li-menu-lv1"><p class="part-title">${titles.KHOI_LUONG_KIEN_THUC}: ${
-  data?.tongTinChi
+  Number(data?.tongTinChi)
 }</p></li>
                                         <li class="li-menu-lv1"><p class="part-title">${titles.DOI_TUONG_TUYEN_SINH}: ${
-  data?.doiTuong
+  data?.doiTuong || ''
 }</p></li>
                                         <li class="li-menu-lv1">
                                              <p class="part-title">${titles.QUY_TRINH_DAO_TAO_DIEU_KIEN_TOT_NGHIEP}</p>
@@ -300,7 +300,7 @@ export default async (data) => `
                                                  'ghiChu'
                                                ],
                                                data: data?.khoiKienThuc,
-                                               tongSoTinChi: data?.tongTinChi,
+                                               tongSoTinChi: Number(data?.tongTinChi),
                                                subTitles: ['', 'Bắt Buộc', 'Tự Chọn', 'Tự Chọn Tự Do', '']
                                              })}
                                         

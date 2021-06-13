@@ -30,13 +30,14 @@ export class KeHoachGiangDayService {
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
       try {
-        const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
+        const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, CTNganhDaoTao: nganhDaoTao, ...otherParam } = filter;
         const skip = Number(page) * Number(limit);
         const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
         const searchField = ['id', 'tenHocKy', 'maKeHoach'];
         const searchQuery = searchField
           .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'khgd.' + e + ' LIKE :search'))
           .join(' OR ');
+        const nganhDaoTaoQuery = nganhDaoTao ? {nganhDaoTao} : {};
         const [list, total] = await this.keHoachGiangDayRepository
           .createQueryBuilder('khgd')
           .leftJoinAndSelect('khgd.nganhDaoTao', 'ndt', 'ndt.isDeleted = false')
@@ -53,7 +54,7 @@ export class KeHoachGiangDayService {
               ? qb.orderBy(sortBy, sortType)
               : qb.orderBy(sortBy ? `khgd.${sortBy}` : null, sortType);
           })
-          .andWhere({ ...otherParam, isDeleted: false })
+          .andWhere({ ...nganhDaoTaoQuery, ...otherParam, isDeleted: false })
           .skip(skip)
           .take(limit)
           .getManyAndCount();
