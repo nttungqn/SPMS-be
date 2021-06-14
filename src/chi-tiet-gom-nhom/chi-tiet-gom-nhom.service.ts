@@ -178,10 +178,37 @@ export class ChiTietGomNhomService {
     const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      result = await this.chiTietGomNhomRepository.findOne({
-        where: { id, isDeleted: false },
-        relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
-      });
+      result = await this.chiTietGomNhomRepository
+        .createQueryBuilder('ctgn')
+        .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+        .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom')
+        .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
+        .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
+        .where((qb) => {
+          qb.where((qb) => {
+            qb.leftJoinAndSelect(
+              'gomNhom.loaiKhoiKienThuc',
+              'loaiKhoiKienThuc',
+              `loaiKhoiKienThuc.isDeleted = ${false}`
+            ).where((qb) => {
+              qb.leftJoinAndSelect(
+                'loaiKhoiKienThuc.khoiKienThuc',
+                'khoiKienThuc',
+                `khoiKienThuc.isDeleted = ${false}`
+              ).where((qb) => {
+                qb.leftJoinAndSelect(
+                  'khoiKienThuc.chiTietNganh',
+                  'chiTietNganh',
+                  `chiTietNganh.isDeleted = ${false}`
+                ).where((qb) => {
+                  qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
+                });
+              });
+            });
+          });
+        })
+        .andWhere('ctgn.id = :id and ctgn.isDeleted = false', { id })
+        .getOne();
       if (!result) {
         throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);
       }
