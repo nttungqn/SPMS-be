@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -30,14 +31,22 @@ export class KeHoachGiangDayService {
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
       try {
-        const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, CTNganhDaoTao: nganhDaoTao, ...otherParam } = filter;
+        const {
+          limit = LIMIT,
+          page = 0,
+          searchKey = '',
+          sortBy,
+          sortType,
+          CTNganhDaoTao: nganhDaoTao,
+          ...otherParam
+        } = filter;
         const skip = Number(page) * Number(limit);
         const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
         const searchField = ['id', 'tenHocKy', 'maKeHoach'];
         const searchQuery = searchField
           .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'khgd.' + e + ' LIKE :search'))
           .join(' OR ');
-        const nganhDaoTaoQuery = nganhDaoTao ? {nganhDaoTao} : {};
+        const nganhDaoTaoQuery = nganhDaoTao ? { nganhDaoTao } : {};
         const [list, total] = await this.keHoachGiangDayRepository
           .createQueryBuilder('khgd')
           .leftJoinAndSelect('khgd.nganhDaoTao', 'ndt', 'ndt.isDeleted = false')
@@ -56,7 +65,7 @@ export class KeHoachGiangDayService {
           })
           .andWhere({ ...nganhDaoTaoQuery, ...otherParam, isDeleted: false })
           .skip(skip)
-          .take(Number(limit) === -1 ? null: Number(limit))
+          .take(Number(limit) === -1 ? null : Number(limit))
           .getManyAndCount();
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_KHGD_CACHE_TTL);
@@ -93,6 +102,15 @@ export class KeHoachGiangDayService {
     });
     if (checkExist) {
       throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_MESSAGE_MAKEHOACH_CONFLIC, HttpStatus.CONFLICT);
+    }
+
+    const hocKyKH = await this.keHoachGiangDayRepository.findOne({
+      tenHocKy: newData?.tenHocKy,
+      nganhDaoTao: newData?.nganhDaoTao,
+      isDeleted: false
+    });
+    if (hocKyKH) {
+      throw new ConflictException('Học kỳ đã tồn tại với khóa tuyển này');
     }
 
     const record = await this.chiTietNganhDaoTaoService.findById(newData.nganhDaoTao);

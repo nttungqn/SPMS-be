@@ -51,15 +51,17 @@ export class LoaiKhoiKienThucService {
           isSortFieldInForeignKey
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `lkkt.${sortBy}` : null, sortType);
-        }).where((qb) => {
-          qb.leftJoinAndSelect('khoiKienThuc.chiTietNganh', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`)
-          .where(qb => {
-            qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`)
-          });
+        })
+        .where((qb) => {
+          qb.leftJoinAndSelect('khoiKienThuc.chiTietNganh', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`).where(
+            (qb) => {
+              qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
+            }
+          );
         })
         .andWhere({ isDeleted: false, ...otherParam, ...queryByIdLKKT })
         .skip(skip)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .andWhere('lkkt.isDeleted = false')
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
@@ -108,6 +110,10 @@ export class LoaiKhoiKienThucService {
   async create(typeOfKnowledgeBlock: LoaiKhoiKienThucEntity) {
     if (await this.isExist(typeOfKnowledgeBlock)) {
       throw new ConflictException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_EXIST);
+    }
+    const record = await this.typeOfKnowledgeBlockRepository.find({ ten: typeOfKnowledgeBlock.ten });
+    if (record) {
+      throw new ConflictException('Tên đã tồn tại');
     }
     let result: LoaiKhoiKienThucEntity;
     try {

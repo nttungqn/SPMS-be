@@ -56,7 +56,7 @@ export class ChuongTrinhDaoTaoService {
         })
         .andWhere({ ...otherParam, isDeleted: false })
         .skip(skip)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CTDT_CACHE_TTL);
