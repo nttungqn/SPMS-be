@@ -27,7 +27,9 @@ export class KhoiKienThucService {
     await this.chiTietNganhDaoTaoService.findById(knowledgeBlock.chiTietNganh);
     const { tinChiBatBuoc = 0, tinChiTuChonTuDo = 0, tinChiTuChon = 0 } = knowledgeBlock;
     knowledgeBlock.tongTinChi = tinChiBatBuoc + tinChiTuChonTuDo + tinChiTuChon;
-    knowledgeBlock.maKKT = knowledgeBlock.maKKT.toLocaleUpperCase().trim();
+    if (knowledgeBlock.maKKT) {
+      knowledgeBlock.maKKT = knowledgeBlock.maKKT.toUpperCase().trim();
+    }
     try {
       const result = await this.knowledgeBlockRepository.save({
         ...knowledgeBlock,
