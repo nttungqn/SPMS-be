@@ -27,7 +27,7 @@ export class KhoiKienThucService {
     await this.chiTietNganhDaoTaoService.findById(knowledgeBlock.chiTietNganh);
     const { tinChiBatBuoc = 0, tinChiTuChonTuDo = 0, tinChiTuChon = 0 } = knowledgeBlock;
     knowledgeBlock.tongTinChi = tinChiBatBuoc + tinChiTuChonTuDo + tinChiTuChon;
-    knowledgeBlock.maKKT = knowledgeBlock.maKKT.toUpperCase().trim();
+    knowledgeBlock.maKKT = knowledgeBlock.maKKT.toLocaleUpperCase().trim();
     try {
       const result = await this.knowledgeBlockRepository.save({
         ...knowledgeBlock,
@@ -69,7 +69,7 @@ export class KhoiKienThucService {
       })
       .andWhere({ ...otherParam, isDeleted: false })
       .skip(skip)
-      .take(Number(limit) === -1 ? null: Number(limit))
+      .take(Number(limit) === -1 ? null : Number(limit))
       .andWhere('kkt.isDeleted = false')
       .getManyAndCount();
     return { contents: list, total, page: Number(page) };

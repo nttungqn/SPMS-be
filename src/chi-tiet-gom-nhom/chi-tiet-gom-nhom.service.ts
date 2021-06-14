@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RedisCacheService } from 'cache/redisCache.service';
 import { LIMIT, CHITIETGOMNHOM_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
@@ -58,8 +64,8 @@ export class ChiTietGomNhomService {
                     'khoiKienThuc.chiTietNganh',
                     'chiTietNganh',
                     `chiTietNganh.isDeleted = ${false}`
-                  ).where(qb => {
-                    qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`)
+                  ).where((qb) => {
+                    qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
                   });
                 });
               });
@@ -74,7 +80,11 @@ export class ChiTietGomNhomService {
           );
         }
 
-        const [list, total] = await queryBuilder.orderBy(sortByTemp, sortType).skip(skip).take(Number(limit) === -1 ? null: Number(limit)).getManyAndCount();
+        const [list, total] = await queryBuilder
+          .orderBy(sortByTemp, sortType)
+          .skip(skip)
+          .take(Number(limit) === -1 ? null : Number(limit))
+          .getManyAndCount();
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_GOM_NHOM_CACHE_TTL);
       } catch (error) {
@@ -90,7 +100,7 @@ export class ChiTietGomNhomService {
   async getAllSubjectsByChiTietNDT(idCTNDT: number, filter: FilterByChiTietNganhDaoTao) {
     const key = format(REDIS_CACHE_VARS.LIST_CTGN_SJ_CTNDT_CACHE_KEY, idCTNDT.toString(), JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
-    if (typeof result === 'undefined') {
+    if (typeof result === 'undefined' || result === null) {
       const { limit = LIMIT, page = 0, searchKey = '' } = filter;
       const skip = Number(page) * Number(limit);
       const query = this.chiTietGomNhomRepository
@@ -124,7 +134,7 @@ export class ChiTietGomNhomService {
             : {};
         })
         .andWhere('ctgn.isDeleted = false')
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .skip(skip);
       const [list, total] = await query.getManyAndCount();
 
@@ -182,6 +192,14 @@ export class ChiTietGomNhomService {
   }
 
   async create(newData: CreateChiTietGomNhomDTO, idUser: number): Promise<any> {
+    const record = await this.chiTietGomNhomRepository.findOne({
+      idGN: newData?.idGN,
+      idMH: newData?.idMH,
+      isDeleted: false
+    });
+    if (record) {
+      throw new ConflictException('Môn học đã tồn tại trong gom nhóm');
+    }
     const { idCTGNMonHocTruoc } = newData;
     const chiTietGomNhom: ChiTietGomNhomEntity = {
       ...newData,
@@ -331,7 +349,7 @@ export class ChiTietGomNhomService {
           maMonHoc ? qb.andWhere(`monHoc.ma LIKE '%${maMonHoc}%'`) : {};
         })
         .andWhere(`ctgn.isDeleted = ${false}`)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .skip(skip)
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
@@ -436,7 +454,7 @@ export class ChiTietGomNhomService {
           : {};
       })
       .andWhere(`ctgn.isDeleted = ${false}`)
-      .take(Number(limit) === -1 ? null: Number(limit))
+      .take(Number(limit) === -1 ? null : Number(limit))
       .skip(skip)
       .getManyAndCount();
     return { contents: list, total, page: Number(page) };
