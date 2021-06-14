@@ -42,7 +42,7 @@ export class CtdtService {
         })
         .andWhere({ isDeleted: false, ...otherParam })
         .skip(skip)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_NDT_CACHE_TTL);
@@ -102,6 +102,9 @@ export class CtdtService {
       throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
     try {
+      if (updatedData?.maNganhDaoTao) {
+        updatedData.maNganhDaoTao = updatedData.maNganhDaoTao.toUpperCase();
+      }
       const updated = await this.nganhDaoTaoRepository.save({ ...nganhDaoTao, ...updatedData, updatedAt: new Date() });
       const key = format(REDIS_CACHE_VARS.DETAIL_NDT_CACHE_KEY, id.toString());
       await this.cacheManager.del(key);

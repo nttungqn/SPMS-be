@@ -9,6 +9,7 @@ export class RedisCacheService {
   ) {}
 
   async get(key): Promise<any> {
+    return undefined;
     return await this.cache.get(key);
   }
 

@@ -219,8 +219,8 @@ export class ChiTietGomNhomService {
       chiTietGomNhom.ctgnMonHoctruoc = ctgnMonHoctruoc;
     }
     try {
-      const ctGomNhom = await this.chiTietGomNhomRepository.create(chiTietGomNhom);
-      const result = await this.chiTietGomNhomRepository.save(ctGomNhom);
+      //const ctGomNhom = await this.chiTietGomNhomRepository.create(chiTietGomNhom);
+      const result = await this.chiTietGomNhomRepository.save(chiTietGomNhom);
       const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, result?.id.toString());
       const detail = await this.findById(result?.id);
       await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL);
@@ -230,6 +230,7 @@ export class ChiTietGomNhomService {
       if (error?.sqlState === '23000') {
         throw new BadRequestException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_FOREIGN_KEY_NOT_FOUND);
       }
+      console.log(error);
       throw new InternalServerErrorException(CHITIETGOMNHOM_MESSAGE.CREATE_CHITIETGOMNHOM_FAILED);
     }
   }
