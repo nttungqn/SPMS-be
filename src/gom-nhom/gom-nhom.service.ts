@@ -48,9 +48,12 @@ export class GomNhomService {
                 'khoiKienThuc',
                 `khoiKienThuc.isDeleted = ${false}`
               ).where((qb) => {
-                qb.leftJoinAndSelect('khoiKienThuc.chiTietNganh', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`)
-                .where(qb => {
-                  qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`)
+                qb.leftJoinAndSelect(
+                  'khoiKienThuc.chiTietNganh',
+                  'chiTietNganh',
+                  `chiTietNganh.isDeleted = ${false}`
+                ).where((qb) => {
+                  qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
                 });
               });
             });
@@ -64,7 +67,11 @@ export class GomNhomService {
           );
         }
 
-        const [list, total] = await queryBuilder.orderBy(sortByTemp, sortType).skip(skip).take(Number(limit) === -1 ? null: Number(limit)).getManyAndCount();
+        const [list, total] = await queryBuilder
+          .orderBy(sortByTemp, sortType)
+          .skip(skip)
+          .take(Number(limit) === -1 ? null : Number(limit))
+          .getManyAndCount();
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_GOM_NHOM_CACHE_TTL);
       } catch (error) {

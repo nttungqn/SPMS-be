@@ -113,7 +113,7 @@ export class HoatDongDanhGiaService extends BaseService {
         })
         .andWhere('hddg.isDeleted = false')
         .skip(skip)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .getManyAndCount();
       result = { contents: results, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_HDDG_CACHE_TTL);
