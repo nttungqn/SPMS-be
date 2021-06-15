@@ -136,6 +136,15 @@ export class ChiTietNganhDaoTaoService {
     if (!cTNganhDaoTao) {
       throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
+    const { khoa, nganhDaoTao } = { ...cTNganhDaoTao, ...updatedData };
+    const checkExistData = await this.chiTietNganhDTRepository.findOne({
+      khoa,
+      nganhDaoTao,
+      isDeleted: false
+    });
+    if (checkExistData) {
+      throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EXIST, HttpStatus.CONFLICT);
+    }
     try {
       const updated = await this.chiTietNganhDTRepository.save({
         ...cTNganhDaoTao,

@@ -53,7 +53,7 @@ export class KeHoachGiangDayService {
           .leftJoinAndSelect('khgd.updatedBy', 'updatedBy')
           .innerJoinAndSelect('khgd.nganhDaoTao', 'ctndt', 'ctndt.isDeleted = false')
           .where((qb) => {
-            qb.innerJoin('ctndt.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where((qb) => {
+            qb.innerJoinAndSelect('ctndt.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where((qb) => {
               qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
             });
             searchKey

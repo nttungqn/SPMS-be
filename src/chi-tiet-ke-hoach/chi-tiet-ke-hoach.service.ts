@@ -94,7 +94,6 @@ export class ChiTietKeHoachService {
             }
           );
         }
-
         const [list, total] = await queryBuilder
           .orderBy(sortByTemp, sortType)
           .skip(skip)
