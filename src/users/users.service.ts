@@ -1,4 +1,11 @@
-import { ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FE_ROUTE } from 'config/config';
 import { CONFIRM_SIGNUP_PATH, LIMIT, REDIS_CACHE_VARS, ROLE_SINHVIEN, USER_MESSAGE } from 'constant/constant';
@@ -87,7 +94,11 @@ export class UsersService {
     const key = format(REDIS_CACHE_VARS.DETAIL_USER_CACHE_KEY, JSON.stringify(query));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      result = await this.usersRepository.findOne({where:{ ...query }, relations: ['role']});
+      result = await this.usersRepository.findOne({ where: { ...query }, relations: ['role'] });
+      if (!result) {
+        throw new NotFoundException(USER_MESSAGE.EMAIL_IS_NOT_EXIST);
+      }
+
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_USER_CACHE_TTL);
     }
 
@@ -227,7 +238,7 @@ export class UsersService {
       if (userUsername) {
         return { message: 'USERNAME_EXISTS' };
       }
-      
+
       const newUser = await this.usersRepository.create({ ...newData });
       const user = await this.usersRepository.save(newUser);
       return user;
