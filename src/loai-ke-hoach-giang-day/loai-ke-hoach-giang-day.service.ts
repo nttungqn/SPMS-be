@@ -32,7 +32,7 @@ export class LoaiKeHoachGiangDayService {
       const list = await this.loaiKeHoachGiangDayEntity.find({
         where: query,
         skip,
-        take: Number(limit),
+        take: Number(limit) === -1 ? null : Number(limit),
         relations: ['createdBy', 'updatedBy']
       });
       const total = await this.loaiKeHoachGiangDayEntity.count({ ...query });

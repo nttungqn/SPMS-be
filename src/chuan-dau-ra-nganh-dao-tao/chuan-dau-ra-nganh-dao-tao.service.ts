@@ -35,7 +35,7 @@ export class ChuanDauRaNganhDaoTaoService {
       const list = await this.chuanDauRaNDTRepository.find({
         relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy'],
         skip,
-        take: limit,
+        take: Number(limit) === -1 ? null : Number(limit),
         where: query
       });
       if (!list.length) {

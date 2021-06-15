@@ -69,7 +69,7 @@ export class UsersService {
           relations: ['role'],
           order: sortQuery,
           skip,
-          take: limit,
+          take: Number(limit) === -1 ? null : Number(limit),
           ...other
         });
         result = { contents: list, total, page: Number(page) };
