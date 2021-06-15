@@ -35,5 +35,9 @@ export class UpdateUserDto {
   @IsOptional()
   role: number;
 
+  @ApiProperty({ required: false, description: 'Trạng thái hoạt động user - isActive: true | false' })
+  @IsOptional()
+  readonly isActive?: boolean;
+
   avatar: string;
 }

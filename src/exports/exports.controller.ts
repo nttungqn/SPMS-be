@@ -106,9 +106,13 @@ export class ExportsController {
     try {
       const data = await this.exportsService.getInfoCTNDT(params.id);
       const extractBody = typeof body.data === 'string' ? JSON.parse(body.data) : body.data;
+      const sumTongTinChi =
+        extractBody?.cauTrucChuongTrinh?.reduce((total, cur) => {
+          return (total = total + Number(cur?.tongTinChi || 0));
+        }, 0) || 0;
       res.setHeader('Content-disposition', 'attachment; filename=preview.pdf');
       await pdf
-        .create(await htmlTemlpatePreviewV2({ ...data, ...extractBody }), options)
+        .create(await htmlTemlpatePreviewV2({ ...data, ...extractBody, tongTinChi: sumTongTinChi }), options)
         .toStream(function (err, stream) {
           if (err) return console.log(err);
           stream.pipe(res);
