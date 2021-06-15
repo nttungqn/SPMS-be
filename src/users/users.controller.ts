@@ -60,7 +60,7 @@ export class UsersController {
   @ApiOkResponse({ type: UsersEntity })
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.usersService.findOne({ id , isDeleted: false,});
+    const user = await this.usersService.findOne({ id, isDeleted: false });
     if (!user) throw new NotFoundException(USER_MESSAGE.USER_ID_NOT_FOUND);
     return user;
   }

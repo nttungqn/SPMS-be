@@ -82,7 +82,7 @@ export class LoaiDanhGiaService extends BaseService {
             : qb.orderBy(sortBy ? `ldg.${sortBy}` : null, sortType);
         })
         .andWhere(`ldg.isDeleted = ${false}`)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .skip(skip)
         .getManyAndCount();
       result = { contents: results, total, page: Number(page) };
