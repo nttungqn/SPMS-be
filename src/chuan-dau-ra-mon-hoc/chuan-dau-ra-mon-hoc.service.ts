@@ -78,14 +78,15 @@ export class ChuanDauRaMonHocService extends BaseService {
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const [list, total] = await this.chuanDauRaMonHocService
         .createQueryBuilder('cdr')
-        .leftJoinAndSelect('cdr.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted =:isDeleted', { isDeleted: false })
+        .innerJoinAndSelect('cdr.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted =:isDeleted', { isDeleted: false })
         .leftJoinAndSelect('cdr.updatedBy', 'updatedBy')
         .leftJoinAndSelect('cdr.createdBy', 'createdBy')
         .where((qb) => {
+          qb.innerJoin('mtmh.syllabus', 'syllabus', 'syllabus.isDeleted = false');
           idSyllabus ? qb.andWhere('mtmh.idSyllabus = :idSyllabus', { idSyllabus }) : {};
           idMucTieuMonHoc ? qb.andWhere('cdr.mucTieuMonHoc = :idMucTieuMonHoc', { idMucTieuMonHoc }) : {};
           searchKey
-            ? qb.andWhere('cdr.ma LIKE :search OR cdr.mota LIKE :search OR cdr.mucDo LIKE :search', {
+            ? qb.andWhere('(cdr.ma LIKE :search OR cdr.mota LIKE :search OR cdr.mucDo LIKE :search)', {
                 search: `%${searchKey}%`
               })
             : {};
@@ -95,7 +96,7 @@ export class ChuanDauRaMonHocService extends BaseService {
         })
         .andWhere('cdr.isDeleted =:isDeleted', { isDeleted: false })
         .skip(skip)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .getManyAndCount();
       result = { contents: list, total, page: page };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CDRMH_CACHE_TTL);
@@ -109,10 +110,16 @@ export class ChuanDauRaMonHocService extends BaseService {
     const key = format(REDIS_CACHE_VARS.DETAIL_CDRMH_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      const found = await this.chuanDauRaMonHocService.findOne(id, {
-        relations: ['mucTieuMonHoc', 'createdBy', 'updatedBy'],
-        where: { isDeleted: false }
-      });
+      const found = await this.chuanDauRaMonHocService
+        .createQueryBuilder('cdr')
+        .innerJoinAndSelect('cdr.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted =:isDeleted', { isDeleted: false })
+        .leftJoinAndSelect('cdr.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('cdr.createdBy', 'createdBy')
+        .where((qb) => {
+          qb.innerJoin('mtmh.syllabus', 'syllabus', 'syllabus.isDeleted = false');
+        })
+        .andWhere('cdr.id = :id and cdr.isDeleted = false', { id })
+        .getOne();
       if (!found) {
         throw new NotFoundException(CHUANDAURAMONHOC_MESSAGE.CHUANDAURAMONHOC_ID_NOT_FOUND);
       }
@@ -202,7 +209,7 @@ export class ChuanDauRaMonHocService extends BaseService {
   async isInSyllabus(idChuanDauRa: number, idSyllabus: number) {
     const query = this.chuanDauRaMonHocService
       .createQueryBuilder('cdrmh')
-      .leftJoin('cdrmh.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted = false')
+      .innerJoin('cdrmh.mucTieuMonHoc', 'mtmh', 'mtmh.isDeleted = false')
       .leftJoinAndSelect('cdrmh.createdBy', 'createdBy')
       .leftJoinAndSelect('cdrmh.updatedBy', 'updatedBy')
       .where((qb) => {

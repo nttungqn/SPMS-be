@@ -32,12 +32,22 @@ export class ChuanDauRaNganhDaoTaoService {
         isDeleted: false,
         ...rest
       };
-      const list = await this.chuanDauRaNDTRepository.find({
-        relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy'],
-        skip,
-        take: Number(limit) === -1 ? null : Number(limit),
-        where: query
-      });
+      const list = await this.chuanDauRaNDTRepository
+        .createQueryBuilder('cdr')
+        .innerJoinAndSelect('cdr.parent', 'parent', 'parent.isDeleted = false')
+        .innerJoinAndSelect('cdr.nganhDaoTao', 'ctndt', 'ctndt.isDeleted = false')
+        .leftJoinAndSelect('cdr.chuanDauRa', 'value')
+        .leftJoinAndSelect('cdr.createdBy', 'createdBy')
+        .leftJoinAndSelect('cdr.updatedBy', 'updatedBy')
+        .where((qb) => {
+          qb.innerJoin('ctndt.nganhDaoTao', 'ndt', 'ndt.isDeleted = false').where((qb) => {
+            qb.innerJoin('ndt.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+          });
+        })
+        .andWhere(query)
+        .take(Number(limit) === -1 ? null : Number(limit))
+        .skip(skip)
+        .getMany();
       if (!list.length) {
         throw new HttpException(CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_EMPTY, HttpStatus.NOT_FOUND);
       }
@@ -54,10 +64,19 @@ export class ChuanDauRaNganhDaoTaoService {
     const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      result = await this.chuanDauRaNDTRepository.findOne({
-        where: { id, isDeleted: false },
-        relations: ['nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy']
-      });
+      result = await this.chuanDauRaNDTRepository
+        .createQueryBuilder('cdr')
+        .innerJoinAndSelect('cdr.nganhDaoTao', 'ctndt', 'ctndt.isDeleted = false')
+        .leftJoinAndSelect('cdr.chuanDauRa', 'value')
+        .leftJoinAndSelect('cdr.createdBy', 'createdBy')
+        .leftJoinAndSelect('cdr.updatedBy', 'updatedBy')
+        .where((qb) => {
+          qb.innerJoin('ctndt.nganhDaoTao', 'ndt', 'ndt.isDeleted = false').where((qb) => {
+            qb.innerJoin('ndt.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+          });
+        })
+        .andWhere('cdr.isDeleted = false and cdr.id = :id', { id })
+        .getOne();
       if (!result) {
         throw new HttpException(
           CHUANDAURA_NGANHDAOTAO_MESSAGE.CHUANDAURA_NGANHDAOTAO_ID_NOT_FOUND,
@@ -157,7 +176,6 @@ export class ChuanDauRaNganhDaoTaoService {
       });
       const key = format(REDIS_CACHE_VARS.DETAIL_CDRNDT_CACHE_KEY, id.toString());
       const keyCDR_NDT = format(REDIS_CACHE_VARS.LIST_CDRNDT_NDT_CACHE_KEY, deleted.nganhDaoTao?.toString());
-      console.log(keyCDR_NDT);
       await this.cacheManager.del(key);
       await this.cacheManager.del(keyCDR_NDT);
       await this.delCacheAfterChange();

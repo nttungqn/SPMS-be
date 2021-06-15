@@ -60,7 +60,7 @@ export class LoaiDanhGiaService extends BaseService {
       if (idSyllabus) await this.syllabusService.findOne(idSyllabus);
       const [results, total] = await this.loaiDanhGiaRepository
         .createQueryBuilder('ldg')
-        .leftJoinAndSelect('ldg.syllabus', 'syllabus')
+        .innerJoinAndSelect('ldg.syllabus', 'syllabus', 'syllabus.isDeleted = false')
         .leftJoinAndSelect('ldg.createdBy', 'createdBy')
         .leftJoinAndSelect('ldg.updatedBy', 'updatedBy')
         .leftJoinAndSelect('ldg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
@@ -72,7 +72,7 @@ export class LoaiDanhGiaService extends BaseService {
             .leftJoinAndSelect('hoatDongDanhGia.chuanDauRaMonHoc', 'cdrmh', `cdrmh.isDeleted = ${false}`);
           idSyllabus ? qb.andWhere('ldg.syllabus = :idSyllabus', { idSyllabus }) : {};
           searchKey
-            ? qb.andWhere('ldg.ten LIKE :search OR ldg.ma LIKE :search OR ldg.tyle = :tyle', {
+            ? qb.andWhere('(ldg.ten LIKE :search OR ldg.ma LIKE :search OR ldg.tyle = :tyle)', {
                 search: `%${searchKey}%`,
                 tyle: Number.isNaN(Number(searchKey)) ? -1 : searchKey
               })
@@ -82,7 +82,7 @@ export class LoaiDanhGiaService extends BaseService {
             : qb.orderBy(sortBy ? `ldg.${sortBy}` : null, sortType);
         })
         .andWhere(`ldg.isDeleted = ${false}`)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .skip(skip)
         .getManyAndCount();
       result = { contents: results, total, page: Number(page) };
@@ -100,7 +100,7 @@ export class LoaiDanhGiaService extends BaseService {
       try {
         result = await this.loaiDanhGiaRepository
           .createQueryBuilder('ldg')
-          .leftJoinAndSelect('ldg.syllabus', 'syllabus')
+          .innerJoinAndSelect('ldg.syllabus', 'syllabus', 'syllabus.isDeleted = false')
           .leftJoinAndSelect('ldg.createdBy', 'createdBy')
           .leftJoinAndSelect('ldg.updatedBy', 'updatedBy')
           .leftJoinAndSelect('ldg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
@@ -237,8 +237,7 @@ export class LoaiDanhGiaService extends BaseService {
               const result = await this.chuanDauRaMonHocService.isInSyllabus(Number(idCDRMH), idSyllabus);
               loaiDanhGia.chuanDauRaMonHoc.push(result);
             } catch (error) {
-              console.log(error);
-              return;
+              throw error;
             }
           }
         }

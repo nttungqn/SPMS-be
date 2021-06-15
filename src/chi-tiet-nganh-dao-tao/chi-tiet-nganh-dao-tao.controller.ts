@@ -79,6 +79,14 @@ export class ChiTietNganhDaoTaoController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Req() req, @Body() newData: CreateCTNganhDaoTaoDto, @Res() res): Promise<any> {
+    const { khoa } = newData;
+    const regex = new RegExp(/^(19|20)\d{2}$/);
+    if (!regex.test(khoa + '')) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_FAILED,
+        error: 'Khoa value : 19xx -> 20xx'
+      });
+    }
     const user = req.user || {};
     let result: ChiTietNganhDaoTaoEntity;
     try {
@@ -114,6 +122,14 @@ export class ChiTietNganhDaoTaoController {
   ): Promise<any> {
     const user = req.user || {};
     const { id } = param;
+    const { khoa } = updatedData;
+    const regex = new RegExp(/^(19|20)\d{2}$/);
+    if (!regex.test(khoa.toString())) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: CTNGANHDAOTAO_MESSAGE.CREATE_CTNGANHDAOTAO_FAILED,
+        error: 'Khoa value : 19xx -> 20xx'
+      });
+    }
     try {
       await this.chiTietNganhDaoTao.update(Number(id), { ...updatedData, updatedBy: user?.id });
     } catch (error) {

@@ -27,7 +27,7 @@ export class CtdtService {
         .join(' OR ');
       const [list, total] = await this.nganhDaoTaoRepository
         .createQueryBuilder('ndt')
-        .leftJoinAndSelect('ndt.chuongTrinhDaoTao', 'chuongTrinhDaoTao', 'chuongTrinhDaoTao.isDeleted = false')
+        .innerJoinAndSelect('ndt.chuongTrinhDaoTao', 'chuongTrinhDaoTao', 'chuongTrinhDaoTao.isDeleted = false')
         .leftJoinAndSelect('ndt.createdBy', 'createdBy')
         .leftJoinAndSelect('ndt.updatedBy', 'updatedBy')
         .where((qb) => {
@@ -42,7 +42,7 @@ export class CtdtService {
         })
         .andWhere({ isDeleted: false, ...otherParam })
         .skip(skip)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_NDT_CACHE_TTL);
@@ -56,10 +56,13 @@ export class CtdtService {
     const key = format(REDIS_CACHE_VARS.DETAIL_NDT_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      result = await this.nganhDaoTaoRepository.findOne({
-        where: { id, isDeleted: false },
-        relations: ['chuongTrinhDaoTao', 'createdBy', 'updatedBy']
-      });
+      result = await this.nganhDaoTaoRepository
+        .createQueryBuilder('ndt')
+        .innerJoinAndSelect('ndt.chuongTrinhDaoTao', 'chuongTrinhDaoTao', 'chuongTrinhDaoTao.isDeleted = false')
+        .leftJoinAndSelect('ndt.createdBy', 'createdBy')
+        .leftJoinAndSelect('ndt.updatedBy', 'updatedBy')
+        .where({ id, isDeleted: false })
+        .getOne();
       if (!result) {
         throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
@@ -102,6 +105,9 @@ export class CtdtService {
       throw new HttpException(NGANHDAOTAO_MESSAGE.NGANHDAOTAO_ID_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
     try {
+      if (updatedData?.maNganhDaoTao) {
+        updatedData.maNganhDaoTao = updatedData.maNganhDaoTao.toUpperCase();
+      }
       const updated = await this.nganhDaoTaoRepository.save({ ...nganhDaoTao, ...updatedData, updatedAt: new Date() });
       const key = format(REDIS_CACHE_VARS.DETAIL_NDT_CACHE_KEY, id.toString());
       await this.cacheManager.del(key);

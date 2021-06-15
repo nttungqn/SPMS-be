@@ -57,11 +57,15 @@ export class KhoiKienThucService {
       .join(' OR ');
     const [list, total] = await this.knowledgeBlockRepository
       .createQueryBuilder('kkt')
-      .leftJoinAndSelect('kkt.chiTietNganh', 'chiTietNganh', 'chiTietNganh.isDeleted = false')
+      .innerJoinAndSelect('kkt.chiTietNganh', 'chiTietNganh', 'chiTietNganh.isDeleted = false')
       .leftJoinAndSelect('kkt.createdBy', 'createdBy')
       .leftJoinAndSelect('kkt.updatedBy', 'updatedBy')
       .where((qb) => {
-        qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao');
+        qb.innerJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where(
+          (qb) => {
+            qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+          }
+        );
         searchKey
           ? qb.andWhere(searchQuery, {
               search: `%${searchKey}%`
@@ -81,10 +85,18 @@ export class KhoiKienThucService {
     const key = format(REDIS_CACHE_VARS.DETAIL_KKT_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      result = await this.knowledgeBlockRepository.findOne(id, {
-        relations: ['chiTietNganh', 'createdBy', 'updatedBy'],
-        where: { isDeleted: false }
-      });
+      result = await this.knowledgeBlockRepository
+        .createQueryBuilder('kkt')
+        .innerJoinAndSelect('kkt.chiTietNganh', 'chiTietNganh', 'chiTietNganh.isDeleted = false')
+        .leftJoinAndSelect('kkt.createdBy', 'createdBy')
+        .leftJoinAndSelect('kkt.updatedBy', 'updatedBy')
+        .where((qb) => {
+          qb.innerJoin('chiTietNganh.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where((qb) => {
+            qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+          });
+        })
+        .andWhere('kkt.isDeleted = false and kkt.id = :id', { id })
+        .getOne();
       if (!result) throw new NotFoundException(KHOIKIENTHUC_MESSAGE.KHOIKIENTHUC_ID_NOT_FOUND);
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_KKT_CACHE_TTL);
     }

@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsArray, IsInt, IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
 export class CreateChuongTrinhDaoTaoDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsNotEmpty()
-  @Length(2)
+  @Matches(/^[a-zA-Z0-9]{5,10}$/, { message: 'Gồm số hoặc chữ và có 5 - 10 ký tự' })
   readonly maCTDT?: string;
 
   @IsString()

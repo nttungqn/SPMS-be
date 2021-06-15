@@ -46,6 +46,7 @@ import { FilterByKeHoachGiangDay } from './dto/filter-by-ke-hoach-giang-day.dto'
 export class ChiTietGomNhomController {
   constructor(private readonly chiTietGomNhomService: ChiTietGomNhomService) {}
 
+  @ApiBearerAuth('token')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('/nganh-dao-tao/:idNganhDaotao/khoa-tuyen/:khoa')
   async getAllSubject(

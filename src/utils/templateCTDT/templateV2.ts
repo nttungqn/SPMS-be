@@ -259,9 +259,9 @@ export default async (data) => `
                                         <li class="li-menu-lv1"><p class="part-title">${
                                           titles.THOI_GIAN_DAO_TAO
                                         }: 4 năm</p></li>
-                                        <li class="li-menu-lv1"><p class="part-title">${titles.KHOI_LUONG_KIEN_THUC}: ${
-  Number(data?.tongTinChi)
-}</p></li>
+                                        <li class="li-menu-lv1"><p class="part-title">${
+                                          titles.KHOI_LUONG_KIEN_THUC
+                                        }: ${Number(data?.tongTinChi)}</p></li>
                                         <li class="li-menu-lv1"><p class="part-title">${titles.DOI_TUONG_TUYEN_SINH}: ${
   data?.doiTuong || ''
 }</p></li>

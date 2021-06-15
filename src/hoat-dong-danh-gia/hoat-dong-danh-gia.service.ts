@@ -52,7 +52,7 @@ export class HoatDongDanhGiaService extends BaseService {
             const result = await this.chuaDauRaMonHocService.isInSyllabus(Number(idCDRMH), idSyllabus);
             hoatDongDanhGia.chuanDauRaMonHoc.push(result);
           } catch (error) {
-            console.log(error);
+            throw error;
           }
         }
       }
@@ -89,20 +89,19 @@ export class HoatDongDanhGiaService extends BaseService {
     if (typeof result === 'undefined' || result === null) {
       const { page = 0, limit = LIMIT, sortBy, sortType, searchKey, idLoaiDanhGia, idSyllabus } = filter;
       const skip = page * limit;
-      console.log(Number.isNaN(Number(searchKey)) ? -1 : Number(searchKey));
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const [results, total] = await this.hoatDongDanhGiaService
         .createQueryBuilder('hddg')
-        .leftJoin('hddg.loaiDanhGia', 'ldg', 'ldg.isDeleted = false')
         .leftJoinAndSelect('hddg.updatedBy', 'updatedBy')
         .leftJoinAndSelect('hddg.createdBy', 'createdBy')
         .leftJoinAndSelect('hddg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted =${false}`)
-        .leftJoinAndSelect('hddg.loaiDanhGia', 'loaiDanhGia', `loaiDanhGia.isDeleted =${false}`)
+        .innerJoinAndSelect('hddg.loaiDanhGia', 'loaiDanhGia', `loaiDanhGia.isDeleted =${false}`)
         .where((qb) => {
-          idSyllabus ? qb.where('ldg.idSyllabus = :idSyllabus', { idSyllabus }) : {};
-          idLoaiDanhGia ? qb.andWhere('ldg.id = :idLoaiDanhGia', { idLoaiDanhGia }) : {};
+          qb.innerJoin('loaiDanhGia.syllabus', 'syllabus', 'syllabus.isDeleted = false');
+          idSyllabus ? qb.where('loaiDanhGia.idSyllabus = :idSyllabus', { idSyllabus }) : {};
+          idLoaiDanhGia ? qb.andWhere('loaiDanhGia.id = :idLoaiDanhGia', { idLoaiDanhGia }) : {};
           searchKey
-            ? qb.andWhere('hddg.ten LIKE :search OR hddg.ma LIKE :search OR hddg.tyLe = :tyle', {
+            ? qb.andWhere('(hddg.ten LIKE :search OR hddg.ma LIKE :search OR hddg.tyLe = :tyle)', {
                 search: `%${searchKey}%`,
                 tyle: Number.isNaN(Number(searchKey)) ? -1 : Number(searchKey)
               })
@@ -113,7 +112,7 @@ export class HoatDongDanhGiaService extends BaseService {
         })
         .andWhere('hddg.isDeleted = false')
         .skip(skip)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .getManyAndCount();
       result = { contents: results, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_HDDG_CACHE_TTL);
@@ -132,7 +131,10 @@ export class HoatDongDanhGiaService extends BaseService {
         .leftJoinAndSelect('hddg.updatedBy', 'updatedBy')
         .leftJoinAndSelect('hddg.createdBy', 'createdBy')
         .leftJoinAndSelect('hddg.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted =${false}`)
-        .leftJoinAndSelect('hddg.loaiDanhGia', 'loaiDanhGia', `loaiDanhGia.isDeleted =${false}`)
+        .innerJoinAndSelect('hddg.loaiDanhGia', 'loaiDanhGia', `loaiDanhGia.isDeleted =${false}`)
+        .where((qb) => {
+          qb.innerJoin('loaiDanhGia.syllabus', 'syllabus', 'syllabus.isDeleted = false');
+        })
         .andWhere('hddg.id = :id', { id: id })
         .andWhere('hddg.isDeleted =:isDeleted', { isDeleted: false })
         .getOne();
@@ -235,7 +237,7 @@ export class HoatDongDanhGiaService extends BaseService {
   async isInSyllabus(idHoatDongDanhGia: number, idSyllabus: number) {
     const query = this.hoatDongDanhGiaService
       .createQueryBuilder('hddg')
-      .leftJoin('hddg.loaiDanhGia', 'ldg', 'ldg.isDeleted = false')
+      .innerJoin('hddg.loaiDanhGia', 'ldg', 'ldg.isDeleted = false')
       .leftJoinAndSelect('ldg.createdBy', 'createdBy')
       .leftJoinAndSelect('ldg.updatedBy', 'updatedBy')
       .where((qb) => {
@@ -274,7 +276,7 @@ export class HoatDongDanhGiaService extends BaseService {
             const result = await this.chuaDauRaMonHocService.isInSyllabus(Number(idCDRMH), idSyllabus);
             hoatDongDanhGia.chuanDauRaMonHoc.push(result);
           } catch (error) {
-            console.log(error);
+            throw error;
           }
         }
       }

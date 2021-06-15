@@ -79,7 +79,7 @@ export class SyllabusService extends BaseService {
         .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
         .leftJoinAndSelect('sy.namHoc', 'namHoc')
         .andWhere(queryByCondition)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .skip(skip)
         .orderBy({ ...queryOrder });
       const [list, total] = await query.getManyAndCount();
@@ -219,7 +219,7 @@ export class SyllabusService extends BaseService {
       .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
       .leftJoinAndSelect('sy.namHoc', 'namHoc')
       .andWhere(queryByCondition)
-      .take(Number(limit) === -1 ? null: Number(limit));
+      .take(Number(limit) === -1 ? null : Number(limit));
     const results = await query.getMany();
     return results;
   }

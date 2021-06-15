@@ -50,7 +50,7 @@ export class ChuDeService extends BaseService {
         .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
         .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
         .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc', `hoatDongDayHoc.isDeleted = ${false}`)
-        .leftJoinAndSelect('cd.idSyllabus', 'syllabus')
+        .innerJoinAndSelect('cd.idSyllabus', 'syllabus', 'syllabus.isDeleted = false')
         .leftJoinAndSelect('cd.idLKHGD', 'lhkgd')
         .where((qb) => {
           qb.leftJoinAndSelect(
@@ -72,7 +72,7 @@ export class ChuDeService extends BaseService {
             : {};
         })
         .skip(skip)
-        .take(Number(limit) === -1 ? null: Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit))
         .andWhere(`cd.isDeleted = ${false}`)
         .getManyAndCount();
       result = { contents: list, total, page: Number(page) };
@@ -94,7 +94,7 @@ export class ChuDeService extends BaseService {
         .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
         .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
         .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc', `hoatDongDayHoc.isDeleted = ${false}`)
-        .leftJoinAndSelect('cd.idSyllabus', 'syllabus')
+        .innerJoinAndSelect('cd.idSyllabus', 'syllabus', 'syllabus.isDeleted = false')
         .leftJoinAndSelect('cd.idLKHGD', 'lhkgd')
         .where((qb) => {
           qb.leftJoinAndSelect(

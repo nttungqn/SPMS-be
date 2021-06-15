@@ -78,7 +78,7 @@ export class MucTieuMonHocService extends BaseService {
           .createQueryBuilder('mtmh')
           .leftJoinAndSelect('mtmh.createdBy', 'createdBy')
           .leftJoinAndSelect('mtmh.updatedBy', 'updatedBy')
-          .leftJoinAndSelect('mtmh.syllabus', 'syllabus')
+          .innerJoinAndSelect('mtmh.syllabus', 'syllabus', 'syllabus.isDeleted = false')
           .leftJoinAndSelect('mtmh.chuanDauRaCDIO', 'chuanDauRaCDIO', `chuanDauRaCDIO.isDeleted = ${false}`)
           .where((qb) => {
             qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
@@ -86,7 +86,7 @@ export class MucTieuMonHocService extends BaseService {
               .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
             idSyllabus ? qb.andWhere('mtmh.syllabus = :idSyllabus', { idSyllabus }) : {};
             searchKey
-              ? qb.andWhere('mtmh.ma LIKE :search OR mtmh.mota LIKE :search', {
+              ? qb.andWhere('(mtmh.ma LIKE :search OR mtmh.mota LIKE :search)', {
                   search: `%${searchKey}%`
                 })
               : {};
@@ -96,7 +96,7 @@ export class MucTieuMonHocService extends BaseService {
           })
           .andWhere('mtmh.isDeleted = false')
           .skip(skip)
-          .take(Number(limit) === -1 ? null: Number(limit))
+          .take(Number(limit) === -1 ? null : Number(limit))
           .getManyAndCount();
         result = { contents: results, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_MTMH_CACHE_TTL);
@@ -118,7 +118,7 @@ export class MucTieuMonHocService extends BaseService {
           .createQueryBuilder('mtmh')
           .leftJoinAndSelect('mtmh.createdBy', 'createdBy')
           .leftJoinAndSelect('mtmh.updatedBy', 'updatedBy')
-          .leftJoinAndSelect('mtmh.syllabus', 'syllabus')
+          .innerJoinAndSelect('mtmh.syllabus', 'syllabus', 'syllabus.isDeleted = false')
           .leftJoinAndSelect('mtmh.chuanDauRaCDIO', 'chuanDauRaCDIO', `chuanDauRaCDIO.isDeleted = ${false}`)
           .where((qb) => {
             qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
