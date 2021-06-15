@@ -47,15 +47,17 @@ export class KeHoachGiangDayService {
           .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'khgd.' + e + ' LIKE :search'))
           .join(' OR ');
         const nganhDaoTaoQuery = nganhDaoTao ? { nganhDaoTao } : {};
-        const [list, total] = await this.keHoachGiangDayRepository
+        const query = this.keHoachGiangDayRepository
           .createQueryBuilder('khgd')
-          .leftJoinAndSelect('khgd.nganhDaoTao', 'ndt', 'ndt.isDeleted = false')
           .leftJoinAndSelect('khgd.createdBy', 'createdBy')
           .leftJoinAndSelect('khgd.updatedBy', 'updatedBy')
+          .innerJoinAndSelect('khgd.nganhDaoTao', 'ctndt', 'ctndt.isDeleted = false')
           .where((qb) => {
-            qb.leftJoinAndSelect('ndt.nganhDaoTao', 'nganhDaoTao');
+            qb.innerJoin('ctndt.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where((qb) => {
+              qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+            });
             searchKey
-              ? qb.andWhere(searchQuery, {
+              ? qb.andWhere('( ' + searchQuery + ' )', {
                   search: `%${searchKey}%`
                 })
               : {};
@@ -65,8 +67,8 @@ export class KeHoachGiangDayService {
           })
           .andWhere({ ...nganhDaoTaoQuery, ...otherParam, isDeleted: false })
           .skip(skip)
-          .take(Number(limit) === -1 ? null : Number(limit))
-          .getManyAndCount();
+          .take(Number(limit) === -1 ? null : Number(limit));
+        const [list, total] = await query.getManyAndCount();
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_KHGD_CACHE_TTL);
       } catch (error) {
@@ -81,10 +83,18 @@ export class KeHoachGiangDayService {
     const key = format(REDIS_CACHE_VARS.DETAIL_KHGD_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      result = await this.keHoachGiangDayRepository.findOne({
-        where: { id, isDeleted: false },
-        relations: ['nganhDaoTao', 'nganhDaoTao.nganhDaoTao', 'createdBy', 'updatedBy']
-      });
+      result = await this.keHoachGiangDayRepository
+        .createQueryBuilder('khgd')
+        .leftJoinAndSelect('khgd.createdBy', 'createdBy')
+        .leftJoinAndSelect('khgd.updatedBy', 'updatedBy')
+        .innerJoinAndSelect('khgd.nganhDaoTao', 'ctndt', 'ctndt.isDeleted = false')
+        .where((qb) => {
+          qb.innerJoinAndSelect('ctndt.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where((qb) => {
+            qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+          });
+        })
+        .andWhere('khgd.isDeleted = false and khgd.id = :id', { id })
+        .getOne();
       if (!result) {
         throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
       }

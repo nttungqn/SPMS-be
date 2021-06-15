@@ -38,11 +38,22 @@ export class LoaiKhoiKienThucService {
         .join(' OR ');
       const [list, total] = await this.typeOfKnowledgeBlockRepository
         .createQueryBuilder('lkkt')
-        .leftJoinAndSelect('lkkt.khoiKienThuc', 'khoiKienThuc', 'khoiKienThuc.isDeleted = false')
         .leftJoinAndSelect('lkkt.gomNhom', 'gomNhom', 'gomNhom.isDeleted = false')
         .leftJoinAndSelect('lkkt.createdBy', 'createdBy')
         .leftJoinAndSelect('lkkt.updatedBy', 'updatedBy')
+        .innerJoinAndSelect('lkkt.khoiKienThuc', 'khoiKienThuc', 'khoiKienThuc.isDeleted = false')
         .where((qb) => {
+          qb.where((qb) => {
+            qb.innerJoinAndSelect('khoiKienThuc.chiTietNganh', 'chiTietNganh', 'chiTietNganh.isDeleted = false').where(
+              (qb) => {
+                qb.innerJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where(
+                  (qb) => {
+                    qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                  }
+                );
+              }
+            );
+          });
           searchKey
             ? qb.andWhere(searchQuery, {
                 search: `%${searchKey}%`
@@ -51,13 +62,6 @@ export class LoaiKhoiKienThucService {
           isSortFieldInForeignKey
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `lkkt.${sortBy}` : null, sortType);
-        })
-        .where((qb) => {
-          qb.leftJoinAndSelect('khoiKienThuc.chiTietNganh', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`).where(
-            (qb) => {
-              qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
-            }
-          );
         })
         .andWhere({ isDeleted: false, ...otherParam, ...queryByIdLKKT })
         .skip(skip)
@@ -94,9 +98,15 @@ export class LoaiKhoiKienThucService {
         .leftJoinAndSelect('lkkt.gomNhom', 'gomNhom', `gomNhom.isDeleted = ${false}`)
         .leftJoinAndSelect('lkkt.khoiKienThuc', 'khoiKienThuc', `khoiKienThuc.isDeleted = ${false}`)
         .where((qb) => {
-          qb.leftJoinAndSelect('gomNhom.chiTietGomNhom', 'chiTietGomNhom').where((qb) => {
-            qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
-          });
+          qb.leftJoinAndSelect('gomNhom.chiTietGomNhom', 'chiTietGomNhom', 'chiTietGomNhom.isDeleted = false')
+            .innerJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh', 'chiTietNganh.isDeleted = false')
+            .where((qb) => {
+              qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc')
+                .innerJoin('chiTietNganh.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false')
+                .where((qb) => {
+                  qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                });
+            });
         })
         .andWhere(`lkkt.id = ${id}`)
         .andWhere(`lkkt.isDeleted = ${false}`)

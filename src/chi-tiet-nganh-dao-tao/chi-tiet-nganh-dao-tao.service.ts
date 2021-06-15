@@ -48,11 +48,11 @@ export class ChiTietNganhDaoTaoService {
         .join(' OR ');
       const [list, total] = await this.chiTietNganhDTRepository
         .createQueryBuilder('ctndt')
-        .leftJoinAndSelect('ctndt.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false')
+        .innerJoinAndSelect('ctndt.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false')
         .leftJoinAndSelect('ctndt.createdBy', 'createdBy')
         .leftJoinAndSelect('ctndt.updatedBy', 'updatedBy')
         .where((qb) => {
-          qb.leftJoinAndSelect(
+          qb.innerJoinAndSelect(
             'nganhDaoTao.chuongTrinhDaoTao',
             'chuongTrinhDaoTao',
             'chuongTrinhDaoTao.isDeleted = false'
@@ -82,10 +82,20 @@ export class ChiTietNganhDaoTaoService {
     const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_NDT_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      result = await this.chiTietNganhDTRepository.findOne({
-        where: { id, isDeleted: false },
-        relations: ['nganhDaoTao', 'createdBy', 'updatedBy', 'nganhDaoTao.chuongTrinhDaoTao']
-      });
+      result = await this.chiTietNganhDTRepository
+        .createQueryBuilder('ctndt')
+        .innerJoinAndSelect('ctndt.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false')
+        .leftJoinAndSelect('ctndt.createdBy', 'createdBy')
+        .leftJoinAndSelect('ctndt.updatedBy', 'updatedBy')
+        .where((qb) => {
+          qb.innerJoinAndSelect(
+            'nganhDaoTao.chuongTrinhDaoTao',
+            'chuongTrinhDaoTao',
+            'chuongTrinhDaoTao.isDeleted = false'
+          );
+        })
+        .andWhere('(ctndt.id = :id and ctndt.isDeleted = false)', { id })
+        .getOne();
       if (!result) {
         throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
       }

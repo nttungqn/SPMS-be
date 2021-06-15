@@ -69,22 +69,26 @@ export class ChiTietKeHoachService {
           .createQueryBuilder('ctkhgd')
           .leftJoinAndSelect('ctkhgd.createdBy', 'createdBy')
           .leftJoinAndSelect('ctkhgd.updatedBy', 'updatedBy')
-          .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN')
+          .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN', 'idCTGN.isdeleted = false')
           .where((qb) => {
             qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom', `idCTGN.isDeleted = ${false}`).leftJoinAndSelect(
               'idCTGN.monHoc',
               'monHoc',
               `gomNhom.isDeleted = ${false}`
             );
-            qb.leftJoinAndSelect('ctkhgd.idKHGD', 'khgd', `khgd.isDeleted = ${false}`).where((qb) => {
-              qb.leftJoinAndSelect('khgd.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
+            qb.innerJoinAndSelect('ctkhgd.idKHGD', 'khgd', `khgd.isDeleted = ${false}`).where((qb) => {
+              qb.innerJoinAndSelect('khgd.nganhDaoTao', 'ctndt', `ctndt.isDeleted = ${false}`).where((qb) => {
+                qb.innerJoin('ctndt.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where((qb) => {
+                  qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                });
+              });
             });
           })
           .where(query);
 
         if (search != '') {
           queryBuilder.andWhere(
-            'idKHGD.maKeHoach LIKE :search OR idCTGN.id LIKE :search OR ctkhgd.ghiChu LIKE :search',
+            '(khgd.maKeHoach LIKE :search OR idCTGN.id LIKE :search OR ctkhgd.ghiChu LIKE :search)',
             {
               search: `%${search}%`
             }
@@ -99,7 +103,6 @@ export class ChiTietKeHoachService {
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_KE_HOACH_CACHE_TTL);
       } catch (error) {
-        console.log(error);
         throw new InternalServerErrorException();
       }
     }
@@ -116,17 +119,23 @@ export class ChiTietKeHoachService {
         .createQueryBuilder('ctkhgd')
         .leftJoinAndSelect('ctkhgd.createdBy', 'createdBy')
         .leftJoinAndSelect('ctkhgd.updatedBy', 'updatedBy')
-        .leftJoinAndSelect('ctkhgd.idKHGD', 'idKHGD')
-        .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN')
+        .innerJoinAndSelect('ctkhgd.idKHGD', 'idKHGD', 'idKHGD.isDeleted = false')
+        .leftJoinAndSelect('ctkhgd.idCTGN', 'idCTGN', 'idCTGN.isDeleted = false')
         .where((qb) => {
           qb.leftJoinAndSelect('idCTGN.gomNhom', 'gomNhom', `idCTGN.isDeleted = ${false}`).leftJoinAndSelect(
             'idCTGN.monHoc',
             'monHoc',
             `gomNhom.isDeleted = ${false}`
           );
-          qb.leftJoinAndSelect('idKHGD.nganhDaoTao', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`).where(
+          qb.innerJoinAndSelect('idKHGD.nganhDaoTao', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`).where(
             (qb) => {
-              qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
+              qb.innerJoinAndSelect(
+                'chiTietNganh.nganhDaoTao',
+                'nganhDaoTao',
+                `nganhDaoTao.isDeleted = ${false}`
+              ).where((qb) => {
+                qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+              });
             }
           );
         })
