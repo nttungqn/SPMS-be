@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, Length, Matches, Min } from 'class-validator';
 import { Column } from 'typeorm';
 
 export class CreateMonHocDto {
   @ApiProperty()
   @IsNotEmpty()
   @Column({ length: 10, name: 'ma' })
-  @Length(5)
+  @Matches(/^[a-zA-Z0-9]{5,10}$/, { message: 'Gồm số hoặc chữ và có 5 - 10 ký tự' })
   ma: string;
 
   @ApiProperty()

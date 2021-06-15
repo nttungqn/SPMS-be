@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ChuanDauRaNganhDaoTaoEntity } from 'chuan-dau-ra-nganh-dao-tao/entity/chuanDauRaNganhDaoTao.entity';
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsInt, IsNumber, IsNumberString, IsOptional, IsString, Matches, Min } from 'class-validator';
 import { TABLE_NAME } from 'constant/constant';
 import { NganhDaoTaoEntity } from 'ctdt/entity/nganhDaoTao.entity';
 import { KeHoachGiangDayEntity } from 'ke-hoach-giang-day/entity/keHoachGiangDay.entity';
@@ -16,7 +16,7 @@ export class ChiTietNganhDaoTaoEntity {
   @ApiProperty()
   @IsInt()
   @Column({ name: 'Khoa' })
-  @Min(1900)
+  @Min(1990)
   khoa: number;
 
   // @IsInt()

@@ -38,22 +38,28 @@ export class GomNhomService {
           .leftJoinAndSelect('gn.chiTietGomNhom', 'chiTietGomNhom')
           .where((qb) => {
             qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
-            qb.leftJoinAndSelect(
+            qb.innerJoinAndSelect(
               'gn.loaiKhoiKienThuc',
               'loaiKhoiKienThuc',
               `loaiKhoiKienThuc.isDeleted = ${false}`
             ).where((qb) => {
-              qb.leftJoinAndSelect(
+              qb.innerJoinAndSelect(
                 'loaiKhoiKienThuc.khoiKienThuc',
                 'khoiKienThuc',
                 `khoiKienThuc.isDeleted = ${false}`
               ).where((qb) => {
-                qb.leftJoinAndSelect(
+                qb.innerJoinAndSelect(
                   'khoiKienThuc.chiTietNganh',
                   'chiTietNganh',
                   `chiTietNganh.isDeleted = ${false}`
                 ).where((qb) => {
-                  qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
+                  qb.innerJoinAndSelect(
+                    'chiTietNganh.nganhDaoTao',
+                    'nganhDaoTao',
+                    `nganhDaoTao.isDeleted = ${false}`
+                  ).where((qb) => {
+                    qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                  });
                 });
               });
             });
@@ -62,7 +68,7 @@ export class GomNhomService {
 
         if (search != '') {
           queryBuilder.andWhere(
-            'idLKKT.ten LIKE :search OR gn.maGN LIKE :search OR gn.stt LIKE :search OR gn.soTCBB LIKE :search OR gn.loaiNhom LIKE :search OR gn.tieuDe LIKE :search',
+            '(idLKKT.ten LIKE :search OR gn.maGN LIKE :search OR gn.stt LIKE :search OR gn.soTCBB LIKE :search OR gn.loaiNhom LIKE :search OR gn.tieuDe LIKE :search)',
             { search: `%${search}%` }
           );
         }
@@ -92,9 +98,28 @@ export class GomNhomService {
         .leftJoinAndSelect('gn.idLKKT', 'idLKKT')
         .leftJoinAndSelect('gn.createdBy', 'createdBy')
         .leftJoinAndSelect('gn.updatedBy', 'updatedBy')
-        .leftJoinAndSelect('gn.chiTietGomNhom', 'chiTietGomNhom')
+        .leftJoinAndSelect('gn.chiTietGomNhom', 'chiTietGomNhom', 'chiTietGomNhom.isDeleted = false')
         .where((qb) => {
           qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
+          qb.innerJoinAndSelect(
+            'gn.loaiKhoiKienThuc',
+            'loaiKhoiKienThuc',
+            `loaiKhoiKienThuc.isDeleted = ${false}`
+          ).where((qb) => {
+            qb.innerJoinAndSelect(
+              'loaiKhoiKienThuc.khoiKienThuc',
+              'khoiKienThuc',
+              `khoiKienThuc.isDeleted = ${false}`
+            ).where((qb) => {
+              qb.innerJoinAndSelect('khoiKienThuc.chiTietNganh', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`)
+                .where((qb) => {
+                  qb.innerJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
+                })
+                .where((qb) => {
+                  qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                });
+            });
+          });
         })
         .andWhere(`gn.id = ${id}`)
         .andWhere(`gn.isDeleted = ${false}`)

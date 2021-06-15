@@ -45,27 +45,33 @@ export class ChiTietGomNhomService {
         const queryBuilder = this.chiTietGomNhomRepository
           .createQueryBuilder('ctgn')
           .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
-          .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom')
+          .innerJoinAndSelect('ctgn.gomNhom', 'gomNhom', 'gomNhom.isDeleted = false')
           .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
           .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
           .where((qb) => {
             qb.where((qb) => {
-              qb.leftJoinAndSelect(
+              qb.innerJoinAndSelect(
                 'gomNhom.loaiKhoiKienThuc',
                 'loaiKhoiKienThuc',
                 `loaiKhoiKienThuc.isDeleted = ${false}`
               ).where((qb) => {
-                qb.leftJoinAndSelect(
+                qb.innerJoinAndSelect(
                   'loaiKhoiKienThuc.khoiKienThuc',
                   'khoiKienThuc',
                   `khoiKienThuc.isDeleted = ${false}`
                 ).where((qb) => {
-                  qb.leftJoinAndSelect(
+                  qb.innerJoinAndSelect(
                     'khoiKienThuc.chiTietNganh',
                     'chiTietNganh',
                     `chiTietNganh.isDeleted = ${false}`
                   ).where((qb) => {
-                    qb.leftJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
+                    qb.innerJoinAndSelect(
+                      'chiTietNganh.nganhDaoTao',
+                      'nganhDaoTao',
+                      `nganhDaoTao.isDeleted = ${false}`
+                    ).where((qb) => {
+                      qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                    });
                   });
                 });
               });
@@ -75,7 +81,7 @@ export class ChiTietGomNhomService {
 
         if (search != '') {
           queryBuilder.andWhere(
-            'gomNhom.tieuDe LIKE :search OR monHoc.tenTiengViet LIKE :search OR ctgn.ghiChu LIKE :search',
+            '(gomNhom.tieuDe LIKE :search OR monHoc.tenTiengViet LIKE :search OR ctgn.ghiChu LIKE :search)',
             { search: `%${search}%` }
           );
         }
@@ -88,7 +94,6 @@ export class ChiTietGomNhomService {
         result = { contents: list, total, page: Number(page) };
         await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_GOM_NHOM_CACHE_TTL);
       } catch (error) {
-        console.log(error);
         throw new InternalServerErrorException();
       }
     }
@@ -121,7 +126,13 @@ export class ChiTietGomNhomService {
                     'chiTietNganh',
                     'chiTietNganh.isDeleted = false and chiTietNganh.id = :idCTNDT',
                     { idCTNDT }
-                  );
+                  ).where((qb) => {
+                    qb.innerJoin('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`).where(
+                      (qb) => {
+                        qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                      }
+                    );
+                  });
                 });
               }
             );
@@ -161,7 +172,13 @@ export class ChiTietGomNhomService {
                     'chiTietNganh',
                     'chiTietNganh.isDeleted = false and chiTietNganh.id = :idCTNDT',
                     { idCTNDT }
-                  );
+                  ).where((qb) => {
+                    qb.innerJoin('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`).where(
+                      (qb) => {
+                        qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                      }
+                    );
+                  });
                 }
               );
             }
@@ -178,10 +195,43 @@ export class ChiTietGomNhomService {
     const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      result = await this.chiTietGomNhomRepository.findOne({
-        where: { id, isDeleted: false },
-        relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
-      });
+      result = await this.chiTietGomNhomRepository
+        .createQueryBuilder('ctgn')
+        .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+        .innerJoinAndSelect('ctgn.gomNhom', 'gomNhom', 'gomNhom.isDeleted = false')
+        .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
+        .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
+        .where((qb) => {
+          qb.where((qb) => {
+            qb.innerJoinAndSelect(
+              'gomNhom.loaiKhoiKienThuc',
+              'loaiKhoiKienThuc',
+              `loaiKhoiKienThuc.isDeleted = ${false}`
+            ).where((qb) => {
+              qb.innerJoinAndSelect(
+                'loaiKhoiKienThuc.khoiKienThuc',
+                'khoiKienThuc',
+                `khoiKienThuc.isDeleted = ${false}`
+              ).where((qb) => {
+                qb.innerJoinAndSelect(
+                  'khoiKienThuc.chiTietNganh',
+                  'chiTietNganh',
+                  `chiTietNganh.isDeleted = ${false}`
+                ).where((qb) => {
+                  qb.innerJoinAndSelect(
+                    'chiTietNganh.nganhDaoTao',
+                    'nganhDaoTao',
+                    `nganhDaoTao.isDeleted = ${false}`
+                  ).where((qb) => {
+                    qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                  });
+                });
+              });
+            });
+          });
+        })
+        .andWhere('ctgn.id = :id and ctgn.isDeleted = false', { id })
+        .getOne();
       if (!result) {
         throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);
       }
@@ -219,8 +269,8 @@ export class ChiTietGomNhomService {
       chiTietGomNhom.ctgnMonHoctruoc = ctgnMonHoctruoc;
     }
     try {
-      const ctGomNhom = await this.chiTietGomNhomRepository.create(chiTietGomNhom);
-      const result = await this.chiTietGomNhomRepository.save(ctGomNhom);
+      //const ctGomNhom = await this.chiTietGomNhomRepository.create(chiTietGomNhom);
+      const result = await this.chiTietGomNhomRepository.save(chiTietGomNhom);
       const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, result?.id.toString());
       const detail = await this.findById(result?.id);
       await this.cacheManager.set(key, detail, REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_TTL);
@@ -328,23 +378,33 @@ export class ChiTietGomNhomService {
         .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
         .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
         .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
-        .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom')
+        .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom', `gomNhom.isDeleted = ${false}`)
         .where((qb) => {
           qb.where((qb) => {
-            qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc')
-              .where((qb) => {
-                qb.innerJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc')
-                  .where((qb) => {
-                    qb.innerJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh')
-                      .where(`chiTietNganh.khoa = ${khoa} and chiTietNganh.nganhDaoTao = ${idNganhDaoTao}`)
-                      .andWhere(`chiTietNganh.isDeleted = ${false}`);
-                  })
-                  .andWhere(`khoiKienThuc.isDeleted = ${false}`);
-              })
-              .andWhere(`gomNhom.isDeleted = ${false}`);
+            qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc', 'loaiKhoiKienThuc.isDeleted = false').where(
+              (qb) => {
+                qb.innerJoin(
+                  'loaiKhoiKienThuc.khoiKienThuc',
+                  'khoiKienThuc',
+                  `khoiKienThuc.isDeleted = ${false}`
+                ).where((qb) => {
+                  qb.innerJoin(
+                    'khoiKienThuc.chiTietNganh',
+                    'chiTietNganh',
+                    `chiTietNganh.isDeleted = ${false} and chiTietNganh.khoa = ${khoa} and chiTietNganh.nganhDaoTao = ${idNganhDaoTao}`
+                  ).where((qb) => {
+                    qb.innerJoin('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`).where(
+                      (qb) => {
+                        qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                      }
+                    );
+                  });
+                });
+              }
+            );
           });
           tenMonHoc
-            ? qb.andWhere(`monHoc.tenTiengViet LIKE '%${tenMonHoc}%' OR monHoc.tenTiengAnh LIKE '%${tenMonHoc}%'`)
+            ? qb.andWhere(`(monHoc.tenTiengViet LIKE '%${tenMonHoc}%' OR monHoc.tenTiengAnh LIKE '%${tenMonHoc}%')`)
             : {};
           maMonHoc ? qb.andWhere(`monHoc.ma LIKE '%${maMonHoc}%'`) : {};
         })
@@ -445,11 +505,19 @@ export class ChiTietGomNhomService {
         qb.where((qb) => {
           qb.innerJoin('ctkhgd.idKHGD', 'khgd', 'khgd.isDeleted = false and khgd.id = :idKHGD', {
             idKHGD: idKeHoachGiangDay
+          }).where((qb) => {
+            qb.innerJoin('khgd.nganhDaoTao', 'chiTietNganh', 'chiTietNganh.isDeleted = false').where((qb) => {
+              qb.innerJoin('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`).where(
+                (qb) => {
+                  qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                }
+              );
+            });
           });
         });
         searchKey
           ? qb.andWhere(
-              `monHoc.tenTiengViet LIKE '%${searchKey}%' OR monHoc.tenTiengAnh LIKE '%${searchKey}%' OR monHoc.ma LIKE '%${searchKey}%'`
+              `(monHoc.tenTiengViet LIKE '%${searchKey}%' OR monHoc.tenTiengAnh LIKE '%${searchKey}%' OR monHoc.ma LIKE '%${searchKey}%')`
             )
           : {};
       })

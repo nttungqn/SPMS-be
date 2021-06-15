@@ -78,7 +78,7 @@ export class MucTieuMonHocService extends BaseService {
           .createQueryBuilder('mtmh')
           .leftJoinAndSelect('mtmh.createdBy', 'createdBy')
           .leftJoinAndSelect('mtmh.updatedBy', 'updatedBy')
-          .leftJoinAndSelect('mtmh.syllabus', 'syllabus')
+          .innerJoinAndSelect('mtmh.syllabus', 'syllabus', 'syllabus.isDeleted = false')
           .leftJoinAndSelect('mtmh.chuanDauRaCDIO', 'chuanDauRaCDIO', `chuanDauRaCDIO.isDeleted = ${false}`)
           .where((qb) => {
             qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
@@ -86,7 +86,7 @@ export class MucTieuMonHocService extends BaseService {
               .leftJoinAndSelect('syllabus.monHoc', 'monHoc');
             idSyllabus ? qb.andWhere('mtmh.syllabus = :idSyllabus', { idSyllabus }) : {};
             searchKey
-              ? qb.andWhere('mtmh.ma LIKE :search OR mtmh.mota LIKE :search', {
+              ? qb.andWhere('(mtmh.ma LIKE :search OR mtmh.mota LIKE :search)', {
                   search: `%${searchKey}%`
                 })
               : {};
@@ -118,7 +118,7 @@ export class MucTieuMonHocService extends BaseService {
           .createQueryBuilder('mtmh')
           .leftJoinAndSelect('mtmh.createdBy', 'createdBy')
           .leftJoinAndSelect('mtmh.updatedBy', 'updatedBy')
-          .leftJoinAndSelect('mtmh.syllabus', 'syllabus')
+          .innerJoinAndSelect('mtmh.syllabus', 'syllabus', 'syllabus.isDeleted = false')
           .leftJoinAndSelect('mtmh.chuanDauRaCDIO', 'chuanDauRaCDIO', `chuanDauRaCDIO.isDeleted = ${false}`)
           .where((qb) => {
             qb.leftJoinAndSelect('syllabus.heDaoTao', 'heDaoTao')
