@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FE_ROUTE } from 'config/config';
 import { CONFIRM_SIGNUP_PATH, LIMIT, REDIS_CACHE_VARS, ROLE_SINHVIEN, USER_MESSAGE } from 'constant/constant';
@@ -87,7 +87,7 @@ export class UsersService {
     const key = format(REDIS_CACHE_VARS.DETAIL_USER_CACHE_KEY, JSON.stringify(query));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      result = await this.usersRepository.findOne({ ...query });
+      result = await this.usersRepository.findOne({where:{ ...query }, relations: ['role']});
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_USER_CACHE_TTL);
     }
 
@@ -217,17 +217,24 @@ export class UsersService {
   }
 
   async createUserNotConfirm(newData) {
-    const userEmail = await this.usersRepository.findOne({ email: newData?.email, isDeleted: false });
-    if (userEmail) {
-      return { message: 'EMAIL_EXISTS' };
+    try {
+      const userEmail = await this.usersRepository.findOne({ email: newData?.email, isDeleted: false });
+      if (userEmail) {
+        return { message: 'EMAIL_EXISTS' };
+      }
+      const userUsername = await this.usersRepository.findOne({ username: newData?.username, isDeleted: false });
+      if (userUsername) {
+        return { message: 'USERNAME_EXISTS' };
+      }
+      
+      const newUser = await this.usersRepository.create({ ...newData });
+      const user = await this.usersRepository.save(newUser);
+      return user;
+    } catch (error) {
+      if (error?.sqlState === '23000') {
+        throw new ConflictException(USER_MESSAGE.USER_EXIST);
+      }
+      throw new InternalServerErrorException('CREATE_USER_FAILED');
     }
-    const userUsername = await this.usersRepository.findOne({ username: newData?.username, isDeleted: false });
-    if (userUsername) {
-      return { message: 'USERNAME_EXISTS' };
-    }
-
-    const newUser = await this.usersRepository.create({ ...newData });
-    const user = await this.usersRepository.save(newUser);
-    return user;
   }
 }
