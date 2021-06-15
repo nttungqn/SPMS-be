@@ -236,4 +236,38 @@ export class SyllabusService extends BaseService {
   async delCacheAfterChange() {
     await this.cacheManager.delCacheList([REDIS_CACHE_VARS.LIST_SYLLABUS_CACHE_COMMON_KEY]);
   }
+
+  async findOneV2(id: number): Promise<Syllabus> {
+    const key = format(REDIS_CACHE_VARS.DETAIL_SYLLABUS_CACHE_KEY, id.toString());
+    let result = await this.cacheManager.get(key);
+    if (typeof result === 'undefined' || result === null) {
+      const query = await this.syllabusRepository
+        .createQueryBuilder('sy')
+        .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
+        .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
+        .leftJoinAndSelect('sy.namHoc', 'namHoc')
+        .leftJoinAndSelect('sy.monHoc', 'monHoc')
+        .leftJoinAndSelect('sy.createdBy', 'createdBy')
+        .where((qb) => {
+          qb.leftJoinAndSelect('monHoc.monHocTienQuyet', 'mhtq', 'mhtq.isDeleted = false').leftJoinAndSelect(
+            'mhtq.monHocTruoc',
+            'mht'
+          );
+          qb.leftJoinAndSelect('monHoc.chiTietGomNhom', 'chiTietGomNhom', 'chiTietGomNhom.isDeleted = false')
+            .leftJoinAndSelect('chiTietGomNhom.idGN', 'gomNhom', 'gomNhom.isDeleted = false')
+            .leftJoinAndSelect('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc', 'loaiKhoiKienThuc.isDeleted = false')
+            .leftJoinAndSelect('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc', 'khoiKienThuc.isDeleted = false');
+        })
+        .andWhere('sy.isDeleted = false')
+        .andWhere('sy.id = :id', { id });
+      result = await query.getOne();
+      if (!result) {
+        throw new NotFoundException(SYLLABUS_MESSAGE.SYLLABUS_ID_NOT_FOUND);
+      }
+      await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_SYLLABUS_CACHE_TTL);
+    }
+
+    if (result && typeof result === 'string') result = JSON.parse(result);
+    return result;
+  }
 }
