@@ -195,40 +195,42 @@ export class ChiTietGomNhomService {
     const key = format(REDIS_CACHE_VARS.DETAIL_CHI_TIET_GOM_NHOM_CACHE_KEY, id.toString());
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      // result = await this.chiTietGomNhomRepository.findOne({
-      //   where: { id, isDeleted: false },
-      //   relations: ['createdBy', 'updatedBy', 'monHoc', 'gomNhom']
-      // });
       result = await this.chiTietGomNhomRepository
         .createQueryBuilder('ctgn')
         .leftJoinAndSelect('ctgn.monHoc', 'monHoc')
+        .innerJoinAndSelect('ctgn.gomNhom', 'gomNhom', 'gomNhom.isDeleted = false')
         .leftJoinAndSelect('ctgn.createdBy', 'createdBy')
         .leftJoinAndSelect('ctgn.updatedBy', 'updatedBy')
-        .leftJoinAndSelect('ctgn.gomNhom', 'gomNhom', `gomNhom.isDeleted = ${false}`)
         .where((qb) => {
           qb.where((qb) => {
-            qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc', 'loaiKhoiKienThuc.isDeleted = false').where(
-              (qb) => {
-                qb.innerJoin(
-                  'loaiKhoiKienThuc.khoiKienThuc',
-                  'khoiKienThuc',
-                  `khoiKienThuc.isDeleted = ${false}`
+            qb.innerJoinAndSelect(
+              'gomNhom.loaiKhoiKienThuc',
+              'loaiKhoiKienThuc',
+              `loaiKhoiKienThuc.isDeleted = ${false}`
+            ).where((qb) => {
+              qb.innerJoinAndSelect(
+                'loaiKhoiKienThuc.khoiKienThuc',
+                'khoiKienThuc',
+                `khoiKienThuc.isDeleted = ${false}`
+              ).where((qb) => {
+                qb.innerJoinAndSelect(
+                  'khoiKienThuc.chiTietNganh',
+                  'chiTietNganh',
+                  `chiTietNganh.isDeleted = ${false}`
                 ).where((qb) => {
-                  qb.innerJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh', 'chiTietNganh.isDeleted = false').where(
-                    (qb) => {
-                      qb.innerJoin('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`).where(
-                        (qb) => {
-                          qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
-                        }
-                      );
-                    }
-                  );
+                  qb.innerJoinAndSelect(
+                    'chiTietNganh.nganhDaoTao',
+                    'nganhDaoTao',
+                    `nganhDaoTao.isDeleted = ${false}`
+                  ).where((qb) => {
+                    qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                  });
                 });
-              }
-            );
+              });
+            });
           });
         })
-        .andWhere('ctgn.isDeleted = false and ctgn.id = :id', { id })
+        .andWhere('ctgn.id = :id and ctgn.isDeleted = false', { id })
         .getOne();
       if (!result) {
         throw new NotFoundException(CHITIETGOMNHOM_MESSAGE.CHITIETGOMNHOM_ID_NOT_FOUND);

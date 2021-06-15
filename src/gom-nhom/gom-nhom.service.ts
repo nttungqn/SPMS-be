@@ -100,19 +100,26 @@ export class GomNhomService {
         .leftJoinAndSelect('gn.updatedBy', 'updatedBy')
         .leftJoinAndSelect('gn.chiTietGomNhom', 'chiTietGomNhom', 'chiTietGomNhom.isDeleted = false')
         .where((qb) => {
-          qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc')
-            .innerJoin('idLKKT.khoiKienThuc', 'khoiKienThuc', 'khoiKienThuc.isDeleted = false')
-            .where((qb) => {
-              qb.innerJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`).where(
-                (qb) => {
-                  qb.innerJoin('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`).where(
-                    (qb) => {
-                      qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
-                    }
-                  );
-                }
-              );
+          qb.leftJoinAndSelect('chiTietGomNhom.monHoc', 'monHoc');
+          qb.innerJoinAndSelect(
+            'gn.loaiKhoiKienThuc',
+            'loaiKhoiKienThuc',
+            `loaiKhoiKienThuc.isDeleted = ${false}`
+          ).where((qb) => {
+            qb.innerJoinAndSelect(
+              'loaiKhoiKienThuc.khoiKienThuc',
+              'khoiKienThuc',
+              `khoiKienThuc.isDeleted = ${false}`
+            ).where((qb) => {
+              qb.innerJoinAndSelect('khoiKienThuc.chiTietNganh', 'chiTietNganh', `chiTietNganh.isDeleted = ${false}`)
+                .where((qb) => {
+                  qb.innerJoinAndSelect('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`);
+                })
+                .where((qb) => {
+                  qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                });
             });
+          });
         })
         .andWhere(`gn.id = ${id}`)
         .andWhere(`gn.isDeleted = ${false}`)
