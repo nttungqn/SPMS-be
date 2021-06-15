@@ -56,7 +56,7 @@ export class MonHocTienQuyetService {
         relations: ['monHocTruoc', 'monHoc', 'createdBy', 'updatedBy'],
         where: query,
         skip,
-        take: limit
+        take: Number(limit) === -1 ? null : Number(limit)
       });
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_MHTQ_CACHE_TTL);
@@ -98,7 +98,7 @@ export class MonHocTienQuyetService {
         relations: ['monHocTruoc', 'monHoc', 'createdBy', 'updatedBy'],
         where: query,
         skip,
-        take: limit
+        take: Number(limit) === -1 ? null : Number(limit)
       });
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_MHTQ_MHT_CACHE_TTL);
