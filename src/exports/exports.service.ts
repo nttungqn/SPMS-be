@@ -197,7 +197,7 @@ export class ExportsService {
       const maNganhDaoTao = lodash.get(result, 'nganhDaoTao.maNganhDaoTao', '');
       const loaiHinh = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.loaiHinh', '');
       const trinhDo = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.trinhDo', '');
-      const tongTinChi = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.tongTinChi', '');
+      const tongTinChi = lodash.get(result, 'tongTinChi', '');
       const doiTuong = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.doiTuong', '');
       const quiTrinhDaoTao = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.quiTrinhDaoTao', '');
       const dieuKienTotNghiep = lodash.get(result, 'nganhDaoTao.chuongTrinhDaoTao.dieuKienTotNghiep', '');
@@ -286,7 +286,7 @@ export class ExportsService {
       const maNganhDaoTao = lodash.get(ctndt, 'nganhDaoTao.maNganhDaoTao', '');
       const loaiHinh = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.loaiHinh', '');
       const trinhDo = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.trinhDo', '');
-      const tongTinChi = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.tongTinChi', '');
+      const tongTinChi = lodash.get(ctndt, 'tongTinChi', '');
       const doiTuong = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.doiTuong', '');
       const quiTrinhDaoTao = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.quiTrinhDaoTao', '');
       const dieuKienTotNghiep = lodash.get(ctndt, 'nganhDaoTao.chuongTrinhDaoTao.dieuKienTotNghiep', '');

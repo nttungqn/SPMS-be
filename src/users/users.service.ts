@@ -107,8 +107,9 @@ export class UsersService {
         message3: 'Thank you!',
         author: 'SPMS Team'
       };
+      const user = await this.usersRepository.save(newUser);
       await sendMail(newData?.email, 'Confirm Register Account', dataMail);
-      return await this.usersRepository.save(newUser);
+      return user;
     } catch (error) {
       throw error;
     }
