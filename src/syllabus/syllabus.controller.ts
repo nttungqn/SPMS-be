@@ -93,7 +93,7 @@ export class SyllabusController {
   @ApiOkResponse({ description: 'OK', type: SyllabusResponse })
   @Get(':id')
   findOne(@Param('id', new ParseIntPipe()) id: number): Promise<Syllabus> {
-    return this.syllabusService.findOne(id);
+    return this.syllabusService.findOneV2(id);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
