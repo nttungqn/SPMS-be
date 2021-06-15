@@ -32,12 +32,6 @@ export class ChuanDauRaNganhDaoTaoService {
         isDeleted: false,
         ...rest
       };
-      // const list = await this.chuanDauRaNDTRepository.find({
-      //   relations: ['parent', 'nganhDaoTao', 'chuanDauRa', 'createdBy', 'updatedBy'],
-      //   skip,
-      //   take: limit,
-      //   where: query
-      // });
       const list = await this.chuanDauRaNDTRepository
         .createQueryBuilder('cdr')
         .innerJoinAndSelect('cdr.parent', 'parent', 'parent.isDeleted = false')
@@ -51,7 +45,7 @@ export class ChuanDauRaNganhDaoTaoService {
           });
         })
         .andWhere(query)
-        .take(limit)
+        .take(Number(limit) === -1 ? null : Number(limit))
         .skip(skip)
         .getMany();
       if (!list.length) {
