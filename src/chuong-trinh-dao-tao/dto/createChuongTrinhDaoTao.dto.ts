@@ -6,7 +6,7 @@ export class CreateChuongTrinhDaoTaoDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsNotEmpty()
-  @Matches(/^[a-zA-Z0-9]{5,10}$/, { message: 'Gồm số hoặc chữ và có 5 - 10 ký tự' })
+  @Matches(/^[a-zA-Z0-9]{5,10}$/, { message: 'Mã CTDT: Gồm số hoặc chữ và có 5 - 10 ký tự' })
   readonly maCTDT?: string;
 
   @IsString()
