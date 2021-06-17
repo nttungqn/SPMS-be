@@ -487,7 +487,7 @@ export class CloneService {
     try {
       // Xử lý chuẩn đầu ra
       let indexLv1 = 0;
-      for (const cdrlv1 of chuanDauRaList) {
+      for (const cdrlv1 of chuanDauRaList || []) {
         indexLv1++;
         keptProperties(cdrlv1, 'ma', 'chuanDauRa', 'children');
         keptProperties(cdrlv1.chuanDauRa, 'id');
@@ -496,7 +496,7 @@ export class CloneService {
         cdrlv1.updatedBy = user.id;
         cdrlv1.ma = `${indexLv1}`;
         let indexLv2 = 0;
-        for (const cdrlv2 of cdrlv1.children) {
+        for (const cdrlv2 of cdrlv1?.children || []) {
           indexLv2++;
           keptProperties(cdrlv2, 'ma', 'chuanDauRa', 'children');
           keptProperties(cdrlv2.chuanDauRa, 'id');
@@ -505,7 +505,7 @@ export class CloneService {
           cdrlv2.updatedBy = user.id;
           cdrlv2.ma = `${indexLv1}.${indexLv2}`;
           let indexLv3 = 0;
-          for (const cdrlv3 of cdrlv2.children) {
+          for (const cdrlv3 of cdrlv2?.children || []) {
             indexLv3++;
             keptProperties(cdrlv3, 'ma', 'chuanDauRa'); //Chỉ áp dụng 3 cấp
             keptProperties(cdrlv3.chuanDauRa, 'id');
@@ -522,20 +522,20 @@ export class CloneService {
       //delete ctndt.chuanDaura;
       await queryRunner.manager.getRepository(ChuanDauRaNganhDaoTaoEntity).save(chuanDauRaList);
       // xử lý khối kiến thức
-      for (const kktE of khoiKienThucList) {
+      for (const kktE of khoiKienThucList  || []) {
         kktE.chiTietNganh = Number(idCTNDT);
         kktE.createdBy = user.id;
         kktE.updatedBy = user.id;
         removeProperties(kktE, 'id', 'createdAt', 'updatedAt', 'isDeleted');
-        for (const lkktE of kktE.loaiKhoiKienThuc) {
+        for (const lkktE of kktE?.loaiKhoiKienThuc  || []) {
           lkktE.createdBy = user.id;
           lkktE.updatedBy = user.id;
           removeProperties(lkktE, 'id', 'isDeleted');
-          for (const gnE of lkktE.gomNhom) {
+          for (const gnE of lkktE?.gomNhom  || []) {
             gnE.createdBy = user.id;
             gnE.updatedBy = user.id;
             removeProperties(gnE, 'id', 'idLKKT', 'loaiKhoiKienThuc', 'createdAt', 'updatedAt', 'isDeleted');
-            for (const ctgnE of gnE.chiTietGomNhom) {
+            for (const ctgnE of gnE?.chiTietGomNhom || []) {
               ctgnE.createdBy = user.id;
               ctgnE.updatedBy = user.id;
               removeProperties(
@@ -574,17 +574,17 @@ export class CloneService {
 
       const results = await queryRunner.manager.getRepository(KhoiKienThucEntity).save(khoiKienThucList);
       const ctgnArr: ChiTietGomNhomEntity[] = [];
-      for (const kktE of results) {
-        for (const lkktK of kktE.loaiKhoiKienThuc) {
-          for (const gnE of lkktK.gomNhom) {
-            for (const ctgnE of gnE.chiTietGomNhom) {
+      for (const kktE of results || []) {
+        for (const lkktK of kktE?.loaiKhoiKienThuc || []) {
+          for (const gnE of lkktK?.gomNhom || []) {
+            for (const ctgnE of gnE?.chiTietGomNhom || []) {
               ctgnArr.push(ctgnE);
             }
           }
         }
       }
       // Xử lý Kế hoạch giảng dạy
-      for (const khgdE of keHoachGiangDayList) {
+      for (const khgdE of keHoachGiangDayList || []) {
         khgdE.nganhDaoTao = Number(idCTNDT);
         khgdE.createdBy = user.id;
         khgdE.updatedBy = user.id;
