@@ -12,7 +12,7 @@ export class CreateKhoiKienThucDto {
   chiTietNganh?: number;
 
   @ApiProperty()
-  @Column({ name: 'MaKTT' })
+  @Column({ name: 'MaKTT'})
   @IsOptional()
   maKKT?: string;
 

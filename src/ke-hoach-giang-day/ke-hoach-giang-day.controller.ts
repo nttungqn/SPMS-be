@@ -16,6 +16,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
@@ -62,30 +63,25 @@ export class KeHoachGiangDayController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiCreatedResponse({ description: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY })
+  @ApiConflictResponse({ description: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED })
   @ApiInternalServerErrorResponse({ description: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED })
   @ApiOperation({ summary: 'tạo mới kế hoạch giảng dạy' })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Req() req, @Body() newData: CreateKeHoachGiangDayDto, @Res() res): Promise<any> {
     const user = req.user || {};
-    try {
-      const result = await this.keHoachGiangDayService.create({
-        ...newData,
-        createdBy: user?.id,
-        updatedBy: user?.id
-      });
-      return res.status(HttpStatus.CREATED).json({
-        response: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY,
-        message: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY,
-        status: HttpStatus.CREATED,
-        id: result.id
-      });
-    } catch (error) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_FAILED,
-        error: lodash.get(error, 'response', 'error')
-      });
-    }
+
+    const result = await this.keHoachGiangDayService.create({
+      ...newData,
+      createdBy: user?.id,
+      updatedBy: user?.id
+    });
+    return res.status(HttpStatus.CREATED).json({
+      response: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY,
+      message: KEHOACHGIANGDAY_MESSAGE.CREATE_KEHOACHGIANGDAY_SUCCESSFULLY,
+      status: HttpStatus.CREATED,
+      id: result.id
+    });
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
