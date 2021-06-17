@@ -17,11 +17,15 @@ import { UsersEntity } from 'users/entity/user.entity';
 import { Cache } from 'cache-manager';
 import * as cryptoRandomString from 'crypto-random-string';
 import { sendMailResetPassword } from 'utils/sendMail';
+import { RedisCacheService } from 'cache/redisCache.service';
 import { type } from 'os';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersService: UsersService, @Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+  constructor(
+    private readonly usersService: UsersService,
+    @Inject(CACHE_MANAGER) private cacheManager: RedisCacheService
+  ) {}
   async login(email: string, password: string): Promise<any> {
     try {
       const user = await this.usersService.findOne({ email, isDeleted: false });
@@ -133,9 +137,12 @@ export class AuthService {
   async handleForgotPassword(user: UsersEntity) {
     try {
       const randomStr = cryptoRandomString({ length: 20, type: 'url-safe' });
-      await this.cacheManager.set(randomStr, user.id, { ttl: TTL_RESET_PASSWORD });
+      await this.cacheManager.set(randomStr, user.id, TTL_RESET_PASSWORD);
       const urlResetPassword = `${FE_ROUTE}/forgot-password/${randomStr}`;
-      return await sendMailResetPassword(user, urlResetPassword);
+      const errorRes = await sendMailResetPassword(user, urlResetPassword);
+      if (errorRes) {
+        throw new InternalServerErrorException(errorRes);
+      }
     } catch (error) {
       throw new InternalServerErrorException(AUTH_MESSAGE.SOME_THING_WENT_WRONG);
     }
