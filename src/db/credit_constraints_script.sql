@@ -129,7 +129,7 @@ begin
 	call procedure_update_ttc_ctndt_by_kkt(new.ID_ChiTietNganhDaoTao);
 end
 $$
-delimiter;
+delimiter ;
 
 DROP procedure IF EXISTS procedure_update_ttc_ctndt_by_kkt;
 delimiter $$
