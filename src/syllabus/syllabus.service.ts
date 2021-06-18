@@ -11,6 +11,7 @@ import { BaseService } from 'guards/base-service.dto';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
 import { UsersEntity } from 'users/entity/user.entity';
+import { ChiTietNganhDaoTaoService } from 'chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
 
 @Injectable()
 export class SyllabusService extends BaseService {
@@ -20,6 +21,7 @@ export class SyllabusService extends BaseService {
     private readonly shoolYearService: NamHocService,
     private readonly typeOfEduService: HeDaotaoService,
     private readonly subjectService: MonHocService,
+    private readonly chiTietNDTService: ChiTietNganhDaoTaoService,
     private cacheManager: RedisCacheService
   ) {
     super();
@@ -33,6 +35,7 @@ export class SyllabusService extends BaseService {
     await this.shoolYearService.findById(createSyllabus.namHoc);
     await this.typeOfEduService.findById(createSyllabus.heDaoTao);
     await this.subjectService.findById(createSyllabus.monHoc);
+    await this.chiTietNDTService.findById(createSyllabus.chiTietNDT);
 
     try {
       const result = await this.syllabusRepository.save(createSyllabus);
@@ -62,6 +65,7 @@ export class SyllabusService extends BaseService {
         .createQueryBuilder('sy')
         .leftJoinAndSelect('sy.monHoc', 'monHoc')
         .leftJoinAndSelect('sy.createdBy', 'createdBy')
+        .leftJoinAndSelect('sy.chiTietNDT', 'chiTietNDT')
         .where((qb) => {
           key
             ? qb.where('(monHoc.TenTiengViet LIKE :key OR monHoc.TenTiengAnh LIKE :key)', {
@@ -102,6 +106,7 @@ export class SyllabusService extends BaseService {
         .leftJoinAndSelect('sy.namHoc', 'namHoc')
         .leftJoinAndSelect('sy.monHoc', 'monHoc')
         .leftJoinAndSelect('sy.createdBy', 'createdBy')
+        .leftJoinAndSelect('sy.chiTietNDT', 'chiTietNDT')
         .where((qb) => {
           qb.leftJoinAndSelect('monHoc.monHocTienQuyet', 'mhtq', 'mhtq.isDeleted = false').leftJoinAndSelect(
             'mhtq.monHocTruoc',
@@ -127,7 +132,7 @@ export class SyllabusService extends BaseService {
       relations: ['createdBy']
     });
     this.checkPermission(syllabus.createdBy, updateBy);
-    const { namHoc, heDaoTao, monHoc } = updateSyllabus;
+    const { namHoc, heDaoTao, monHoc, chiTietNDT } = updateSyllabus;
     if (namHoc) {
       await this.shoolYearService.findById(namHoc);
       syllabus.namHoc = namHoc;
@@ -139,6 +144,10 @@ export class SyllabusService extends BaseService {
     if (monHoc) {
       await this.subjectService.findById(monHoc);
       syllabus.monHoc = monHoc;
+    }
+    if (chiTietNDT) {
+      await this.chiTietNDTService.findById(chiTietNDT);
+      syllabus.chiTietNDT = chiTietNDT;
     }
 
     if (await this.isExist(syllabus)) {

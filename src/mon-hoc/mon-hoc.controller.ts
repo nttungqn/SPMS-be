@@ -65,6 +65,11 @@ export class MonHocController {
     return res.sendFile('template-import-subjects.xlsx', { root: 'src/assets/templates' });
   }
 
+  @Get('chi-tiet-chuong-trinh-dao-tao/:idCTCTDT')
+  async getAllSubjectByIdCTCTDT(@Param('idCTCTDT', ParseIntPipe) idCTCTDT: number, @Query() filter: FilterMonHoc) {
+    return this.monHocService.getAllSubjectByIDCTNDT(idCTCTDT, filter);
+  }
+
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: 'Lấy danh sách các môn học' })
