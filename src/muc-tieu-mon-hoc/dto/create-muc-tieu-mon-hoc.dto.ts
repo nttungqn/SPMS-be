@@ -15,7 +15,7 @@ export class CreateMucTieuMonHocDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Length(5)
+  // @Length(5)
   moTa?: string;
 
   @ApiProperty()

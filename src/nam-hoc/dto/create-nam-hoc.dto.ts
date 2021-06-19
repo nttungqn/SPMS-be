@@ -8,7 +8,7 @@ export class CreateNamHocDto {
   ma?: string;
 
   @ApiProperty()
-  @Length(5)
+  // @Length(5)
   @Matches(/^[0-9]{4}-[0-9]{4}$/, { message: 'Tên : yyyy-yyyy' })
   ten?: string;
 }

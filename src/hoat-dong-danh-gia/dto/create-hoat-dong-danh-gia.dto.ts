@@ -23,7 +23,7 @@ export class CreateHoatDongDanhGiaDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  @Length(5)
+  // // @Length(5)
   moTa?: string;
 
   @ApiProperty()
