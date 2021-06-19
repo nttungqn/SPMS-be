@@ -64,10 +64,10 @@ export class CreateDetailChuongTrinhDaoTaoDto {
   @IsNotEmpty()
   readonly trinhDo?: string;
 
-  @IsInt()
-  @ApiProperty({ required: false, example: 0 })
-  @IsNotEmpty()
-  readonly tongTinChi?: number;
+  // @IsInt()
+  // @ApiProperty({ required: false, example: 0 })
+  // @IsNotEmpty()
+  // readonly tongTinChi?: number;
 
   @IsString()
   @ApiProperty({ required: false })
