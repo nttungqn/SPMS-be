@@ -21,7 +21,7 @@ export class CreateGomNhomDTO {
   @ApiProperty()
   @IsString()
   @Column({ name: 'TieuDe' })
-  @Length(5)
+  // @Length(5)
   tieuDe?: string;
 
   @ApiProperty()

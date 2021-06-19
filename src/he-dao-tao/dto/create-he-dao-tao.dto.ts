@@ -3,10 +3,10 @@ import { IsNotEmpty, Length } from 'class-validator';
 
 export class CreateHeDaoTaoDto {
   @ApiProperty()
-  @Length(5)
+  // // @Length(5)
   ma?: string;
 
   @ApiProperty()
-  @Length(5)
+  // // @Length(5)
   ten?: string;
 }

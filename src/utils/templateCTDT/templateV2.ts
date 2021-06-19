@@ -314,7 +314,7 @@ export default async (data) => `
                                                       return `
                                                                  <li class="li-menu-lv2">
                                                                       <p class="part-title">${item?.ten}</p>
-                                                                      <p>${item?.ghiChu}</p>
+                                                                      <p style="font-style: italic">Ghi chú: ${item?.ghiChu}</p>
 
                                                                       <ol>
                                                                            ${item?.loaiKhoiKienThuc

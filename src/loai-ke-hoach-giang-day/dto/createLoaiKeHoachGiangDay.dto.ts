@@ -13,6 +13,6 @@ export class CreateLoaiKeHoachGiangDayDto {
   @Column({ name: 'ten' })
   @IsString()
   @IsNotEmpty()
-  @Length(5)
+  // @Length(5)
   ten: string;
 }

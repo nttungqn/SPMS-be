@@ -14,7 +14,7 @@ export class CreateLoaiDanhGiaDto {
 
   @ApiProperty({ required: true })
   @IsNotEmpty()
-  @Length(5)
+  // @Length(5)
   ten?: string;
 
   @ApiProperty()

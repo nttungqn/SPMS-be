@@ -19,7 +19,7 @@ export class NganhDaoTaoEntity {
   @IsString()
   @ApiProperty()
   @Column()
-  @Length(5)
+  // @Length(5)
   @IsNotEmpty()
   ten: string;
 
