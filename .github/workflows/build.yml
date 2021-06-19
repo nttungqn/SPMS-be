@@ -1,4 +1,4 @@
-name: Testing
+name: Build
 
 on:
   push:
@@ -55,29 +55,7 @@ jobs:
         context: ./
         file: ./Dockerfile
         push: true
-        tags: ${{ env.IMAGE_TESTING }}
+        tags: ${{ steps.vars.outputs.tag }}
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
-  
-  deploy:
-    name: 'Update testing server'
-    needs: [build]
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: SSH and deploy in server
-      uses: appleboy/ssh-action@master
-      with:
-        HOST: ${{ secrets.SSH_HOST }}
-        USERNAME: ${{ secrets.SSH_USERNAME }}
-        KEY: ${{ secrets.SSH_KEY }}
-        PORT: ${{ secrets.SSH_PORT }}
-        script: |
-          cd /opt/nestjs-app
-          docker tag ${{ steps.vars.outputs.tag }} temp
-          docker rmi ${{ steps.vars.outputs.tag }}
-          docker pull ${{ steps.vars.outputs.tag }}
-          docker rmi temp
-          echo IMAGE=${{ steps.vars.outputs.tag }} > .env
-          docker-compose up -d
