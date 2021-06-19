@@ -19,7 +19,7 @@ export class AppController {
     }
   }
 
-  @Get('show-redis-keys')
+  @Get('show-all-keys')
   async getKeys() {
     return await this.appService.getKeys();
   }

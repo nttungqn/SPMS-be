@@ -42,6 +42,11 @@ jobs:
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v1
+    
+    - name: Get commit revision
+      id: vars
+      shell: bash
+      run: echo ::set-output name=tag::$(echo $(git describe --long --tags --always)| sed 's/v//')
 
     - name: Build and push
       id: docker_build
@@ -70,9 +75,9 @@ jobs:
         PORT: ${{ secrets.SSH_PORT }}
         script: |
           cd /opt/nestjs-app
-          docker tag ${{ env.IMAGE_TESTING }} temp
-          docker rmi ${{ env.IMAGE_TESTING }}
-          docker pull ${{ env.IMAGE_TESTING }}
+          docker tag ${{ steps.vars.outputs.tag }} temp
+          docker rmi ${{ steps.vars.outputs.tag }}
+          docker pull ${{ steps.vars.outputs.tag }}
           docker rmi temp
-          echo IMAGE=${{ env.IMAGE_TESTING }} > .env
+          echo IMAGE=${{ steps.vars.outputs.tag }} > .env
           docker-compose up -d
