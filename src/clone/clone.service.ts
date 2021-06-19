@@ -457,10 +457,7 @@ export class CloneService {
     idCTNDT: number,
     user: UsersEntity
   ) {
-    const queryRunner = this.conection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    const ctndtRepository = queryRunner.manager.getRepository(ChiTietNganhDaoTaoEntity);
+    const ctndtRepository = this.conection.getRepository(ChiTietNganhDaoTaoEntity);
     const ctndt = await ctndtRepository
       .createQueryBuilder('ctndt')
       .leftJoinAndSelect('ctndt.keHoachGiangDayList', 'khgd')
@@ -469,21 +466,20 @@ export class CloneService {
       .where({ id: idCTNDT })
       .getOne();
     if (ctndt.chuanDaura.length > 0 || ctndt.keHoachGiangDayList.length > 0 || ctndt.khoiKienThucList.length > 0) {
-      queryRunner.release();
       throw new BadRequestException(CLONE_MESSAGE.CONTENT_EXISTED);
     }
     if (chuanDauRaList.length === 0) {
-      queryRunner.release();
       throw new BadRequestException(CLONE_MESSAGE.CHUAN_DAU_RA_NOT_EMPTY);
     }
     if (khoiKienThucList.length === 0) {
-      queryRunner.release();
       throw new BadRequestException(CLONE_MESSAGE.KHOI_KIEN_THUC_NOT_EMPTY);
     }
     if (keHoachGiangDayList.length === 0) {
-      queryRunner.release();
       throw new BadRequestException(CLONE_MESSAGE.KE_HOACH_GIANG_DAY_NOT_EMPTY);
     }
+    const queryRunner = this.conection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
       // Xử lý chuẩn đầu ra
       let indexLv1 = 0;
@@ -516,10 +512,6 @@ export class CloneService {
           }
         }
       }
-      //Save Chuẩn đầu ra
-      //ctndt.chuanDaura = chuanDauRaList;
-      //await ctndtRepository.save(ctndt);
-      //delete ctndt.chuanDaura;
       await queryRunner.manager.getRepository(ChuanDauRaNganhDaoTaoEntity).save(chuanDauRaList);
       // xử lý khối kiến thức
       for (const kktE of khoiKienThucList  || []) {
@@ -557,21 +549,6 @@ export class CloneService {
       }
 
       // save khối kiến thức
-      // ctndt.khoiKienThucList = khoiKienThucList;
-      // const results = await ctndtRepository.save(ctndt);
-
-      // const ctgnArr: ChiTietGomNhomEntity[] = [];
-      // for (const kktE of results.khoiKienThucList) {
-      //   for (const lkktK of kktE.loaiKhoiKienThuc) {
-      //     for (const gnE of lkktK.gomNhom) {
-      //       for (const ctgnE of gnE.chiTietGomNhom) {
-      //         ctgnArr.push(ctgnE);
-      //       }
-      //     }
-      //   }
-      // }
-      // delete ctndt.khoiKienThucList;
-
       const results = await queryRunner.manager.getRepository(KhoiKienThucEntity).save(khoiKienThucList);
       const ctgnArr: ChiTietGomNhomEntity[] = [];
       for (const kktE of results || []) {
