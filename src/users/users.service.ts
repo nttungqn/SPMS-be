@@ -95,9 +95,6 @@ export class UsersService {
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
       result = await this.usersRepository.findOne({ where: { ...query }, relations: ['role'] });
-      if (!result) {
-        throw new NotFoundException(USER_MESSAGE.EMAIL_IS_NOT_EXIST);
-      }
 
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.DETAIL_USER_CACHE_TTL);
     }
