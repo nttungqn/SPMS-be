@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CTNGANHDAOTAO_MESSAGE, LIMIT, REDIS_CACHE_VARS } from 'constant/constant';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { ChiTietNganhDaoTaoEntity } from './entity/chiTietNganhDaoTao.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
@@ -20,7 +20,7 @@ export class ChiTietNganhDaoTaoService {
     @InjectRepository(ChiTietNganhDaoTaoEntity)
     private readonly chiTietNganhDTRepository: Repository<ChiTietNganhDaoTaoEntity>,
     private cacheManager: RedisCacheService
-  ) {}
+  ) { }
 
   async isExist(filter: FilterIsExistChiTietCTDT) {
     const { khoa, idNganhDaoTao } = filter;
@@ -59,8 +59,8 @@ export class ChiTietNganhDaoTaoService {
           );
           searchKey
             ? qb.andWhere(searchQuery, {
-                search: `%${searchKey}%`
-              })
+              search: `%${searchKey}%`
+            })
             : {};
           isSortFieldInForeignKey
             ? qb.orderBy(sortBy, sortType)
@@ -140,11 +140,13 @@ export class ChiTietNganhDaoTaoService {
     const checkExistData = await this.chiTietNganhDTRepository.findOne({
       khoa,
       nganhDaoTao,
-      isDeleted: false
+      isDeleted: false,
+      id: Not(id)
     });
     if (checkExistData) {
       throw new HttpException(CTNGANHDAOTAO_MESSAGE.CTNGANHDAOTAO_EXIST, HttpStatus.CONFLICT);
     }
+
     try {
       const updated = await this.chiTietNganhDTRepository.save({
         ...cTNganhDaoTao,
