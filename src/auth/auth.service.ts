@@ -24,7 +24,7 @@ import { type } from 'os';
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    @Inject(CACHE_MANAGER) private cacheManager: RedisCacheService
+    private cacheManager: RedisCacheService
   ) {}
   async login(email: string, password: string): Promise<any> {
     try {
@@ -137,7 +137,7 @@ export class AuthService {
   async handleForgotPassword(user: UsersEntity) {
     try {
       const randomStr = cryptoRandomString({ length: 20, type: 'url-safe' });
-      await this.cacheManager.set(randomStr, user.id, TTL_RESET_PASSWORD);
+      await this.cacheManager.setKeyForgotPassword(randomStr, user.id, TTL_RESET_PASSWORD);
       const urlResetPassword = `${FE_ROUTE}/forgot-password/${randomStr}`;
       const errorRes = await sendMailResetPassword(user, urlResetPassword);
       if (errorRes) {
@@ -150,7 +150,7 @@ export class AuthService {
 
   async handleGetResetPassword(radomStr: string) {
     try {
-      const userId = await this.cacheManager.get(radomStr);
+      const userId = await this.cacheManager.getKeyForgotPassword(radomStr);
       if (!userId) throw new NotFoundException(AUTH_MESSAGE.ACCOUNT_NOT_FOUND);
       return userId;
     } catch (error) {
