@@ -33,10 +33,7 @@ export const sendMail = async (
   attachments?: any
 ) => {
   const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    //host: 'myhost',
-    port: 465,
-    secure: true,
+    service: 'gmail',
     auth: {
       user: EMAIL_MAIL,
       pass: PASSWORD_MAIL
@@ -62,14 +59,14 @@ export const sendMail = async (
 
 export const sendMailResetPassword = async (user?: UsersEntity, urlResetPassword?: string) => {
   const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    //host: 'myhost',
-    port: 465,
-    secure: true,
+    service: 'gmail',
     auth: {
       user: EMAIL_MAIL,
       pass: PASSWORD_MAIL
-    }
+    },
+    secure: false,
+    // here it goes
+    tls: { rejectUnauthorized: false }
   });
 
   const mailOptions = {
@@ -79,16 +76,12 @@ export const sendMailResetPassword = async (user?: UsersEntity, urlResetPassword
     text: 'You received message from SPMS',
     html: resetPasswordEmailTemplate(user, urlResetPassword)
   };
-
-  let errorRes;
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      errorRes = error;
       console.log('Message error mail:', error);
     } else {
       console.log('sent mail');
     }
   });
   transporter.close();
-  return errorRes;
 };
