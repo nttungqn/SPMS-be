@@ -60,7 +60,7 @@ export const generateRows = (data = [], fields = [], groupType = '') => {
       const newItem = { ...item, groupType };
       return `<tr>
        <td>${index + 1}</td>
-       ${fields.map((field) => `<td>${get(newItem, field, '')}</td>`).join('')}
+       ${fields.map((field) => `<td>${get(newItem, field, '') || ''}</td>`).join('')}
        </tr>`;
     })
     .join('\n')}
