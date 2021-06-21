@@ -4,7 +4,7 @@ import { IsNotEmpty, Length, Matches } from 'class-validator';
 export class CreateNamHocDto {
   @ApiProperty()
   @IsNotEmpty()
-  @Matches(/^[a-zA-Z0-9]{2,}$/, { message: 'Mã chỉ bao gồm chữ và số' })
+  @Matches(/^[a-zA-Z0-9]{1,}$/, { message: 'Mã chỉ bao gồm chữ và số' })
   ma?: string;
 
   @ApiProperty()

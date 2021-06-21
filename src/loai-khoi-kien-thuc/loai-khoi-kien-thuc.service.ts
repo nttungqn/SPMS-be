@@ -121,7 +121,7 @@ export class LoaiKhoiKienThucService {
     if (await this.isExist(typeOfKnowledgeBlock)) {
       throw new ConflictException(LOAIKHOIKIENTHUC_MESSAGE.LOAIKHOIKIENTHUC_EXIST);
     }
-    const record = await this.typeOfKnowledgeBlockRepository.find({ ten: typeOfKnowledgeBlock.ten });
+    const record = await this.typeOfKnowledgeBlockRepository.findOne({ ten: typeOfKnowledgeBlock.ten });
     if (record) {
       throw new ConflictException('Tên đã tồn tại');
     }
