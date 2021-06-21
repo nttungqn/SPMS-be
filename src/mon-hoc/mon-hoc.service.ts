@@ -13,6 +13,7 @@ import { MonHocEntity } from './entity/mon-hoc.entity';
 import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
 import { Connection, getConnection, createConnection } from 'typeorm';
+import { FilterMonHoc } from './dto/filter-mon-hoc.dto';
 @Injectable()
 export class MonHocService {
   constructor(
@@ -230,24 +231,22 @@ export class MonHocService {
     if (typeof result === 'undefined' || result === null) {
       result = await this.monHocRepository
         .createQueryBuilder('mh')
-        .leftJoinAndSelect('mh.chiTietGomNhom', 'chiTietGomNhom')
+        .innerJoinAndSelect('mh.chiTietGomNhom', 'chiTietGomNhom', 'chiTietGomNhom.isDeleted = false')
         .where((qb) => {
-          qb.leftJoin('chiTietGomNhom.gomNhom', 'gomNhom')
-            .where((qb) => {
-              qb.leftJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc')
-                .where((qb) => {
-                  qb.leftJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc')
-                    .where((qb) => {
-                      qb.leftJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh')
-                        .where(`chiTietNganh.khoa = ${khoaTuyen}`)
-                        .andWhere(`chiTietNganh.nganhDaoTao = ${idNganhDaoTao}`)
-                        .andWhere(`chiTietNganh.isDeleted = ${false}`);
-                    })
-                    .andWhere(`khoiKienThuc.isDeleted = ${false}`);
-                })
-                .andWhere(`loaiKhoiKienThuc.isDeleted = ${false}`);
-            })
-            .andWhere(`chiTietGomNhom.isDeleted = ${false}`);
+          qb.innerJoin('chiTietGomNhom.gomNhom', 'gomNhom', 'gomNhom.isDeleted = false').where((qb) => {
+            qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc', 'loaiKhoiKienThuc.isDeleted = false').where(
+              (qb) => {
+                qb.innerJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc', 'khoiKienThuc.isDeleted = false').where(
+                  (qb) => {
+                    qb.innerJoin('khoiKienThuc.chiTietNganh', 'chiTietNganh')
+                      .where(`chiTietNganh.khoa = ${khoaTuyen}`)
+                      .andWhere(`chiTietNganh.nganhDaoTao = ${idNganhDaoTao}`)
+                      .andWhere(`chiTietNganh.isDeleted = ${false}`);
+                  }
+                );
+              }
+            );
+          });
         })
         .getMany();
       if (result.length === 0) {
@@ -258,6 +257,57 @@ export class MonHocService {
 
     if (result && typeof result === 'string') result = JSON.parse(result);
     return result;
+  }
+  async getAllSubjectByIDCTNDT(idCTNDT: number, filter) {
+    const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
+    const skip = Number(page) * Number(limit);
+    const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
+    const searchField = ['id', 'ma', 'tenTiengViet', 'tenTiengAnh', 'soTietLyThuyet', 'soTietThucHanh', 'soTietTuHoc'];
+    const searchQuery = searchField
+      .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'mh.' + e + ' LIKE :search'))
+      .join(' OR ');
+
+    const [list, total] = await this.monHocRepository
+      .createQueryBuilder('mh')
+      .innerJoin('mh.chiTietGomNhom', 'chiTietGomNhom', 'chiTietGomNhom.isDeleted = false')
+      .where((qb) => {
+        qb.innerJoin('chiTietGomNhom.gomNhom', 'gomNhom', 'gomNhom.isDeleted = false').where((qb) => {
+          qb.innerJoin('gomNhom.loaiKhoiKienThuc', 'loaiKhoiKienThuc', 'loaiKhoiKienThuc.isDeleted = false').where(
+            (qb) => {
+              qb.innerJoin('loaiKhoiKienThuc.khoiKienThuc', 'khoiKienThuc', 'khoiKienThuc.isDeleted = false').where(
+                (qb) => {
+                  qb.innerJoin(
+                    'khoiKienThuc.chiTietNganh',
+                    'chiTietNganh',
+                    'chiTietNganh.id = :idCTNDT and chiTietNganh.isDeleted = false',
+                    { idCTNDT }
+                  ).where((qb) => {
+                    qb.innerJoin('chiTietNganh.nganhDaoTao', 'nganhDaoTao', `nganhDaoTao.isDeleted = ${false}`).where(
+                      (qb) => {
+                        qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+                      }
+                    );
+                  });
+                }
+              );
+            }
+          );
+        });
+        searchKey
+          ? qb.andWhere(`(${searchQuery})`, {
+              search: `%${searchKey}%`
+            })
+          : {};
+        isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `mh.${sortBy}` : null, sortType);
+      })
+      .andWhere({ ...otherParam })
+      .skip(skip)
+      .take(Number(limit) === -1 ? null : Number(limit))
+      .getManyAndCount();
+    if (list.length === 0) {
+      throw new BadRequestException(`MONHOC_EMPTY`);
+    }
+    return { contents: list, total, page: Number(page) };
   }
   async isExist(oldData: MonHocEntity, newData: CreateMonHocDto): Promise<boolean> {
     if (!newData.ma) return false;

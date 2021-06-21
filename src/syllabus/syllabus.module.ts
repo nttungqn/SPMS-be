@@ -8,6 +8,7 @@ import { HeDaotaoModule } from 'he-dao-tao/he-dao-tao.module';
 import { MonHocModule } from 'mon-hoc/mon-hoc.module';
 import { RedisCacheModule } from 'cache/redisCache.module';
 import { PermissionModule } from 'permission/permission.module';
+import { ChiTietNganhDaoTaoModule } from 'chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { PermissionModule } from 'permission/permission.module';
     HeDaotaoModule,
     MonHocModule,
     RedisCacheModule,
-    PermissionModule
+    PermissionModule,
+    ChiTietNganhDaoTaoModule
   ],
   controllers: [SyllabusController],
   providers: [SyllabusService],
