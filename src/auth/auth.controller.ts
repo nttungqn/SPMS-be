@@ -145,7 +145,7 @@ export class AuthController {
 
   @Post('forgot-password')
   async forgotPassword(@Query() emailDto: EmailDto): Promise<any> {
-    const user = await this.usersService.findOne({ email: emailDto?.email, isDeleted: false });
+    const user = await this.usersService.findOneV2({ email: emailDto?.email, isDeleted: false });
     if (!user) {
       return new NotFoundException(AUTH_MESSAGE.ACCOUNT_NOT_FOUND);
     }
