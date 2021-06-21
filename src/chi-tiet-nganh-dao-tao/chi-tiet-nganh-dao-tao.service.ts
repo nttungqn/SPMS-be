@@ -20,7 +20,7 @@ export class ChiTietNganhDaoTaoService {
     @InjectRepository(ChiTietNganhDaoTaoEntity)
     private readonly chiTietNganhDTRepository: Repository<ChiTietNganhDaoTaoEntity>,
     private cacheManager: RedisCacheService
-  ) { }
+  ) {}
 
   async isExist(filter: FilterIsExistChiTietCTDT) {
     const { khoa, idNganhDaoTao } = filter;
@@ -59,8 +59,8 @@ export class ChiTietNganhDaoTaoService {
           );
           searchKey
             ? qb.andWhere(searchQuery, {
-              search: `%${searchKey}%`
-            })
+                search: `%${searchKey}%`
+              })
             : {};
           isSortFieldInForeignKey
             ? qb.orderBy(sortBy, sortType)

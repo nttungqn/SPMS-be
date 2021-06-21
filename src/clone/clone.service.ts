@@ -514,16 +514,16 @@ export class CloneService {
       }
       await queryRunner.manager.getRepository(ChuanDauRaNganhDaoTaoEntity).save(chuanDauRaList);
       // xử lý khối kiến thức
-      for (const kktE of khoiKienThucList  || []) {
+      for (const kktE of khoiKienThucList || []) {
         kktE.chiTietNganh = Number(idCTNDT);
         kktE.createdBy = user.id;
         kktE.updatedBy = user.id;
         removeProperties(kktE, 'id', 'createdAt', 'updatedAt', 'isDeleted');
-        for (const lkktE of kktE?.loaiKhoiKienThuc  || []) {
+        for (const lkktE of kktE?.loaiKhoiKienThuc || []) {
           lkktE.createdBy = user.id;
           lkktE.updatedBy = user.id;
           removeProperties(lkktE, 'id', 'isDeleted');
-          for (const gnE of lkktE?.gomNhom  || []) {
+          for (const gnE of lkktE?.gomNhom || []) {
             gnE.createdBy = user.id;
             gnE.updatedBy = user.id;
             removeProperties(gnE, 'id', 'idLKKT', 'loaiKhoiKienThuc', 'createdAt', 'updatedAt', 'isDeleted');

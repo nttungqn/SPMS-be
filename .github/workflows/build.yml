@@ -42,11 +42,6 @@ jobs:
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v1
-    
-    - name: Get commit revision
-      id: vars
-      shell: bash
-      run: echo ::set-output name=tag::$(echo $(git describe --long --tags --always)| sed 's/v//')
 
     - name: Build and push
       id: docker_build
@@ -59,3 +54,25 @@ jobs:
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
+  
+  deploy:
+    name: 'Update testing server'
+    needs: [build]
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: SSH and deploy in server
+      uses: appleboy/ssh-action@master
+      with:
+        HOST: ${{ secrets.SSH_HOST }}
+        USERNAME: ${{ secrets.SSH_USERNAME }}
+        KEY: ${{ secrets.SSH_KEY }}
+        PORT: ${{ secrets.SSH_PORT }}
+        script: |
+          cd /opt/nestjs-app
+          docker tag ${{ env.IMAGE_TESTING }} temp
+          docker rmi ${{ env.IMAGE_TESTING }}
+          docker pull ${{ env.IMAGE_TESTING }}
+          docker rmi temp
+          echo IMAGE=${{ env.IMAGE_TESTING }} > .env
+          docker-compose up -d

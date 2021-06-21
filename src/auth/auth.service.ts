@@ -22,10 +22,7 @@ import { type } from 'os';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly usersService: UsersService,
-    private cacheManager: RedisCacheService
-  ) {}
+  constructor(private readonly usersService: UsersService, private cacheManager: RedisCacheService) {}
   async login(email: string, password: string): Promise<any> {
     try {
       const user = await this.usersService.findOne({ email, isDeleted: false });

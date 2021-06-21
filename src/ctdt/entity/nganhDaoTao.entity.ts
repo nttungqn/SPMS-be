@@ -13,7 +13,8 @@ export class NganhDaoTaoEntity {
   @ApiProperty()
   @IsString()
   @Column()
-  @Matches(/^[a-zA-Z0-9_|]{1,}$/, { message: 'Mã CTDT: Gồm chữ và số có >= 1 ký tự' })  maNganhDaoTao: string;
+  @Matches(/^[a-zA-Z0-9_|]{1,}$/, { message: 'Mã CTDT: Gồm chữ và số có >= 1 ký tự' })
+  maNganhDaoTao: string;
 
   @IsString()
   @ApiProperty()

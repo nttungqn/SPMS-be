@@ -7,7 +7,7 @@ export class CreateMonHocDto {
   @IsNotEmpty()
   @Column({ length: 10, name: 'ma' })
   @Matches(/^[a-zA-Z0-9_|]{1,}$/, { message: 'Mã CTDT: Gồm chữ và số có >= 1 ký tự' })
-    ma: string;
+  ma: string;
 
   @ApiProperty()
   @IsNotEmpty()
