@@ -33,7 +33,10 @@ export const sendMail = async (
   attachments?: any
 ) => {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: 'Gmail',
+    //host: 'myhost',
+    port: 465,
+    secure: true,
     auth: {
       user: EMAIL_MAIL,
       pass: PASSWORD_MAIL
@@ -59,12 +62,14 @@ export const sendMail = async (
 
 export const sendMailResetPassword = async (user?: UsersEntity, urlResetPassword?: string) => {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: 'Gmail',
+    //host: 'myhost',
+    port: 465,
+    secure: true,
     auth: {
       user: EMAIL_MAIL,
       pass: PASSWORD_MAIL
-    },
-    secure: false
+    }
   });
 
   const mailOptions = {
