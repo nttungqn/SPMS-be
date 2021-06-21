@@ -1,4 +1,4 @@
-name: Build
+name: Testing
 
 on:
   push:
@@ -50,7 +50,7 @@ jobs:
         context: ./
         file: ./Dockerfile
         push: true
-        tags: ${{ steps.vars.outputs.tag }}
+        tags: ${{ env.IMAGE_TESTING }}
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
