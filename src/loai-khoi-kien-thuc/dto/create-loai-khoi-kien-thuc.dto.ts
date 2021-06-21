@@ -20,7 +20,7 @@ export class CreateLoaiKhoiKienThucDto {
   @ApiProperty()
   @Column({ name: 'Ten' })
   @IsNotEmpty()
-  @Length(5)
+  // @Length(5)
   ten?: string;
 
   @ApiProperty()

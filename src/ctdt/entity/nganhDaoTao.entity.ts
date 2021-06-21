@@ -13,13 +13,13 @@ export class NganhDaoTaoEntity {
   @ApiProperty()
   @IsString()
   @Column()
-  @Matches(/^[a-zA-Z0-9]{5,10}$/, { message: 'Gồm số hoặc chữ và có 5 - 10 ký tự' })
+  @Matches(/^[a-zA-Z0-9_|]{1,}$/, { message: 'Mã CTDT: Gồm chữ và số có >= 1 ký tự' })
   maNganhDaoTao: string;
 
   @IsString()
   @ApiProperty()
   @Column()
-  @Length(5)
+  // @Length(5)
   @IsNotEmpty()
   ten: string;
 

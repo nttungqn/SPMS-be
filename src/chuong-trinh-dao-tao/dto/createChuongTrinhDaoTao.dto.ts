@@ -6,7 +6,7 @@ export class CreateChuongTrinhDaoTaoDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsNotEmpty()
-  @Matches(/^[a-zA-Z0-9]{5,10}$/, { message: 'Mã CTDT: Gồm số hoặc chữ và có 5 - 10 ký tự' })
+  @Matches(/^[a-zA-Z0-9_|]{1,}$/, { message: 'Mã CTDT: Gồm chữ và số có >= 1 ký tự' })
   readonly maCTDT?: string;
 
   @IsString()
@@ -17,7 +17,7 @@ export class CreateChuongTrinhDaoTaoDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsNotEmpty()
-  @Length(5)
+  // // @Length(5)
   readonly ten?: string;
 
   @IsString()
@@ -33,13 +33,13 @@ export class CreateChuongTrinhDaoTaoDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsNotEmpty()
-  @Length(5)
+  // // @Length(5)
   readonly quiTrinhDaoTao?: string;
 
   @IsString()
   @ApiProperty({ required: false })
   @IsNotEmpty()
-  @Length(5)
+  // // @Length(5)
   readonly dieuKienTotNghiep?: string;
 }
 
@@ -64,10 +64,10 @@ export class CreateDetailChuongTrinhDaoTaoDto {
   @IsNotEmpty()
   readonly trinhDo?: string;
 
-  @IsInt()
-  @ApiProperty({ required: false, example: 0 })
-  @IsNotEmpty()
-  readonly tongTinChi?: number;
+  // @IsInt()
+  // @ApiProperty({ required: false, example: 0 })
+  // @IsNotEmpty()
+  // readonly tongTinChi?: number;
 
   @IsString()
   @ApiProperty({ required: false })

@@ -9,7 +9,7 @@ export default ({ subTitles = [], titles = [], data = [], fields = [], tongTC = 
           <tbody>
                ${data
                  .map((item, index) => {
-                   tongTC += item?.soTCBB;
+                   tongTC += Number(item?.soTCBB);
                    let str = '';
                    // [if(item?.loaiNhom === 'TC')] or if(item?.loaiNhom === 'BB')
                    str += `
@@ -60,7 +60,7 @@ export const generateRows = (data = [], fields = [], groupType = '') => {
       const newItem = { ...item, groupType };
       return `<tr>
        <td>${index + 1}</td>
-       ${fields.map((field) => `<td>${get(newItem, field, '')}</td>`).join('')}
+       ${fields.map((field) => `<td>${get(newItem, field, '') || ''}</td>`).join('')}
        </tr>`;
     })
     .join('\n')}

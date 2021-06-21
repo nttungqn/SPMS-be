@@ -261,7 +261,7 @@ export class ChuongTrinhDaoTaoService {
       await queryRunner.rollbackTransaction();
       return {
         message: CHUONGTRINHDAOTAO_MESSAGE.CREATE_CHUONGTRINHDAOTAO_FAILED,
-        isError: false,
+        isError: true,
         error: lodash.get(error, 'sqlMessage', 'error')
       };
     } finally {

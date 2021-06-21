@@ -9,11 +9,13 @@ export class RedisCacheService {
   ) {}
 
   async get(key): Promise<any> {
-    return await this.cache.get(key);
+    return undefined;
+    // return await this.cache.get(key);
   }
 
   async set(key, value, ttl = REDIS_CONFIG.TTL) {
-    await this.cache.set(key, value, { ttl });
+    return undefined;
+    // await this.cache.set(key, value, { ttl });
   }
 
   async reset() {
@@ -37,5 +39,13 @@ export class RedisCacheService {
       });
     });
     if (map.length > 0) await this.store.del(map);
+  }
+
+  async getKeyForgotPassword(key): Promise<any> {
+    return await this.store.get(key);
+  }
+
+  async setKeyForgotPassword(key, value, ttl = REDIS_CONFIG.TTL) {
+    await this.store.set(key, value, { ttl });
   }
 }

@@ -11,6 +11,6 @@ export class CreateHoatDongDayHocDTO {
   @ApiProperty()
   @Column({ name: 'ten' })
   @IsNotEmpty()
-  @Length(5)
+  // // @Length(5)
   ten: string;
 }
