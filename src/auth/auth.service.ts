@@ -136,7 +136,7 @@ export class AuthService {
       const randomStr = cryptoRandomString({ length: 20, type: 'url-safe' });
       await this.cacheManager.setKeyForgotPassword(randomStr, user.id, TTL_RESET_PASSWORD);
       const urlResetPassword = `${FE_ROUTE}/forgot-password/${randomStr}`;
-      const errorRes = await sendMailResetPassword(user, urlResetPassword);
+      const errorRes:any = await sendMailResetPassword(user, urlResetPassword);
       if (errorRes) {
         throw new InternalServerErrorException(errorRes);
       }

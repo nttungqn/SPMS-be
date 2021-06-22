@@ -74,6 +74,13 @@ export class SyllabusService extends BaseService {
             : {};
           createdBy ? qb.andWhere('createdBy.id =:idUser', { idUser: createdBy }) : {};
         })
+        .where((qb) => {
+        qb.leftJoinAndSelect('chiTietNDT.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where(
+          (qb) => {
+            qb.leftJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+          }
+        );
+      })
         .where({
           ...queryByIDHeDaoTao,
           ...queryByIDMonHoc,
