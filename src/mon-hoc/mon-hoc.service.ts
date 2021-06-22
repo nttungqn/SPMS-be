@@ -47,7 +47,7 @@ export class MonHocService {
         .leftJoinAndSelect('mh.updatedBy', 'updatedBy')
         .where((qb) => {
           searchKey
-            ? qb.andWhere(searchQuery, {
+            ? qb.andWhere('('+searchQuery+')', {
                 search: `%${searchKey}%`
               })
             : {};
@@ -215,6 +215,7 @@ export class MonHocService {
       await queryRunner.commitTransaction();
       return { message: MONHOC_MESSAGE.IMPORT_SUCCESSFULLY, isError: false };
     } catch (error) {
+      console.log(error)
       if (error instanceof BadRequestException) {
         throw error;
       }
@@ -342,7 +343,8 @@ export class MonHocService {
   async getListSubjectDuplicate(listSubjectCode) {
     const list = await this.monHocRepository.find({
       where: {
-        ma: In(listSubjectCode)
+        ma: In(listSubjectCode),
+        isDeleted:false
       },
       select: ['ma']
     });

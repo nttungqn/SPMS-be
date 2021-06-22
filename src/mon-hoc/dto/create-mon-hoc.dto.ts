@@ -5,7 +5,7 @@ import { Column } from 'typeorm';
 export class CreateMonHocDto {
   @ApiProperty()
   @IsNotEmpty()
-  @Column({ length: 10, name: 'ma' })
+  @Column({ length: 30, name: 'ma' })
   @Matches(/^[a-zA-Z0-9_|]{1,}$/, { message: 'Mã CTDT: Gồm chữ và số có >= 1 ký tự' })
   ma: string;
 
@@ -22,7 +22,7 @@ export class CreateMonHocDto {
   @ApiProperty()
   @IsInt()
   @Column({ name: 'soTinChi' })
-  @Min(0)
+  @Min(1)
   soTinChi: number;
 
   @ApiProperty()
