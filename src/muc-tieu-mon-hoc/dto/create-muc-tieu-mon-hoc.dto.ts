@@ -10,7 +10,7 @@ export class CreateMucTieuMonHocDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Matches(/^[a-zA-Z0-9_|]{1,}$/, { message: 'Mã CTDT: Gồm chữ và số có >= 1 ký tự' })
+  @Matches(/^[a-zA-Z0-9\.\#\_]{1,30}$/, { message: 'Mã : Gồm chữ và số có 1 - 30 ký tự, ký tự đặt biệt (#,.,_), ' })
   ma?: string;
 
   @ApiProperty()

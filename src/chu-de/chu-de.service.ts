@@ -49,7 +49,7 @@ export class ChuDeService extends BaseService {
         .leftJoinAndSelect('cd.updatedBy', 'updatedBy')
         .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
         .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
-        .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc', `hoatDongDayHoc.isDeleted = ${false}`)
+        .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc', )
         .innerJoinAndSelect('cd.idSyllabus', 'syllabus', 'syllabus.isDeleted = false')
         .leftJoinAndSelect('cd.idLKHGD', 'lhkgd')
         .where((qb) => {
@@ -65,7 +65,7 @@ export class ChuDeService extends BaseService {
           idSyllabus ? qb.andWhere('syllabus.id = :idSyllabus', { idSyllabus }) : {};
           idLKHGD ? qb.andWhere('lhkgd.id = :idLKHGD', { idLKHGD }) : {};
           searchKey
-            ? qb.andWhere('cd.ten LIKE :search OR cd.ma LIKE :search or cd.tuan = :tuan', {
+            ? qb.andWhere('(cd.ten LIKE :search OR cd.ma LIKE :search or cd.tuan = :tuan)', {
                 search: `%${searchKey}%`,
                 tuan: Number.isNaN(Number(searchKey)) ? -1 : searchKey
               })

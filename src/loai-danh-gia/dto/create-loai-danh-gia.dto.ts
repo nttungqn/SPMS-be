@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches, Max, Min } from 'class-validator';
 
 export class CreateLoaiDanhGiaDto {
   @ApiProperty({ required: true })
@@ -9,7 +9,7 @@ export class CreateLoaiDanhGiaDto {
 
   @ApiProperty({ required: true })
   @IsNotEmpty()
-  @Length(3)
+  @Matches(/^[a-zA-Z0-9\.\#\_]{2,30}$/, { message: 'Mã : Gồm chữ và số có 2 - 30 ký tự, ký tự đặt biệt (#,.,_), ' })
   ma?: string;
 
   @ApiProperty({ required: true })

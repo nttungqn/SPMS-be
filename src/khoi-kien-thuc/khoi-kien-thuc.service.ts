@@ -65,7 +65,7 @@ export class KhoiKienThucService {
           }
         );
         searchKey
-          ? qb.andWhere(searchQuery, {
+          ? qb.andWhere('('+searchQuery+')', {
               search: `%${searchKey}%`
             })
           : {};

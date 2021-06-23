@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsOptional, IsString, Length, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Length, Matches, Min } from 'class-validator';
 
 export class CreateChuDeDto {
   @ApiProperty({ required: true })
@@ -15,7 +15,7 @@ export class CreateChuDeDto {
   @ApiProperty({ required: true })
   @IsString()
   @IsNotEmpty()
-  @Length(2)
+  @Matches(/^[a-zA-Z0-9\.\#\_]{2,30}$/, { message: 'Mã : Gồm chữ và số có 2 - 30 ký tự, ký tự đặt biệt (#,.,_), ' })
   ma?: string;
 
   @ApiProperty()

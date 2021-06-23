@@ -1,6 +1,6 @@
 import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, Matches, Min } from 'class-validator';
 
 export class CreateChuanDauRaMonHocDto {
   @ApiProperty()
@@ -12,6 +12,7 @@ export class CreateChuanDauRaMonHocDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @Matches(/^[a-zA-Z0-9\.\#\_]{2,30}$/, { message: 'Mã : Gồm chữ và số có 2 - 30 ký tự, ký tự đặt biệt (#,.,_), ' })
   ma?: string;
 
   @ApiProperty()
