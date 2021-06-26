@@ -37,6 +37,7 @@ export class ChuanDauRaService {
             : qb.orderBy(sortBy ? `cdr.${sortBy}` : null, sortType);
         })
         .andWhere(query)
+        .skip(skip)
         .getManyAndCount();
       if (!list.length) {
         throw new HttpException(CHUANDAURA_MESSAGE.CHUANDAURA_EMPTY, HttpStatus.NOT_FOUND);

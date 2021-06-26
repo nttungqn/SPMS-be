@@ -11,6 +11,7 @@ import { Connection, getConnection, createConnection } from 'typeorm';
 import { NganhDaoTaoEntity } from 'ctdt/entity/nganhDaoTao.entity';
 import { ChiTietNganhDaoTaoEntity } from 'chi-tiet-nganh-dao-tao/entity/chiTietNganhDaoTao.entity';
 import * as lodash from 'lodash';
+import { FilterChuongTrinhDaoTao } from './dto/filterChuongTrinhDaoTao.dto';
 
 @Injectable()
 export class ChuongTrinhDaoTaoService {
@@ -19,16 +20,15 @@ export class ChuongTrinhDaoTaoService {
     private cacheManager: RedisCacheService,
     private connection: Connection
   ) {}
-  async findAll(filter): Promise<ChuongTrinhDaoTaoEntity[] | any> {
+  async findAll(filter:FilterChuongTrinhDaoTao): Promise<ChuongTrinhDaoTaoEntity[] | any> {
     const key = format(REDIS_CACHE_VARS.LIST_CTDT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, updatedAt, ...otherParam } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, updatedAt, maCTDT } = filter;
       const finalSortType = updatedAt ? updatedAt : sortType ? sortType : 'ASC';
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const searchField = [
-        'id',
         'maCTDT',
         'loaiHinh',
         'trinhDo',
@@ -46,15 +46,16 @@ export class ChuongTrinhDaoTaoService {
         .leftJoinAndSelect('ctdt.updatedBy', 'updatedBy')
         .where((qb) => {
           searchKey
-            ? qb.andWhere(searchQuery, {
+            ? qb.andWhere(`(${searchQuery})`, {
                 search: `%${searchKey}%`
               })
-            : {};
+            : {}
+            maCTDT?qb.andWhere('ctdt.maCTDT = :maCTDT',{maCTDT}):{}
           isSortFieldInForeignKey
             ? qb.orderBy(sortBy, finalSortType)
             : qb.orderBy(sortBy ? `ctdt.${sortBy}` : null, finalSortType);
         })
-        .andWhere({ ...otherParam, isDeleted: false })
+        .andWhere('ctdt.isDeleted = false')
         .skip(skip)
         .take(Number(limit) === -1 ? null : Number(limit))
         .getManyAndCount();

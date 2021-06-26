@@ -29,7 +29,7 @@ export class HoatDongDayHocService {
         .leftJoinAndSelect('hddh.updatedBy', 'updatedBy')
         .where((qb) => {
           searchKey
-            ? qb.andWhere('hddh.ma LIKE :search OR hddh.ten LIKE :search', {
+            ? qb.andWhere('(hddh.ma LIKE :search OR hddh.ten LIKE :search)', {
                 search: `%${searchKey}%`
               })
             : {};

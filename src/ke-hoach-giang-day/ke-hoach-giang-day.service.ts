@@ -37,24 +37,25 @@ export class KeHoachGiangDayService {
           searchKey = '',
           sortBy,
           sortType,
-          CTNganhDaoTao: nganhDaoTao,
+          CTNganhDaoTao,
           ...otherParam
         } = filter;
         const skip = Number(page) * Number(limit);
         const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
-        const searchField = ['id', 'tenHocKy', 'maKeHoach'];
+        const searchField = ['tenHocKy', 'maKeHoach'];
         const searchQuery = searchField
           .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'khgd.' + e + ' LIKE :search'))
           .join(' OR ');
-        const nganhDaoTaoQuery = nganhDaoTao ? { nganhDaoTao } : {};
+        const nganhDaoTaoQuery = CTNganhDaoTao ? { nganhDaoTao:CTNganhDaoTao } : {};
         const query = this.keHoachGiangDayRepository
           .createQueryBuilder('khgd')
           .leftJoinAndSelect('khgd.createdBy', 'createdBy')
           .leftJoinAndSelect('khgd.updatedBy', 'updatedBy')
           .innerJoinAndSelect('khgd.nganhDaoTao', 'ctndt', 'ctndt.isDeleted = false')
           .where((qb) => {
-            qb.innerJoinAndSelect('ctndt.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where((qb) => {
-              qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+            qb.innerJoinAndSelect('ctndt.nganhDaoTao', 'ndt', 'ndt.isDeleted = false').where((qb) => {
+              qb.innerJoin('ndt.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false')
+              qb.where({ ...nganhDaoTaoQuery, ...otherParam, isDeleted: false })
             });
             searchKey
               ? qb.andWhere('( ' + searchQuery + ' )', {
@@ -65,7 +66,6 @@ export class KeHoachGiangDayService {
               ? qb.orderBy(sortBy, sortType)
               : qb.orderBy(sortBy ? `khgd.${sortBy}` : null, sortType);
           })
-          .andWhere({ ...nganhDaoTaoQuery, ...otherParam, isDeleted: false })
           .skip(skip)
           .take(Number(limit) === -1 ? null : Number(limit));
         const [list, total] = await query.getManyAndCount();
@@ -93,7 +93,7 @@ export class KeHoachGiangDayService {
             qb.innerJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
           });
         })
-        .andWhere('khgd.isDeleted = false and khgd.id = :id', { id })
+        .andWhere('(khgd.isDeleted = false and khgd.id = :id)', { id })
         .getOne();
       if (!result) {
         throw new HttpException(KEHOACHGIANGDAY_MESSAGE.KEHOACHGIANGDAY_ID_NOT_FOUND, HttpStatus.NOT_FOUND);
