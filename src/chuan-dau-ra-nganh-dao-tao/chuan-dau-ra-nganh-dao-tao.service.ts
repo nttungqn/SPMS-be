@@ -75,7 +75,7 @@ export class ChuanDauRaNganhDaoTaoService {
             qb.innerJoin('ndt.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
           });
         })
-        .andWhere('cdr.isDeleted = false and cdr.id = :id', { id })
+        .andWhere('(cdr.isDeleted = false and cdr.id = :id)', { id })
         .getOne();
       if (!result) {
         throw new HttpException(

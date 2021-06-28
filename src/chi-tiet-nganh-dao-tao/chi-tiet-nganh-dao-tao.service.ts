@@ -13,6 +13,7 @@ import { RedisCacheService } from 'cache/redisCache.service';
 import * as format from 'string-format';
 import { IChiTietNganhDaoTao } from './interfaces/chiTietNganhDaoTao.interface';
 import { FilterIsExistChiTietCTDT } from './dto/filter-exist-CTNganhDaoTao.dto';
+import { FilterCTNganhDaoTaoDto } from './dto/filterCTNganhDaoTao.dto';
 
 @Injectable()
 export class ChiTietNganhDaoTaoService {
@@ -20,7 +21,7 @@ export class ChiTietNganhDaoTaoService {
     @InjectRepository(ChiTietNganhDaoTaoEntity)
     private readonly chiTietNganhDTRepository: Repository<ChiTietNganhDaoTaoEntity>,
     private cacheManager: RedisCacheService
-  ) {}
+  ) { }
 
   async isExist(filter: FilterIsExistChiTietCTDT) {
     const { khoa, idNganhDaoTao } = filter;
@@ -35,18 +36,18 @@ export class ChiTietNganhDaoTaoService {
     return checkExistData ? checkExistData : null;
   }
 
-  async findAll(filter: any): Promise<any> {
+  async findAll(filter: FilterCTNganhDaoTaoDto): Promise<any> {
     const key = format(REDIS_CACHE_VARS.LIST_CHI_TIET_NDT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
-      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, ...otherParam } = filter;
+      const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, khoa, nganhDaoTao } = filter;
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
       const searchField = ['id', 'khoa', 'tongTinChi', 'coHoiNgheNghiep', 'mucTieuChung'];
       const searchQuery = searchField
         .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'ctndt.' + e + ' LIKE :search'))
         .join(' OR ');
-      const [list, total] = await this.chiTietNganhDTRepository
+      const query = await this.chiTietNganhDTRepository
         .createQueryBuilder('ctndt')
         .innerJoinAndSelect('ctndt.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false')
         .leftJoinAndSelect('ctndt.createdBy', 'createdBy')
@@ -56,20 +57,22 @@ export class ChiTietNganhDaoTaoService {
             'nganhDaoTao.chuongTrinhDaoTao',
             'chuongTrinhDaoTao',
             'chuongTrinhDaoTao.isDeleted = false'
-          );
+          )
           searchKey
-            ? qb.andWhere(searchQuery, {
-                search: `%${searchKey}%`
-              })
+            ? qb.andWhere(`(${searchQuery})`, {
+              search: `%${searchKey}%`
+            })
             : {};
+          khoa ? qb.andWhere('ctndt.khoa = :khoa', { khoa }) : {}
+          nganhDaoTao ? qb.andWhere('ctndt.nganhDaoTao =:nganhDaoTao',{nganhDaoTao}):{}
           isSortFieldInForeignKey
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `ctndt.${sortBy}` : null, sortType);
         })
-        .andWhere({ ...otherParam, isDeleted: false })
+        .andWhere('ctndt.isDeleted = false')
         .skip(skip)
         .take(Number(limit) === -1 ? null : Number(limit))
-        .getManyAndCount();
+      const [list, total] = await query.getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_NDT_CACHE_TTL);
     }

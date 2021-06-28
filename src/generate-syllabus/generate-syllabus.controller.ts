@@ -23,8 +23,6 @@ import {
   ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { GENERATE_SYLLABUS_MESSAGE, SYLLABUS_MESSAGE } from 'constant/constant';
-import { Roles } from 'guards/roles.decorator';
-import { Role } from 'guards/roles.enum';
 import { RolesGuard } from 'guards/roles.guard';
 import { SyllabusDto } from './dto/syllabus.dto';
 import { GenerateSyllabusService } from './generate-syllabus.service';
@@ -35,7 +33,6 @@ export class GenerateSyllabusController {
   constructor(private readonly generateSyllabusService: GenerateSyllabusService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles([Role.GIAOVIEN, Role.ADMIN])
   @ApiBearerAuth('token')
   @ApiUnauthorizedResponse({ description: GENERATE_SYLLABUS_MESSAGE.GENERATE_SYLLABUS_NOT_AUTHORIZED })
   @ApiInternalServerErrorResponse({ description: GENERATE_SYLLABUS_MESSAGE.GENERATE_SYLLABUS_FAILED })

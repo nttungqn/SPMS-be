@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RedisCacheService } from 'cache/redisCache.service';
 import { LIMIT, CHITIETGOMNHOM_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
 import { MonHocEntity } from 'mon-hoc/entity/mon-hoc.entity';
-import { stringify } from 'querystring';
 import { Repository } from 'typeorm';
 import { CreateChiTietGomNhomDTO } from './dto/create-chi-tiet-gom-nhom.dto';
 import { FilterByNganhDaoTao } from './dto/filter-by-nganh-dao-tao.dto';
