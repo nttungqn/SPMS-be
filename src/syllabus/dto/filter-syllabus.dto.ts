@@ -23,6 +23,11 @@ export class GetSyllabusFilterDto extends BaseFilterDto {
   @IsNumberString()
   idHeDaotao: number;
 
+  @ApiProperty({ required: false, description: 'Id chi tiết ngành đào tạo' })
+  @IsOptional()
+  @IsNumberString()
+  idCTNDT: number;
+
   createdBy?: number;
 
   @ApiProperty({ required: false, description: 'Sắp xếp tăng dần,giảm dần ASC | DESC ' })

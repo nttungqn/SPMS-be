@@ -53,42 +53,34 @@ export class SyllabusService extends BaseService {
     const keyRedis = format(REDIS_CACHE_VARS.LIST_SYLLABUS_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(keyRedis);
     if (typeof result === 'undefined' || result === null) {
-      const { key, page = 0, limit = LIMIT, updatedAt, createdBy, idHeDaotao, idMonHoc, idNamHoc } = filter;
+      const { key, page = 0, limit = LIMIT, updatedAt, createdBy, idHeDaotao, idMonHoc, idNamHoc, idCTNDT } = filter;
       const skip = page * limit;
       const queryOrder: OrderByCondition = updatedAt ? { 'sy.updatedAt': updatedAt } : {};
       const isDeleted = false;
       const queryByCondition = `sy.isDeleted = ${isDeleted}`;
-      const queryByIDNamHoc = idNamHoc ? { namHoc: idNamHoc } : {};
-      const queryByIDHeDaoTao = idHeDaotao ? { heDaoTao: idHeDaotao } : {};
-      const queryByIDMonHoc = idMonHoc ? { monHoc: idMonHoc } : {};
       const query = this.syllabusRepository
         .createQueryBuilder('sy')
         .leftJoinAndSelect('sy.monHoc', 'monHoc')
         .leftJoinAndSelect('sy.createdBy', 'createdBy')
         .leftJoinAndSelect('sy.chiTietNDT', 'chiTietNDT')
-        .where((qb) => {
-          key
-            ? qb.where('(monHoc.TenTiengViet LIKE :key OR monHoc.TenTiengAnh LIKE :key)', {
-                key: `%${key}%`
-              })
-            : {};
-          createdBy ? qb.andWhere('createdBy.id =:idUser', { idUser: createdBy }) : {};
-        })
-        .where((qb) => {
-        qb.leftJoinAndSelect('chiTietNDT.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where(
-          (qb) => {
-            qb.leftJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
-          }
-        );
-      })
-        .where({
-          ...queryByIDHeDaoTao,
-          ...queryByIDMonHoc,
-          ...queryByIDNamHoc
-        })
         .leftJoinAndSelect('sy.heDaoTao', 'heDaoTao')
         .leftJoinAndSelect('sy.updatedBy', 'updatedBy')
         .leftJoinAndSelect('sy.namHoc', 'namHoc')
+        .where((qb) => {
+          qb.leftJoinAndSelect('chiTietNDT.nganhDaoTao', 'nganhDaoTao', 'nganhDaoTao.isDeleted = false').where((qb) => {
+            qb.leftJoin('nganhDaoTao.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+          });
+          key
+            ? qb.andWhere('(monHoc.TenTiengViet LIKE :key OR monHoc.TenTiengAnh LIKE :key OR monHoc.ma LIKE :key)', {
+                key: `%${key}%`
+              })
+            : {};
+          idHeDaotao ? qb.andWhere('heDaoTao.id = :idHeDaotao', { idHeDaotao }) : {};
+          idNamHoc ? qb.andWhere('namHoc.id = :idNamHoc', { idNamHoc }) : {};
+          idMonHoc ? qb.andWhere('monHoc.id = :idMonHoc', { idMonHoc }) : {};
+          idCTNDT ? qb.andWhere('chiTietNDT.id = :idCTNDT', { idCTNDT }) : {};
+          createdBy ? qb.andWhere('createdBy.id =:idUser', { idUser: createdBy }) : {};
+        })
         .andWhere(queryByCondition)
         .take(Number(limit) === -1 ? null : Number(limit))
         .skip(skip)
