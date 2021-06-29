@@ -53,7 +53,7 @@ export class ExportsController {
   async receiveDataExportPdf(@Req() req, @Body() body: postDataDto, @Res() res): Promise<any> {
     try {
       res.setHeader('Content-disposition', `attachment; filename=${body.fileName || 'noname'}.pdf`);
-      await pdf.create(await htmlTemlpateV2(body.data), options).toStream(function (err, stream) {
+      await pdf.create(body.data, options).toStream(function (err, stream) {
         if (err) return console.log(err);
         stream.pipe(res);
         stream.on('end', () => res.end());
