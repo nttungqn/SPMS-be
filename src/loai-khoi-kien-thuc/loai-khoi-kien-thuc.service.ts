@@ -22,7 +22,7 @@ export class LoaiKhoiKienThucService {
     @InjectRepository(LoaiKhoiKienThucEntity)
     private typeOfKnowledgeBlockRepository: Repository<LoaiKhoiKienThucEntity>,
     private cacheManager: RedisCacheService
-  ) { }
+  ) {}
 
   async findAll(filter: any) {
     const key = format(REDIS_CACHE_VARS.LIST_LKKT_CACHE_KEY, JSON.stringify(filter));
@@ -55,13 +55,13 @@ export class LoaiKhoiKienThucService {
           });
           searchKey
             ? qb.andWhere(`(${searchQuery})`, {
-              search: `%${searchKey}%`
-            })
+                search: `%${searchKey}%`
+              })
             : {};
           isSortFieldInForeignKey
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `lkkt.${sortBy}` : null, sortType);
-          idKhoiKienThuc ? qb.andWhere('khoiKienThuc.id = :idKhoiKienThuc', { idKhoiKienThuc }) : {}
+          idKhoiKienThuc ? qb.andWhere('khoiKienThuc.id = :idKhoiKienThuc', { idKhoiKienThuc }) : {};
         })
         .andWhere('lkkt.isDeleted = false')
         .skip(skip)

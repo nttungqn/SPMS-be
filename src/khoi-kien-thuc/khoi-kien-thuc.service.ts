@@ -45,7 +45,7 @@ export class KhoiKienThucService {
     }
   }
 
-  async findAll(filter:filterKnowledgeBlock) {
+  async findAll(filter: filterKnowledgeBlock) {
     const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, chiTietNganh } = filter;
     const skip = Number(page) * Number(limit);
     const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
@@ -65,12 +65,12 @@ export class KhoiKienThucService {
           }
         );
         searchKey
-          ? qb.andWhere('('+searchQuery+')', {
+          ? qb.andWhere('(' + searchQuery + ')', {
               search: `%${searchKey}%`
             })
           : {};
         isSortFieldInForeignKey ? qb.orderBy(sortBy, sortType) : qb.orderBy(sortBy ? `kkt.${sortBy}` : null, sortType);
-        chiTietNganh?qb.andWhere('chiTietNganh.id = :chiTietNganh',{chiTietNganh}):{}
+        chiTietNganh ? qb.andWhere('chiTietNganh.id = :chiTietNganh', { chiTietNganh }) : {};
       })
       .andWhere('kkt.isDeleted = false')
       .skip(skip)

@@ -79,9 +79,9 @@ export class HoatDongDanhGiaService extends BaseService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
-      console.log(error)
-      if(error?.sqlState==='45000'){
-        throw new BadRequestException(error?.sqlMessage)
+      console.log(error);
+      if (error?.sqlState === '45000') {
+        throw new BadRequestException(error?.sqlMessage);
       }
       throw new InternalServerErrorException(HOATDONGDANHGIA_MESSAGE.CREATE_HOATDONGDANHGIA_FAILED);
     }
@@ -202,8 +202,8 @@ export class HoatDongDanhGiaService extends BaseService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
-      if(error?.sqlState==='45000'){
-        throw new BadRequestException(error?.sqlMessage)
+      if (error?.sqlState === '45000') {
+        throw new BadRequestException(error?.sqlMessage);
       }
       throw new InternalServerErrorException(HOATDONGDANHGIA_MESSAGE.UPDATE_HOATDONGDANHGIA_FAILED);
     }

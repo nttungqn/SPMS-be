@@ -1,4 +1,10 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChuanDauRaMonHocService } from 'chuan-dau-ra-mon-hoc/chuan-dau-ra-mon-hoc.service';
 import { LIMIT, LOAIDANHGIA_MESSAGE, REDIS_CACHE_VARS } from 'constant/constant';
@@ -46,8 +52,8 @@ export class LoaiDanhGiaService extends BaseService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
-      if(error?.sqlState == '45000'){
-        throw new BadRequestException(error?.sqlMessage)
+      if (error?.sqlState == '45000') {
+        throw new BadRequestException(error?.sqlMessage);
       }
       throw new InternalServerErrorException(LOAIDANHGIA_MESSAGE.CREATE_LOAIDANHGIA_FAILED);
     }
@@ -159,8 +165,8 @@ export class LoaiDanhGiaService extends BaseService {
       await this.delCacheAfterChange();
       return result;
     } catch (error) {
-      if(error?.sqlState == '45000'){
-        throw new BadRequestException(error?.sqlMessage)
+      if (error?.sqlState == '45000') {
+        throw new BadRequestException(error?.sqlMessage);
       }
       throw new InternalServerErrorException(LOAIDANHGIA_MESSAGE.UPDATE_LOAIDANHGIA_FAILED);
     }
