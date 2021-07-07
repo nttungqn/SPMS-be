@@ -25,8 +25,9 @@ const FIREBASECONFIG = {
   measurementId: 'G-B0QRZVC2GM',
   databaseURL: 'https://spms-f664f.firebaseio.com'
 };
+
 const REDIS_CONFIG =
-  process.env.REDIS_HOST === 'db_redis'
+  process.env.REDIS_HOST === 'http://68.183.176.74/'
     ? {
         HOST: process.env.REDIS_HOST || 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com',
         PORT: +process.env.REDIS_PORT || 18872,

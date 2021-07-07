@@ -21,7 +21,7 @@ export class ChiTietNganhDaoTaoService {
     @InjectRepository(ChiTietNganhDaoTaoEntity)
     private readonly chiTietNganhDTRepository: Repository<ChiTietNganhDaoTaoEntity>,
     private cacheManager: RedisCacheService
-  ) { }
+  ) {}
 
   async isExist(filter: FilterIsExistChiTietCTDT) {
     const { khoa, idNganhDaoTao } = filter;
@@ -57,21 +57,21 @@ export class ChiTietNganhDaoTaoService {
             'nganhDaoTao.chuongTrinhDaoTao',
             'chuongTrinhDaoTao',
             'chuongTrinhDaoTao.isDeleted = false'
-          )
+          );
           searchKey
             ? qb.andWhere(`(${searchQuery})`, {
-              search: `%${searchKey}%`
-            })
+                search: `%${searchKey}%`
+              })
             : {};
-          khoa ? qb.andWhere('ctndt.khoa = :khoa', { khoa }) : {}
-          nganhDaoTao ? qb.andWhere('ctndt.nganhDaoTao =:nganhDaoTao',{nganhDaoTao}):{}
+          khoa ? qb.andWhere('ctndt.khoa = :khoa', { khoa }) : {};
+          nganhDaoTao ? qb.andWhere('ctndt.nganhDaoTao =:nganhDaoTao', { nganhDaoTao }) : {};
           isSortFieldInForeignKey
             ? qb.orderBy(sortBy, sortType)
             : qb.orderBy(sortBy ? `ctndt.${sortBy}` : null, sortType);
         })
         .andWhere('ctndt.isDeleted = false')
         .skip(skip)
-        .take(Number(limit) === -1 ? null : Number(limit))
+        .take(Number(limit) === -1 ? null : Number(limit));
       const [list, total] = await query.getManyAndCount();
       result = { contents: list, total, page: Number(page) };
       await this.cacheManager.set(key, result, REDIS_CACHE_VARS.LIST_CHI_TIET_NDT_CACHE_TTL);

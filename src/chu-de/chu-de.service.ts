@@ -49,7 +49,7 @@ export class ChuDeService extends BaseService {
         .leftJoinAndSelect('cd.updatedBy', 'updatedBy')
         .leftJoinAndSelect('cd.hoatDongDanhGia', 'hoatDongDanhGia', `hoatDongDanhGia.isDeleted = ${false}`)
         .leftJoinAndSelect('cd.chuanDauRaMonHoc', 'chuanDauRaMonHoc', `chuanDauRaMonHoc.isDeleted = ${false}`)
-        .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc', )
+        .leftJoinAndSelect('cd.hoatDongDayHoc', 'hoatDongDayHoc')
         .innerJoinAndSelect('cd.idSyllabus', 'syllabus', 'syllabus.isDeleted = false')
         .leftJoinAndSelect('cd.idLKHGD', 'lhkgd')
         .where((qb) => {

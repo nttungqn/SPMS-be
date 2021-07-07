@@ -20,7 +20,7 @@ export class ChuongTrinhDaoTaoService {
     private cacheManager: RedisCacheService,
     private connection: Connection
   ) {}
-  async findAll(filter:FilterChuongTrinhDaoTao): Promise<ChuongTrinhDaoTaoEntity[] | any> {
+  async findAll(filter: FilterChuongTrinhDaoTao): Promise<ChuongTrinhDaoTaoEntity[] | any> {
     const key = format(REDIS_CACHE_VARS.LIST_CTDT_CACHE_KEY, JSON.stringify(filter));
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
@@ -28,15 +28,7 @@ export class ChuongTrinhDaoTaoService {
       const finalSortType = updatedAt ? updatedAt : sortType ? sortType : 'ASC';
       const skip = Number(page) * Number(limit);
       const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
-      const searchField = [
-        'maCTDT',
-        'loaiHinh',
-        'trinhDo',
-        'dieuKienTotNghiep',
-        'ten',
-        'doiTuong',
-        'quiTrinhDaoTao'
-      ];
+      const searchField = ['maCTDT', 'loaiHinh', 'trinhDo', 'dieuKienTotNghiep', 'ten', 'doiTuong', 'quiTrinhDaoTao'];
       const searchQuery = searchField
         .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'ctdt.' + e + ' LIKE :search'))
         .join(' OR ');
@@ -49,8 +41,8 @@ export class ChuongTrinhDaoTaoService {
             ? qb.andWhere(`(${searchQuery})`, {
                 search: `%${searchKey}%`
               })
-            : {}
-            maCTDT?qb.andWhere('ctdt.maCTDT = :maCTDT',{maCTDT}):{}
+            : {};
+          maCTDT ? qb.andWhere('ctdt.maCTDT = :maCTDT', { maCTDT }) : {};
           isSortFieldInForeignKey
             ? qb.orderBy(sortBy, finalSortType)
             : qb.orderBy(sortBy ? `ctdt.${sortBy}` : null, finalSortType);

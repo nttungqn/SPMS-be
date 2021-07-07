@@ -31,22 +31,14 @@ export class KeHoachGiangDayService {
     let result = await this.cacheManager.get(key);
     if (typeof result === 'undefined' || result === null) {
       try {
-        const {
-          limit = LIMIT,
-          page = 0,
-          searchKey = '',
-          sortBy,
-          sortType,
-          CTNganhDaoTao,
-          ...otherParam
-        } = filter;
+        const { limit = LIMIT, page = 0, searchKey = '', sortBy, sortType, CTNganhDaoTao, ...otherParam } = filter;
         const skip = Number(page) * Number(limit);
         const isSortFieldInForeignKey = sortBy ? sortBy.trim().includes('.') : false;
         const searchField = ['tenHocKy', 'maKeHoach'];
         const searchQuery = searchField
           .map((e) => (e.includes('.') ? e + ' LIKE :search' : 'khgd.' + e + ' LIKE :search'))
           .join(' OR ');
-        const nganhDaoTaoQuery = CTNganhDaoTao ? { nganhDaoTao:CTNganhDaoTao } : {};
+        const nganhDaoTaoQuery = CTNganhDaoTao ? { nganhDaoTao: CTNganhDaoTao } : {};
         const query = this.keHoachGiangDayRepository
           .createQueryBuilder('khgd')
           .leftJoinAndSelect('khgd.createdBy', 'createdBy')
@@ -54,8 +46,8 @@ export class KeHoachGiangDayService {
           .innerJoinAndSelect('khgd.nganhDaoTao', 'ctndt', 'ctndt.isDeleted = false')
           .where((qb) => {
             qb.innerJoinAndSelect('ctndt.nganhDaoTao', 'ndt', 'ndt.isDeleted = false').where((qb) => {
-              qb.innerJoin('ndt.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false')
-              qb.where({ ...nganhDaoTaoQuery, ...otherParam, isDeleted: false })
+              qb.innerJoin('ndt.chuongTrinhDaoTao', 'ctdt', 'ctdt.isDeleted = false');
+              qb.where({ ...nganhDaoTaoQuery, ...otherParam, isDeleted: false });
             });
             searchKey
               ? qb.andWhere('( ' + searchQuery + ' )', {
