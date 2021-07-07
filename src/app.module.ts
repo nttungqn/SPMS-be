@@ -43,6 +43,7 @@ import { ResourcesModule } from './resources/resources.module';
 import { GenerateSyllabusModule } from 'generate-syllabus/generate-syllabus.module';
 import { ExportSyllabusModule } from 'export-syllabus/export-syllabus.module';
 import { BloomModule } from './bloom/bloom.module';
+import { BloomV2Module } from './bloom-v2/bloom-v2.module';
 
 @Module({
   imports: [
@@ -87,7 +88,8 @@ import { BloomModule } from './bloom/bloom.module';
     ResourcesModule,
     GenerateSyllabusModule,
     ExportSyllabusModule,
-    BloomModule
+    BloomModule,
+    BloomV2Module
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseConnectionService, CronService]

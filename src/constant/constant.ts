@@ -33,7 +33,8 @@ const TABLE_NAME = {
   MONHOCTRUOC: 'MonHocTruocV2',
   PERMISSION: 'permission',
   RESOURCE: 'resources',
-  BLOOM: 'bloom'
+  BLOOM: 'bloom',
+  BLOOM_V2:'bloomv2'
 };
 const EXPIREDIN = 3600;
 const SALT = 12;
