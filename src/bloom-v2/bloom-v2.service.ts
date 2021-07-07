@@ -14,10 +14,10 @@ export class BloomV2Service {
     if(filter?.mucDo === undefined){
       return await this.bloomRepository.find();
     }
-    if(Array.isArray(filter)){
+    if(Array.isArray(filter?.mucDo)){
       return await this.bloomRepository.find({ where: { levelEng: In(filter.mucDo) } });
     }else{
-      return await this.bloomRepository.find({ where: { levelEng: filter.mucDo[0] } });
+      return await this.bloomRepository.find({ where: { levelEng: filter.mucDo } });
     }
   }
 }
