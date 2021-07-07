@@ -25,13 +25,21 @@ const FIREBASECONFIG = {
   measurementId: 'G-B0QRZVC2GM',
   databaseURL: 'https://spms-f664f.firebaseio.com'
 };
-const REDIS_CONFIG = {
-  HOST: process.env.REDIS_HOST || 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com',
-  PORT: +process.env.REDIS_PORT || 18872,
-  PASSWORD: 'A7yzKrnkLM8vN3w6G1nzn5MozR9YIOsD',
-  TTL: 600,
-  MAX: 256
-};
+const REDIS_CONFIG =
+  process.env.REDIS_HOST === 'db_redis'
+    ? {
+        HOST: process.env.REDIS_HOST || 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com',
+        PORT: +process.env.REDIS_PORT || 18872,
+        TTL: 600,
+        MAX: 256
+      }
+    : {
+        HOST: process.env.REDIS_HOST || 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com',
+        PORT: +process.env.REDIS_PORT || 18872,
+        PASSWORD: process.env.REDIS_PASSWORD || 'A7yzKrnkLM8vN3w6G1nzn5MozR9YIOsD',
+        TTL: 600,
+        MAX: 256
+      };
 export {
   PORT,
   DB_HOSTNAME,
