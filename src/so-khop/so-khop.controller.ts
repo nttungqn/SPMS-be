@@ -38,6 +38,14 @@ export class SoKhopController {
     }
     return this.soKhopService.soKhopNganhDaoTao(id, filter);
   }
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiBearerAuth('token')
+  @ApiOperation({ summary: 'Lấy thông tin so khớp môn học của 1 ngành đào tạo trong 2 năm' })
+  @ApiOkResponse({ description: 'OK', type: [RowSoKhopNganhDaoTao] })
+  @Get('/chi-tiet-nganh-dao-tao/:idCTNDT1/:idCTNDT2')
+  soKhopList(@Param('idCTNDT1') idCTNDT1: number,@Param('idCTNDT2') idCTNDT2: number) {
+    return this.soKhopService.soKhopChiTietNganhDaoTao(idCTNDT1,idCTNDT2);
+  }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiBearerAuth('token')
