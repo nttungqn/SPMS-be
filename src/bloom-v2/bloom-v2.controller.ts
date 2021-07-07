@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { BloomV2Service } from './bloom-v2.service';
-import { CreateBloomV2Dto } from './dto/create-bloom-v2.dto';
 import { FilterBloomV2 } from './dto/filter-bloom.dto';
-import { UpdateBloomV2Dto } from './dto/update-bloom-v2.dto';
 
+@ApiTags('bloom-v2')
 @Controller('bloom-v2')
 export class BloomV2Controller {
   constructor(private readonly bloomV2Service: BloomV2Service) {}
