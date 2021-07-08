@@ -27,17 +27,17 @@ const FIREBASECONFIG = {
 };
 
 const REDIS_CONFIG =
-  process.env.REDIS_HOST === 'http://68.183.176.74/'
+  process.env.REDIS_HOST && process.env.REDIS_HOST !== 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com'
     ? {
-        HOST: process.env.REDIS_HOST || 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com',
+        HOST: process.env.REDIS_HOST,
         PORT: +process.env.REDIS_PORT || 18872,
         TTL: 600,
         MAX: 256
       }
     : {
-        HOST: process.env.REDIS_HOST || 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com',
+        HOST: 'redis-18872.c1.ap-southeast-1-1.ec2.cloud.redislabs.com',
         PORT: +process.env.REDIS_PORT || 18872,
-        PASSWORD: process.env.REDIS_PASSWORD || 'A7yzKrnkLM8vN3w6G1nzn5MozR9YIOsD',
+        PASSWORD: 'A7yzKrnkLM8vN3w6G1nzn5MozR9YIOsD',
         TTL: 600,
         MAX: 256
       };

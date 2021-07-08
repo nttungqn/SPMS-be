@@ -6,17 +6,25 @@ import { RedisCacheService } from './redisCache.service';
 @Module({
   imports: [
     CacheModule.registerAsync({
-      useFactory: async () => ({
-        store: redisStore,
+      useFactory: async () => {
+        return REDIS_CONFIG.PASSWORD
+          ? {
+              store: redisStore,
+              host: REDIS_CONFIG.HOST,
+              port: REDIS_CONFIG.PORT,
+              password: REDIS_CONFIG.PASSWORD,
 
-        // remote: https://redislabs.com/
-        host: REDIS_CONFIG.HOST,
-        port: REDIS_CONFIG.PORT,
-        password: REDIS_CONFIG.PASSWORD,
-
-        ttl: REDIS_CONFIG.TTL,
-        max: REDIS_CONFIG.MAX
-      })
+              ttl: REDIS_CONFIG.TTL,
+              max: REDIS_CONFIG.MAX
+            }
+          : {
+              store: redisStore,
+              host: REDIS_CONFIG.HOST,
+              port: REDIS_CONFIG.PORT,
+              ttl: REDIS_CONFIG.TTL,
+              max: REDIS_CONFIG.MAX
+            };
+      }
     })
   ],
   providers: [RedisCacheService],
