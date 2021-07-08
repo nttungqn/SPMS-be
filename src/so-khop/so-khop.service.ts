@@ -9,15 +9,16 @@ import * as format from 'string-format';
 import { REDIS_CACHE_VARS, SOKHOP_MESSAGE } from 'constant/constant';
 import { UsersEntity } from 'users/entity/user.entity';
 import { UpdateSoKhopRequestBody } from './body/update-so-kho-request-body';
+import { ChiTietNganhDaoTaoService } from 'chi-tiet-nganh-dao-tao/chi-tiet-nganh-dao-tao.service';
 
 @Injectable()
 export class SoKhopService {
   constructor(
     private chiTietGomNhomService: ChiTietGomNhomService,
     private monHocService: MonHocService,
+    private chiTietNDTSerice:ChiTietNganhDaoTaoService,
     private cacheManager: RedisCacheService
   ) {}
-
   async soKhopNganhDaoTao(idNganhDaoTao: number, filter: FilterSoKhopNganhDaoTao) {
     const { khoaTuyenNam1, khoaTuyenNam2 } = filter;
 
@@ -146,5 +147,20 @@ export class SoKhopService {
     } catch (error) {
       throw new InternalServerErrorException(SOKHOP_MESSAGE.UPDATE_MONHOCTRUOC_FAILED);
     }
+  }
+  async soKhopChiTietNganhDaoTao(idCTNDT1: number, idCTNDT2: number) {
+    const chiTietNDT1 = await this.chiTietNDTSerice.findById(idCTNDT1);
+    const chiTietNDT2 = await this.chiTietNDTSerice.findById(idCTNDT2);
+    const khoaTuyen1 = chiTietNDT1.khoa
+    const khoaTuyen2 = chiTietNDT2.khoa
+    const NDT1=chiTietNDT1.nganhDaoTao.id
+    const NDT2=chiTietNDT2.nganhDaoTao.id
+    if(NDT1 !== NDT2){
+      throw new BadRequestException("NOT_SAME_NGANH_DAO_TAO")
+    }
+    if(khoaTuyen1 >= khoaTuyen2){
+      throw new BadRequestException()
+    }
+    return await this.soKhopNganhDaoTao(NDT1,{khoaTuyenNam1:khoaTuyen1,khoaTuyenNam2:khoaTuyen2});
   }
 }
